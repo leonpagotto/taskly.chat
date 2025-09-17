@@ -1,4 +1,4 @@
-# 🌟 Taskly – Core Identity (Reimagined)
+# 🌟 Taskly.chat – Core Identity
 
 ## Vision  
 To be the **central hub for life**, where every idea, task, and goal—personal or professional—comes together seamlessly.  
