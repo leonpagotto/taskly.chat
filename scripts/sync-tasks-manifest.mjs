@@ -4,7 +4,8 @@ import path from 'path';
 
 const STORIES_ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
 const PIPELINE_ROOT = path.resolve(process.cwd(), 'tasks');
-const OUTPUT = path.resolve(process.cwd(), 'tasks.yaml');
+const OUTPUT_YAML = path.resolve(process.cwd(), 'tasks.yaml');
+const OUTPUT_JSON = path.resolve(process.cwd(), 'tasks.json');
 
 const STATUS_ORDER = ['backlog','todo','in-progress','review','done'];
 
@@ -190,8 +191,9 @@ async function main() {
     tasks: all.map(t => ({ id: t.id, title: t.title, status: t.status, story: t.story, file: `./${t.file}`, assignee: t.assignee || undefined }))
   };
   const yaml = toYAML(doc) + '\n';
-  await fs.writeFile(OUTPUT, yaml, 'utf8');
-  console.log('Wrote manifest to', OUTPUT, `(tasks: ${all.length})`);
+  await fs.writeFile(OUTPUT_YAML, yaml, 'utf8');
+  await fs.writeFile(OUTPUT_JSON, JSON.stringify(doc, null, 2) + '\n', 'utf8');
+  console.log('Wrote manifests to', OUTPUT_YAML, 'and tasks.json', `(tasks: ${all.length})`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

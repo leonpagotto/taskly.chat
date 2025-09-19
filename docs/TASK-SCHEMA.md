@@ -75,8 +75,8 @@ provenance:                      # Optional structured history (script may appen
 - Slug recommended but optional; scripts infer missing slug from title.
 
 ---
-## 3. Manifest File: `tasks.yaml`
-Root-level machine index consumed by the Kanban UI for fast loading.
+## 3. Manifest Files: `tasks.yaml` & `tasks.json`
+Root-level machine indices consumed by the Kanban UI (YAML for humans) and integrators (JSON for programmatic usage).
 
 ```yaml
 version: 1
@@ -101,7 +101,7 @@ tasks:
   # ...
 ```
 
-### 3.1 Manifest Sections
+### 3.1 Manifest Sections (YAML / JSON share same structure)
 | Section | Purpose |
 |---------|---------|
 | version | Schema versioning for forward compat. |
@@ -119,9 +119,9 @@ Additional values (priority, labels) MAY be included but are optional.
 ---
 ## 4. Sync Process
 1. Developer or Copilot modifies tasks (create / move / edit).
-2. Run: `pnpm tasks:manifest` (script) → regenerates `tasks.yaml` deterministically.
-3. Commit both changed task files + updated manifest.
-4. CI can diff manifest to detect undeclared task moves or missing sync.
+2. Run: `pnpm tasks:manifest` (script) → regenerates `tasks.yaml` & `tasks.json` deterministically.
+3. Commit both changed task files + updated manifests.
+4. CI enforces cleanliness (fails if regeneration changes uncommitted files).
 
 ---
 ## 5. Script Responsibilities
@@ -130,7 +130,13 @@ Additional values (priority, labels) MAY be included but are optional.
 - Parses YAML frontmatter (or header key: value lines) from Markdown.
 - Derives missing `id` from filename if absent.
 - Emits sorted task list (by status order, then id).
-- Writes `tasks.yaml` atomically.
+- Writes `tasks.yaml` and `tasks.json` atomically.
+
+Additional Scripts:
+- `scripts/promote-task.mjs` (backlog → pipeline + provenance event, refresh Updated)
+- `scripts/update-task-status.mjs` (pipeline status transitions + provenance)
+- `scripts/archive-done-tasks.mjs` (optional archival for aged done tasks)
+- `scripts/migrate-task-structure.mjs` (one-time legacy migration)
 
 ---
 ## 6. Status Ordering
@@ -139,9 +145,10 @@ Canonical ordering for display & sorting:
 
 ---
 ## 7. Validation & Governance
-- `scripts/validate-tasks.mjs` remains source of truth for required fields.
-- CI should enforce: manifest timestamp within last commit range; no orphaned files in incorrect folders.
-- Future: cross-check `id` uniqueness + referential integrity of `related` fields.
+- `scripts/validate-tasks.mjs` enforces required fields & duplicate ID detection.
+- CI workflow `.github/workflows/tasks-governance.yml` regenerates spec index + manifests and fails if dirty.
+- Duplicate IDs across backlog + pipeline are disallowed (prevents simultaneous backlog + active duplication).
+- Future: referential integrity of `related`, cycle time metrics from provenance.
 
 ---
 ## 8. Extension Ideas
@@ -150,4 +157,15 @@ Canonical ordering for display & sorting:
 - Maintain separate `archive/` trees per story for done tasks older than N days.
 
 ---
+## 9. Command Summary
+| Action | Command |
+|--------|---------|
+| Generate Spec Index | `pnpm spec:index` |
+| Validate Tasks | `pnpm tasks:validate` |
+| Sync Manifest (yaml+json) | `pnpm tasks:manifest` |
+| Promote Backlog Task | `pnpm task:promote <file> <status>` |
+| Update Pipeline Status | `pnpm task:status <file> <status>` |
+| Archive Old Done Tasks | `pnpm tasks:archive -- --days 30` |
+| Migrate Legacy Structure | `node scripts/migrate-task-structure.mjs` |
+
 Document updated: 2025-09-19

@@ -36,16 +36,18 @@ async function run() {
   const exists = await fs.access(src).then(()=>true).catch(()=>false);
   if (!exists) { console.error('Task file not found:', src); process.exit(1); }
   let raw = await fs.readFile(src,'utf8');
-  // Update Status: line (support either YAML frontmatter or simple header key lines)
-  if (/^Status:/m.test(raw)) {
-    raw = raw.replace(/^Status:.*$/m, `Status: ${status}`);
-  } else if (/^---\n/.test(raw)) {
-    // naive YAML injection (not used currently)
+  // Update Status
+  if (/^Status:/m.test(raw)) raw = raw.replace(/^Status:.*$/m, `Status: ${status}`);
+  else if (!/^---\n/.test(raw)) raw = raw.replace(/^(# Task:[^\n]*\n)/, `$1Status: ${status}\n`);
+  // Refresh Updated timestamp if present
+  if (/^Updated:/m.test(raw)) raw = raw.replace(/^Updated:.*$/m, `Updated: ${new Date().toISOString().slice(0,10)}`);
+  // Append provenance log (append new line always)
+  const provLine = `- ${new Date().toISOString()} promoted backlog→${status}`;
+  if (/^Provenance:/m.test(raw)) {
+    // If Provenance block exists, append line after it (simple append at end for now)
+    raw += `\n${provLine}`;
   } else {
-    raw = raw.replace(/^(# Task:[^\n]*\n)/, `$1Status: ${status}\n`);
-  }
-  if (!/Provenance:/i.test(raw)) {
-    raw += `\n\nProvenance: promoted to global pipeline ${new Date().toISOString()} -> ${status}`;
+    raw += `\n\nProvenance:\n${provLine}`;
   }
   await fs.writeFile(src, raw, 'utf8');
   const destDir = path.resolve(ROOT, 'tasks', status);

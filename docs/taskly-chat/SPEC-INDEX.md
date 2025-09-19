@@ -1,12 +1,12 @@
 # SPEC INDEX
-Generated: 2025-09-19T20:37:36.237Z
+Generated: 2025-09-19T20:41:32.324Z
 
 ## Stories (Backlog Only)
 
 | Story | Title | Status | Backlog |
 |-------|-------|--------|---------|
-| 00-lobe-chat-framework-integration |  | Draft | 5 |
-| 01-natural-language-task-creation |  | Draft | 9 |
+| 00-lobe-chat-framework-integration |  | Draft | 4 |
+| 01-natural-language-task-creation |  | Draft | 6 |
 | 02-retrieve-conversation-history |  | Draft | 7 |
 | 03-ai-personalization-based-on-memory |  | Draft | 9 |
 | 04-set-global-ai-instructions |  | Draft | 6 |

@@ -27,6 +27,8 @@
     "tasks:types:migrate": "node scripts/migrate-task-types.mjs",
     "tasks:manifest": "node scripts/sync-tasks-manifest.mjs",
     "task:promote": "node scripts/promote-task.mjs",
+  "task:status": "node scripts/update-task-status.mjs",
+  "tasks:archive": "node scripts/archive-done-tasks.mjs",
     "spec:index:json": "node scripts/generate-spec-index.mjs --json",
     "prepare": "husky"
   }

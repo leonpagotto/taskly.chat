@@ -88,12 +88,28 @@ async function main() {
   await collectStoryBacklogTasks(STORIES_ROOT, files);
   await collectPipelineTasks(PIPELINE_ROOT, files);
   let invalid = 0;
+  const ids = new Map();
   for (const f of files) {
     const { errors } = await validateTask(f);
+    // Extract ID from filename prefix (before first '.')
+    const base = path.basename(f).replace(/\.md$/,'');
+    const idMatch = base.match(/^([A-Za-z0-9_-]+)/);
+    if (idMatch) {
+      const id = idMatch[1];
+      if (!ids.has(id)) ids.set(id, []);
+      ids.get(id).push(f);
+    }
     if (errors.length) {
       invalid++;
       console.error(`\n✗ ${f}`);
       for (const er of errors) console.error('  -', er);
+    }
+  }
+  for (const [id, list] of ids.entries()) {
+    if (list.length > 1) {
+      invalid++;
+      console.error(`\n✗ Duplicate ID: ${id}`);
+      for (const l of list) console.error('  -', l);
     }
   }
   const summary = `${files.length - invalid}/${files.length} valid tasks`;

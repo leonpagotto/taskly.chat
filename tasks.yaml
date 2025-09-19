@@ -1,5 +1,5 @@
 version: 1
-generated: 2025-09-19T20:37:36.195Z
+generated: 2025-09-19T20:41:32.271Z
 pipeline:
   todo: 0
   in-progress: 4
@@ -12,14 +12,14 @@ stories:
     11-configure-smart-automation-nudges: 7
     07-share-project-with-collaborator: 9
     10-explicit-memory-management-ui: 9
-    01-natural-language-task-creation: 9
+    01-natural-language-task-creation: 6
     12-define-collaboration-permissions: 8
     03-ai-personalization-based-on-memory: 9
     04-set-global-ai-instructions: 6
     05-context-aware-reminders: 7
     06-unified-task-management: 10
     08-integrate-with-google-calendar-read-only: 8
-    00-lobe-chat-framework-integration: 5
+    00-lobe-chat-framework-integration: 4
 tasks:
   -
     id: ADA-001
@@ -220,18 +220,6 @@ tasks:
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016.md
   -
-    id: DEV-001
-    title: DEV-001
-    status: backlog
-    story: 01-natural-language-task-creation
-    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-001.md
-  -
-    id: DEV-002
-    title: DEV-002
-    status: backlog
-    story: 01-natural-language-task-creation
-    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-002.md
-  -
     id: DEV-003
     title: DEV-003
     status: backlog
@@ -369,12 +357,6 @@ tasks:
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001.md
-  -
-    id: IMP-001
-    title: IMP-001
-    status: backlog
-    story: 01-natural-language-task-creation
-    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-001.md
   -
     id: IMP-002
     title: IMP-002
@@ -603,12 +585,6 @@ tasks:
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003.md
-  -
-    id: RES-001
-    title: RES-001
-    status: backlog
-    story: 00-lobe-chat-framework-integration
-    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/RES-001.md
   -
     id: TES-001
     title: TES-001
