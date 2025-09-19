@@ -1,3 +1,4 @@
+Status: Draft
 ---
 id: 6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
 title: Define Collaboration Permissions

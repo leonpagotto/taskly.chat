@@ -1,21 +1,21 @@
 # SPEC INDEX
-Generated: 2025-09-19T19:02:02.878Z
+Generated: 2025-09-19T19:07:19.837Z
 
-| Story | Title | Status | Backlog | InProgress | Review | Done |
-|-------|-------|--------|---------|------------|--------|------|
-| 00-lobe-chat-framework-integration |  | Unknown | 5 | 1 | 0 | 0 |
-| 01-natural-language-task-creation |  | Unknown | 9 | 3 | 0 | 0 |
-| 02-retrieve-conversation-history |  | Unknown | 7 | 0 | 0 | 0 |
-| 03-ai-personalization-based-on-memory |  | Unknown | 9 | 0 | 0 | 0 |
-| 04-set-global-ai-instructions |  | Unknown | 6 | 0 | 0 | 0 |
-| 05-context-aware-reminders |  | Unknown | 7 | 0 | 0 | 0 |
-| 06-unified-task-management |  | Unknown | 10 | 0 | 0 | 0 |
-| 07-share-project-with-collaborator |  | Unknown | 9 | 0 | 0 | 0 |
-| 08-integrate-with-google-calendar-read-only |  | Unknown | 8 | 0 | 0 | 0 |
-| 09-manage-project-specific-ai-instructions |  | Unknown | 7 | 0 | 0 | 0 |
-| 10-engineering-automation | Story 10: Engineering Automation Enablement | Draft | 2 | 2 | 0 | 0 |
-| 10-explicit-memory-management-ui |  | Unknown | 9 | 0 | 0 | 0 |
-| 11-configure-smart-automation-nudges |  | Unknown | 7 | 0 | 0 | 0 |
-| 12-define-collaboration-permissions |  | Unknown | 8 | 0 | 0 | 0 |
-| 13-integrate-with-google-calendar-read-write |  | Unknown | 0 | 0 | 0 | 0 |
-| 14-track-personal-habits |  | Unknown | 0 | 0 | 0 | 0 |
+| Story | Title | Status | Backlog | InProgress | Review | Done | %Done | LastUpdated |
+|-------|-------|--------|---------|------------|--------|------|-------|-------------|
+| 00-lobe-chat-framework-integration |  | Draft | 5 | 1 | 0 | 0 | 0% | 2025-09-19T19:06:53.542Z |
+| 01-natural-language-task-creation |  | Draft | 9 | 3 | 0 | 0 | 0% | 2025-09-19T19:06:53.548Z |
+| 02-retrieve-conversation-history |  | Draft | 7 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.551Z |
+| 03-ai-personalization-based-on-memory |  | Draft | 9 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.555Z |
+| 04-set-global-ai-instructions |  | Draft | 6 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.561Z |
+| 05-context-aware-reminders |  | Draft | 7 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.566Z |
+| 06-unified-task-management |  | Draft | 10 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.572Z |
+| 07-share-project-with-collaborator |  | Draft | 9 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.576Z |
+| 08-integrate-with-google-calendar-read-only |  | Draft | 8 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.579Z |
+| 09-manage-project-specific-ai-instructions |  | Draft | 7 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.581Z |
+| 10-engineering-automation | Story 10: Engineering Automation Enablement | Draft | 4 | 5 | 0 | 0 | 0% | 2025-09-19T19:06:46.310Z |
+| 10-explicit-memory-management-ui |  | Draft | 9 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.586Z |
+| 11-configure-smart-automation-nudges |  | Draft | 7 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.588Z |
+| 12-define-collaboration-permissions |  | Draft | 8 | 0 | 0 | 0 | 0% | 2025-09-19T19:06:53.591Z |
+| 13-integrate-with-google-calendar-read-write |  | Draft | 0 | 0 | 0 | 0 | -- |  |
+| 14-track-personal-habits |  | Draft | 0 | 0 | 0 | 0 | -- |  |

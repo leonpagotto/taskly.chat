@@ -1,3 +1,4 @@
+Status: Draft
 ---
 id: 0d-framework-001
 title: Lobe Chat Framework Integration

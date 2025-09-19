@@ -19,19 +19,27 @@ async function readStoryMeta(storyDir) {
   return { title, status };
 }
 
-async function countTasks(storyDir) {
+async function collectTasks(storyDir) {
   const statuses = ['Backlog','InProgress','Review','Done'];
   const counts = {};
+  const mtimes = [];
   for (const st of statuses) {
     const folder = path.join(storyDir, st);
-    let c = 0;
+    let files = [];
     try {
       const entries = await fs.readdir(folder, { withFileTypes: true });
-      c = entries.filter(e => e.isFile() && e.name.endsWith('.md')).length;
-    } catch { c = 0; }
-    counts[st] = c;
+      files = entries.filter(e => e.isFile() && e.name.endsWith('.md')).map(e => path.join(folder, e.name));
+    } catch { files = []; }
+    counts[st] = files.length;
+    for (const f of files) {
+      try { const stat = await fs.stat(f); mtimes.push(stat.mtimeMs); } catch {}
+    }
   }
-  return counts;
+  const latest = mtimes.length ? new Date(Math.max(...mtimes)).toISOString() : '';
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const done = counts.Done || 0;
+  const pct = total ? Math.round((done/total)*100) : null;
+  return { counts, latest, total, done, pct };
 }
 
 function parseStoryFolderName(name) {
@@ -50,19 +58,38 @@ async function main() {
     const full = path.join(ROOT, d.name);
     const storyMeta = await readStoryMeta(full);
     if (!storyMeta) continue;
-    const counts = await countTasks(full);
-    stories.push({ ...meta, ...storyMeta, counts });
+  const taskData = await collectTasks(full);
+  stories.push({ ...meta, ...storyMeta, ...taskData });
   }
   stories.sort((a,b) => a.number - b.number);
+
+  if (process.argv.includes('--json')) {
+    const json = stories.map(s => ({
+      id: `${String(s.number).padStart(2,'0')}-${s.slug}`,
+      title: s.title,
+      status: s.status,
+      backlog: s.counts.Backlog,
+      inProgress: s.counts.InProgress,
+      review: s.counts.Review,
+      done: s.counts.Done,
+      total: s.total,
+      pctDone: s.pct,
+      lastUpdated: s.latest
+    }));
+    console.log(JSON.stringify(json,null,2));
+    return;
+  }
 
   const lines = [];
   lines.push('# SPEC INDEX');
   lines.push('Generated: ' + new Date().toISOString());
   lines.push('');
-  lines.push('| Story | Title | Status | Backlog | InProgress | Review | Done |');
-  lines.push('|-------|-------|--------|---------|------------|--------|------|');
+  lines.push('| Story | Title | Status | Backlog | InProgress | Review | Done | %Done | LastUpdated |');
+  lines.push('|-------|-------|--------|---------|------------|--------|------|-------|-------------|');
   for (const s of stories) {
-    lines.push(`| ${String(s.number).padStart(2,'0')}-${s.slug} | ${s.title} | ${s.status} | ${s.counts.Backlog} | ${s.counts.InProgress} | ${s.counts.Review} | ${s.counts.Done} |`);
+    const id = `${String(s.number).padStart(2,'0')}-${s.slug}`;
+    const pct = s.pct === null ? '--' : `${s.pct}%`;
+    lines.push(`| ${id} | ${s.title} | ${s.status} | ${s.counts.Backlog} | ${s.counts.InProgress} | ${s.counts.Review} | ${s.counts.Done} | ${pct} | ${s.latest} |`);
   }
   lines.push('');
   await fs.writeFile(OUTPUT, lines.join('\n'), 'utf8');

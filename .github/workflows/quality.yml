@@ -1,0 +1,50 @@
+name: Quality
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Spec Index
+        run: pnpm run spec:index
+
+      - name: Validate Tasks
+        run: pnpm run tasks:validate
+
+      - name: Check Relationships
+        run: pnpm run tasks:relationships
+
+      - name: Ensure Spec Index Committed
+        run: |
+          if ! git diff --exit-code docs/taskly-chat/SPEC-INDEX.md; then
+            echo 'SPEC-INDEX.md not up to date. Run pnpm run spec:index and commit.' >&2
+            exit 1
+          fi
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Tests
+        run: pnpm run test

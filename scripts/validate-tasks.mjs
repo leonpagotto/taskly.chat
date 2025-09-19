@@ -5,6 +5,7 @@ import path from 'path';
 const ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
 const REQUIRED = ['Status','Story','Created','Type'];
 const STATUS_VALUES = new Set(['Backlog','InProgress','Review','Done']);
+const TYPE_VALUES = new Set(['feature','bug','refactor','research','chore','spike','ops','doc']);
 
 function parseHeader(lines) {
   const map = {};
@@ -25,6 +26,14 @@ async function validateTask(file) {
   if (!titleOk) errors.push('Missing or malformed title line (# Task: ...)');
   for (const f of REQUIRED) if (!header[f]) errors.push(`Missing field: ${f}`);
   if (header.Status && !STATUS_VALUES.has(header.Status)) errors.push(`Invalid Status: ${header.Status}`);
+  if (header.Type) {
+    const t = header.Type.toLowerCase();
+    if (t === 'unknown') {
+      errors.push('Deprecated Type: unknown (use chore/doc/spike)');
+    } else if (!TYPE_VALUES.has(t)) {
+      errors.push(`Invalid Type: ${header.Type} (allowed: ${[...TYPE_VALUES].join(', ')})`);
+    }
+  }
   return { file, errors };
 }
 
