@@ -1,0 +1,707 @@
+version: 1
+generated: 2025-09-19T20:37:36.195Z
+pipeline:
+  todo: 0
+  in-progress: 4
+  review: 0
+  done: 9
+stories:
+  backlog:
+    09-manage-project-specific-ai-instructions: 7
+    02-retrieve-conversation-history: 7
+    11-configure-smart-automation-nudges: 7
+    07-share-project-with-collaborator: 9
+    10-explicit-memory-management-ui: 9
+    01-natural-language-task-creation: 9
+    12-define-collaboration-permissions: 8
+    03-ai-personalization-based-on-memory: 9
+    04-set-global-ai-instructions: 6
+    05-context-aware-reminders: 7
+    06-unified-task-management: 10
+    08-integrate-with-google-calendar-read-only: 8
+    00-lobe-chat-framework-integration: 5
+tasks:
+  -
+    id: ADA-001
+    title: ADA-001
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001.md
+  -
+    id: BAC-001
+    title: BAC-001
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-001.md
+  -
+    id: BAC-002
+    title: BAC-002
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-002.md
+  -
+    id: BUI-001
+    title: BUI-001
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/BUI-001.md
+  -
+    id: COM-001
+    title: COM-001
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/COM-001.md
+  -
+    id: COM-002
+    title: COM-002
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/COM-002.md
+  -
+    id: CON-001
+    title: CON-001
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/CON-001.md
+  -
+    id: CON-002
+    title: CON-002
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/CON-002.md
+  -
+    id: CON-003
+    title: CON-003
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/CON-003.md
+  -
+    id: CRE-001
+    title: CRE-001
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/CRE-001.md
+  -
+    id: DAT-001
+    title: DAT-001
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DAT-001.md
+  -
+    id: DEF-001
+    title: DEF-001
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEF-001.md
+  -
+    id: DEF-002
+    title: DEF-002
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEF-002.md
+  -
+    id: DEF-003
+    title: DEF-003
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEF-003.md
+  -
+    id: DEF-004
+    title: DEF-004
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEF-004.md
+  -
+    id: DEF-005
+    title: DEF-005
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEF-005.md
+  -
+    id: DEF-006
+    title: DEF-006
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006.md
+  -
+    id: DES-001
+    title: DES-001
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-001.md
+  -
+    id: DES-002
+    title: DES-002
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-002.md
+  -
+    id: DES-003
+    title: DES-003
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DES-003.md
+  -
+    id: DES-004
+    title: DES-004
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DES-004.md
+  -
+    id: DES-005
+    title: DES-005
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DES-005.md
+  -
+    id: DES-006
+    title: DES-006
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DES-006.md
+  -
+    id: DES-007
+    title: DES-007
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DES-007.md
+  -
+    id: DES-008
+    title: DES-008
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DES-008.md
+  -
+    id: DES-009
+    title: DES-009
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009.md
+  -
+    id: DES-010
+    title: DES-010
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010.md
+  -
+    id: DES-011
+    title: DES-011
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-011.md
+  -
+    id: DES-012
+    title: DES-012
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-012.md
+  -
+    id: DES-013
+    title: DES-013
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/DES-013.md
+  -
+    id: DES-014
+    title: DES-014
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DES-014.md
+  -
+    id: DES-015
+    title: DES-015
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-015.md
+  -
+    id: DES-016
+    title: DES-016
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016.md
+  -
+    id: DEV-001
+    title: DEV-001
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-001.md
+  -
+    id: DEV-002
+    title: DEV-002
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-002.md
+  -
+    id: DEV-003
+    title: DEV-003
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-003.md
+  -
+    id: DEV-004
+    title: DEV-004
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-004.md
+  -
+    id: DEV-005
+    title: DEV-005
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-005.md
+  -
+    id: DEV-006
+    title: DEV-006
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-006.md
+  -
+    id: DEV-007
+    title: DEV-007
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEV-007.md
+  -
+    id: DEV-008
+    title: DEV-008
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-008.md
+  -
+    id: DEV-009
+    title: DEV-009
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-009.md
+  -
+    id: DEV-010
+    title: DEV-010
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-010.md
+  -
+    id: DEV-011
+    title: DEV-011
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-011.md
+  -
+    id: DEV-012
+    title: DEV-012
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-012.md
+  -
+    id: DEV-013
+    title: DEV-013
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-013.md
+  -
+    id: DEV-014
+    title: DEV-014
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-014.md
+  -
+    id: DEV-015
+    title: DEV-015
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015.md
+  -
+    id: DEV-016
+    title: DEV-016
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016.md
+  -
+    id: DEV-017
+    title: DEV-017
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017.md
+  -
+    id: DEV-018
+    title: DEV-018
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-018.md
+  -
+    id: DEV-019
+    title: DEV-019
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-019.md
+  -
+    id: DEV-020
+    title: DEV-020
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-020.md
+  -
+    id: DEV-021
+    title: DEV-021
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-021.md
+  -
+    id: DOC-001
+    title: DOC-001
+    status: backlog
+    story: 00-lobe-chat-framework-integration
+    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/DOC-001.md
+  -
+    id: ENS-001
+    title: ENS-001
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/ENS-001.md
+  -
+    id: ENS-002
+    title: ENS-002
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/ENS-002.md
+  -
+    id: FRO-001
+    title: FRO-001
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001.md
+  -
+    id: IMP-001
+    title: IMP-001
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-001.md
+  -
+    id: IMP-002
+    title: IMP-002
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-002.md
+  -
+    id: IMP-003
+    title: IMP-003
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-003.md
+  -
+    id: IMP-004
+    title: IMP-004
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-004.md
+  -
+    id: IMP-005
+    title: IMP-005
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-005.md
+  -
+    id: IMP-006
+    title: IMP-006
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/IMP-006.md
+  -
+    id: IMP-007
+    title: IMP-007
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-007.md
+  -
+    id: IMP-008
+    title: IMP-008
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-008.md
+  -
+    id: IMP-009
+    title: IMP-009
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-009.md
+  -
+    id: IMP-010
+    title: IMP-010
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-010.md
+  -
+    id: IMP-011
+    title: IMP-011
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-011.md
+  -
+    id: IMP-012
+    title: IMP-012
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-012.md
+  -
+    id: IMP-013
+    title: IMP-013
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-013.md
+  -
+    id: IMP-014
+    title: IMP-014
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-014.md
+  -
+    id: IMP-015
+    title: IMP-015
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015.md
+  -
+    id: IMP-016
+    title: IMP-016
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016.md
+  -
+    id: IMP-017
+    title: IMP-017
+    status: backlog
+    story: 09-manage-project-specific-ai-instructions
+    file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017.md
+  -
+    id: IMP-018
+    title: IMP-018
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-018.md
+  -
+    id: IMP-019
+    title: IMP-019
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-019.md
+  -
+    id: IMP-020
+    title: IMP-020
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-020.md
+  -
+    id: IMP-021
+    title: IMP-021
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-021.md
+  -
+    id: IMP-022
+    title: IMP-022
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-022.md
+  -
+    id: IMP-023
+    title: IMP-023
+    status: backlog
+    story: 10-explicit-memory-management-ui
+    file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-023.md
+  -
+    id: IMP-024
+    title: IMP-024
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-024.md
+  -
+    id: IMP-025
+    title: IMP-025
+    status: backlog
+    story: 11-configure-smart-automation-nudges
+    file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-025.md
+  -
+    id: IMP-026
+    title: IMP-026
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/IMP-026.md
+  -
+    id: IMP-101
+    title: IMP-101
+    status: backlog
+    story: 00-lobe-chat-framework-integration
+    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101.md
+  -
+    id: IMP-102
+    title: IMP-102
+    status: backlog
+    story: 00-lobe-chat-framework-integration
+    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-102.md
+  -
+    id: IMP-103
+    title: IMP-103
+    status: backlog
+    story: 00-lobe-chat-framework-integration
+    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-103.md
+  -
+    id: INT-001
+    title: INT-001
+    status: backlog
+    story: 01-natural-language-task-creation
+    file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/INT-001.md
+  -
+    id: INT-002
+    title: INT-002
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/INT-002.md
+  -
+    id: INT-003
+    title: INT-003
+    status: backlog
+    story: 03-ai-personalization-based-on-memory
+    file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/INT-003.md
+  -
+    id: INT-004
+    title: INT-004
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/INT-004.md
+  -
+    id: INT-005
+    title: INT-005
+    status: backlog
+    story: 06-unified-task-management
+    file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/INT-005.md
+  -
+    id: INT-006
+    title: INT-006
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006.md
+  -
+    id: INT-007
+    title: INT-007
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/INT-007.md
+  -
+    id: QUA-001
+    title: QUA-001
+    status: backlog
+    story: 04-set-global-ai-instructions
+    file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/QUA-001.md
+  -
+    id: QUA-002
+    title: QUA-002
+    status: backlog
+    story: 05-context-aware-reminders
+    file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/QUA-002.md
+  -
+    id: QUA-003
+    title: QUA-003
+    status: backlog
+    story: 08-integrate-with-google-calendar-read-only
+    file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003.md
+  -
+    id: RES-001
+    title: RES-001
+    status: backlog
+    story: 00-lobe-chat-framework-integration
+    file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/RES-001.md
+  -
+    id: TES-001
+    title: TES-001
+    status: backlog
+    story: 02-retrieve-conversation-history
+    file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/TES-001.md
+  -
+    id: UPD-001
+    title: UPD-001
+    status: backlog
+    story: 07-share-project-with-collaborator
+    file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/UPD-001.md
+  -
+    id: WRI-001
+    title: WRI-001
+    status: backlog
+    story: 12-define-collaboration-permissions
+    file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/WRI-001.md
+  -
+    id: DEV-001
+    title: DEV-001
+    status: in-progress
+    story: 01-natural-language-task-creation
+    file: ./tasks/in-progress/DEV-001.md
+  -
+    id: DEV-002
+    title: DEV-002
+    status: in-progress
+    story: 01-natural-language-task-creation
+    file: ./tasks/in-progress/DEV-002.md
+  -
+    id: IMP-001
+    title: IMP-001
+    status: in-progress
+    story: 01-natural-language-task-creation
+    file: ./tasks/in-progress/IMP-001.md
+  -
+    id: RES-001
+    title: RES-001
+    status: in-progress
+    story: 00-lobe-chat-framework-integration
+    file: ./tasks/in-progress/RES-001.md
+  -
+    id: TOOL-001
+    title: Implement Spec Index Generator
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-001.md
+  -
+    id: TOOL-002
+    title: Implement Task Header Validator
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-002.md
+  -
+    id: TOOL-003
+    title: Add Pre-Commit Hook for Validation
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-003.md
+  -
+    id: TOOL-004
+    title: Normalize Legacy Task Files
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-004.md
+  -
+    id: TOOL-005
+    title: Insert Story Status Lines
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-005.md
+  -
+    id: TOOL-006
+    title: Add Relationship Integrity Checker
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-006.md
+  -
+    id: TOOL-007
+    title: Add CI Quality Workflow
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-007.md
+  -
+    id: TOOL-008
+    title: Enforce Task Type Enumeration
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-008.md
+  -
+    id: TOOL-009
+    title: Enhance Spec Index Output
+    status: done
+    story: 10-engineering-automation
+    file: ./tasks/done/TOOL-009.md

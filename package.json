@@ -25,6 +25,8 @@
     "tasks:status:fill": "node scripts/update-story-statuses.mjs",
     "tasks:normalize": "node scripts/normalize-tasks.mjs",
     "tasks:types:migrate": "node scripts/migrate-task-types.mjs",
+    "tasks:manifest": "node scripts/sync-tasks-manifest.mjs",
+    "task:promote": "node scripts/promote-task.mjs",
     "spec:index:json": "node scripts/generate-spec-index.mjs --json",
     "prepare": "husky"
   }

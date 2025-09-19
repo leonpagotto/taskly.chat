@@ -2,9 +2,12 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
+const STORIES_ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
+const PIPELINE_ROOT = path.resolve(process.cwd(), 'tasks');
 const REQUIRED = ['Status','Story','Created','Type'];
-const STATUS_VALUES = new Set(['Backlog','InProgress','Review','Done']);
+// Canonical story (backlog) status + pipeline statuses
+// Accept both canonical lowercase and legacy TitleCase 'Backlog' for story backlog tasks
+const STATUS_VALUES = new Set(['backlog','Backlog','todo','in-progress','review','done']);
 const TYPE_VALUES = new Set(['feature','bug','refactor','research','chore','spike','ops','doc']);
 
 function parseHeader(lines) {
@@ -37,22 +40,53 @@ async function validateTask(file) {
   return { file, errors };
 }
 
-async function walk(dir, acc=[]) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
+async function collectStoryBacklogTasks(root, acc=[]) {
+  const entries = await fs.readdir(root,{withFileTypes:true});
   for (const e of entries) {
-    const full = path.join(dir, e.name);
-    if (e.isDirectory()) await walk(full, acc);
-  else if (e.isFile() && e.name.endsWith('.md') && /(\/Backlog\/|\/InProgress\/|\/Review\/|\/Done\/)/.test(full.replace(/\\/g,'/'))) {
-      // only validate task files, skip story.md
-      if (e.name === 'story.md') continue;
-      acc.push(full);
+    const full = path.join(root, e.name);
+    if (e.isDirectory()) {
+      // Expect story directories like <number>-slug
+      if (/^\d+-.+/.test(e.name)) {
+        // look for tasks subfolder pattern old style statuses (Backlog etc.) or new future 'tasks'
+        // Legacy: status folders; New: story backlog likely in a 'tasks' folder
+        const legacyStatuses = ['Backlog','InProgress','Review','Done'];
+        for (const ls of legacyStatuses) {
+          const statusDir = path.join(full, ls);
+          try {
+            const items = await fs.readdir(statusDir,{withFileTypes:true});
+            for (const it of items) if (it.isFile() && it.name.endsWith('.md') && it.name !== 'story.md') acc.push(path.join(statusDir,it.name));
+          } catch {}
+        }
+        // New backlog tasks folder (optional future): stories/<story>/tasks/*.md
+        const backlogDir = path.join(full,'tasks');
+        try {
+          const items = await fs.readdir(backlogDir,{withFileTypes:true});
+          for (const it of items) if (it.isFile() && it.name.endsWith('.md')) acc.push(path.join(backlogDir,it.name));
+        } catch {}
+      } else {
+        await collectStoryBacklogTasks(full, acc);
+      }
     }
   }
   return acc;
 }
 
+async function collectPipelineTasks(root, acc=[]) {
+  const statuses = ['todo','in-progress','review','done'];
+  for (const st of statuses) {
+    const dir = path.join(root, st);
+    try {
+      const entries = await fs.readdir(dir,{withFileTypes:true});
+      for (const e of entries) if (e.isFile() && e.name.endsWith('.md')) acc.push(path.join(dir,e.name));
+    } catch {}
+  }
+  return acc;
+}
+
 async function main() {
-  const files = await walk(ROOT);
+  const files = [];
+  await collectStoryBacklogTasks(STORIES_ROOT, files);
+  await collectPipelineTasks(PIPELINE_ROOT, files);
   let invalid = 0;
   for (const f of files) {
     const { errors } = await validateTask(f);
