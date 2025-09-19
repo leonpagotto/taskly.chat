@@ -1,6 +1,0 @@
----
-id: d0c1b2a3-e4f5-4678-9a0b-1c2d3e4f5a6b
-title: Free Tier Feature Management
-priority: Highest
----
-As a user in the Free Tier, I want to utilize Taskly.chat with a clear understanding of its limitations, so I can experience its core functionalities before deciding to upgrade. This includes limited projects (e.g., 3 active projects), basic workflow tools, very limited AI requests (e.g., 20-30 per month using a lightweight AI model), and access to basic third-party integrations (Google Calendar, Outlook, Slack, Trello, Asana). The system should clearly indicate my current tier and its associated limits, providing clear prompts for upgrading when limits are approached or exceeded. The UI should gracefully handle feature restrictions without hindering the overall user experience. This tier is designed for onboarding and experimentation, ensuring accessibility for price-sensitive users while showcasing the value proposition to encourage conversion to paid tiers. All Free Tier functionalities must adhere to standard required data privacy and security measures, maintaining user trust from the outset. The experience should be reliable, even with limited resources, aligning with the project's principle of accessibility and value.

@@ -1,6 +1,0 @@
----
-id: a9e8d7c6-b5a4-4321-9876-1e0d2c3f4a5b
-title: Slack Integration
-priority: Highest
----
-As a user, I want to integrate Taskly.chat with Slack, so that I can receive important notifications, capture discussions as tasks, and trigger actions directly from my chat conversations. This includes the ability to send messages, reminders, or summaries from Taskly.chat into Slack channels or direct messages, and conversely, to convert Slack messages into tasks or memory entries within Taskly.chat using specific commands or conversational prompts. The integration should support secure OAuth 2.0 authentication for connecting my Slack workspace and manage API calls to ensure efficient and reliable communication. I should be able to easily configure which channels or direct messages Taskly.chat can interact with, maintaining control over my data and privacy. This feature is crucial for professionals and teams to streamline their communication and task management workflows, enabling Taskly.chat to act as a central hub across different platforms. The integration must prioritize data security, ensuring that all data exchange between Taskly.chat and Slack complies with standard required data privacy and security measures.

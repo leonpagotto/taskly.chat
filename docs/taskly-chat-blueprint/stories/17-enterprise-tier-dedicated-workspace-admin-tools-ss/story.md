@@ -1,6 +1,0 @@
----
-id: b3c2a1d0-e9f8-4765-8a9b-c0d1e2f3a4b5
-title: 'Enterprise Tier: Dedicated Workspace, Admin Tools & SSO'
-priority: High
----
-As an administrator for an Enterprise, I want Taskly.chat to provide a dedicated workspace, comprehensive admin tools, security and compliance features (like SSO), and priority support, so I can efficiently manage my team's usage, data, and security within the platform. This tier should include all Pro features. The dedicated workspace will offer isolated environments for teams. Admin tools should allow me to manage users, assign roles, monitor usage, and configure team-wide automations and integrations. SSO (Single Sign-On) integration is essential for streamlined access and enhanced security within our corporate environment. Priority support ensures rapid resolution of any critical issues. This tier is designed for companies and larger teams, focusing on robust organizational control, security, and dedicated service. All aspects of the Enterprise Tier must meet the highest standards for data privacy, security, and compliance, aligning with corporate requirements and relevant regulations. The platform should offer comprehensive documentation and training resources tailored for enterprise adoption, fostering seamless integration into corporate workflows and policies.

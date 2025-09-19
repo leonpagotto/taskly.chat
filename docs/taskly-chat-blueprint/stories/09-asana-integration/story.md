@@ -1,6 +1,0 @@
----
-id: c9b8a7d6-e5f4-4321-0987-fedcba987654
-title: Asana Integration
-priority: Highest
----
-As a user, I want to integrate Taskly.chat with Asana, so that I can manage my projects, tasks, and teams using natural language, enabling a unified approach to my professional tasks. This involves the ability to create new Asana tasks, assign them, set due dates, update task statuses, or query project progress directly through Taskly.chat's conversational interface. The integration should facilitate secure OAuth 2.0 authentication for connecting my Asana account and ensure reliable, bidirectional data synchronization between Taskly.chat and Asana. I should have granular control over which Asana workspaces or projects Taskly.chat can access, ensuring data security and privacy. This feature is crucial for professionals and teams relying on Asana for project management, allowing them to harness AI-powered assistance within their existing workflows. All data exchanges must adhere to standard required data privacy and security measures. The integration should be performant and reliable, ensuring real-time updates and accurate task management within Taskly.chat.

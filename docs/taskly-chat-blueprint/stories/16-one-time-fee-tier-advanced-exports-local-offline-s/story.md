@@ -1,6 +1,0 @@
----
-id: f9e8d7c6-b5a4-4321-9876-543210fedcba
-title: 'One-Time Fee Tier: Advanced Exports & Local Offline Sync'
-priority: High
----
-As a user who prefers a non-subscription model, I want to access Taskly.chat through a One-Time Fee Tier, so I can benefit from unlimited projects and storage, advanced export capabilities (PDF, Word, CSV), and local offline synchronization of my data. This tier will include access to cheaper AI models (like the Cheap AI Tier) but will not upgrade to premium AI reasoning unless I later subscribe to a Pro or Enterprise plan. The system should provide a clear, secure payment process for the one-time fee and grant immediate access to the tier's features. The advanced export functionality should allow me to generate high-quality, formatted documents of my conversations, tasks, and memory entries. Local offline sync should ensure that my data and core functionalities are accessible even without an internet connection, enhancing privacy and control. This tier aims to monetize users resistant to subscriptions, offering significant value while reserving premium AI for recurring revenue models. All features must uphold standard data privacy and security, especially concerning offline data management and exports. The UI should clearly communicate the features included and excluded in this tier, managing user expectations effectively.
