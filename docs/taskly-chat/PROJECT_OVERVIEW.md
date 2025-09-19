@@ -1,7 +1,6 @@
 # Project: Taskly.Chat (v1.0.0)
 
-**Description:** Create a new project specification based on the context from the GitHub repository: https://github.com/leonpagotto/taskly.chat
-
+**Description:** MVP project specification for https://github.com/leonpagotto/
 ---
 
 # Specification
