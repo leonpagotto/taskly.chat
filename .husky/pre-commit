@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+. "$(dirname "$0")/_/husky.sh"
+
+set -euo pipefail
+
+# Block .next artifacts
+if git diff --cached --name-only | grep -E '/\.next/' >/dev/null; then
+  echo "❌ Commit blocked: .next build artifacts are staged. Remove them before committing." >&2
+  exit 2
+fi
+
+# Validate tasks
+echo "▶ Running task validator..."
+if ! pnpm tasks:validate; then
+  echo "❌ Commit blocked: Task validation failed." >&2
+  exit 3
+fi
+
+echo "✅ Pre-commit checks passed."

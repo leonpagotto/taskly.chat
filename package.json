@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "devDependencies": {
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "husky": "9.0.11"
   },
   "scripts": {
     "dev": "pnpm -r run dev",
@@ -17,6 +18,9 @@
     "build": "pnpm run prisma:generate && pnpm run build:packages && pnpm --filter @taskly/chat-app run build",
     "lint": "pnpm -r run lint",
     "typecheck": "tsc -b --pretty false --noEmit",
-    "test": "pnpm --filter @taskly/data run test"
+    "test": "pnpm --filter @taskly/data run test",
+    "spec:index": "node scripts/generate-spec-index.mjs",
+    "tasks:validate": "node scripts/validate-tasks.mjs",
+    "prepare": "husky"
   }
 }
