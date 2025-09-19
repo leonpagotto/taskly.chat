@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+  "module": "ESNext",
+  "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@taskly/core": ["packages/core/src/index.ts"],
+      "@taskly/ai": ["packages/ai/src/index.ts"],
+      "@taskly/integration": ["packages/integration/src/index.ts"]
+    }
+  }
+}

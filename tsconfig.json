@@ -1,0 +1,21 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "paths": {
+      "@taskly/core": ["packages/core/src"],
+      "@taskly/ai": ["packages/ai/src"],
+      "@taskly/integration": ["packages/integration/src"]
+    },
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/ai" },
+    { "path": "packages/integration" },
+    { "path": "apps/chat" }
+  ]
+}

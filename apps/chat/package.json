@@ -1,0 +1,26 @@
+{
+  "name": "@taskly/chat-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "14.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@taskly/core": "workspace:*",
+    "@taskly/ai": "workspace:*",
+    "@taskly/integration": "workspace:*"
+  },
+  "devDependencies": {
+  "typescript": "5.9.2",
+    "@types/react": "18.2.21",
+    "@types/node": "20.11.0"
+  }
+}

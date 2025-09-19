@@ -1,0 +1,22 @@
+{
+  "name": "taskly-chat-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "typescript": "5.9.2"
+  },
+  "scripts": {
+    "dev": "pnpm -r run dev",
+    "prisma:generate": "pnpm --filter @taskly/data run prisma:generate",
+    "prisma:migrate:dev": "pnpm dlx prisma migrate dev",
+    "build:packages": "tsc -b packages/core packages/ai packages/integration packages/data",
+    "build": "pnpm run prisma:generate && pnpm run build:packages && pnpm --filter @taskly/chat-app run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "tsc -b --pretty false --noEmit",
+    "test": "pnpm --filter @taskly/data run test"
+  }
+}
