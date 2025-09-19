@@ -12,7 +12,7 @@ Usage:
 Rules:
 - Task must reside in tasks/done/
 - Must contain a Story: field to determine destination story dir
-- Destination: docs/taskly-chat/stories/<story>/archive/<filename>
+- Destination: stories/<story>/archive/<filename>
 - Creates archive/ if missing.
 - Adds provenance entry.
 */

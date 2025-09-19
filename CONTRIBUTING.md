@@ -1,7 +1,7 @@
 # Contributing
 
 ## Workflow Summary
-1. Start from a spec / backlog item inside `docs/taskly-chat/stories/*/Backlog/`.
+1. Start from a spec / backlog item inside `stories/*/Backlog/`.
 2. Move the file to an appropriate progress folder (process TBD) when you begin work.
 3. Implement changes in code referencing the task ID in commit messages.
 

@@ -29,7 +29,8 @@
     "task:promote": "node scripts/promote-task.mjs",
   "task:status": "node scripts/update-task-status.mjs",
   "tasks:archive": "node scripts/archive-done-tasks.mjs",
-    "spec:index:json": "node scripts/generate-spec-index.mjs --json",
+  "spec:index:json": "node scripts/generate-spec-index.mjs --json",
+  "guard:legacy-paths": "node scripts/check-legacy-paths.mjs",
     "prepare": "husky"
   }
 }

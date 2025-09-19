@@ -114,8 +114,8 @@ The Copilot follows strict rules for creating, managing, and implementing tasks.
 
 ## 🛠 Workflow Enforcement
 We operate under a Spec > Plan > Task > Implement flow.
-- Specs & Stories: `docs/taskly-chat/stories/*/story.md`
-- Tasks: `docs/taskly-chat/stories/*/Backlog/*.md` (move across status folders)
+- Specs & Stories: `stories/*/story.md`
+- Tasks: `stories/*/Backlog/*.md` (move across status folders)
 - Process Reference: `docs/PROCESS.md`
 - Copilot Context: `.github/instructions/COPILOT.instruction.md`
 
@@ -213,11 +213,7 @@ node scripts/generate-changed-tasks.mjs --full
 Use the `hash` field in `tasks.json` to validate integrity and decide which task Markdown files to re-fetch.
 
 ---
-<<<<<<< HEAD
-
-=======
->>>>>>> 4f06eaf (feat(data): introduce @taskly/data with prisma schema, migration, repositories, and tests (Story 02 DEV-020 DEV-021))
-# Taskly.Chat
+<!-- removed obsolete merge conflict remnants -->
 
 Taskly.Chat is an **AI-powered personal assistant** that blends conversation, memory, and automation into a single experience. Unlike traditional productivity tools or project managers, Taskly.Chat is designed to work the way people naturally think and talk — through **conversation**.
 
@@ -335,8 +331,8 @@ _______
 
 ## 🛠 Workflow Enforcement
 We operate under a Spec > Plan > Task > Implement flow.
-- Specs & Stories: `docs/taskly-chat/stories/*/story.md`
-- Tasks: `docs/taskly-chat/stories/*/Backlog/*.md` (move across status folders)
+- Specs & Stories: `stories/*/story.md`
+- Tasks: `stories/*/Backlog/*.md` (move across status folders)
 - Process Reference: `docs/PROCESS.md`
 - Copilot Context: `.github/instructions/COPILOT.instruction.md`
 

@@ -1,11 +1,11 @@
 # SPEC INDEX
-Generated: 2025-09-19T20:41:32.324Z
+Generated: 2025-09-19T23:03:40.743Z
 
 ## Stories (Backlog Only)
 
 | Story | Title | Status | Backlog |
 |-------|-------|--------|---------|
-| 00-lobe-chat-framework-integration |  | Draft | 4 |
+| 00-lobe-chat-framework-integration |  | Draft | 11 |
 | 01-natural-language-task-creation |  | Draft | 6 |
 | 02-retrieve-conversation-history |  | Draft | 7 |
 | 03-ai-personalization-based-on-memory |  | Draft | 9 |
@@ -26,4 +26,4 @@ Generated: 2025-09-19T20:41:32.324Z
 
 | Todo | In-Progress | Review | Done | Total | %Done | LastUpdated |
 |------|-------------|--------|------|-------|-------|-------------|
-| 0 | 4 | 0 | 9 | 13 | 69% | 2025-09-19T20:17:55.294Z |
+| 0 | 4 | 0 | 9 | 13 | 69% | 2025-09-19T21:15:47.468Z |
