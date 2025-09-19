@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { promises as fs } from 'fs';
+import crypto from 'crypto';
 import path from 'path';
 
 const STORIES_ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
@@ -40,6 +41,13 @@ function parseKeyValues(lines) {
   return map;
 }
 
+async function fileHash(p){
+  try {
+    const buf = await fs.readFile(p);
+    return crypto.createHash('sha256').update(buf).digest('hex');
+  } catch { return null; }
+}
+
 async function collectBacklogTasks() {
   const tasks = [];
   const dirs = await fs.readdir(STORIES_ROOT,{withFileTypes:true});
@@ -56,12 +64,14 @@ async function collectBacklogTasks() {
       const raw = await readFileSafe(file) || '';
       const meta = extractFrontmatter(raw);
       const id = meta.id || e.name.replace(/\.md$/,'');
+      const hash = await fileHash(file);
       tasks.push({
         id,
         title: meta.title || inferTitle(raw) || id,
         status: 'backlog',
         story: meta.story || d.name,
         file: path.relative(process.cwd(), file),
+        hash,
         assignee: meta.assignee || null,
         priority: meta.priority || undefined
       });
@@ -84,12 +94,14 @@ async function collectPipelineTasks() {
       const meta = extractFrontmatter(raw);
       // Status normalization preference to folder truth
       const id = meta.id || e.name.replace(/\.md$/,'');
+      const hash = await fileHash(file);
       tasks.push({
         id,
         title: meta.title || inferTitle(raw) || id,
         status: st,
         story: meta.story || inferStoryFromContent(meta, raw) || 'unknown',
         file: path.relative(process.cwd(), file),
+        hash,
         assignee: meta.assignee || null,
         priority: meta.priority || undefined
       });
@@ -188,7 +200,7 @@ async function main() {
     generated: new Date().toISOString(),
     pipeline: pipeAgg,
     stories: { backlog: backlogCounts },
-    tasks: all.map(t => ({ id: t.id, title: t.title, status: t.status, story: t.story, file: `./${t.file}`, assignee: t.assignee || undefined }))
+    tasks: all.map(t => ({ id: t.id, title: t.title, status: t.status, story: t.story, file: `./${t.file}`, hash: t.hash, assignee: t.assignee || undefined }))
   };
   const yaml = toYAML(doc) + '\n';
   await fs.writeFile(OUTPUT_YAML, yaml, 'utf8');

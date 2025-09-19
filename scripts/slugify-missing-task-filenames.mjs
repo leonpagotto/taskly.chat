@@ -97,6 +97,8 @@ function deriveSlug(raw, id){
 }
 
 async function main(){
+  const args = process.argv.slice(2);
+  const dryRun = args.includes('--dry-run');
   const files = await collectFiles();
   if (!files.length){
     console.log('No unslugged files found.');
@@ -116,20 +118,30 @@ async function main(){
       console.warn('Skip (target exists):', target);
       continue;
     } catch {}
-    await fs.rename(file, target);
     actions.push({from: path.relative(ROOT,file), to: path.relative(ROOT,target)});
+    if (!dryRun){
+      await fs.rename(file, target);
+    }
   }
   if (!actions.length){
     console.log('No renames performed (maybe all already slugged).');
     return;
   }
-  console.log('Renamed', actions.length, 'files');
-  for (const a of actions){
-    console.log('-', a.from, '=>', a.to);
+  if (dryRun){
+    console.log('[dry-run] Would rename', actions.length, 'files');
+  } else {
+    console.log('Renamed', actions.length, 'files');
   }
-  console.log('\nNext steps:');
-  console.log('  node scripts/sync-tasks-manifest.mjs');
-  console.log('  node scripts/validate-tasks.mjs');
+  for (const a of actions){
+    console.log(dryRun ? '[dry-run] -' : '-', a.from, '=>', a.to);
+  }
+  if (!dryRun){
+    console.log('\nNext steps:');
+    console.log('  node scripts/sync-tasks-manifest.mjs');
+    console.log('  node scripts/validate-tasks.mjs');
+  } else {
+    console.log('\nDry run only. No files were changed.');
+  }
 }
 
 main().catch(err=>{console.error(err); process.exit(1);});

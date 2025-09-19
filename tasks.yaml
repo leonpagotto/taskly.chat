@@ -1,5 +1,5 @@
 version: 1
-generated: 2025-09-19T22:45:43.502Z
+generated: 2025-09-19T22:53:01.252Z
 pipeline:
   todo: 0
   in-progress: 4
@@ -27,699 +27,816 @@ tasks:
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001-migrated-legacy-task-improve-this-summary.md
+    hash: 337ab549da1c931cf5dd13487fcff22a4020fd9d12459fc9a576cdbf64b445f5
   -
     id: ANL-100-feasibility-licensing-assessment
     title: ANL-100
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ANL-100-feasibility-licensing-assessment.md
+    hash: fa1cb0e5c77a1ffb0160ef8ff5818650ada06becf3abcb624d4c9522515d6e38
   -
     id: ARCH-106-adapter-architecture-layer
     title: ARCH-106
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ARCH-106-adapter-architecture-layer.md
+    hash: 03bd1fa7cd44d3329956a1537517a107cbd0ab510ca255d9d9cccade96985937
   -
     id: BAC-001-migrated-legacy-task-improve-this-summary
     title: BAC-001
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-001-migrated-legacy-task-improve-this-summary.md
+    hash: d7d2c4cc06d0858d82a3c3738bc919fe78f1a313c2e0fa2940dbdc8c80f50fd2
   -
     id: BAC-002-migrated-legacy-task-improve-this-summary
     title: BAC-002
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-002-migrated-legacy-task-improve-this-summary.md
+    hash: 4bcd69b235e75149d8016e9fdcb85f40a62195d7bcd8585d8a37c2d8ab4b5d74
   -
     id: BUI-001-migrated-legacy-task-improve-this-summary
     title: BUI-001
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/BUI-001-migrated-legacy-task-improve-this-summary.md
+    hash: 8bca60b740a509ba813c9cc770a7cfff961743240635e2140f7ac4630daa36a2
   -
     id: COM-001-migrated-legacy-task-improve-this-summary
     title: COM-001
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/COM-001-migrated-legacy-task-improve-this-summary.md
+    hash: 9cf988488216bda0ebfb43a7a0ab6802a48c0f55a4fab74da0e7b755bd8e659a
   -
     id: COM-002-migrated-legacy-task-improve-this-summary
     title: COM-002
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/COM-002-migrated-legacy-task-improve-this-summary.md
+    hash: d2465cca8ff044e96e446c0fb027294a5b29451c92a47cd67db4515c0fab7675
   -
     id: CON-001-migrated-legacy-task-improve-this-summary
     title: CON-001
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/CON-001-migrated-legacy-task-improve-this-summary.md
+    hash: 533ce2e7f5e9872be33b60cdfefe1f29833ffca4248959adae19d743b04da9cf
   -
     id: CON-002-migrated-legacy-task-improve-this-summary
     title: CON-002
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/CON-002-migrated-legacy-task-improve-this-summary.md
+    hash: 5d6c78ec277b90f2be7239d4576ed0965dfdca651feb21d00f60f104346b7eb3
   -
     id: CON-003-migrated-legacy-task-improve-this-summary
     title: CON-003
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/CON-003-migrated-legacy-task-improve-this-summary.md
+    hash: 04ba58d40e6a864992fa093b7e668e4f1f5b333726274991cd005d25f483d3d8
   -
     id: CRE-001-migrated-legacy-task-improve-this-summary
     title: CRE-001
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/CRE-001-migrated-legacy-task-improve-this-summary.md
+    hash: c2443769123e60acb2afde9c680233353c1dee7e3f72eb0829eb2fbb66674e53
   -
     id: DAT-001-migrated-legacy-task-improve-this-summary
     title: DAT-001
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DAT-001-migrated-legacy-task-improve-this-summary.md
+    hash: 4297c9fdf69bbc1cf891324c9465f2d551f4c8e3d264f19711200dffbba9697c
   -
     id: DEF-001-migrated-legacy-task-improve-this-summary
     title: DEF-001
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEF-001-migrated-legacy-task-improve-this-summary.md
+    hash: a706b424df16b9ed8a9ed5350be5746e26f54d61c436242ee079052963615d4a
   -
     id: DEF-002-migrated-legacy-task-improve-this-summary
     title: DEF-002
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEF-002-migrated-legacy-task-improve-this-summary.md
+    hash: db7f983ac858548e5419d260a2d145d5f4edb697c5cc0b3e454a0313bdb0b091
   -
     id: DEF-003-migrated-legacy-task-improve-this-summary
     title: DEF-003
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEF-003-migrated-legacy-task-improve-this-summary.md
+    hash: b035241d2fb2192bffb1a8fea222b974e6c10f1ad4c82312ac8e0a9d25454df7
   -
     id: DEF-004-migrated-legacy-task-improve-this-summary
     title: DEF-004
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEF-004-migrated-legacy-task-improve-this-summary.md
+    hash: 70c2f96e69416e1092cd30d931ce8949050d92836fe2503f7f49f4fd4853b11a
   -
     id: DEF-005-migrated-legacy-task-improve-this-summary
     title: DEF-005
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEF-005-migrated-legacy-task-improve-this-summary.md
+    hash: 126b9bc8ce7483da9c7ddf0d94e2dff91949a5eb95300cc9dea11f1f107e73d6
   -
     id: DEF-006-migrated-legacy-task-improve-this-summary
     title: DEF-006
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006-migrated-legacy-task-improve-this-summary.md
+    hash: f1a070600f895ed987199ac9244cd16cf14a219b5d1ec07ddaabe6571015d46e
   -
     id: DES-001-migrated-legacy-task-improve-this-summary
     title: DES-001
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-001-migrated-legacy-task-improve-this-summary.md
+    hash: 993d03b5fc7571edcff07f5ed60e836eb92918a811ff421f2444a14e55f73a87
   -
     id: DES-002-migrated-legacy-task-improve-this-summary
     title: DES-002
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-002-migrated-legacy-task-improve-this-summary.md
+    hash: ad9c7b75673c9affd414c7227f59215f7199abac86e3037a3ce93f24bba3c09e
   -
     id: DES-003-migrated-legacy-task-improve-this-summary
     title: DES-003
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DES-003-migrated-legacy-task-improve-this-summary.md
+    hash: b119776cdddbafb808e895cecfa47b6f947759d7fe0caa8ddf04fb40701057cd
   -
     id: DES-004-migrated-legacy-task-improve-this-summary
     title: DES-004
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DES-004-migrated-legacy-task-improve-this-summary.md
+    hash: 15ef7dc395d4b03dab17911752488dffa85f478b766228506ef7affde21a86dc
   -
     id: DES-005-migrated-legacy-task-improve-this-summary
     title: DES-005
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DES-005-migrated-legacy-task-improve-this-summary.md
+    hash: b863ad7c3dd6794f06820dd54ec8fc69d007c112104674787c29f7c16c2e2277
   -
     id: DES-006-migrated-legacy-task-improve-this-summary
     title: DES-006
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DES-006-migrated-legacy-task-improve-this-summary.md
+    hash: 58fca98eb418703a0ed8f169920348edbcf95988d6ab550316c90e02190bb129
   -
     id: DES-007-migrated-legacy-task-improve-this-summary
     title: DES-007
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DES-007-migrated-legacy-task-improve-this-summary.md
+    hash: b731a298c5a9a02dfc56ea32d79c45387edb87f3d01beed3b677ebfe2e0855f3
   -
     id: DES-008-migrated-legacy-task-improve-this-summary
     title: DES-008
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DES-008-migrated-legacy-task-improve-this-summary.md
+    hash: f63b0684a284c05b71b65b58392321b4fcb79b14771aed07cb48840e08c9d651
   -
     id: DES-009-migrated-legacy-task-improve-this-summary
     title: DES-009
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009-migrated-legacy-task-improve-this-summary.md
+    hash: 793339bfb828683f238cd20059917de6caa9a30a14b6f48c90dd33b86b9a4949
   -
     id: DES-010-migrated-legacy-task-improve-this-summary
     title: DES-010
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010-migrated-legacy-task-improve-this-summary.md
+    hash: e1942f68da8d10baa0a7f826dd8b916974fb042807958913307aa680c1a0a69e
   -
     id: DES-011-migrated-legacy-task-improve-this-summary
     title: DES-011
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-011-migrated-legacy-task-improve-this-summary.md
+    hash: 06b29d5d3d14239505c62f388d6377daa6857ea3e7b69d0cc517b66f644e64b6
   -
     id: DES-012-migrated-legacy-task-improve-this-summary
     title: DES-012
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-012-migrated-legacy-task-improve-this-summary.md
+    hash: 92fe93dc909c53a5e298e4e8ddfd7fc90120d84f4cd9d1eeb0368be821992905
   -
     id: DES-013-migrated-legacy-task-improve-this-summary
     title: DES-013
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/DES-013-migrated-legacy-task-improve-this-summary.md
+    hash: 917b47cbc21810dd43865f7972a76aa00190241cf21201e94ffa6d8e004213d9
   -
     id: DES-014-migrated-legacy-task-improve-this-summary
     title: DES-014
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DES-014-migrated-legacy-task-improve-this-summary.md
+    hash: 82c01424a58017753cea3086c0c703207308e4b5d3efddfff78769787f4a9bc4
   -
     id: DES-015-migrated-legacy-task-improve-this-summary
     title: DES-015
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-015-migrated-legacy-task-improve-this-summary.md
+    hash: 4b3698b9b43ddf25c57b75ef953afa1fb17c37a45d3307e6f66920e6422f3bf6
   -
     id: DES-016-migrated-legacy-task-improve-this-summary
     title: DES-016
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016-migrated-legacy-task-improve-this-summary.md
+    hash: f5de6b6984a3637a8d12269cce2a88e2dd4d1f7f50ec0690fd2ea5fa0fe4820e
   -
     id: DEV-003-migrated-legacy-task-improve-this-summary
     title: DEV-003
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-003-migrated-legacy-task-improve-this-summary.md
+    hash: 432b9d08c21a5a1916380981cc17c5c5ed1abceab8399faebd0fb86a55df90a0
   -
     id: DEV-004-migrated-legacy-task-improve-this-summary
     title: DEV-004
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-004-migrated-legacy-task-improve-this-summary.md
+    hash: 430d4b9c31f2fcdeb6172f3546cb672a6f080398606e5f51ac24985c772d0d78
   -
     id: DEV-005-migrated-legacy-task-improve-this-summary
     title: DEV-005
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-005-migrated-legacy-task-improve-this-summary.md
+    hash: 9144410e5c9ab4c78312b84a334aefcdf62fa7d17e14c8ae710aa643e7cfe2ae
   -
     id: DEV-006-migrated-legacy-task-improve-this-summary
     title: DEV-006
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-006-migrated-legacy-task-improve-this-summary.md
+    hash: a087a7d166220296a9a066f6e1e1b66807071eb37c6d779f407ed43cfaf590fd
   -
     id: DEV-007-migrated-legacy-task-improve-this-summary
     title: DEV-007
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEV-007-migrated-legacy-task-improve-this-summary.md
+    hash: 883c332ff3deac350b86d541e023d20b9a17c94d659a3ca8ba270080737640fd
   -
     id: DEV-008-migrated-legacy-task-improve-this-summary
     title: DEV-008
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-008-migrated-legacy-task-improve-this-summary.md
+    hash: 16e4c925fc0f78dc6fbbb5fab493db1f00b453785ca5b8b1f52ad7dc819e5809
   -
     id: DEV-009-migrated-legacy-task-improve-this-summary
     title: DEV-009
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-009-migrated-legacy-task-improve-this-summary.md
+    hash: 5875311187d16a7019eb0b8bca34f801a49bb71e47658999fbd73977c02875c0
   -
     id: DEV-010-migrated-legacy-task-improve-this-summary
     title: DEV-010
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-010-migrated-legacy-task-improve-this-summary.md
+    hash: a3b8f4620a8ed44d13f8c248a3dad337662d397e3a9c610b04ff12adbfa7dd09
   -
     id: DEV-011-migrated-legacy-task-improve-this-summary
     title: DEV-011
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-011-migrated-legacy-task-improve-this-summary.md
+    hash: 74b2cda37669062ef142c89c00406dc17e32c7c5d0e734f5c369e76c5c31939f
   -
     id: DEV-012-migrated-legacy-task-improve-this-summary
     title: DEV-012
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-012-migrated-legacy-task-improve-this-summary.md
+    hash: 30959913a2dcb65edc0584ebe1495994efaf854e23254b1c2bcd60d4a7e1f8fe
   -
     id: DEV-013-migrated-legacy-task-improve-this-summary
     title: DEV-013
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-013-migrated-legacy-task-improve-this-summary.md
+    hash: 89d9613a028d5f21d5c26cc861480f57f20c7d9272439f9339105a503d385df0
   -
     id: DEV-014-migrated-legacy-task-improve-this-summary
     title: DEV-014
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-014-migrated-legacy-task-improve-this-summary.md
+    hash: 41e270e70b8e7c14788ddc393308fdcd927b076fc61341766fadad363f8725b0
   -
     id: DEV-015-migrated-legacy-task-improve-this-summary
     title: DEV-015
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015-migrated-legacy-task-improve-this-summary.md
+    hash: a68a0031c676eac14d0da91c4659ce059b9ff1b78cfb8ccc912f2235b3c218ac
   -
     id: DEV-016-migrated-legacy-task-improve-this-summary
     title: DEV-016
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016-migrated-legacy-task-improve-this-summary.md
+    hash: 42c43f8036ff8684075924f96229bc4e9637d02aeedeb26bf9fc4e8f2a9d3f85
   -
     id: DEV-017-migrated-legacy-task-improve-this-summary
     title: DEV-017
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017-migrated-legacy-task-improve-this-summary.md
+    hash: b601f7383cec830ddcd14d3f5bdd6222ee88683e6a7625174c37c9a91fe1d84f
   -
     id: DEV-018-migrated-legacy-task-improve-this-summary
     title: DEV-018
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-018-migrated-legacy-task-improve-this-summary.md
+    hash: 9557da447fd9f0bf84eb10682adec7b6f643e5b20cf6fa8b5e32acd882cb5d0b
   -
     id: DEV-019-migrated-legacy-task-improve-this-summary
     title: DEV-019
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-019-migrated-legacy-task-improve-this-summary.md
+    hash: e22f86cd0dde1577d25454980a0219f88995ef95fe64e302a890d5488243ed2d
   -
     id: DEV-020-migrated-legacy-task-improve-this-summary
     title: DEV-020
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-020-migrated-legacy-task-improve-this-summary.md
+    hash: 1dd975caf536c4f40fbea31f8a5b6ee9538892e069fdf795f40142ceb911f59f
   -
     id: DEV-021-migrated-legacy-task-improve-this-summary
     title: DEV-021
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-021-migrated-legacy-task-improve-this-summary.md
+    hash: cc0fc49d96aecf8139d3d6af260495782cb13de74c58b2df7625ad1f4b862953
   -
     id: DOC-001-integration-boundaries-doc
     title: DOC-001
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/DOC-001-integration-boundaries-doc.md
+    hash: 690a7bf7a3d75b0af7db52b19105c2d38c2026854856138e6c852bcb57c57a5b
   -
     id: ENS-001-migrated-legacy-task-improve-this-summary
     title: ENS-001
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/ENS-001-migrated-legacy-task-improve-this-summary.md
+    hash: e81d032e2d137b6ac787154c7c8b5038ed618d9813c10882bd71d36b7d338dac
   -
     id: ENS-002-migrated-legacy-task-improve-this-summary
     title: ENS-002
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/ENS-002-migrated-legacy-task-improve-this-summary.md
+    hash: e7d3ab5643515a5f1a68d51eaef60c6647781fffee7dfc6ad7c7577038bbfdcd
   -
     id: FRO-001-migrated-legacy-task-improve-this-summary
     title: FRO-001
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001-migrated-legacy-task-improve-this-summary.md
+    hash: 11b5bf85811a4bbbb706fda66beeb9956c5d5d18e6b8e08811365ae103cb9059
   -
     id: IMP-002-migrated-legacy-task-improve-this-summary
     title: IMP-002
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-002-migrated-legacy-task-improve-this-summary.md
+    hash: bea552cdb209077d2606d875f088d2082d151a1c0d4ed96856955c6c8c616220
   -
     id: IMP-003-migrated-legacy-task-improve-this-summary
     title: IMP-003
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-003-migrated-legacy-task-improve-this-summary.md
+    hash: 033e90519424ecb30e30cdea7ec3b8f2b0fab29c282bc1fbeac6f91fdbb5cf53
   -
     id: IMP-004-migrated-legacy-task-improve-this-summary
     title: IMP-004
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-004-migrated-legacy-task-improve-this-summary.md
+    hash: e4f96e7ff26cb608c24ecd7912a41b64ecbd3bdfe26ddfc3c7d56d7213669326
   -
     id: IMP-005-migrated-legacy-task-improve-this-summary
     title: IMP-005
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-005-migrated-legacy-task-improve-this-summary.md
+    hash: 8ab297b23a995e4e71a2429a9ec8541907583323da5266d5449cfa512ca819dc
   -
     id: IMP-006-migrated-legacy-task-improve-this-summary
     title: IMP-006
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/IMP-006-migrated-legacy-task-improve-this-summary.md
+    hash: 03518003e4f76f9cb84aec1656f4b61fd36aae3817c95eb044ca31e21d6c7994
   -
     id: IMP-007-migrated-legacy-task-improve-this-summary
     title: IMP-007
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-007-migrated-legacy-task-improve-this-summary.md
+    hash: 1466571b662a5d27c8e8a6e93ef1deb129a53c1d1fe469b7b97646bf464833c5
   -
     id: IMP-008-migrated-legacy-task-improve-this-summary
     title: IMP-008
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-008-migrated-legacy-task-improve-this-summary.md
+    hash: 3b3d10fbaa2eaa15cd9d1489a81d06cad742f4b8a94e6aaef82fd24750e0825c
   -
     id: IMP-009-migrated-legacy-task-improve-this-summary
     title: IMP-009
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-009-migrated-legacy-task-improve-this-summary.md
+    hash: e51986fac91cd03f0226cea610d97128b539a066b3fec7fb74b610b231316364
   -
     id: IMP-010-migrated-legacy-task-improve-this-summary
     title: IMP-010
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-010-migrated-legacy-task-improve-this-summary.md
+    hash: 148484ad89840882581b5f8472798b62653454e928cd7adb7b11e1cecabd3331
   -
     id: IMP-011-migrated-legacy-task-improve-this-summary
     title: IMP-011
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-011-migrated-legacy-task-improve-this-summary.md
+    hash: e8a0b8f4f2cb431a637428dff3a27da319a0b07ad27336d3d35cfefda9caf210
   -
     id: IMP-012-migrated-legacy-task-improve-this-summary
     title: IMP-012
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-012-migrated-legacy-task-improve-this-summary.md
+    hash: 3c34b5546e1c940400e89614087855d65b7d04e55d03ceb58a0150362f4d7f48
   -
     id: IMP-013-migrated-legacy-task-improve-this-summary
     title: IMP-013
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-013-migrated-legacy-task-improve-this-summary.md
+    hash: 842a4e1c5befcbeab158f1d8c84aaa057a1fbe2b09eefb4b807d44e979eed269
   -
     id: IMP-014-migrated-legacy-task-improve-this-summary
     title: IMP-014
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-014-migrated-legacy-task-improve-this-summary.md
+    hash: 565984c121d3c38b59cb556ac564bb7be6be09169c48d5f466afd9011568d29a
   -
     id: IMP-015-migrated-legacy-task-improve-this-summary
     title: IMP-015
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015-migrated-legacy-task-improve-this-summary.md
+    hash: a6f579ec3b271faf6df88cefc7bce103df4173f3478f96f4c80063982dcaee4e
   -
     id: IMP-016-migrated-legacy-task-improve-this-summary
     title: IMP-016
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016-migrated-legacy-task-improve-this-summary.md
+    hash: 7e3c402131291d162a3948b13b53cf4236a9b4b265fb8a98496f5670d9c95989
   -
     id: IMP-017-migrated-legacy-task-improve-this-summary
     title: IMP-017
     status: backlog
     story: 09-manage-project-specific-ai-instructions
     file: ./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017-migrated-legacy-task-improve-this-summary.md
+    hash: e97c7757b1b24f53d56dc8ab235c9086dc2a6f14f5928c225dc4a5427cbc756b
   -
     id: IMP-018-migrated-legacy-task-improve-this-summary
     title: IMP-018
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-018-migrated-legacy-task-improve-this-summary.md
+    hash: 174dec26a7ac4690993556997f8b74408fe1b32e76d00ce1a69028a4732f3f2e
   -
     id: IMP-019-migrated-legacy-task-improve-this-summary
     title: IMP-019
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-019-migrated-legacy-task-improve-this-summary.md
+    hash: 7399de64af53db7856ea3475f086b7a5bf2d89725f23014e39ab9e8f8a23eec3
   -
     id: IMP-020-migrated-legacy-task-improve-this-summary
     title: IMP-020
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-020-migrated-legacy-task-improve-this-summary.md
+    hash: 8b70f0e7cf74c37cadf1ac090349cfb8ca9f0ae547a9293332e78afe6d06262c
   -
     id: IMP-021-migrated-legacy-task-improve-this-summary
     title: IMP-021
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-021-migrated-legacy-task-improve-this-summary.md
+    hash: 4d9d96fa8e224f0e0a41d0adac06cc8a981221390f51277f18cd4f78f0b3ec62
   -
     id: IMP-022-migrated-legacy-task-improve-this-summary
     title: IMP-022
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-022-migrated-legacy-task-improve-this-summary.md
+    hash: da5019fd21b82ff09e41da4895238991ba3db8075ee28faed1ebc43894dcd9f1
   -
     id: IMP-023-migrated-legacy-task-improve-this-summary
     title: IMP-023
     status: backlog
     story: 10-explicit-memory-management-ui
     file: ./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-023-migrated-legacy-task-improve-this-summary.md
+    hash: 9adfb988cac57eaf6cef746107624401b302993a1f0f32f462fe73e14c03210b
   -
     id: IMP-024-migrated-legacy-task-improve-this-summary
     title: IMP-024
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-024-migrated-legacy-task-improve-this-summary.md
+    hash: cf2a7be18ed226d3542638888f5b6ffd112657db00a011d77a6de4b6a1401dc7
   -
     id: IMP-025-migrated-legacy-task-improve-this-summary
     title: IMP-025
     status: backlog
     story: 11-configure-smart-automation-nudges
     file: ./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-025-migrated-legacy-task-improve-this-summary.md
+    hash: 0663faa26a5e2148a369f90c9b61c106ffb6a43825baf8d38c22c554d28f1e23
   -
     id: IMP-026-migrated-legacy-task-improve-this-summary
     title: IMP-026
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/IMP-026-migrated-legacy-task-improve-this-summary.md
+    hash: a5c6320cc4c2705ebd48046f4cb5f273e2295313add0167e0bb567dd479c71fe
   -
     id: IMP-101-minimal-lobe-mount
     title: IMP-101
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md
+    hash: a35d29d1b6847d76bf214b84fbce050b08f2d16f0759a1bc09cdacc80c669715
   -
     id: IMP-102-instruction-layer-adapter
     title: IMP-102
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-102-instruction-layer-adapter.md
+    hash: 6ea67d000f781571f46117deb7fdf499cd4a61b7e4724c04df041de3dd1cfe66
   -
     id: IMP-103-draft-extraction-hook
     title: IMP-103
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-103-draft-extraction-hook.md
+    hash: a681e3a074b0dff81b61fb47af1913628ca9c6f62f425ee183535c72d08aa2d7
   -
     id: IMP-104-theming-alignment
     title: IMP-104
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-104-theming-alignment.md
+    hash: 4912477f33f9ddf1285c58b28650775c145e4a551e6f8561db19cd6d014b0821
   -
     id: INT-001-migrated-legacy-task-improve-this-summary
     title: INT-001
     status: backlog
     story: 01-natural-language-task-creation
     file: ./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/INT-001-migrated-legacy-task-improve-this-summary.md
+    hash: 5e3362c4ed83737b93a766bc179179ae45d298905273428e4d81b3b5a0b90281
   -
     id: INT-002-migrated-legacy-task-improve-this-summary
     title: INT-002
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/INT-002-migrated-legacy-task-improve-this-summary.md
+    hash: 783df04d5da5192529b00c51bbd5e8a5e8b1ff1d46a880cbe6db68f8b2073143
   -
     id: INT-003-migrated-legacy-task-improve-this-summary
     title: INT-003
     status: backlog
     story: 03-ai-personalization-based-on-memory
     file: ./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/INT-003-migrated-legacy-task-improve-this-summary.md
+    hash: 33ac46072bd65ce0b5d789417fc9fd7bbd783988b8528212a9266500bf300655
   -
     id: INT-004-migrated-legacy-task-improve-this-summary
     title: INT-004
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/INT-004-migrated-legacy-task-improve-this-summary.md
+    hash: 28dd20e5c1df6251945fa107819086e43cc723d18305f9f7327fbab8b3cfd6a6
   -
     id: INT-005-migrated-legacy-task-improve-this-summary
     title: INT-005
     status: backlog
     story: 06-unified-task-management
     file: ./docs/taskly-chat/stories/06-unified-task-management/Backlog/INT-005-migrated-legacy-task-improve-this-summary.md
+    hash: ae1e23418e7fef76254b71b54fc0bafb05ff68fbb0c958184e51d9e1fe44bb00
   -
     id: INT-006-migrated-legacy-task-improve-this-summary
     title: INT-006
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006-migrated-legacy-task-improve-this-summary.md
+    hash: ca00ef41c410424b1ab95ce6c66f936c5a565d649b6378a082138537d0f51005
   -
     id: INT-007-migrated-legacy-task-improve-this-summary
     title: INT-007
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/INT-007-migrated-legacy-task-improve-this-summary.md
+    hash: f0486626a184fa1c4bc83110d7f561b9a06e2152ce5cec9b267f59157c9e7336
   -
     id: MEM-109-memory-context-scaffold
     title: MEM-109
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/MEM-109-memory-context-scaffold.md
+    hash: e06ee490f81fca692be54e6a05b98089b4925606025eb3d146e80fcabdf93b80
   -
     id: OBS-108-telemetry-observability
     title: OBS-108
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/OBS-108-telemetry-observability.md
+    hash: e55dfdbfac620fa6ee328e0042256c6f1ecfef157becf081989ed612eb206ae7
   -
     id: PERF-105-performance-bundle-audit
     title: PERF-105
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/PERF-105-performance-bundle-audit.md
+    hash: 09134dfe46e2a2379a2c8a3cabdee2488c7714ce52ca1e69916147e4090b4b57
   -
     id: QA-107-adapter-test-harness
     title: QA-107
     status: backlog
     story: 00-lobe-chat-framework-integration
     file: ./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/QA-107-adapter-test-harness.md
+    hash: 7ae2928f20d3e9a2f15dcad9740fdb8a92b85499219ba00e3a71d4fd061d2945
   -
     id: QUA-001-migrated-legacy-task-improve-this-summary
     title: QUA-001
     status: backlog
     story: 04-set-global-ai-instructions
     file: ./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/QUA-001-migrated-legacy-task-improve-this-summary.md
+    hash: ad6b6c277a8a53716fe262f464efb9980810b3582f265522c5018a289cb43481
   -
     id: QUA-002-migrated-legacy-task-improve-this-summary
     title: QUA-002
     status: backlog
     story: 05-context-aware-reminders
     file: ./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/QUA-002-migrated-legacy-task-improve-this-summary.md
+    hash: ec2f85a332f06df49a5a8ef20705d7479e93cf504fe0f4ab15fde8af76c0814e
   -
     id: QUA-003-migrated-legacy-task-improve-this-summary
     title: QUA-003
     status: backlog
     story: 08-integrate-with-google-calendar-read-only
     file: ./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003-migrated-legacy-task-improve-this-summary.md
+    hash: 790567eef99bd748ad62a371ed718766e76b2ca9fdce8d85d896feca1499fa80
   -
     id: TES-001-migrated-legacy-task-improve-this-summary
     title: TES-001
     status: backlog
     story: 02-retrieve-conversation-history
     file: ./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/TES-001-migrated-legacy-task-improve-this-summary.md
+    hash: be29d21543cf4a62313da3485b41e3deacaabccd1503f8e2781746b6624f8740
   -
     id: UPD-001-migrated-legacy-task-improve-this-summary
     title: UPD-001
     status: backlog
     story: 07-share-project-with-collaborator
     file: ./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/UPD-001-migrated-legacy-task-improve-this-summary.md
+    hash: 3c05df04c889c3b582670c97bdb6fb669ebe971030acdfee444bcfd4fe73f705
   -
     id: WRI-001-migrated-legacy-task-improve-this-summary
     title: WRI-001
     status: backlog
     story: 12-define-collaboration-permissions
     file: ./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/WRI-001-migrated-legacy-task-improve-this-summary.md
+    hash: 43ce088f115fb76f161d6ff71ec586dcf822501e5c7f6582c32e3ce1165555f4
   -
     id: DEV-001-migrated-legacy-task-improve-this-summary
     title: DEV-001
     status: in-progress
     story: 01-natural-language-task-creation
     file: ./tasks/in-progress/DEV-001-migrated-legacy-task-improve-this-summary.md
+    hash: 53fa60bcd15f12fd680214f5a903fdd1c8e118e55f0fa6807b24e6243c59fd0e
   -
     id: DEV-002-migrated-legacy-task-improve-this-summary
     title: DEV-002
     status: in-progress
     story: 01-natural-language-task-creation
     file: ./tasks/in-progress/DEV-002-migrated-legacy-task-improve-this-summary.md
+    hash: 1248b200c90962247af3e46eb7c228771489b3763162288105a0c6d755d9f244
   -
     id: IMP-001-migrated-legacy-task-improve-this-summary
     title: IMP-001
     status: in-progress
     story: 01-natural-language-task-creation
     file: ./tasks/in-progress/IMP-001-migrated-legacy-task-improve-this-summary.md
+    hash: f7ca1e0c597ae4dd634a067689550cd86601709a0164e57e9e88e2144622700e
   -
     id: RES-001-migrated-legacy-task-improve-this-summary
     title: RES-001
     status: in-progress
     story: 00-lobe-chat-framework-integration
     file: ./tasks/in-progress/RES-001-migrated-legacy-task-improve-this-summary.md
+    hash: 194d63156cdea6b8ad64f25b632948d76d0908dc78d91f2393f745af4973c81c
   -
     id: TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories
     title: TOOL-001
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories.md
+    hash: 38fe84e11d21a201f92cd60996f968859d04f145469ecb34bde9fdd935505778
   -
     id: TOOL-002-implement-task-header-validator-script-checks
     title: TOOL-002
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-002-implement-task-header-validator-script-checks.md
+    hash: d946fa913e8aa65c99b70ebfce8ce230ef03a9b1f96757074f0c1a62ac94c18a
   -
     id: TOOL-003-add-pre-commit-hook-for-validation-husky-powered
     title: TOOL-003
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-003-add-pre-commit-hook-for-validation-husky-powered.md
+    hash: 7a7f1ff571190e1fbe72bdfd433b4ab79d3dd486532b83b843bcce79b7cc0b3f
   -
     id: TOOL-004-add-canonical-headers-to-all-existing
     title: TOOL-004
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-004-add-canonical-headers-to-all-existing.md
+    hash: 3060cbe26eba27b1e6cdb2cf5d5c9bc138e28386854739f14453d450e1937ff2
   -
     id: TOOL-005-add-explicit-status-lines-to-all
     title: TOOL-005
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-005-add-explicit-status-lines-to-all.md
+    hash: 0792692f2f9ea777dceccd71e557b62d362e10dd2b0f166d2c2262531e33560b
   -
     id: TOOL-006-create-a-script-to-validate-that
     title: TOOL-006
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-006-create-a-script-to-validate-that.md
+    hash: 1c77a751fcaa82c25e74a7e207b568c472c7857c6d2bedc62d09c2b7ff63a8c4
   -
     id: TOOL-007-introduce-a-github-actions-workflow-to
     title: TOOL-007
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-007-introduce-a-github-actions-workflow-to.md
+    hash: 47bf54bc7ac7e2a55bb9134478fd543994ea798998519ca526d3d5fd157f7f6b
   -
     id: TOOL-008-extend-validator-to-enforce-allowed-task
     title: TOOL-008
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-008-extend-validator-to-enforce-allowed-task.md
+    hash: 3dc29cf3b34e3887cc84eecf7217dca13d6a4a6076087f56bd3986cb5a903331
   -
     id: TOOL-009-add-percent-completion-last-updated-timestamp
     title: TOOL-009
     status: done
     story: 10-engineering-automation
     file: ./tasks/done/TOOL-009-add-percent-completion-last-updated-timestamp.md
+    hash: a3ad6e7a373d22045603abf42369836115d5f7f6f1c7108a05251289bcba16db

@@ -82,12 +82,35 @@ This allocates the next sequential numeric portion for the given prefix (scans b
 - Filename ↔ ID consistency (new rule).
 
 ## 7. Future Enhancements (Planned)
-- Enforce slug normalization rule (kebab-case) as error (currently assumed correct via creation/normalization scripts).
+Implemented items moved out of this list:
+- Slug normalization & enforcement (now an error if missing).
+
+Planned / Upcoming:
 - Track slug change history in provenance for analytics.
 - Optional lint rule to forbid direct editing of IDs.
+- Hash-driven change feed (incremental sync using `hash` from manifest).
+- Integrity signature layer (detached signature file referencing per-task hashes).
+
+## 9. Content Hashes
+Each manifest entry now includes a `hash` (SHA256) of the full task file. Uses:
+- Detect content changes without diffing full repository.
+- Enable external caches or mirrors to pull only mutated tasks.
+- Integrity check: recompute SHA256 of fetched Markdown and compare.
+
+Guidelines:
+- Any edit (even whitespace) changes the hash.
+- Hash absence in older commits: treat as unknown; perform full fetch.
+- Do not attempt to manually edit or spoof hashes—always regenerate via `sync-tasks-manifest` script.
+
+## 10. Utility Script Flags
+`slugify-missing-task-filenames.mjs` now supports `--dry-run`:
+```
+node scripts/slugify-missing-task-filenames.mjs --dry-run
+```
+Outputs the planned rename operations without modifying files (useful for CI safety checks or preview in PRs).
 
 ## 8. Rationale
 Global uniqueness simplifies manifest generation, cross-story referencing, provenance tracking, analytics, and prevents ambiguity in automation (promotion, archival, metrics). Prefix segmentation keeps readability & categorization without introducing hierarchical collisions.
 
 ---
-Document version: 2025-09-19
+Document version: 2025-09-20
