@@ -89,15 +89,77 @@ async function main() {
   await collectPipelineTasks(PIPELINE_ROOT, files);
   let invalid = 0;
   const ids = new Map();
+  const idToFileHeaderIdMismatch = [];
+  const tasksMeta = new Map(); // id -> {file, status, story, related[], blocking[], blockedBy[]}
+
+  // Preload optional WIP config
+  const wipConfigPath = path.resolve(process.cwd(), 'tasks.config.json');
+  let wipLimits = null;
+  try {
+    const rawCfg = await fs.readFile(wipConfigPath,'utf8');
+    wipLimits = JSON.parse(rawCfg).wip || null;
+  } catch {}
+
   for (const f of files) {
+    const raw = await fs.readFile(f,'utf8');
+    const headerLines = raw.split(/\r?\n/).slice(0,40);
+    const header = {};
+    for (const line of headerLines) {
+      const m = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+      if (m) header[m[1]] = m[2].trim();
+      if (line.startsWith('## ')) break;
+    }
     const { errors } = await validateTask(f);
-    // Extract ID from filename prefix (before first '.')
-    const base = path.basename(f).replace(/\.md$/,'');
-    const idMatch = base.match(/^([A-Za-z0-9_-]+)/);
-    if (idMatch) {
-      const id = idMatch[1];
+    const baseFull = path.basename(f).replace(/\.md$/,'');
+    // Expect pattern: ID-SLUG where ID = PREFIX-NNN (PREFIX alnum/uppercase) and SLUG is kebab
+    const fileParts = baseFull.split('-');
+    let filenameId = null;
+    let slug = null;
+    if (fileParts.length >= 3) { // e.g. IMP-101-minimal-mount => [IMP,101,minimal,...]
+      const maybeId = fileParts[0] + '-' + fileParts[1];
+      if (/^[A-Z0-9]+-[0-9]{3,}$/.test(maybeId)) {
+        filenameId = maybeId;
+        slug = fileParts.slice(2).join('-');
+      }
+    } else if (/^[A-Z0-9]+-[0-9]{3,}$/.test(baseFull)) {
+      // ID-only filename (will be flagged below)
+      filenameId = baseFull;
+      slug = '';
+    } else {
+      // fallback: previous loose match for legacy
+      const loose = baseFull.match(/^([A-Za-z0-9_-]+)/);
+      filenameId = loose ? loose[1] : null;
+    }
+    const titleLine = raw.split(/\r?\n/,1)[0];
+    let headerId = null;
+    if (titleLine.startsWith('# Task:')) {
+      const m = titleLine.match(/^# Task:\s*([A-Za-z0-9_-]+)/);
+      if (m) headerId = m[1];
+    }
+    // Prefer headerId if present; they must match; we'll report mismatch.
+    let id = headerId || filenameId;
+    if (id) {
+      if (filenameId && headerId && filenameId !== headerId) {
+        idToFileHeaderIdMismatch.push({ file: f, filenameId, headerId });
+      }
       if (!ids.has(id)) ids.set(id, []);
       ids.get(id).push(f);
+      tasksMeta.set(id, {
+        file: f,
+        status: header.Status || '',
+        story: header.Story || '',
+        related: parseListField(header.Related),
+        blocking: parseListField(header.blocking || header.Blocking),
+        blockedBy: parseListField(header['blocked-by'] || header.BlockedBy)
+      });
+      // Slug enforcement: if file in pipeline or backlog ensure slug exists & matches pattern
+      if (slug !== null) {
+        if (!slug) {
+          errors.push('Missing slug in filename (expected ID-slug.md)');
+        } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
+          errors.push(`Non-conforming slug '${slug}' (kebab-case required)`);
+        }
+      }
     }
     if (errors.length) {
       invalid++;
@@ -105,6 +167,16 @@ async function main() {
       for (const er of errors) console.error('  -', er);
     }
   }
+
+  // Report filename/header mismatches
+  for (const m of idToFileHeaderIdMismatch) {
+    invalid++;
+    console.error(`\n✗ ID mismatch: ${m.file}`);
+    console.error(`  - filename ID: ${m.filenameId}`);
+    console.error(`  - header   ID: ${m.headerId}`);
+  }
+
+  // Duplicate IDs
   for (const [id, list] of ids.entries()) {
     if (list.length > 1) {
       invalid++;
@@ -112,6 +184,51 @@ async function main() {
       for (const l of list) console.error('  -', l);
     }
   }
+
+  // Build lookup sets
+  const storyDirs = new Set();
+  try {
+    const dirs = await fs.readdir(STORIES_ROOT,{withFileTypes:true});
+    for (const d of dirs) if (d.isDirectory() && /^\d+-.+/.test(d.name)) storyDirs.add(d.name);
+  } catch {}
+  const taskIds = new Set(ids.keys());
+
+  // Referential checks
+  for (const [id, meta] of tasksMeta.entries()) {
+    const problems = [];
+    for (const ref of [...meta.related, ...meta.blocking, ...meta.blockedBy]) {
+      if (ref.startsWith('story:')) {
+        const s = ref.slice(6);
+        if (!storyDirs.has(s)) problems.push(`Unknown story reference: ${ref}`);
+      } else if (ref.startsWith('task:')) {
+        const t = ref.slice(5);
+        if (!taskIds.has(t)) problems.push(`Unknown task reference: ${ref}`);
+      }
+    }
+    if (problems.length) {
+      invalid++;
+      console.error(`\n✗ ${meta.file}`);
+      for (const p of problems) console.error('  -', p);
+    }
+  }
+
+  // WIP limit enforcement
+  if (wipLimits) {
+    const columnCounts = {};
+    for (const [, meta] of tasksMeta.entries()) {
+      const st = (meta.status||'').toLowerCase();
+      if (['todo','in-progress','review'].includes(st)) {
+        columnCounts[st] = (columnCounts[st]||0)+1;
+      }
+    }
+    for (const [col, limit] of Object.entries(wipLimits)) {
+      if (limit != null && columnCounts[col] && columnCounts[col] > limit) {
+        invalid++;
+        console.error(`\n✗ WIP limit exceeded: ${col} ${columnCounts[col]}/${limit}`);
+      }
+    }
+  }
+
   const summary = `${files.length - invalid}/${files.length} valid tasks`;
   if (invalid) {
     console.error(`\nValidation failed: ${summary}`);
@@ -119,6 +236,17 @@ async function main() {
   } else {
     console.log(`Validation passed: ${summary}`);
   }
+}
+
+function parseListField(val) {
+  if (!val) return [];
+  // Accept formats: [a,b] or comma/space separated tokens
+  if (/^\[.*\]$/.test(val)) {
+    const inner = val.slice(1,-1).trim();
+    if (!inner) return [];
+    return inner.split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
+  }
+  return val.split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });
