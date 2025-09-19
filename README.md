@@ -90,26 +90,3 @@ It acts as a **companion for life and work**, turning fleeting thoughts, reminde
 
 Taskly.chat is not just another project manager. It’s a **personal AI assistant** that remembers, adapts, and acts as a **bridge between free-form conversation and structured execution** — making productivity feel natural, human, and effortless.
 
----
-
-
-## 🚀 Workflow
-
-This project uses a **Spec-driven workflow**:
-
-* All work starts from a **Spec → Plan → Tasks**.
-* Tasks are stored as files inside project version folders.
-* Progress is tracked using a **Kanban board**, which is a visualization of the folder structure under `docs/tasks/` (`Backlog/`, `InProgress/`, `Review/`, `Done/`).
-
-### 🔹 For Humans
-
-* Always work from existing task files.
-* Move tasks between status folders as you progress.
-* Commit changes regularly so the Kanban board stays in sync.
-
-### 🔹 For AI / Copilot
-
-The Copilot follows strict rules for creating, managing, and implementing tasks.
-👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
-👉 Spec Index: `docs/specs/SPEC-INDEX.md`
-_______
