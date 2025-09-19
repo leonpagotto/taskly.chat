@@ -103,6 +103,18 @@ Guidelines:
 - Do not attempt to manually edit or spoof hashes—always regenerate via `sync-tasks-manifest` script.
 
 ## 10. Utility Script Flags
+## 11. Incremental Sync (Optional)
+Run after manifest regeneration:
+```
+node scripts/generate-changed-tasks.mjs
+```
+Outputs `changed-tasks.json` summarizing additions / modifications / removals using file `hash` values. Use `--since <git-ref>` to diff against a historical ref without updating the snapshot cache, or `--full` to emit an `all` list.
+
+Consumer Guidance:
+- Process `added` and `modified` arrays first; fetch each `file` if `hash` unknown or changed.
+- Remove any tasks listed under `removed` from local indexes.
+- Ignore `unchanged` unless auditing drift.
+
 `slugify-missing-task-filenames.mjs` now supports `--dry-run`:
 ```
 node scripts/slugify-missing-task-filenames.mjs --dry-run

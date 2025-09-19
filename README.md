@@ -196,6 +196,22 @@ SQLite for dev; Postgres migration path. Participants & meta stored as JSON stri
 4. Memory personalization story
 5. Calendar integration stories
 
+### Incremental Task Sync (Automation)
+To fetch only changed task files between runs:
+```
+node scripts/sync-tasks-manifest.mjs
+node scripts/generate-changed-tasks.mjs      # writes changed-tasks.json (added/modified)
+```
+Diff against a historical git ref without updating snapshot:
+```
+node scripts/generate-changed-tasks.mjs --since HEAD~1
+```
+Emit a full listing (adds `all` array):
+```
+node scripts/generate-changed-tasks.mjs --full
+```
+Use the `hash` field in `tasks.json` to validate integrity and decide which task Markdown files to re-fetch.
+
 ---
 <<<<<<< HEAD
 
@@ -315,9 +331,7 @@ This project uses a **Spec-driven workflow**:
 The Copilot follows strict rules for creating, managing, and implementing tasks.
 👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
 👉 Spec Index: `docs/specs/SPEC-INDEX.md`
-<<<<<<< HEAD
 _______
-=======
 
 ## 🛠 Workflow Enforcement
 We operate under a Spec > Plan > Task > Implement flow.
@@ -395,4 +409,3 @@ MODEL_FAST=gpt-4o-mini
 4. Implement lightweight memory store abstraction.
 
 ---
->>>>>>> 4f06eaf (feat(data): introduce @taskly/data with prisma schema, migration, repositories, and tests (Story 02 DEV-020 DEV-021))
