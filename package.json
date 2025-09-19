@@ -24,7 +24,7 @@
     "tasks:relationships": "node scripts/check-relationships.mjs",
     "tasks:status:fill": "node scripts/update-story-statuses.mjs",
     "tasks:normalize": "node scripts/normalize-tasks.mjs",
-    "tasks:types:migrate": "node scripts/migrate-task-types.mjs",
+  "tasks:types:migrate": "node scripts/legacy/migrate-task-types.mjs",
     "tasks:manifest": "node scripts/sync-tasks-manifest.mjs",
     "task:promote": "node scripts/promote-task.mjs",
   "task:status": "node scripts/update-task-status.mjs",

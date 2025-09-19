@@ -196,6 +196,13 @@ SQLite for dev; Postgres migration path. Participants & meta stored as JSON stri
 4. Memory personalization story
 5. Calendar integration stories
 
+## 🗂 Legacy Task Migration Scripts
+The original one-off migration utilities have been moved under `scripts/legacy/` and should not be run in normal development:
+- `scripts/legacy/migrate-task-types.mjs`
+- `scripts/legacy/migrate-task-structure.mjs`
+
+They are retained for historical reference only. Future structural changes should introduce new purpose-built scripts rather than modifying these.
+
 ### Incremental Task Sync (Automation)
 To fetch only changed task files between runs:
 ```
