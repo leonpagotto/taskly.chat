@@ -1,4 +1,4 @@
-# Task: Normalize Legacy Task Files
+# Task: TOOL-004
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19

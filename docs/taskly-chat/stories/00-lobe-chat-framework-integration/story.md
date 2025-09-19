@@ -18,6 +18,9 @@ Adopt Lobe Chat components/state management in a way that accelerates delivery o
 6. Performance & Bundle Review: Tree-shake or code-split if footprint is large.
 7. Documentation: Update architecture to reflect framework adoption boundaries and avoidance of direct modification (favor composition).
 
+## Governance Reference
+Task creation, naming, promotion, and uniqueness rules are defined in `docs/TASKS-GUIDELINES.md` (global unique IDs, filename/header consistency, backlog vs pipeline separation). Integration tasks (ANL-100 .. MEM-109) adhere to those conventions.
+
 ## Dependencies
 - Must precede: Story 01 (Natural Language Task Creation) to avoid duplicative UI build.
 

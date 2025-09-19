@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2025-09-19T20:41:32.271Z",
+  "generated": "2025-09-19T22:45:43.502Z",
   "pipeline": {
     "todo": 0,
     "in-progress": 4,
@@ -10,6 +10,7 @@
   "stories": {
     "backlog": {
       "09-manage-project-specific-ai-instructions": 7,
+      "00-lobe-chat-framework-integration": 11,
       "02-retrieve-conversation-history": 7,
       "11-configure-smart-automation-nudges": 7,
       "07-share-project-with-collaborator": 9,
@@ -20,780 +21,828 @@
       "04-set-global-ai-instructions": 6,
       "05-context-aware-reminders": 7,
       "06-unified-task-management": 10,
-      "08-integrate-with-google-calendar-read-only": 8,
-      "00-lobe-chat-framework-integration": 4
+      "08-integrate-with-google-calendar-read-only": 8
     }
   },
   "tasks": [
     {
-      "id": "ADA-001",
+      "id": "ADA-001-migrated-legacy-task-improve-this-summary",
       "title": "ADA-001",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "BAC-001",
+      "id": "ANL-100-feasibility-licensing-assessment",
+      "title": "ANL-100",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ANL-100-feasibility-licensing-assessment.md"
+    },
+    {
+      "id": "ARCH-106-adapter-architecture-layer",
+      "title": "ARCH-106",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ARCH-106-adapter-architecture-layer.md"
+    },
+    {
+      "id": "BAC-001-migrated-legacy-task-improve-this-summary",
       "title": "BAC-001",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-001.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "BAC-002",
+      "id": "BAC-002-migrated-legacy-task-improve-this-summary",
       "title": "BAC-002",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-002.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "BUI-001",
+      "id": "BUI-001-migrated-legacy-task-improve-this-summary",
       "title": "BUI-001",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/BUI-001.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/BUI-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "COM-001",
+      "id": "COM-001-migrated-legacy-task-improve-this-summary",
       "title": "COM-001",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/COM-001.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/COM-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "COM-002",
+      "id": "COM-002-migrated-legacy-task-improve-this-summary",
       "title": "COM-002",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/COM-002.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/COM-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "CON-001",
+      "id": "CON-001-migrated-legacy-task-improve-this-summary",
       "title": "CON-001",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/CON-001.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/CON-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "CON-002",
+      "id": "CON-002-migrated-legacy-task-improve-this-summary",
       "title": "CON-002",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/CON-002.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/CON-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "CON-003",
+      "id": "CON-003-migrated-legacy-task-improve-this-summary",
       "title": "CON-003",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/CON-003.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/CON-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "CRE-001",
+      "id": "CRE-001-migrated-legacy-task-improve-this-summary",
       "title": "CRE-001",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/CRE-001.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/CRE-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DAT-001",
+      "id": "DAT-001-migrated-legacy-task-improve-this-summary",
       "title": "DAT-001",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DAT-001.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DAT-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-001",
+      "id": "DEF-001-migrated-legacy-task-improve-this-summary",
       "title": "DEF-001",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEF-001.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEF-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-002",
+      "id": "DEF-002-migrated-legacy-task-improve-this-summary",
       "title": "DEF-002",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEF-002.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEF-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-003",
+      "id": "DEF-003-migrated-legacy-task-improve-this-summary",
       "title": "DEF-003",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEF-003.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEF-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-004",
+      "id": "DEF-004-migrated-legacy-task-improve-this-summary",
       "title": "DEF-004",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEF-004.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEF-004-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-005",
+      "id": "DEF-005-migrated-legacy-task-improve-this-summary",
       "title": "DEF-005",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEF-005.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEF-005-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEF-006",
+      "id": "DEF-006-migrated-legacy-task-improve-this-summary",
       "title": "DEF-006",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-001",
+      "id": "DES-001-migrated-legacy-task-improve-this-summary",
       "title": "DES-001",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-001.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-002",
+      "id": "DES-002-migrated-legacy-task-improve-this-summary",
       "title": "DES-002",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-002.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-003",
+      "id": "DES-003-migrated-legacy-task-improve-this-summary",
       "title": "DES-003",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DES-003.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DES-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-004",
+      "id": "DES-004-migrated-legacy-task-improve-this-summary",
       "title": "DES-004",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DES-004.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DES-004-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-005",
+      "id": "DES-005-migrated-legacy-task-improve-this-summary",
       "title": "DES-005",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DES-005.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DES-005-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-006",
+      "id": "DES-006-migrated-legacy-task-improve-this-summary",
       "title": "DES-006",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DES-006.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DES-006-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-007",
+      "id": "DES-007-migrated-legacy-task-improve-this-summary",
       "title": "DES-007",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DES-007.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DES-007-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-008",
+      "id": "DES-008-migrated-legacy-task-improve-this-summary",
       "title": "DES-008",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DES-008.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DES-008-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-009",
+      "id": "DES-009-migrated-legacy-task-improve-this-summary",
       "title": "DES-009",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-010",
+      "id": "DES-010-migrated-legacy-task-improve-this-summary",
       "title": "DES-010",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-011",
+      "id": "DES-011-migrated-legacy-task-improve-this-summary",
       "title": "DES-011",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-011.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-011-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-012",
+      "id": "DES-012-migrated-legacy-task-improve-this-summary",
       "title": "DES-012",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-012.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-012-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-013",
+      "id": "DES-013-migrated-legacy-task-improve-this-summary",
       "title": "DES-013",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/DES-013.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/DES-013-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-014",
+      "id": "DES-014-migrated-legacy-task-improve-this-summary",
       "title": "DES-014",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DES-014.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DES-014-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-015",
+      "id": "DES-015-migrated-legacy-task-improve-this-summary",
       "title": "DES-015",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-015.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-015-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DES-016",
+      "id": "DES-016-migrated-legacy-task-improve-this-summary",
       "title": "DES-016",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-003",
+      "id": "DEV-003-migrated-legacy-task-improve-this-summary",
       "title": "DEV-003",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-003.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-004",
+      "id": "DEV-004-migrated-legacy-task-improve-this-summary",
       "title": "DEV-004",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-004.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-004-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-005",
+      "id": "DEV-005-migrated-legacy-task-improve-this-summary",
       "title": "DEV-005",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-005.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-005-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-006",
+      "id": "DEV-006-migrated-legacy-task-improve-this-summary",
       "title": "DEV-006",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-006.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-006-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-007",
+      "id": "DEV-007-migrated-legacy-task-improve-this-summary",
       "title": "DEV-007",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEV-007.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEV-007-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-008",
+      "id": "DEV-008-migrated-legacy-task-improve-this-summary",
       "title": "DEV-008",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-008.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-008-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-009",
+      "id": "DEV-009-migrated-legacy-task-improve-this-summary",
       "title": "DEV-009",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-009.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-009-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-010",
+      "id": "DEV-010-migrated-legacy-task-improve-this-summary",
       "title": "DEV-010",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-010.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-010-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-011",
+      "id": "DEV-011-migrated-legacy-task-improve-this-summary",
       "title": "DEV-011",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-011.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-011-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-012",
+      "id": "DEV-012-migrated-legacy-task-improve-this-summary",
       "title": "DEV-012",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-012.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-012-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-013",
+      "id": "DEV-013-migrated-legacy-task-improve-this-summary",
       "title": "DEV-013",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-013.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-013-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-014",
+      "id": "DEV-014-migrated-legacy-task-improve-this-summary",
       "title": "DEV-014",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-014.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-014-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-015",
+      "id": "DEV-015-migrated-legacy-task-improve-this-summary",
       "title": "DEV-015",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-016",
+      "id": "DEV-016-migrated-legacy-task-improve-this-summary",
       "title": "DEV-016",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-017",
+      "id": "DEV-017-migrated-legacy-task-improve-this-summary",
       "title": "DEV-017",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-018",
+      "id": "DEV-018-migrated-legacy-task-improve-this-summary",
       "title": "DEV-018",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-018.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-018-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-019",
+      "id": "DEV-019-migrated-legacy-task-improve-this-summary",
       "title": "DEV-019",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-019.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-019-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-020",
+      "id": "DEV-020-migrated-legacy-task-improve-this-summary",
       "title": "DEV-020",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-020.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-020-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-021",
+      "id": "DEV-021-migrated-legacy-task-improve-this-summary",
       "title": "DEV-021",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-021.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-021-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DOC-001",
+      "id": "DOC-001-integration-boundaries-doc",
       "title": "DOC-001",
       "status": "backlog",
       "story": "00-lobe-chat-framework-integration",
-      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/DOC-001.md"
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/DOC-001-integration-boundaries-doc.md"
     },
     {
-      "id": "ENS-001",
+      "id": "ENS-001-migrated-legacy-task-improve-this-summary",
       "title": "ENS-001",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/ENS-001.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/ENS-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "ENS-002",
+      "id": "ENS-002-migrated-legacy-task-improve-this-summary",
       "title": "ENS-002",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/ENS-002.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/ENS-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "FRO-001",
+      "id": "FRO-001-migrated-legacy-task-improve-this-summary",
       "title": "FRO-001",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-002",
+      "id": "IMP-002-migrated-legacy-task-improve-this-summary",
       "title": "IMP-002",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-002.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-003",
+      "id": "IMP-003-migrated-legacy-task-improve-this-summary",
       "title": "IMP-003",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-003.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-004",
+      "id": "IMP-004-migrated-legacy-task-improve-this-summary",
       "title": "IMP-004",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-004.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-004-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-005",
+      "id": "IMP-005-migrated-legacy-task-improve-this-summary",
       "title": "IMP-005",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-005.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-005-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-006",
+      "id": "IMP-006-migrated-legacy-task-improve-this-summary",
       "title": "IMP-006",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/IMP-006.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/IMP-006-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-007",
+      "id": "IMP-007-migrated-legacy-task-improve-this-summary",
       "title": "IMP-007",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-007.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-007-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-008",
+      "id": "IMP-008-migrated-legacy-task-improve-this-summary",
       "title": "IMP-008",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-008.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-008-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-009",
+      "id": "IMP-009-migrated-legacy-task-improve-this-summary",
       "title": "IMP-009",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-009.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-009-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-010",
+      "id": "IMP-010-migrated-legacy-task-improve-this-summary",
       "title": "IMP-010",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-010.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-010-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-011",
+      "id": "IMP-011-migrated-legacy-task-improve-this-summary",
       "title": "IMP-011",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-011.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-011-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-012",
+      "id": "IMP-012-migrated-legacy-task-improve-this-summary",
       "title": "IMP-012",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-012.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-012-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-013",
+      "id": "IMP-013-migrated-legacy-task-improve-this-summary",
       "title": "IMP-013",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-013.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-013-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-014",
+      "id": "IMP-014-migrated-legacy-task-improve-this-summary",
       "title": "IMP-014",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-014.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-014-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-015",
+      "id": "IMP-015-migrated-legacy-task-improve-this-summary",
       "title": "IMP-015",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-016",
+      "id": "IMP-016-migrated-legacy-task-improve-this-summary",
       "title": "IMP-016",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-017",
+      "id": "IMP-017-migrated-legacy-task-improve-this-summary",
       "title": "IMP-017",
       "status": "backlog",
       "story": "09-manage-project-specific-ai-instructions",
-      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017.md"
+      "file": "./docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-018",
+      "id": "IMP-018-migrated-legacy-task-improve-this-summary",
       "title": "IMP-018",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-018.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-018-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-019",
+      "id": "IMP-019-migrated-legacy-task-improve-this-summary",
       "title": "IMP-019",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-019.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-019-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-020",
+      "id": "IMP-020-migrated-legacy-task-improve-this-summary",
       "title": "IMP-020",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-020.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-020-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-021",
+      "id": "IMP-021-migrated-legacy-task-improve-this-summary",
       "title": "IMP-021",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-021.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-021-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-022",
+      "id": "IMP-022-migrated-legacy-task-improve-this-summary",
       "title": "IMP-022",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-022.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-022-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-023",
+      "id": "IMP-023-migrated-legacy-task-improve-this-summary",
       "title": "IMP-023",
       "status": "backlog",
       "story": "10-explicit-memory-management-ui",
-      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-023.md"
+      "file": "./docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-023-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-024",
+      "id": "IMP-024-migrated-legacy-task-improve-this-summary",
       "title": "IMP-024",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-024.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-024-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-025",
+      "id": "IMP-025-migrated-legacy-task-improve-this-summary",
       "title": "IMP-025",
       "status": "backlog",
       "story": "11-configure-smart-automation-nudges",
-      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-025.md"
+      "file": "./docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-025-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-026",
+      "id": "IMP-026-migrated-legacy-task-improve-this-summary",
       "title": "IMP-026",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/IMP-026.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/IMP-026-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-101",
+      "id": "IMP-101-minimal-lobe-mount",
       "title": "IMP-101",
       "status": "backlog",
       "story": "00-lobe-chat-framework-integration",
-      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101.md"
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md"
     },
     {
-      "id": "IMP-102",
+      "id": "IMP-102-instruction-layer-adapter",
       "title": "IMP-102",
       "status": "backlog",
       "story": "00-lobe-chat-framework-integration",
-      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-102.md"
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-102-instruction-layer-adapter.md"
     },
     {
-      "id": "IMP-103",
+      "id": "IMP-103-draft-extraction-hook",
       "title": "IMP-103",
       "status": "backlog",
       "story": "00-lobe-chat-framework-integration",
-      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-103.md"
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-103-draft-extraction-hook.md"
     },
     {
-      "id": "INT-001",
+      "id": "IMP-104-theming-alignment",
+      "title": "IMP-104",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-104-theming-alignment.md"
+    },
+    {
+      "id": "INT-001-migrated-legacy-task-improve-this-summary",
       "title": "INT-001",
       "status": "backlog",
       "story": "01-natural-language-task-creation",
-      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/INT-001.md"
+      "file": "./docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/INT-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-002",
+      "id": "INT-002-migrated-legacy-task-improve-this-summary",
       "title": "INT-002",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/INT-002.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/INT-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-003",
+      "id": "INT-003-migrated-legacy-task-improve-this-summary",
       "title": "INT-003",
       "status": "backlog",
       "story": "03-ai-personalization-based-on-memory",
-      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/INT-003.md"
+      "file": "./docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/INT-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-004",
+      "id": "INT-004-migrated-legacy-task-improve-this-summary",
       "title": "INT-004",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/INT-004.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/INT-004-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-005",
+      "id": "INT-005-migrated-legacy-task-improve-this-summary",
       "title": "INT-005",
       "status": "backlog",
       "story": "06-unified-task-management",
-      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/INT-005.md"
+      "file": "./docs/taskly-chat/stories/06-unified-task-management/Backlog/INT-005-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-006",
+      "id": "INT-006-migrated-legacy-task-improve-this-summary",
       "title": "INT-006",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "INT-007",
+      "id": "INT-007-migrated-legacy-task-improve-this-summary",
       "title": "INT-007",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/INT-007.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/INT-007-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "QUA-001",
+      "id": "MEM-109-memory-context-scaffold",
+      "title": "MEM-109",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/MEM-109-memory-context-scaffold.md"
+    },
+    {
+      "id": "OBS-108-telemetry-observability",
+      "title": "OBS-108",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/OBS-108-telemetry-observability.md"
+    },
+    {
+      "id": "PERF-105-performance-bundle-audit",
+      "title": "PERF-105",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/PERF-105-performance-bundle-audit.md"
+    },
+    {
+      "id": "QA-107-adapter-test-harness",
+      "title": "QA-107",
+      "status": "backlog",
+      "story": "00-lobe-chat-framework-integration",
+      "file": "./docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/QA-107-adapter-test-harness.md"
+    },
+    {
+      "id": "QUA-001-migrated-legacy-task-improve-this-summary",
       "title": "QUA-001",
       "status": "backlog",
       "story": "04-set-global-ai-instructions",
-      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/QUA-001.md"
+      "file": "./docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/QUA-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "QUA-002",
+      "id": "QUA-002-migrated-legacy-task-improve-this-summary",
       "title": "QUA-002",
       "status": "backlog",
       "story": "05-context-aware-reminders",
-      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/QUA-002.md"
+      "file": "./docs/taskly-chat/stories/05-context-aware-reminders/Backlog/QUA-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "QUA-003",
+      "id": "QUA-003-migrated-legacy-task-improve-this-summary",
       "title": "QUA-003",
       "status": "backlog",
       "story": "08-integrate-with-google-calendar-read-only",
-      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003.md"
+      "file": "./docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "TES-001",
+      "id": "TES-001-migrated-legacy-task-improve-this-summary",
       "title": "TES-001",
       "status": "backlog",
       "story": "02-retrieve-conversation-history",
-      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/TES-001.md"
+      "file": "./docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/TES-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "UPD-001",
+      "id": "UPD-001-migrated-legacy-task-improve-this-summary",
       "title": "UPD-001",
       "status": "backlog",
       "story": "07-share-project-with-collaborator",
-      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/UPD-001.md"
+      "file": "./docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/UPD-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "WRI-001",
+      "id": "WRI-001-migrated-legacy-task-improve-this-summary",
       "title": "WRI-001",
       "status": "backlog",
       "story": "12-define-collaboration-permissions",
-      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/WRI-001.md"
+      "file": "./docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/WRI-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-001",
+      "id": "DEV-001-migrated-legacy-task-improve-this-summary",
       "title": "DEV-001",
       "status": "in-progress",
       "story": "01-natural-language-task-creation",
-      "file": "./tasks/in-progress/DEV-001.md"
+      "file": "./tasks/in-progress/DEV-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "DEV-002",
+      "id": "DEV-002-migrated-legacy-task-improve-this-summary",
       "title": "DEV-002",
       "status": "in-progress",
       "story": "01-natural-language-task-creation",
-      "file": "./tasks/in-progress/DEV-002.md"
+      "file": "./tasks/in-progress/DEV-002-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "IMP-001",
+      "id": "IMP-001-migrated-legacy-task-improve-this-summary",
       "title": "IMP-001",
       "status": "in-progress",
       "story": "01-natural-language-task-creation",
-      "file": "./tasks/in-progress/IMP-001.md"
+      "file": "./tasks/in-progress/IMP-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "RES-001",
+      "id": "RES-001-migrated-legacy-task-improve-this-summary",
       "title": "RES-001",
       "status": "in-progress",
       "story": "00-lobe-chat-framework-integration",
-      "file": "./tasks/in-progress/RES-001.md"
+      "file": "./tasks/in-progress/RES-001-migrated-legacy-task-improve-this-summary.md"
     },
     {
-      "id": "TOOL-001",
-      "title": "Implement Spec Index Generator",
+      "id": "TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories",
+      "title": "TOOL-001",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-001.md"
+      "file": "./tasks/done/TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories.md"
     },
     {
-      "id": "TOOL-002",
-      "title": "Implement Task Header Validator",
+      "id": "TOOL-002-implement-task-header-validator-script-checks",
+      "title": "TOOL-002",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-002.md"
+      "file": "./tasks/done/TOOL-002-implement-task-header-validator-script-checks.md"
     },
     {
-      "id": "TOOL-003",
-      "title": "Add Pre-Commit Hook for Validation",
+      "id": "TOOL-003-add-pre-commit-hook-for-validation-husky-powered",
+      "title": "TOOL-003",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-003.md"
+      "file": "./tasks/done/TOOL-003-add-pre-commit-hook-for-validation-husky-powered.md"
     },
     {
-      "id": "TOOL-004",
-      "title": "Normalize Legacy Task Files",
+      "id": "TOOL-004-add-canonical-headers-to-all-existing",
+      "title": "TOOL-004",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-004.md"
+      "file": "./tasks/done/TOOL-004-add-canonical-headers-to-all-existing.md"
     },
     {
-      "id": "TOOL-005",
-      "title": "Insert Story Status Lines",
+      "id": "TOOL-005-add-explicit-status-lines-to-all",
+      "title": "TOOL-005",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-005.md"
+      "file": "./tasks/done/TOOL-005-add-explicit-status-lines-to-all.md"
     },
     {
-      "id": "TOOL-006",
-      "title": "Add Relationship Integrity Checker",
+      "id": "TOOL-006-create-a-script-to-validate-that",
+      "title": "TOOL-006",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-006.md"
+      "file": "./tasks/done/TOOL-006-create-a-script-to-validate-that.md"
     },
     {
-      "id": "TOOL-007",
-      "title": "Add CI Quality Workflow",
+      "id": "TOOL-007-introduce-a-github-actions-workflow-to",
+      "title": "TOOL-007",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-007.md"
+      "file": "./tasks/done/TOOL-007-introduce-a-github-actions-workflow-to.md"
     },
     {
-      "id": "TOOL-008",
-      "title": "Enforce Task Type Enumeration",
+      "id": "TOOL-008-extend-validator-to-enforce-allowed-task",
+      "title": "TOOL-008",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-008.md"
+      "file": "./tasks/done/TOOL-008-extend-validator-to-enforce-allowed-task.md"
     },
     {
-      "id": "TOOL-009",
-      "title": "Enhance Spec Index Output",
+      "id": "TOOL-009-add-percent-completion-last-updated-timestamp",
+      "title": "TOOL-009",
       "status": "done",
       "story": "10-engineering-automation",
-      "file": "./tasks/done/TOOL-009.md"
+      "file": "./tasks/done/TOOL-009-add-percent-completion-last-updated-timestamp.md"
     }
   ]
 }

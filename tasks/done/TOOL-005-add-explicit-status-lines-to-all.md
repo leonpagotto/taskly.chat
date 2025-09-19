@@ -1,4 +1,4 @@
-# Task: Insert Story Status Lines
+# Task: TOOL-005
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19

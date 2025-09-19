@@ -142,6 +142,15 @@ Adoption Strategy:
 
 Fork Avoidance: prefer composition & adapter; only vendor minimal components if blockages arise.
 
+## Task Governance & Naming (Summary)
+Full specification lives in `docs/TASKS-GUIDELINES.md`. Key enforced rules:
+- Global unique task ID (prefix+number) across repository.
+- Filename ID must match `# Task:` header line.
+- Promotion moves file from story backlog to `/tasks/<status>/` with provenance line.
+- Validator enforces schema, uniqueness, referential integrity, WIP limits.
+
+Refer to guidelines doc for folder hierarchy, naming rationale, and future enhancements (slug stability warnings).
+
 ---
 This document will evolve as implementation proceeds.
 

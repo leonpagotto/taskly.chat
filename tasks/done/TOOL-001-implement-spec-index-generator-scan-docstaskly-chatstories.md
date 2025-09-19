@@ -1,14 +1,14 @@
-# Task: Implement Spec Index Generator
+# Task: TOOL-001
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19
 Updated: 2025-09-19
-Type: feature
+Type: chore
 Related: [story:10-engineering-automation]
 Owner: system
 
 ## Summary
-Create a script to scan `docs/taskly-chat/stories/*` and produce `docs/taskly-chat/SPEC-INDEX.md` summarizing story metadata and task counts by status.
+Implement Spec Index Generator: scan `docs/taskly-chat/stories/*` and produce `docs/taskly-chat/SPEC-INDEX.md` summarizing story metadata and task counts by status.
 
 ## Acceptance Criteria
 - [ ] Script outputs deterministic ordering by story number

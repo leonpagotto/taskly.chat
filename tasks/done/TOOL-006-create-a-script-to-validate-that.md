@@ -1,4 +1,4 @@
-# Task: Add Relationship Integrity Checker
+# Task: TOOL-006
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19

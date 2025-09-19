@@ -1,4 +1,4 @@
-# Task: Add CI Quality Workflow
+# Task: TOOL-007
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19

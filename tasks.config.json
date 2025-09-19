@@ -1,0 +1,10 @@
+{
+  "wip": {
+    "todo": 10,
+    "in-progress": 6,
+    "review": 4
+  },
+  "archive": {
+    "defaultRetentionDays": 30
+  }
+}

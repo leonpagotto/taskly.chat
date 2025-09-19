@@ -42,7 +42,7 @@ async function run() {
   // Refresh Updated timestamp if present
   if (/^Updated:/m.test(raw)) raw = raw.replace(/^Updated:.*$/m, `Updated: ${new Date().toISOString().slice(0,10)}`);
   // Append provenance log (append new line always)
-  const provLine = `- ${new Date().toISOString()} promoted backlog→${status}`;
+  const provLine = `- ${new Date().toISOString()} EVENT:status-change from=backlog to=${status}`;
   if (/^Provenance:/m.test(raw)) {
     // If Provenance block exists, append line after it (simple append at end for now)
     raw += `\n${provLine}`;

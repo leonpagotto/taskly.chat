@@ -1,14 +1,14 @@
-# Task: Implement Task Header Validator
+# Task: TOOL-002
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19
 Updated: 2025-09-19
-Type: feature
+Type: chore
 Related: [story:10-engineering-automation]
 Owner: system
 
 ## Summary
-Add a validation script that checks all task markdown files for required header fields and valid status values.
+Implement Task Header Validator: script checks all task markdown files for required header fields and valid status values.
 
 ## Acceptance Criteria
 - [ ] Exits with non-zero if any task invalid

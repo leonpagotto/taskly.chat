@@ -29,7 +29,7 @@ async function run() {
   let raw = await fs.readFile(src,'utf8');
   if (/^Status:/m.test(raw)) raw = raw.replace(/^Status:.*$/m, `Status: ${status}`);
   if (/^Updated:/m.test(raw)) raw = raw.replace(/^Updated:.*$/m, `Updated: ${new Date().toISOString().slice(0,10)}`);
-  const provLine = `- ${new Date().toISOString()} status→${status}`;
+  const provLine = `- ${new Date().toISOString()} EVENT:status-change to=${status}`;
   if (/^Provenance:/m.test(raw)) raw += `\n${provLine}`; else raw += `\n\nProvenance:\n${provLine}`;
   await fs.writeFile(src, raw,'utf8');
   const destDir = path.resolve(ROOT, 'tasks', status);

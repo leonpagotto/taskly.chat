@@ -28,10 +28,14 @@ jobs:
         run: pnpm spec:index
       - name: Generate manifest (expected clean)
         run: pnpm tasks:manifest
+      - name: Generate task metrics (expected clean)
+        run: node scripts/generate-task-metrics.mjs || true
+      - name: Generate board aggregate (expected clean)
+        run: node scripts/generate-board-data.mjs || true
       - name: Detect dirty repo (spec index / manifest must be committed)
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            echo "Repository dirty after generation steps. Commit updated tasks.yaml / SPEC-INDEX.md.";
+            echo "Repository dirty after generation steps. Commit updated tasks.yaml tasks.json tasks-board.json metrics and SPEC-INDEX.md.";
             git status --porcelain;
             exit 1;
           fi

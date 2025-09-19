@@ -1,4 +1,4 @@
-# Task: Enhance Spec Index Output
+# Task: TOOL-009
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19

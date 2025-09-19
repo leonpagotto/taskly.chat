@@ -1,4 +1,4 @@
-# Task: Add Pre-Commit Hook for Validation
+# Task: TOOL-003
 Status: done
 Story: 10-engineering-automation
 Created: 2025-09-19
@@ -8,7 +8,7 @@ Related: [story:10-engineering-automation]
 Owner: system
 
 ## Summary
-Introduce a Husky-powered pre-commit hook to run task validator and block commits that include `.next/` artifacts.
+Add Pre-Commit Hook for Validation: Husky-powered pre-commit runs validator and blocks commits that include `.next/` artifacts.
 
 ## Acceptance Criteria
 - [ ] Husky installed with `prepare` script
