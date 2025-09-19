@@ -1,1642 +1,1642 @@
 {
-  "generated": "2025-09-19T22:53:01.323Z",
+  "generated": "2025-09-19T23:00:56.627Z",
   "metrics": [
     {
       "id": "ANL-100-feasibility-licensing-assessment",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ANL-100-feasibility-licensing-assessment.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/ANL-100-feasibility-licensing-assessment.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "ARCH-106-adapter-architecture-layer",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/ARCH-106-adapter-architecture-layer.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/ARCH-106-adapter-architecture-layer.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DOC-001-integration-boundaries-doc",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/DOC-001-integration-boundaries-doc.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/DOC-001-integration-boundaries-doc.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-101-minimal-lobe-mount",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-102-instruction-layer-adapter",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-102-instruction-layer-adapter.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/IMP-102-instruction-layer-adapter.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-103-draft-extraction-hook",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-103-draft-extraction-hook.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/IMP-103-draft-extraction-hook.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-104-theming-alignment",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-104-theming-alignment.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/IMP-104-theming-alignment.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "MEM-109-memory-context-scaffold",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/MEM-109-memory-context-scaffold.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/MEM-109-memory-context-scaffold.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "OBS-108-telemetry-observability",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/OBS-108-telemetry-observability.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/OBS-108-telemetry-observability.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "PERF-105-performance-bundle-audit",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/PERF-105-performance-bundle-audit.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/PERF-105-performance-bundle-audit.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "QA-107-adapter-test-harness",
-      "file": "docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/QA-107-adapter-test-harness.md",
+      "file": "stories/00-lobe-chat-framework-integration/Backlog/QA-107-adapter-test-harness.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "CON-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/CON-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/CON-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/DES-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DES-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/DES-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/DEV-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/DEV-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/IMP-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/IMP-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/01-natural-language-task-creation/Backlog/INT-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/01-natural-language-task-creation/Backlog/INT-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "BAC-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/BAC-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "BAC-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/BAC-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/BAC-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DAT-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DAT-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/DAT-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/DES-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/DES-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "FRO-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/FRO-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/FRO-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/INT-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/INT-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TES-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/02-retrieve-conversation-history/Backlog/TES-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/02-retrieve-conversation-history/Backlog/TES-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEF-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/DEF-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-004-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DES-004-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/DES-004-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-004-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-004-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/DEV-004-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-005-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-005-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/DEV-005-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-006-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/DEV-006-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/DEV-006-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/IMP-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-004-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-004-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/IMP-004-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-005-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/IMP-005-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/IMP-005-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/03-ai-personalization-based-on-memory/Backlog/INT-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/03-ai-personalization-based-on-memory/Backlog/INT-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEF-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/DEF-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-005-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DES-005-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/DES-005-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-007-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/DEV-007-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/DEV-007-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-006-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/IMP-006-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/IMP-006-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-004-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/INT-004-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/INT-004-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "QUA-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/04-set-global-ai-instructions/Backlog/QUA-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/04-set-global-ai-instructions/Backlog/QUA-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEF-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/DEF-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-006-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DES-006-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/DES-006-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-008-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-008-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/DEV-008-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-009-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/DEV-009-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/DEV-009-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-007-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-007-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/IMP-007-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-008-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/IMP-008-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/IMP-008-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "QUA-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/05-context-aware-reminders/Backlog/QUA-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/05-context-aware-reminders/Backlog/QUA-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-004-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/DEF-004-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/DEF-004-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-007-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/DES-007-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/DES-007-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-010-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-010-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/DEV-010-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-011-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-011-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/DEV-011-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-012-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/DEV-012-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/DEV-012-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-009-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-009-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/IMP-009-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-010-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-010-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/IMP-010-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-011-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-011-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/IMP-011-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-012-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/IMP-012-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/IMP-012-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-005-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/06-unified-task-management/Backlog/INT-005-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/06-unified-task-management/Backlog/INT-005-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "COM-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/COM-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/COM-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-005-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEF-005-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/DEF-005-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-008-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DES-008-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/DES-008-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-013-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-013-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/DEV-013-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-014-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/DEV-014-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/DEV-014-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "ENS-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/ENS-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/ENS-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-013-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-013-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/IMP-013-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-014-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/IMP-014-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/IMP-014-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "UPD-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/07-share-project-with-collaborator/Backlog/UPD-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/07-share-project-with-collaborator/Backlog/UPD-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEF-006-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/DEF-006-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-009-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/DES-009-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-010-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/DES-010-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-015-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/DEV-015-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-015-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-015-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-016-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/IMP-016-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-006-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/INT-006-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "QUA-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/08-integrate-with-google-calendar-read-only/Backlog/QUA-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "ADA-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/ADA-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "CON-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/CON-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/CON-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-011-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-011-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/DES-011-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-012-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DES-012-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/DES-012-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-016-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/DEV-016-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-017-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/DEV-017-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-017-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/09-manage-project-specific-ai-instructions/Backlog/IMP-017-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "COM-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/COM-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/COM-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-013-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/DES-013-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/DES-013-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "ENS-002-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/ENS-002-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/ENS-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-018-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-018-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-018-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-019-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-019-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-019-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-020-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-020-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-020-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-021-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-021-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-021-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-022-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-022-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-022-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-023-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/10-explicit-memory-management-ui/Backlog/IMP-023-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/10-explicit-memory-management-ui/Backlog/IMP-023-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "BUI-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/BUI-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/BUI-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "CRE-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/CRE-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/CRE-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-014-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DES-014-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/DES-014-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-018-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-018-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/DEV-018-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-019-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/DEV-019-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/DEV-019-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-024-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-024-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/IMP-024-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-025-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/11-configure-smart-automation-nudges/Backlog/IMP-025-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/11-configure-smart-automation-nudges/Backlog/IMP-025-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "CON-003-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/CON-003-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/CON-003-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-015-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-015-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/DES-015-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DES-016-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DES-016-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/DES-016-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-020-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-020-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/DEV-020-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-021-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/DEV-021-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/DEV-021-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-026-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/IMP-026-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/IMP-026-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "INT-007-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/INT-007-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/INT-007-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "WRI-001-migrated-legacy-task-improve-this-summary",
-      "file": "docs/taskly-chat/stories/12-define-collaboration-permissions/Backlog/WRI-001-migrated-legacy-task-improve-this-summary.md",
+      "file": "stories/12-define-collaboration-permissions/Backlog/WRI-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-001-migrated-legacy-task-improve-this-summary",
       "file": "tasks/in-progress/DEV-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "DEV-002-migrated-legacy-task-improve-this-summary",
       "file": "tasks/in-progress/DEV-002-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "IMP-001-migrated-legacy-task-improve-this-summary",
       "file": "tasks/in-progress/IMP-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "RES-001-migrated-legacy-task-improve-this-summary",
       "file": "tasks/in-progress/RES-001-migrated-legacy-task-improve-this-summary.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories",
       "file": "tasks/done/TOOL-001-implement-spec-index-generator-scan-docstaskly-chatstories.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-002-implement-task-header-validator-script-checks",
       "file": "tasks/done/TOOL-002-implement-task-header-validator-script-checks.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-003-add-pre-commit-hook-for-validation-husky-powered",
       "file": "tasks/done/TOOL-003-add-pre-commit-hook-for-validation-husky-powered.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-004-add-canonical-headers-to-all-existing",
       "file": "tasks/done/TOOL-004-add-canonical-headers-to-all-existing.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-005-add-explicit-status-lines-to-all",
       "file": "tasks/done/TOOL-005-add-explicit-status-lines-to-all.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-006-create-a-script-to-validate-that",
       "file": "tasks/done/TOOL-006-create-a-script-to-validate-that.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-007-introduce-a-github-actions-workflow-to",
       "file": "tasks/done/TOOL-007-introduce-a-github-actions-workflow-to.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-008-extend-validator-to-enforce-allowed-task",
       "file": "tasks/done/TOOL-008-extend-validator-to-enforce-allowed-task.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     },
     {
       "id": "TOOL-009-add-percent-completion-last-updated-timestamp",
       "file": "tasks/done/TOOL-009-add-percent-completion-last-updated-timestamp.md",
       "durations": {
-        "backlog": 82381.299,
+        "backlog": 82856.601,
         "todo": 0,
         "in-progress": 0,
         "review": 0,
         "done": 0
       },
-      "openIntervalSeconds": 82381.299,
-      "currentStatusDurationSeconds": 82381.299,
+      "openIntervalSeconds": 82856.601,
+      "currentStatusDurationSeconds": 82856.601,
       "currentStatus": "backlog"
     }
   ]

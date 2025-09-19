@@ -15,7 +15,7 @@ Output: metrics/tasks-metrics.json
 */
 
 const ROOT = process.cwd();
-const STORIES_ROOT = path.join(ROOT,'docs/taskly-chat/stories');
+const STORIES_ROOT = path.join(ROOT,'stories');
 const PIPELINE_ROOT = path.join(ROOT,'tasks');
 const OUTPUT_DIR = path.join(ROOT,'metrics');
 const OUTPUT_FILE = path.join(OUTPUT_DIR,'tasks-metrics.json');

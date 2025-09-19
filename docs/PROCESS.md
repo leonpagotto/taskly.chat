@@ -3,7 +3,7 @@
 We follow a strict Spec > Plan > Task > Implement workflow to ensure traceability and architectural coherence.
 
 ## 1. Spec
-Authoritative problem / feature definition lives in `docs/taskly-chat/stories/<story>/story.md` with context and priority.
+Authoritative problem / feature definition lives in `stories/<story>/story.md` with context and priority.
 
 ## 2. Plan
 For a chosen story, outline implementation strategy before coding:

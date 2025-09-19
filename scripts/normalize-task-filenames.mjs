@@ -8,7 +8,7 @@ Where ID = existing filename prefix up to first non-alnum-hyphen block; slug der
 Dry run by default. Use --write to apply.
 */
 const ROOT = process.cwd();
-const STORIES_ROOT = path.join(ROOT,'docs/taskly-chat/stories');
+const STORIES_ROOT = path.join(ROOT,'stories');
 const PIPELINE_ROOT = path.join(ROOT,'tasks');
 
 function slugify(str) {

@@ -20,7 +20,7 @@ Rules:
 const ROOT = process.cwd();
 const CONFIG_FILE = path.join(ROOT,'tasks.config.json');
 const DONE_DIR = path.join(ROOT, 'tasks', 'done');
-const STORIES_ROOT = path.join(ROOT, 'docs/taskly-chat/stories');
+const STORIES_ROOT = path.join(ROOT, 'stories');
 
 function parseArgs(defaultRetention) {
   const args = process.argv.slice(2);

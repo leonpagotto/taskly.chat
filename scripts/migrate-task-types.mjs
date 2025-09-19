@@ -2,7 +2,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const ROOT = path.resolve(process.cwd(),'docs/taskly-chat/stories');
+const ROOT = path.resolve(process.cwd(),'stories');
 
 function isTaskFile(p){return /(\/Backlog\/|\/InProgress\/|\/Review\/|\/Done\/)[^/]+\.md$/.test(p.replace(/\\/g,'/'));}
 

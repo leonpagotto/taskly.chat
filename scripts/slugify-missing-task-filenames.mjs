@@ -20,7 +20,7 @@ After execution you should run:
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname,'..');
-const STORIES_ROOT = path.join(ROOT,'docs/taskly-chat/stories');
+const STORIES_ROOT = path.join(ROOT,'stories');
 const PIPELINE_ROOT = path.join(ROOT,'tasks');
 
 function isUnslugged(name){

@@ -11,7 +11,7 @@ This document defines the authoritative workflow rules, task file schema, and th
 ### 1.2 Location by State
 | State | Storage Path | Notes |
 |-------|--------------|-------|
-| backlog | `docs/taskly-chat/stories/<story>/Backlog/` (or future `tasks/` subfolder) | Story-scoped ideation only. |
+| backlog | `stories/<story>/Backlog/` (or future `tasks/` subfolder) | Story-scoped ideation only. |
 | todo | `tasks/todo/` | Centralized pipeline. |
 | in-progress | `tasks/in-progress/` | Active execution. |
 | review | `tasks/review/` | Awaiting validation / QA. |
@@ -21,7 +21,7 @@ This document defines the authoritative workflow rules, task file schema, and th
 - A task file exists in exactly one state directory reflecting its `status` field.
 - Promotion from backlog moves file to `tasks/<status>/` and updates `status`.
 - Status changes always trigger: (a) path move, (b) `status:` update, (c) `updated:` timestamp refresh.
-- Optionally, archival can move a finished task from `tasks/done/` to `docs/taskly-chat/stories/<story>/archive/` (not yet automated).
+- Optionally, archival can move a finished task from `tasks/done/` to `stories/<story>/archive/` (not yet automated).
 
 ### 1.4 Copilot Responsibilities
 | Action | Copilot Capability |

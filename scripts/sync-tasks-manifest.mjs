@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import crypto from 'crypto';
 import path from 'path';
 
-const STORIES_ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
+const STORIES_ROOT = path.resolve(process.cwd(), 'stories');
 const PIPELINE_ROOT = path.resolve(process.cwd(), 'tasks');
 const OUTPUT_YAML = path.resolve(process.cwd(), 'tasks.yaml');
 const OUTPUT_JSON = path.resolve(process.cwd(), 'tasks.json');

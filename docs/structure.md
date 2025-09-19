@@ -4,7 +4,7 @@ This document describes how the task governance, backlog stories, and board arti
 
 ## Overview
 The repository stores all planning and execution tasks as Markdown files. They are partitioned into:
-- Story Backlogs: `docs/taskly-chat/stories/<NN>-<story-slug>/Backlog/*.md`
+- Story Backlogs: `stories/<NN>-<story-slug>/Backlog/*.md`
 - Global Pipeline: `tasks/<status>/*.md` where `<status>` is one of `todo | in-progress | review | done`
 
 Governance scripts generate derived artifacts:
@@ -147,7 +147,7 @@ curl -s https://raw.githubusercontent.com/<org>/<repo>/main/tasks-board.json | j
 ```
 Pull a specific task file:
 ```
-curl -s https://raw.githubusercontent.com/<org>/<repo>/main/docs/taskly-chat/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md
+curl -s https://raw.githubusercontent.com/<org>/<repo>/main/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md
 ```
 
 ## Future Enhancements

@@ -2,7 +2,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const STORIES_ROOT = path.resolve(process.cwd(),'docs/taskly-chat/stories');
+const STORIES_ROOT = path.resolve(process.cwd(),'stories');
 
 async function listStories() {
   const dirs = await fs.readdir(STORIES_ROOT,{withFileTypes:true});

@@ -16,7 +16,7 @@ function slugify(str) {
 }
 
 const ROOT = process.cwd();
-const STORIES_ROOT = path.join(ROOT,'docs/taskly-chat/stories');
+const STORIES_ROOT = path.join(ROOT,'stories');
 const PIPELINE_ROOT = path.join(ROOT,'tasks');
 
 async function collectExistingIds(story) {

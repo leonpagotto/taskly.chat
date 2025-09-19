@@ -16,7 +16,7 @@ Execute:
   node scripts/migrate-task-structure.mjs
 */
 
-const STORIES_ROOT = path.resolve(process.cwd(),'docs/taskly-chat/stories');
+const STORIES_ROOT = path.resolve(process.cwd(),'stories');
 const PIPELINE_ROOT = path.resolve(process.cwd(),'tasks');
 const MAP = new Map([
   ['InProgress','in-progress'],

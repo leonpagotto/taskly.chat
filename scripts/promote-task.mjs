@@ -6,7 +6,7 @@ import path from 'path';
 Usage:
   node scripts/promote-task.mjs <taskFilePath> <newStatus>
 Where:
-  <taskFilePath> = path to backlog task under a story (e.g. docs/taskly-chat/stories/10-engineering-automation/Done/TOOL-001.md NOT VALID for backlog; backlog will be under new structure later)
+  <taskFilePath> = path to backlog task under a story (e.g. stories/10-engineering-automation/Backlog/TOOL-001-sample.md)
   <newStatus> one of: todo | in-progress | review | done
 
 This script:

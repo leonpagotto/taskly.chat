@@ -2,7 +2,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const STORIES_ROOT = path.resolve(process.cwd(), 'docs/taskly-chat/stories');
+const STORIES_ROOT = path.resolve(process.cwd(), 'stories');
 const PIPELINE_ROOT = path.resolve(process.cwd(), 'tasks');
 const OUTPUT = path.resolve(process.cwd(), 'docs/taskly-chat/SPEC-INDEX.md');
 

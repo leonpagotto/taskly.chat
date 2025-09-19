@@ -6,7 +6,7 @@ This repository uses a bifurcated task storage model that separates exploratory 
 
 | Layer | Location | Purpose | Allowed Status Values | Folder Names |
 |-------|----------|---------|-----------------------|--------------|
-| Story Backlog | `docs/taskly-chat/stories/<story>/Backlog/` | Capture raw, unprioritized tasks tightly coupled to a specific story domain. | `backlog` (in file metadata) or legacy `Backlog` | `Backlog/` |
+| Story Backlog | `stories/<story>/Backlog/` | Capture raw, unprioritized tasks tightly coupled to a specific story domain. | `backlog` (in file metadata) or legacy `Backlog` | `Backlog/` |
 | Global Pipeline | `tasks/{todo,in-progress,review,done}/` | Centralized, prioritized flow of active work across all stories. | `todo`, `in-progress`, `review`, `done` | `tasks/` subfolders |
 
 A task exists in exactly one layer at a time:

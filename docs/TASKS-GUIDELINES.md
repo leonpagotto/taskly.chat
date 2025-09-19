@@ -5,7 +5,7 @@ This document defines the canonical folder structure, task file naming conventio
 ## 1. Canonical Folder Structure
 
 ```
-docs/taskly-chat/stories/<story-slug>/
+stories/<story-slug>/
   story.md
   Backlog/              # Story-scoped backlog tasks only (Status: Backlog)
   Archive/ (optional)   # Archived completed tasks for historical reference
