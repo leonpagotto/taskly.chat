@@ -1,5 +1,5 @@
 # Task: Add Pre-Commit Hook for Validation
-Status: Backlog
+Status: Done
 Story: 10-engineering-automation
 Created: 2025-09-19
 Updated: 2025-09-19

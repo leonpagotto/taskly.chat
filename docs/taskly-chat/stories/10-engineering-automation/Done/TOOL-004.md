@@ -1,5 +1,5 @@
 # Task: Normalize Legacy Task Files
-Status: Backlog
+Status: Done
 Story: 10-engineering-automation
 Created: 2025-09-19
 Updated: 2025-09-19
