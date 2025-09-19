@@ -1,0 +1,6 @@
+---
+id: f5e4d3c2-b1a0-4987-6543-7890abcdef
+title: Trello Integration
+priority: Highest
+---
+As a user, I want to integrate Taskly.chat with Trello, so that I can manage my boards, cards, and lists directly through natural language conversations, centralizing my project management efforts. This includes the ability to create new Trello cards, assign members, set due dates, move cards between lists, or get updates on specific boards or cards, all by interacting with Taskly.chat's AI. The system should handle secure OAuth 2.0 authentication for connecting my Trello account and ensure efficient synchronization of data, reflecting changes in both platforms. I should be able to easily enable or disable this integration and specify which Trello boards Taskly.chat can access. This integration is essential for project managers and teams to maintain seamless workflows and leverage AI assistance for their Trello-managed projects. Data privacy and security must be paramount, ensuring that all interactions and data transfers comply with standard required data privacy and security measures. The integration should be robust, providing reliable interaction with Trello's API.
