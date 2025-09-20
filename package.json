@@ -25,6 +25,8 @@
     "typecheck": "pnpm run build:packages && tsc -p tsconfig.typecheck.json --noEmit --pretty false",
     "test": "pnpm --filter @taskly/data run test",
     "spec:index": "node scripts/generate-spec-index.mjs",
+    "spec:scaffold:story": "node speca-chat/scripts/scaffold-story.mjs",
+    "spec:scaffold:task": "node speca-chat/scripts/scaffold-task.mjs",
     "spec-index:generate": "node scripts/generate-spec-index.mjs",
     "tasks:validate": "node scripts/validate-tasks.mjs",
     "tasks:relationships": "node scripts/check-relationships.mjs",
@@ -36,7 +38,9 @@
     "task:status": "node scripts/update-task-status.mjs",
     "tasks:archive": "node scripts/archive-done-tasks.mjs",
     "spec:index:json": "node scripts/generate-spec-index.mjs --json",
-    "guard:legacy-paths": "node scripts/check-legacy-paths.mjs",
+  "guard:legacy-paths": "node scripts/check-legacy-paths.mjs",
+  "spec:board": "node speca-chat/scripts/generate-board.mjs",
+  "spec:validate": "node speca-chat/scripts/validate-structure.mjs",
     "prepare": "husky"
   }
 }

@@ -1,4 +1,6 @@
 id: story-002
+slug: import-render-sync-tasks-stories
 title: 15-import-render-sync-tasks-stories
 status: active
 created: 2025-09-20
+summary: Provide ingestion and rendering pipeline to import, parse, and sync external or local story/task sources into the system.

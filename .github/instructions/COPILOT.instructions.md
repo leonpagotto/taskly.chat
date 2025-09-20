@@ -153,6 +153,8 @@ Scripts (run via `pnpm` or `node`):
 - `speca-chat/scripts/report-status-delta.mjs` → legacy vs current drift (export JSON/CSV with `--out`).
 - `speca-chat/scripts/update-task-timestamps.mjs` → manage `updated:` fields.
 - `speca-chat/scripts/lint-acceptance.mjs` → detailed acceptance quality report (`artifacts/acceptance-lint-report.json`).
+- `speca-chat/scripts/scaffold-story.mjs` → create new story directory + `story.yml` + narrative from template.
+- `speca-chat/scripts/scaffold-task.mjs` → create new task YAML + narrative markdown using templates.
 
 Review readiness criteria (before setting `status: review`):
 - Acceptance statements reflect implemented observable outcomes.
@@ -195,6 +197,8 @@ On conflicting human instruction:
 ## 18. Minimal Operational Examples
 - Incremental feature: Add `<PREFIX-NNN>.task.yml` (status backlog) → implement → set status `in-progress` → generate board → validate → move to `review` then `done`.
 - New capability: Spec Kit → create `story.yml` + initial tasks → activate first task.
+- Scaffolding new story: `pnpm spec:scaffold:story 018 calendar-insights "Calendar Insights Overlay"` then fill summary & narrative TODOs.
+- Scaffolding new task: `pnpm spec:scaffold:task 018 DEV-001 feature "Implement calendar insights API"` then refine acceptance list.
 - Refactor improvement: Create chore task; acceptance focuses on preserved behavior + metrics (e.g., bundle size reduced X%).
 - Post-completion follow-up: New task referencing original via `related:` both directions.
 

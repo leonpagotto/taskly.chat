@@ -1,14 +1,40 @@
-# Story: Context-Aware Reminders
-Slug: 05-context-aware-reminders
-Status: draft
-Created: 2025-09-19
-Owner: 
-Area: general
+<!-- Normalized from legacy mixed format on 2025-09-20 -->
+# Story: 05-context-aware-reminders
 
-Status: Draft
----
-id: 9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d
-title: Context-Aware Reminders
-priority: Medium
----
-As a user, I want Taskly.chat to provide context-aware reminders for tasks and appointments, leveraging my calendar and conversation context, so I stay organized without manual scheduling for every item.
+## Summary
+Offer intelligent reminders triggered by temporal and contextual cues, reducing need for manual scheduling.
+
+## Motivation
+Need to reduce cognitive load managing tasks manually.
+
+## Desired Outcomes
+- Users configure contextual triggers.
+- Reminders delivered at relevant moments.
+
+## Scope
+In Scope:
+- Time-based + simple condition triggers.
+
+Out of Scope (Initial):
+- ML-based predictive triggers.
+
+## Success Metrics
+- Reminder engagement rate baseline.
+
+## Risks
+- Notification fatigue.
+
+## Assumptions
+- Users opt-in individually per reminder type.
+
+## Open Questions
+1. Where to surface reminders (chat vs dedicated view)?
+
+## Related Stories / Tasks
+- story-014 automation nudges (overlaps future phase).
+
+## Narrative Notes
+Will need scheduler + evaluation loop.
+
+## Progress Log
+- 2025-09-20 Narrative scaffold added; legacy draft replaced.

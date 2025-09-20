@@ -1,4 +1,6 @@
 id: story-016
+slug: google-calendar-read-write
 title: 13-integrate-with-google-calendar-read-write
 status: active
 created: 2025-09-20
+summary: Extend calendar integration to create, update, and delete events with proper permission scopes.

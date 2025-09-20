@@ -1,4 +1,6 @@
 id: story-010
+slug: share-project-collaborator
 title: 07-share-project-with-collaborator
 status: active
 created: 2025-09-20
+summary: Allow inviting collaborators to a project with shared context and controlled permissions.

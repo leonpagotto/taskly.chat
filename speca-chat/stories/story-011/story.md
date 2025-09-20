@@ -1,6 +1,43 @@
-# Story: Integrate with Google Calendar (Read-Only)
-Slug: 08-integrate-with-google-calendar-read-only
-Status: draft
+<!-- Generated/Normalized from template on 2025-09-20 -->
+# Story: 08-integrate-with-google-calendar-read-only
+
+## Summary
+Provide read-only calendar integration to surface upcoming events and contextual planning suggestions.
+
+## Motivation
+Users want schedule awareness inside assistant.
+
+## Desired Outcomes
+- Events appear in context panel.
+- Conflicts highlighted for scheduling tasks.
+
+## Scope
+In Scope:
+- OAuth & event fetch.
+
+Out of Scope (Initial):
+- Write operations.
+
+## Success Metrics
+- Connections established count.
+
+## Risks
+- Token refresh complexity.
+
+## Assumptions
+- Limited event volume per user initially.
+
+## Open Questions
+1. Cache strategy TTL?
+
+## Related Stories / Tasks
+- story-016 write access extension.
+
+## Narrative Notes
+Set foundation for future mutation.
+
+## Progress Log
+- 2025-09-20 Narrative scaffold added.
 Created: 2025-09-19
 Owner: 
 Area: integrations

@@ -1,4 +1,6 @@
 id: story-001
+slug: natural-language-task-creation
 title: 01-natural-language-task-creation
 status: active
 created: 2025-09-19
+summary: Enable users to type natural language instructions and have the system extract structured task drafts automatically.

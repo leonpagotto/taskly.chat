@@ -1,4 +1,6 @@
 id: story-015
+slug: define-collaboration-permissions
 title: 12-define-collaboration-permissions
 status: active
 created: 2025-09-20
+summary: Establish permission model defining roles, scopes, and allowed actions for shared workspaces.

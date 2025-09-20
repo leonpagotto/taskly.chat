@@ -1,4 +1,6 @@
 id: story-003
+slug: lobe-chat-framework-integration
 title: 00-lobe-chat-framework-integration
 status: active
 created: 2025-09-19
+summary: Integrate foundational Lobe Chat provider/framework to enable unified instruction layering and future conversational orchestration.

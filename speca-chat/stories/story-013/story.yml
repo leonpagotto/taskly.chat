@@ -1,4 +1,6 @@
 id: story-013
+slug: explicit-memory-management-ui
 title: 10-explicit-memory-management-ui
 status: active
 created: 2025-09-20
+summary: Provide UI to view, approve, edit, and remove stored memories ensuring user control and transparency.

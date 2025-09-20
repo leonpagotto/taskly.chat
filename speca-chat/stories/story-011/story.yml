@@ -1,4 +1,6 @@
 id: story-011
+slug: google-calendar-read-only
 title: 08-integrate-with-google-calendar-read-only
 status: active
 created: 2025-09-20
+summary: Provide read-only calendar integration to surface upcoming events and contextual planning suggestions.

@@ -1,4 +1,6 @@
 id: story-008
+slug: context-aware-reminders
 title: 05-context-aware-reminders
 status: active
 created: 2025-09-20
+summary: Offer intelligent reminders triggered by temporal and contextual cues, reducing need for manual scheduling.

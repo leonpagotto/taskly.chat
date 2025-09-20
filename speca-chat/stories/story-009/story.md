@@ -1,6 +1,43 @@
-# Story: Unified Task Management
-Slug: 06-unified-task-management
-Status: draft
+<!-- Generated/Normalized from template on 2025-09-20 -->
+# Story: 06-unified-task-management
+
+## Summary
+Provide a single consolidated task model and interface across sources (manual, extracted, imported) with consistent lifecycle.
+
+## Motivation
+Avoid fragmentation and cognitive load from multiple task lists.
+
+## Desired Outcomes
+- Unified list view.
+- Consistent status transitions.
+
+## Scope
+In Scope:
+- Aggregated task retrieval.
+
+Out of Scope (Initial):
+- Cross-project rollups.
+
+## Success Metrics
+- Reduction in duplicate tasks created.
+
+## Risks
+- Over-generalizing model early.
+
+## Assumptions
+- Core fields enough for initial workflows.
+
+## Open Questions
+1. Tagging vs project-only grouping?
+
+## Related Stories / Tasks
+- story-001 extraction (task source).
+
+## Narrative Notes
+Design flexible but minimal schema.
+
+## Progress Log
+- 2025-09-20 Narrative scaffold added.
 Created: 2025-09-19
 Owner: 
 Area: general

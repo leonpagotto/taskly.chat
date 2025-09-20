@@ -1,4 +1,6 @@
 id: story-009
+slug: unified-task-management
 title: 06-unified-task-management
 status: active
 created: 2025-09-20
+summary: Provide a single consolidated task model and interface across sources (manual, extracted, imported) with consistent lifecycle.

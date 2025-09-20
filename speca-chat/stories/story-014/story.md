@@ -1,6 +1,43 @@
-# Story: Configure Smart Automation Nudges
-Slug: 11-configure-smart-automation-nudges
-Status: draft
+<!-- Generated/Normalized from template on 2025-09-20 -->
+# Story: 11-configure-smart-automation-nudges
+
+## Summary
+Allow users to configure automation rules and proactive nudges based on behavior patterns and goals.
+
+## Motivation
+Drive sustained engagement and timely action.
+
+## Desired Outcomes
+- Users create nudge rules.
+- System emits nudges responsibly.
+
+## Scope
+In Scope:
+- Rule config UI + evaluation engine.
+
+Out of Scope (Initial):
+- ML predictive rule suggestions.
+
+## Success Metrics
+- Nudge interaction rate.
+
+## Risks
+- Notification fatigue / spam perception.
+
+## Assumptions
+- Conservative initial defaults.
+
+## Open Questions
+1. Quiet hours support timeline?
+
+## Related Stories / Tasks
+- story-008 reminders interplay.
+
+## Narrative Notes
+Rules engine modular for future conditions.
+
+## Progress Log
+- 2025-09-20 Narrative scaffold added.
 Created: 2025-09-19
 Owner: 
 Area: automation
