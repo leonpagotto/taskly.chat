@@ -17,7 +17,7 @@
     "build:packages": "tsc -b packages/core packages/ai packages/integration packages/data",
     "build": "pnpm run prisma:generate && pnpm run build:packages && pnpm --filter @taskly/chat-app run build",
     "lint": "pnpm -r run lint",
-    "typecheck": "tsc -b --pretty false --noEmit",
+  "typecheck": "pnpm run build:packages && tsc -p tsconfig.typecheck.json --noEmit --pretty false",
     "test": "pnpm --filter @taskly/data run test",
     "spec:index": "node scripts/generate-spec-index.mjs",
     "tasks:validate": "node scripts/validate-tasks.mjs",

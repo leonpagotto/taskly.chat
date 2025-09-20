@@ -1,6 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "@taskly/core": ["../core/dist/index.d.ts"],
+      "@taskly/ai": ["./dist/index.d.ts"],
+      "@taskly/integration": ["../integration/dist/index.d.ts"]
+    }
   }
 }

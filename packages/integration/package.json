@@ -18,9 +18,11 @@
   },
   "dependencies": {
     "@taskly/core": "workspace:*",
-    "@taskly/ai": "workspace:*"
+    "@taskly/ai": "workspace:*",
+    "@google/generative-ai": "^0.21.0"
   },
   "devDependencies": {
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@types/node": "20.11.0"
   }
 }

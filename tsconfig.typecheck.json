@@ -1,0 +1,24 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/ai" },
+    { "path": "packages/integration" },
+    { "path": "packages/data" },
+    { "path": "apps/chat" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ES2022",
+    "strict": true,
+    "paths": {
+      "@taskly/core": ["./packages/core/dist/index.d.ts"],
+      "@taskly/ai": ["./packages/ai/dist/index.d.ts"],
+      "@taskly/integration": ["./packages/integration/dist/index.d.ts"]
+    }
+  }
+}

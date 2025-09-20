@@ -34,10 +34,23 @@ export const ChatShell: React.FC = () => {
       }
     } catch (e) {
       parse = { error: true };
+    }
+    const userEntry: ChatEntry = { id, role: 'user', content: text, tasks: extraction.drafts, parse };
+    setMessages(prev => [...prev, userEntry]);
+    // Call Gemini backend for assistant reply.
+    try {
+      const assistantRes = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [chatMsg], systemPrompt: merged.systemPrompt }) });
+      if (assistantRes.ok) {
+        const data = await assistantRes.json();
+        setMessages(prev => [...prev, { id: data.id, role: 'assistant', content: data.content }]);
+      } else {
+        setMessages(prev => [...prev, { id: 'assistant-' + Date.now(), role: 'assistant', content: '(error generating response)' }]);
+      }
+    } catch {
+      setMessages(prev => [...prev, { id: 'assistant-' + Date.now(), role: 'assistant', content: '(network error)' }]);
     } finally {
       setLoading(false);
     }
-    setMessages(prev => [...prev, { id, role: 'user', content: text, tasks: extraction.drafts, parse }]);
   }
 
   return (

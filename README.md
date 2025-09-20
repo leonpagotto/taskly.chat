@@ -178,6 +178,8 @@ OPENAI_API_KEY=sk-...
 MODEL_CHAT=gpt-4o-mini
 MODEL_FAST=gpt-4o-mini
 DATABASE_URL="file:./dev.db"
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-1.5-flash
 ```
 
 ## 🧩 Core Domain Guidelines
