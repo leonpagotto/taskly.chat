@@ -1,21 +1,19 @@
-# Task Workflow & Schema
+> DEPRECATED DOCUMENT
 
-This document defines the authoritative workflow rules, task file schema, and the `tasks.yaml` manifest contract used by the Kanban UI and Copilot automation.
+# Task Workflow & Schema (Legacy)
+
+Superseded by YAML task governance under `speca-chat/`. See:
+- `.github/instructions/COPILOT.instructions.md`
+- `speca-chat/STRUCTURE_REPORT.md`
 
 ---
-## 1. Workflow Rules
+Legacy lifecycle retained conceptually but implemented via YAML `status:` edits + board regeneration.
 
 ### 1.1 Lifecycle States
 `backlog → todo → in-progress → review → done`
 
-### 1.2 Location by State
-| State | Storage Path | Notes |
-|-------|--------------|-------|
-| backlog | `stories/<story>/Backlog/` (or future `tasks/` subfolder) | Story-scoped ideation only. |
-| todo | `tasks/todo/` | Centralized pipeline. |
-| in-progress | `tasks/in-progress/` | Active execution. |
-| review | `tasks/review/` | Awaiting validation / QA. |
-| done | `tasks/done/` | Completed work (optionally later archived per story). |
+### 1.2 Location (Legacy)
+Legacy per-status directories replaced by YAML status field + generated board refs.
 
 ### 1.3 Movement Rules
 - A task file exists in exactly one state directory reflecting its `status` field.
@@ -26,15 +24,15 @@ This document defines the authoritative workflow rules, task file schema, and th
 ### 1.4 Copilot Responsibilities
 | Action | Copilot Capability |
 |--------|--------------------|
-| Create backlog task | Generate file with valid frontmatter in story backlog. |
-| Promote task | Update status to `todo` and move file. |
-| Progress task | Move across pipeline columns & sync metadata. |
-| Sync manifest | Regenerate `tasks.yaml` after any changes. |
-| Validate | Run schema/structure validation script. |
+| (Legacy) Create backlog task | (Deprecated) |
+| (Legacy) Promote task | (Deprecated) |
+| (Legacy) Progress task | (Deprecated) |
+| (Legacy) Sync manifest | (Removed) |
+| Validate (current) | Run `pnpm spec:validate` |
 
 ---
-## 2. Task File Schema (YAML Frontmatter)
-Placed at top of each task file (Markdown or pure YAML). Followed by rich description / notes if Markdown.
+## Current Schema Location
+Inline YAML in `<TASK-ID>.task.yml` (no markdown frontmatter). Optional narrative file `<TASK-ID>.task.md` permitted.
 
 ```yaml
 id: <string|int>                # Unique within repo (recommend zero-padded per story or global numeric)
@@ -75,62 +73,15 @@ provenance:                      # Optional structured history (script may appen
 - Slug recommended but optional; scripts infer missing slug from title.
 
 ---
-## 3. Manifest Files: `tasks.yaml` & `tasks.json`
-Root-level machine indices consumed by the Kanban UI (YAML for humans) and integrators (JSON for programmatic usage).
+Legacy manifests removed; derive state from tasks + board refs.
 
-```yaml
-version: 1
-generated: 2025-09-19T20:20:00Z
-pipeline:
-  todo: 0
-  in-progress: 4
-  review: 0
-  done: 9
-stories:
-  backlog:
-    00-lobe-chat-framework-integration: 5
-    01-natural-language-task-creation: 9
-    # ... etc
-tasks:
-  - id: TOOL-001
-    title: Implement Spec Index Generator
-    status: done
-    story: 10-engineering-automation
-    file: ./tasks/done/TOOL-001.md
-    assignee: system
-  # ...
-```
-
-### 3.1 Manifest Sections (YAML / JSON share same structure)
-| Section | Purpose |
-|---------|---------|
-| version | Schema versioning for forward compat. |
-| generated | ISO timestamp of last sync. |
-| pipeline | Aggregated counts by active status. |
-| stories.backlog | Per-story backlog counts. |
-| tasks | Flat list of all tasks (backlog + pipeline). |
-
-### 3.2 Task Entries in Manifest
-Minimal fields necessary for fast board rendering:
-`id, title, status, story, file, assignee (optional)`
-
-Additional values (priority, labels) MAY be included but are optional.
+Legacy manifest examples removed.
 
 ---
-## 4. Sync Process
-1. Developer or Copilot modifies tasks (create / move / edit).
-2. Run: `pnpm tasks:manifest` (script) → regenerates `tasks.yaml` & `tasks.json` deterministically.
-3. Commit both changed task files + updated manifests.
-4. CI enforces cleanliness (fails if regeneration changes uncommitted files).
+Sync now: `pnpm spec:board && pnpm spec:validate`.
 
 ---
-## 5. Script Responsibilities
-`scripts/sync-tasks-manifest.mjs`:
-- Scans story backlog folders & pipeline directories.
-- Parses YAML frontmatter (or header key: value lines) from Markdown.
-- Derives missing `id` from filename if absent.
-- Emits sorted task list (by status order, then id).
-- Writes `tasks.yaml` and `tasks.json` atomically.
+Legacy scripts obsolete; see `speca-chat/scripts/` for active tooling.
 
 Additional Scripts:
 - `scripts/promote-task.mjs` (backlog → pipeline + provenance event, refresh Updated)
@@ -139,33 +90,22 @@ Additional Scripts:
 - `scripts/migrate-task-structure.mjs` (one-time legacy migration)
 
 ---
-## 6. Status Ordering
-Canonical ordering for display & sorting:
-`backlog < todo < in-progress < review < done`
+Ordering implied by validator; board refs grouped by status directories.
 
 ---
-## 7. Validation & Governance
-- `scripts/validate-tasks.mjs` enforces required fields & duplicate ID detection.
-- CI workflow `.github/workflows/tasks-governance.yml` regenerates spec index + manifests and fails if dirty.
-- Duplicate IDs across backlog + pipeline are disallowed (prevents simultaneous backlog + active duplication).
-- Future: referential integrity of `related`, cycle time metrics from provenance.
+Validation: `validate-structure.mjs` (AJV + related + acceptance heuristics) & `lint-acceptance.mjs` for quality.
 
 ---
-## 8. Extension Ideas
-- Add cycle time metrics using provenance events.
-- Auto-generate burndown snapshots.
-- Maintain separate `archive/` trees per story for done tasks older than N days.
+Extension ideas consolidated in Copilot instructions roadmap.
 
 ---
-## 9. Command Summary
+## Command Summary (Current)
 | Action | Command |
 |--------|---------|
-| Generate Spec Index | `pnpm spec:index` |
-| Validate Tasks | `pnpm tasks:validate` |
-| Sync Manifest (yaml+json) | `pnpm tasks:manifest` |
-| Promote Backlog Task | `pnpm task:promote <file> <status>` |
-| Update Pipeline Status | `pnpm task:status <file> <status>` |
-| Archive Old Done Tasks | `pnpm tasks:archive -- --days 30` |
-| Migrate Legacy Structure | `node scripts/migrate-task-structure.mjs` |
+| Generate Board | `pnpm spec:board` |
+| Validate Structure | `pnpm spec:validate` |
+| Delta Report | `pnpm spec:delta` |
+| Lint Acceptance | `pnpm spec:lint-acceptance` |
+| Update Timestamps | `pnpm spec:timestamps` |
 
-Document updated: 2025-09-19
+Last updated (deprecation): 2025-09-20

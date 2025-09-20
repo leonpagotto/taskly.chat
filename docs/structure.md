@@ -1,59 +1,16 @@
-# Repository Task & Board Structure
+> DEPRECATED DOCUMENT
 
-This document describes how the task governance, backlog stories, and board artifacts are organized and persisted in GitHub. It is intended for integration consumers (e.g. external tooling, dashboards, or synchronization services) that need a stable contract for reading task data and board state.
+# Repository Task & Board Structure (Legacy)
 
-## Overview
-The repository stores all planning and execution tasks as Markdown files. They are partitioned into:
-- Story Backlogs: `stories/<NN>-<story-slug>/Backlog/*.md`
-- Global Pipeline: `tasks/<status>/*.md` where `<status>` is one of `todo | in-progress | review | done`
+Superseded by `speca-chat/STRUCTURE_REPORT.md` and Copilot instructions.
 
-Governance scripts generate derived artifacts:
-- Manifest: `tasks.yaml` + `tasks.json` – canonical indexed listing of all tasks.
-- Metrics: `metrics/tasks-metrics.json` – time-in-status & aging metrics.
-- Board Data: `tasks-board.json` – enriched board view merging manifest + metrics.
+Legacy markdown partitioning removed; tasks now YAML per story.
 
-## Directory Layout
-```
-/ (repo root)
-  tasks.yaml                # YAML manifest (source of truth index)
-  tasks.json                # JSON manifest mirror
-  tasks-board.json          # Aggregated board snapshot (lightweight UI feed)
-  metrics/
-    tasks-metrics.json      # Per-task timing metrics
-  changed-tasks.json        # (Optional) Last diff run output (added/modified/removed)
-  tasks/
-    todo/                   # Pipeline tasks in TODO
-    in-progress/            # Pipeline tasks currently being executed
-    review/                 # Pipeline tasks under review (optional)
-    done/                   # Completed pipeline tasks (retained for history)
-  docs/
-    TASKS-GUIDELINES.md     # Governance & naming rules
-    structure.md            # (This file) Integration-facing structure contract
-    taskly-chat/
-      stories/
-        <NN>-<story-slug>/
-          story.md          # Narrative / context for the story
-          Backlog/          # Story-scoped backlog tasks
-            <ID>-<slug>.md  # Individual backlog task files
-```
+Refer to current layout in Copilot instructions Section 4.
 
-## File Naming Conventions
-- Story folder: two-digit order prefix + kebab slug (e.g. `07-share-project-with-collaborator`).
-- Task file: `<ID>-<short-kebab-title>.md` (transitional tasks without slug will be migrated; post-migration the slug is mandatory).
-- IDs are globally unique (e.g. `IMP-101`, `DEV-013`).
+Story folder pattern updated to `story-<NNN>`; task file to `<TASK-ID>.task.yml`.
 
-## Task File Schema (Markdown Front Matter Region)
-Each task file begins with a header section (not strict YAML, but line-based key/value) containing at least:
-```
-# Task: <ID>
-Status: <Backlog|Todo|In-Progress|Review|Done>
-Story: <story-folder-name or omitted for pipeline tasks>
-Created: YYYY-MM-DD
-Type: <type>
-Related: <comma-separated IDs or blank>
-Owner: <optional>
-```
-Followed by content sections: Summary, Acceptance Criteria, Implementation Notes, Progress Log.
+Task schema now full YAML; see template in Copilot instructions.
 
 ## Provenance & Progress Log
 Status transitions (when implemented) appear as log lines in the `## Progress Log` section. Supported patterns:
@@ -66,92 +23,19 @@ Status transitions (when implemented) appear as log lines in the `## Progress Lo
 ```
 The metrics generator consumes both legacy (`promoted` / `status→`) and the standardized `EVENT:status-change` format.
 
-## Generated Artifacts
-### tasks.yaml / tasks.json
-Fields per entry:
-- `id`: Canonical ID (maps exactly to filename prefix ID, globally unique).
-- `title`: Derived display title (often mirrors ID when no explicit title header present).
-- `status`: One of `backlog | todo | in-progress | review | done`.
-- `story`: Story folder key (omitted or `unknown` for legacy or pipeline tasks without linkage).
-- `file`: Relative path to the source Markdown file (prefixed with `./`).
-- `hash`: SHA256 hex digest of the task file's full contents (line-ending sensitive) enabling integrity verification & change detection. Consumers may cache tasks keyed by `hash`; a differing hash implies content mutation. Hash stability is guaranteed unless the file content changes. (Added 2025-09-20, manifest version remains `1` until a breaking structural change occurs.)
+Legacy manifest / metrics artifacts deprecated; use board refs + optional future analytics.
 
-### metrics/tasks-metrics.json
-Structure:
-```
-{
-  generated: <ISO timestamp>,
-  metrics: [
-    {
-      id,               // matches manifest id (filename stem)
-      file,             // relative path
-      durations: { backlog, todo, 'in-progress', review, done }, // seconds spent
-      openIntervalSeconds,           // seconds since last status change (if not done)
-      currentStatusDurationSeconds,  // alias for open interval (for convenience)
-      currentStatus                  // inferred last status or 'backlog'
-    }, ...
-  ]
-}
-```
-If a task has no explicit status change events, time accrues under `backlog` from its Created date.
+Integration: parse YAML tasks directly or consume generated board refs.
 
-### tasks-board.json
-Merges manifest entries with metric enrichment. Intended as a single file ingestion point for front-end boards or external dashboards. Each task object includes:
-- All manifest fields.
-- Metrics overlay: `durations`, `currentStatus`, `currentStatusDurationSeconds`.
+## Refresh Cycle (Current)
+1. Generate board refs
+2. Validate structure
+3. Optional lint / delta / timestamps
 
-### changed-tasks.json (Optional Incremental Diff)
-Produced by `node scripts/generate-changed-tasks.mjs` after manifest generation. Enables incremental consumers to pull only additions / modifications:
-```
-{
-  generated,
-  baseMode: 'snapshot' | 'git-ref' | 'full',
-  since: <git ref when using --since>,
-  totals: { current, previous, added, modified, removed, unchanged },
-  added: [ { id, file, hash } ],
-  modified: [ { id, file, oldHash, newHash } ],
-  removed: [ { id, file, hash } ],
-  unchanged: [ ... ],
-  all?: [ ... ] // when --full
-}
-```
-Snapshot mode persists a cache at `.cache/last-tasks.json` to diff against in subsequent runs. Consumers can watch the `hash` to decide whether to re-fetch task content.
+Migration completed; this document retained only as a pointer.
 
-## Integration Guidelines
-- Prefer `tasks-board.json` for lightweight board rendering.
-- Fall back to `tasks.yaml` / `tasks.json` if deeper metadata or future fields are needed.
-- Use `metrics/tasks-metrics.json` for analytics pipelines (aging, flow efficiency, SLA alerts).
-- Treat Markdown task files as the *source of truth*; all other artifacts are reproducible.
+Current contract defined in structure report + Copilot instructions.
 
-## Refresh Cycle
-Artifacts are regenerated by scripts (invoked manually or via CI) in this order:
-1. `node scripts/validate-tasks.mjs`
-2. `node scripts/sync-tasks-manifest.mjs`
-3. `node scripts/generate-task-metrics.mjs`
-4. `node scripts/generate-board-data.mjs`
- 5. (Optional) `node scripts/generate-changed-tasks.mjs`
+Consumption examples updated in current docs; remove legacy curl paths.
 
-## Migration Notes
-- Slug migration completed; missing slugs now fail validation.
-- Metrics currently show all time in `backlog` until status promotion events are appended to Progress Logs.
-- Hash field introduced (2025-09-20). Downstream tools should treat absence (in earlier commits) as equivalent to unknown; do not fail hard—fallback to mtime or content diff if needed.
-
-## Contract Stability
-- Filenames and directory topology above are considered stable integration boundaries.
-- New fields may be added to JSON artifacts; existing fields will not be repurposed without a deprecation note in this `structure.md`.
-
-## Consumption Examples
-Fetch board (curl example):
-```
-curl -s https://raw.githubusercontent.com/<org>/<repo>/main/tasks-board.json | jq '.tasks[0]'
-```
-Pull a specific task file:
-```
-curl -s https://raw.githubusercontent.com/<org>/<repo>/main/stories/00-lobe-chat-framework-integration/Backlog/IMP-101-minimal-lobe-mount.md
-```
-
-## Future Enhancements
-- Introduce `archived/` directory for completed aged tasks (with retention policy).
-- Add cumulative flow snapshot generator.
-- Provide GraphQL endpoint mapping (out of scope for current repository only model).
-- Optional GPG signature map for task hashes (supply-chain style attestation).
+Future enhancements tracked in Copilot instructions roadmap.
