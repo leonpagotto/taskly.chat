@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from 'react';
-import { mergeInstructionLayers } from '@taskly/ai';
+import { mergeInstructionLayers, adaptInstructionLayers } from '@taskly/ai';
 import { InstructionLayer } from '@taskly/core';
 
 const baseLayers: InstructionLayer[] = [
@@ -9,5 +9,9 @@ const baseLayers: InstructionLayer[] = [
 ];
 
 export function useMergedInstructions(extraLayers: InstructionLayer[] = []) {
-  return useMemo(() => mergeInstructionLayers([...baseLayers, ...extraLayers]), [extraLayers]);
+  return useMemo(() => {
+    const merged = mergeInstructionLayers([...baseLayers, ...extraLayers]);
+    const adapted = adaptInstructionLayers(merged.layers);
+    return { ...merged, adaptedSegments: adapted };
+  }, [extraLayers]);
 }

@@ -1,21 +1,19 @@
 'use client';
 import React, { useState } from 'react';
-import { mergeInstructionLayers, extractTaskDrafts } from '@taskly/ai';
+import { extractTaskDrafts } from '@taskly/ai';
+import { useMergedInstructions } from './useMergedInstructions';
 import { ChatMessage, InstructionLayer } from '@taskly/core';
 
 interface ChatEntry { id: string; role: 'user' | 'assistant'; content: string; tasks?: any[]; parse?: any; }
 
-const initialLayers: InstructionLayer[] = [
-  { id: 'global', content: 'You are Taskly Chat, an AI assistant that helps convert user intentions into structured tasks while maintaining context and memory.' },
-  { id: 'context:session', content: 'Session context is lightweight in this prototype.' }
-];
+const initialLayers: InstructionLayer[] = [];
 
 export const ChatShell: React.FC = () => {
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const merged = mergeInstructionLayers(initialLayers);
+  const merged = useMergedInstructions(initialLayers);
 
   async function handleSend() {
     if (!input.trim()) return;
@@ -62,6 +60,14 @@ export const ChatShell: React.FC = () => {
       <section style={{ background: '#222', padding: 12, borderRadius: 8 }}>
         <strong>System Prompt Layers</strong>
         <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>{merged.systemPrompt}</pre>
+        <div style={{ marginTop: 8 }}>
+          <strong>Adapted Segments:</strong>
+          <ul style={{ margin: '4px 0 0 16px', fontSize: 11 }}>
+            {merged.adaptedSegments.map((s: { role: string; content: string }, i: number) => (
+              <li key={i}>{s.role}: {s.content.slice(0,80)}{s.content.length>80?'…':''}</li>
+            ))}
+          </ul>
+        </div>
       </section>
       <div style={{ flex: 1, minHeight: 300, background: '#1b1b1b', padding: 12, borderRadius: 8 }}>
         {messages.map(m => (
