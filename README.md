@@ -172,15 +172,24 @@ Adapter-first incremental adoption:
 - Phase 6: Persistence + vector memory expansion
 
 ## 🔐 Environment Variables
-Copy `.env.example` to `.env.local`.
+Copy `.env.example` to `.env.local` (either at repo root or inside `apps/chat/`).
+
+Baseline:
 ```
-OPENAI_API_KEY=sk-...
+DATABASE_URL="file:./dev.db"
+MODEL_PROVIDER=gemini
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-1.5-pro
+# Optional OpenAI (future expansion)
+OPENAI_API_KEY=
 MODEL_CHAT=gpt-4o-mini
 MODEL_FAST=gpt-4o-mini
-DATABASE_URL="file:./dev.db"
-GEMINI_API_KEY=your_gemini_key
-GEMINI_MODEL=gemini-1.5-flash
 ```
+
+Notes:
+- `MODEL_PROVIDER` selects the backend adapter (currently only `gemini` is implemented; others will fallback to Gemini).
+- The server route `/api/chat` also accepts a JSON field `provider` to override per-request.
+- Never commit real API keys—keep them only in local `.env.local` or deployment secrets.
 
 ## 🧩 Core Domain Guidelines
 - `@taskly/core`: side-effect free
@@ -393,15 +402,7 @@ We will progressively embed lobe-chat functionality instead of forking its repo:
 - Phase 5: Memory adapter (simple in-memory) feeding personalization context.
 - Phase 6: Persistence layer (SQLite or Postgres) & vector memory (future).
 
-## 🔐 Environment Variables
-Duplicate `.env.example` into `.env.local` (root or inside `apps/chat/`).
-
-Required (initial):
-```
-OPENAI_API_KEY=sk-...
-MODEL_CHAT=gpt-4o-mini
-MODEL_FAST=gpt-4o-mini
-```
+<!-- (Removed earlier duplicate Environment Variables block; consolidated above) -->
 
 ## 🧩 Core Domain Guidelines
 - `@taskly/core` must remain side-effect free and persistence agnostic.
