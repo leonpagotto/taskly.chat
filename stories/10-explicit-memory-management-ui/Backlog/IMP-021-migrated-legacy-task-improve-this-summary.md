@@ -10,16 +10,24 @@ Owner:
 Implement Frontend UI for Memory List View
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Integration with `GET /api/v1/memories` endpoint
+- [ ] Display memories in a clear, sortable, and filterable list
+- [ ] Implement pagination or infinite scrolling for large datasets
+- [ ] Basic memory preview (e.g., first few words)
+- [ ] Navigation to a detailed view for editing/deleting
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

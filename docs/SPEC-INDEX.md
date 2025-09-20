@@ -1,5 +1,5 @@
 # Specification Index
-Generated: 2025-09-20T08:17:17.180Z
+Generated: 2025-09-20T09:40:50.116Z
 
 ## Project Overview
 
@@ -25,12 +25,13 @@ Generated: 2025-09-20T08:17:17.180Z
 | 12-define-collaboration-permissions |  | Draft | 8 |
 | 13-integrate-with-google-calendar-read-write |  | Draft | 0 |
 | 14-track-personal-habits |  | Draft | 0 |
+| 15-import-render-sync-tasks-stories | Story: Import, Render, and Synchronize Tasks and Stories | active | 10 |
 
 ## Global Task Pipeline
 
 | Todo | In-Progress | Review | Done | Total | %Done | LastUpdated |
 |------|-------------|--------|------|-------|-------|-------------|
-| 0 | 7 | 0 | 9 | 16 | 56% | 2025-09-20T08:17:02.030Z |
+| 0 | 7 | 0 | 9 | 16 | 56% | 2025-09-20T08:18:53.021Z |
 
 ## Notes
 

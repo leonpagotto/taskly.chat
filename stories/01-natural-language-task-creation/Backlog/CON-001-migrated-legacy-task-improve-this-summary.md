@@ -10,16 +10,25 @@ Owner:
 Conduct End-to-End Testing for Natural Language Task/Reminder/Idea Creation
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Testing a wide variety of natural language inputs (simple, complex, ambiguous)
+- [ ] Verifying the accuracy of intent recognition and entity extraction
+- [ ] Confirming the correct persistence of tasks, reminders, and ideas in the database
+- [ ] Validating the frontend display of Taskly.chat's responses, including confirmations and clarifications
+- [ ] Testing error handling and clarification flows for user experience
+- [ ] Conducting performance testing to ensure acceptable response times
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

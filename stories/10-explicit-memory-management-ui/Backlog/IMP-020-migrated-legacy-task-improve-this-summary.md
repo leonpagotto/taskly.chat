@@ -10,16 +10,24 @@ Owner:
 Implement Backend API for Deleting/Forgetting Specific Memories
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Endpoint: `DELETE /api/v1/memories/{memoryId}` (or similar)
+- [ ] Authentication: OAuth2.0 integration
+- [ ] Database Deletion: Remove relevant entries from PostgreSQL and ensure corresponding vectors are removed from Pinecone/Weaviate
+- [ ] Cascading Deletion: Consider if any related data needs to be deleted or anonymized
+- [ ] Soft Delete vs. Hard Delete: Implement a hard delete for explicit 'forget' action
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

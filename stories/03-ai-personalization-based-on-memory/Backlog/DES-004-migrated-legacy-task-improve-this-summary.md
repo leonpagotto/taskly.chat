@@ -10,16 +10,22 @@ Owner:
 Design and implement relational database schema for structured user memories
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Creating tables for `user_routines`, `user_preferences`, `user_priorities`, and `user_important_dates`
+- [ ] Defining columns, data types, and constraints for each table based on the memory schema
+- [ ] Ensuring proper indexing for efficient querying
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

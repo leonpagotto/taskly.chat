@@ -10,16 +10,24 @@ Owner:
 Design UI/UX for Global AI Instruction Settings
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **Wireframes and Mockups:** Create visual designs for the settings page where users can input and view their global AI instructions
+- [ ] **Input Fields:** Define appropriate input types and validation for various instruction parameters (e.g., text area for custom instructions, dropdown for tone, slider for detail level)
+- [ ] **User Flow:** Map out the user journey for accessing, modifying, saving, and canceling instruction changes
+- [ ] **Feedback Mechanisms:** Design clear success and error messages for saving operations
+- [ ] **Responsiveness:** Ensure the design is adaptive and consistent across different device sizes
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

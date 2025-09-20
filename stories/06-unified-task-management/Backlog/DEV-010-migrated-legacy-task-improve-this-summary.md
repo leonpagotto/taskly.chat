@@ -10,16 +10,25 @@ Owner:
 Develop Task Management REST API Endpoints
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] `POST /api/tasks`: To create a new task with specified attributes, including category
+- [ ] `GET /api/tasks`: To retrieve a list of tasks for the authenticated user, supporting filters by `category`, `status`, `due_date`, and sorting options
+- [ ] `GET /api/tasks/{id}`: To retrieve a single task by its ID
+- [ ] `PUT /api/tasks/{id}`: To update an existing task's details
+- [ ] `DELETE /api/tasks/{id}`: To delete a task
+- [ ] Implementing proper authentication and authorization checks for all endpoints
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

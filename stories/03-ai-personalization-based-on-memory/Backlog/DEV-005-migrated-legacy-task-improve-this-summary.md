@@ -10,16 +10,23 @@ Owner:
 Develop automated tests for memory extraction, storage, and retrieval
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **Unit tests:** For NLP extraction logic, database CRUD operations, and embedding generation
+- [ ] **Integration tests:** To verify the end-to-end flow from conversation ingestion to memory storage (both structured and vector)
+- [ ] **Retrieval tests:** To ensure that given a query, the correct relevant memories are retrieved from both databases
+- [ ] **Data integrity checks:** To ensure memories are stored and updated accurately
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

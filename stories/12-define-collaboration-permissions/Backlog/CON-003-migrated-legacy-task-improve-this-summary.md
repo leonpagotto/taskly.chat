@@ -10,16 +10,24 @@ Owner:
 Conduct End-to-End Testing for Project Collaboration Permissions
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] A user can successfully add a collaborator with 'read-only' access and verify they cannot edit content
+- [ ] A user can successfully change a collaborator's role from 'read-only' to 'edit' and verify they can now edit content
+- [ ] A user can successfully remove a collaborator and verify they no longer have access to the project
+- [ ] Security checks are validated to ensure unauthorized users cannot bypass permission restrictions
+- [ ] Performance is acceptable when managing multiple collaborators
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

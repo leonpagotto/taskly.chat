@@ -10,16 +10,24 @@ Owner:
 Develop Frontend UI Components for Collaborator Management
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] A `CollaboratorsList` component displays current collaborators, their roles, and options to edit/remove
+- [ ] An `AddCollaborator` component allows searching for users and assigning an initial role
+- [ ] A `RoleSelector` component enables changing a collaborator's role with available options
+- [ ] All components are responsive and integrate seamlessly into the project settings page
+- [ ] UI reflects the designs provided by the UX/UI Designer
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

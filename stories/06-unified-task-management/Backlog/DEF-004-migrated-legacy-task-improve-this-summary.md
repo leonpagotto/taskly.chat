@@ -10,16 +10,22 @@ Owner:
 Define Unified Task Data Model and Business Rules
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Identifying core attributes like title, description, due date, priority, status, and category (personal/professional)
+- [ ] Defining validation rules for each attribute
+- [ ] Specifying how 'personal' and 'professional' categories will be enforced and utilized in the UI and backend logic
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

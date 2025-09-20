@@ -10,16 +10,22 @@ Owner:
 Develop NLP Model for Task Detail Extraction and Categorization
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Training the model to identify task title, description, due dates, priority, and status from free-form text
+- [ ] Specifically focusing on accurately classifying tasks as 'personal' or 'professional' based on linguistic cues and contextual understanding
+- [ ] Providing an API endpoint for the backend to consume, returning structured task data from free-form text
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

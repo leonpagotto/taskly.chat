@@ -10,16 +10,23 @@ Owner:
 Ensure Memory Management Operations Impact AI Retrieval
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] For updates: Trigger re-embedding of modified memory content and update/replace corresponding vectors in the vector database
+- [ ] For deletions: Ensure the corresponding vectors and any associated metadata are permanently removed from the vector database
+- [ ] Verify the AI assistant no longer references 'forgotten' information in new conversations
+- [ ] Monitor vector store performance during updates/deletions
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

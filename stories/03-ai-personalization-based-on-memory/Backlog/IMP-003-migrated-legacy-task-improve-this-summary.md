@@ -10,16 +10,22 @@ Owner:
 Implement NLP models for extracting personal memories from conversations
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Training/fine-tuning models for named entity recognition (NER) to identify routines, preferences, priorities, and dates
+- [ ] Developing intent classification models to understand the user's intention related to memory (e.g., "set a reminder", "state a preference")
+- [ ] Implementing logic to convert extracted raw text into structured data points matching the defined memory schema
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

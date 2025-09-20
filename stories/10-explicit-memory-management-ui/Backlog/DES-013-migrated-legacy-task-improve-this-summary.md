@@ -10,16 +10,24 @@ Owner:
 Design Memory Management User Interface
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Wireframes and mockups for the main memory list view
+- [ ] Detailed design for memory detail/edit view
+- [ ] Interaction flows for 'edit' and 'forget' actions, including confirmation dialogs
+- [ ] Consider pagination/lazy loading for large memory sets
+- [ ] Ensure consistency with existing Taskly UI guidelines
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

@@ -10,16 +10,23 @@ Owner:
 Implement Task Creation and Edit Forms
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Building a form with input fields for title, description, due date, priority, and a clear selection mechanism for 'personal' or 'professional' category
+- [ ] Implementing client-side validation for form inputs
+- [ ] Connecting the form submission to the `POST /api/tasks` and `PUT /api/tasks/{id}` endpoints
+- [ ] Providing clear feedback to the user upon successful submission or error
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

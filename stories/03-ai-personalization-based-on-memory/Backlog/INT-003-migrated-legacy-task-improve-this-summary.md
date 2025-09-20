@@ -10,16 +10,22 @@ Owner:
 Integrate retrieved memories into AI model's context window
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Designing a prompt engineering strategy to effectively inject memory data without overwhelming the LLM
+- [ ] Ensuring the memory context is appropriately formatted and prioritized within the prompt
+- [ ] Testing the impact of memory injection on AI response quality and relevance
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

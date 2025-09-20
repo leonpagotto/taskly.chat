@@ -10,16 +10,23 @@ Owner:
 Implement contextual memory retrieval service
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Processing the current user query to generate its embedding
+- [ ] Querying the vector database for semantically similar past interactions/memories
+- [ ] Querying PostgreSQL for structured facts (routines, dates, preferences) relevant to the current conversation context
+- [ ] Aggregating and ranking the retrieved memories to provide the most relevant context for the AI model
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

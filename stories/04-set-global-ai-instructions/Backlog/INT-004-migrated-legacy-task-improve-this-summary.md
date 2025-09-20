@@ -10,16 +10,23 @@ Owner:
 Integrate Global AI Instructions into AI Model Prompting
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **Instruction Retrieval:** Develop a service layer or utility to fetch the current user's global AI instructions from the database via the backend API or directly from a cache
+- [ ] **Dynamic Prompt Engineering:** Adapt existing prompt templates to dynamically inject parameters like `preferredTone`, `defaultDetailLevel`, and `customInstructions` into the prompts sent to the LLM
+- [ ] **Contextual Application:** Ensure that the global instructions are consistently applied across all AI-generated responses and automated actions, unless overridden by specific task-level instructions
+- [ ] **Testing and Validation:** Implement unit and integration tests to verify that the AI models are correctly interpreting and adhering to the global instructions
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

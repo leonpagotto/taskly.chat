@@ -10,16 +10,25 @@ Owner:
 Implement Global AI Instruction Settings UI
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **UI Development:** Build the necessary React components to render the instruction settings page
+- [ ] **Input Handling:** Implement controlled components for user input, including text areas, dropdowns, and sliders, mirroring the design specifications
+- [ ] **Client-side Validation:** Add basic validation to input fields to provide immediate user feedback
+- [ ] **API Integration:** Connect the frontend to the backend API to `GET` existing global instructions and `PUT` updated instructions
+- [ ] **State Management:** Manage the UI state for instructions, including loading, saving, and error states
+- [ ] **User Feedback:** Display appropriate success or error messages to the user after API calls
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

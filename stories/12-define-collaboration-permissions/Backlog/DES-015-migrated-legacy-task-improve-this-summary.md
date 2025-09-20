@@ -10,16 +10,23 @@ Owner:
 Design and Implement Database Schema for Project Collaboration Permissions
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] A `roles` table exists, defining standard roles (e.g., 'read-only', 'edit', 'administer')
+- [ ] A `project_collaborators` table links `projects`, `users`, and `roles`
+- [ ] Appropriate foreign key constraints and indices are defined for performance and data integrity
+- [ ] Database migrations are prepared and tested
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

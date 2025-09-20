@@ -10,16 +10,23 @@ Owner:
 Implement Chat Interface for AI-powered Task Management
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Sending user chat input to the backend's NLP integration service (TASK-006)
+- [ ] Displaying the AI's parsed task suggestions to the user for confirmation
+- [ ] Allowing users to confirm, edit, or cancel the suggested task creation/update
+- [ ] Providing conversational prompts and responses for a seamless experience
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

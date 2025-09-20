@@ -10,16 +10,22 @@ Owner:
 Develop AI-driven Natural Language Response Generation for Confirmations/Clarifications
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **Confirmation Responses**: e.g., "Okay, I've created a task: 'Call John about project updates' due tomorrow."
+- [ ] **Clarification Requests**: e.g., "I couldn't quite catch the due date for that task. Could you please specify?"
+- [ ] **Error Messages**: e.g., "I'm sorry, I couldn't process that request. Please try again." ensuring they are helpful and conversational
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

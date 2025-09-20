@@ -10,16 +10,23 @@ Owner:
 Integrate Frontend with Backend APIs for Collaborator Management
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Frontend can fetch the list of collaborators for a project and display their roles
+- [ ] Frontend can successfully send requests to add a new collaborator, update a collaborator's role, and remove a collaborator
+- [ ] Loading states, success messages, and error notifications are handled gracefully on the frontend
+- [ ] Consider real-time updates if WebSockets are deemed necessary for this feature
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

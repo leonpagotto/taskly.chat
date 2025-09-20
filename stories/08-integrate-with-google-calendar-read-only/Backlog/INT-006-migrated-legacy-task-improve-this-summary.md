@@ -10,16 +10,23 @@ Owner:
 Integrate Google Calendar Data into AI Context for Suggestions
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Develop logic to retrieve relevant calendar events for a given user query or context
+- [ ] Integrate event data into the AI's prompt engineering process or knowledge base (e.g., using vector embeddings in Pinecone/Weaviate or LangChain context management)
+- [ ] Refine existing or develop new AI models/prompts to generate accurate and timely suggestions and reminders based on the user's schedule
+- [ ] Ensure the AI respects the read-only nature and doesn't attempt to modify calendar events
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

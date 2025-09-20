@@ -10,16 +10,23 @@ Owner:
 Design Unified Task Management UI and Conversational Flows
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Wireframes and mockups for the main task list/dashboard, including filtering, sorting, and search capabilities
+- [ ] Design for task creation and editing forms, ensuring clear distinction and selection of task categories
+- [ ] Consideration for task states (e.g., pending, completed) and visual indicators
+- [ ] Propose natural conversational flows for task interaction via chat, including creation, update, and query
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

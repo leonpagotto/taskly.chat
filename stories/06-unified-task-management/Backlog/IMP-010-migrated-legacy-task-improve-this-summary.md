@@ -10,16 +10,24 @@ Owner:
 Implement Unified Task List UI Component
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Creating a responsive component that fetches tasks from `/api/tasks`
+- [ ] Implementing UI elements for filtering tasks by category (personal/professional), status, and due date
+- [ ] Adding sorting capabilities (e.g., by due date, priority)
+- [ ] Displaying task details in an easily digestible format
+- [ ] Providing quick actions (e.g., mark as complete, edit, delete)
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

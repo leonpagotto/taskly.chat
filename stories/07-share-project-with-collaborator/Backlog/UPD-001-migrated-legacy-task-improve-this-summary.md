@@ -10,16 +10,22 @@ Owner:
 Update Database Schema for Project Collaboration
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **`projects` table**: Ensure an `owner_id` foreign key referencing the `users` table
+- [ ] **`project_collaborators` table**: Create a new table with fields such as `project_id`, `user_id`, `permission_level` (e.g., 'view_only', 'editor', 'admin'), and `created_at`
+- [ ] Ensure appropriate indexing for efficient querying of shared projects and collaborators
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

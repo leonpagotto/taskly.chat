@@ -10,16 +10,25 @@ Owner:
 Comprehensive Testing of Project Sharing Feature
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **Functional Testing**: Verify sharing initiation, collaborator search, permission assignment, and revocation
+- [ ] **Access Control Testing**: Test different user roles (owner, editor, viewer, non-collaborator) and verify correct access to shared projects and features (read, write, manage)
+- [ ] **AI Context Consistency**: Validate that AI memory and conversational context are consistent and up-to-date for all collaborators in a shared project
+- [ ] **Notification Testing**: Verify delivery and functionality of in-app and email notifications/invitations
+- [ ] **Edge Cases**: Test sharing with non-existent users, self-sharing, and attempting to share with maximum collaborators
+- [ ] **Security Testing**: Ensure only authorized users can share and manage project access
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

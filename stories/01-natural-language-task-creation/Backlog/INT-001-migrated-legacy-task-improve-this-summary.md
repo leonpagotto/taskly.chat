@@ -10,16 +10,22 @@ Owner:
 Integrate Error Handling and User Feedback Mechanisms
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Gracefully handling NLP model failures or instances with low confidence scores
+- [ ] Managing and responding to database write errors
+- [ ] Returning appropriate error messages and suggested next steps to the frontend for display to the user
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

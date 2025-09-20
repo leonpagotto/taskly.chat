@@ -10,16 +10,25 @@ Owner:
 Develop and Execute Comprehensive QA Test Plan for Unified Tasks
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Writing test cases for manual task creation, editing, deletion, and viewing across both personal and professional categories
+- [ ] Testing all filtering, sorting, and search functionalities in the unified view
+- [ ] Developing test cases for the AI-powered task creation from natural language, covering various phrasings and scenarios
+- [ ] Verifying data persistence and consistency in the database
+- [ ] Performing integration tests between frontend, backend, and AI services
+- [ ] Conducting user acceptance testing (UAT) for the overall user experience
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

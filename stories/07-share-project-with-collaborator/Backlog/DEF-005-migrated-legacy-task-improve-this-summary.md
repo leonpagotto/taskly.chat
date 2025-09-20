@@ -10,16 +10,22 @@ Owner:
 Define Sharing Scope and Permission Levels
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] **View Only**: Can read project content and AI context but cannot modify
+- [ ] **Editor**: Can read and modify project content and interact with AI context, affecting shared memory
+- [ ] **Admin/Manager**: Can edit content, manage other collaborators' permissions, and potentially delete the shared project
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

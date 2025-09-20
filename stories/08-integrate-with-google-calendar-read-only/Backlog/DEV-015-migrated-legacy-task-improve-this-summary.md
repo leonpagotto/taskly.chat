@@ -10,16 +10,23 @@ Owner:
 Develop Backend Service for Google Calendar Read Operations
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Implement API calls to fetch user's calendar list
+- [ ] Implement API calls to fetch events from selected calendars within a specified timeframe
+- [ ] Handle pagination, rate limits, and error responses from Google Calendar API
+- [ ] Abstract the Google API interactions into a reusable module or service
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

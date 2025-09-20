@@ -10,16 +10,23 @@ Owner:
 Implement Nudge Delivery Mechanism
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Choosing and integrating an appropriate notification service (e.g., in-app notifications, email, push notifications)
+- [ ] Ensuring that nudges are delivered reliably and in a timely manner
+- [ ] Handling different delivery channels based on user preferences or system defaults
+- [ ] Logging delivery attempts and success/failure for monitoring
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 

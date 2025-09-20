@@ -10,16 +10,24 @@ Owner:
 Design UX/UI for Project Collaboration Permissions Management Interface
 
 ## Acceptance Criteria
-- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
+
+- [ ] Wireframes and high-fidelity mockups for a 'Share Project' or 'Project Settings' section showing current collaborators
+- [ ] Design for adding new collaborators, including user search/selection
+- [ ] Design for role selection dropdowns or radio buttons for each collaborator with clear descriptions of each role's capabilities
+- [ ] Design for removing collaborators
+- [ ] Designs are consistent with Taskly's overall design system
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
 Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
 
-## Progress Log
-- 2025-09-19 Normalized legacy file
 
+Acceptance criteria refined automatically from legacy bullet list.
+## Progress Log
+- 2025-09-20 Refined acceptance criteria (auto)
+
+- 2025-09-19 Normalized legacy file
 ## Migration Note
 Upgraded in-place; original legacy body retained below.
 
