@@ -9,16 +9,28 @@ Usage:
 Add to CI or pre-commit to ensure no regressions after path refactor.
 */
 
-const PATTERN = 'docs/taskly-chat/stories';
+const PATTERNS = [
+  'docs/taskly-chat/stories',
+  'docs/taskly-chat/SPEC-INDEX.md',
+  'docs/specs/SPEC-INDEX.md'
+];
 
 function main() {
   try {
-    const grep = execSync(`git --no-pager grep -n '${PATTERN}' || true`, { encoding: 'utf8' });
-    if (!grep.trim()) {
+    let any = false;
+    let report = '';
+    for (const p of PATTERNS) {
+      const out = execSync(`git --no-pager grep -n '${p}' || true`, { encoding: 'utf8' });
+      if (out.trim()) {
+        any = true;
+        report += `\nPattern: ${p}\n${out}`;
+      }
+    }
+    if (!any) {
       console.log('Legacy path check passed (no occurrences).');
       return;
     }
-    console.error('Legacy path references found:\n' + grep);
+    console.error('Legacy path references found:' + report);
     process.exit(1);
   } catch (err) {
     console.error('Error running legacy path check:', err.message);

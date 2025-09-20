@@ -14,12 +14,15 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -w -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.build.json"
+    "typecheck": "tsc -p tsconfig.build.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "@taskly/core": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "5.9.2"
+    "@types/node": "^20.11.0",
+    "typescript": "5.9.2",
+    "vitest": "^1.6.0"
   }
 }

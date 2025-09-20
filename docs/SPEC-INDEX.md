@@ -1,5 +1,5 @@
 # Specification Index
-Generated: 2025-09-20T08:02:11.541Z
+Generated: 2025-09-20T08:13:37.205Z
 
 ## Project Overview
 
@@ -9,7 +9,7 @@ Generated: 2025-09-20T08:02:11.541Z
 
 | Story | Title | Status | Backlog |
 |-------|-------|--------|---------|
-| 00-lobe-chat-framework-integration |  | Draft | 9 |
+| 00-lobe-chat-framework-integration |  | Draft | 8 |
 | 01-natural-language-task-creation |  | Draft | 6 |
 | 02-retrieve-conversation-history |  | Draft | 7 |
 | 03-ai-personalization-based-on-memory |  | Draft | 9 |
@@ -30,7 +30,7 @@ Generated: 2025-09-20T08:02:11.541Z
 
 | Todo | In-Progress | Review | Done | Total | %Done | LastUpdated |
 |------|-------------|--------|------|-------|-------|-------------|
-| 1 | 5 | 0 | 9 | 15 | 60% | 2025-09-20T07:57:08.362Z |
+| 1 | 6 | 0 | 9 | 16 | 56% | 2025-09-20T08:13:33.443Z |
 
 ## Notes
 

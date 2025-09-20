@@ -1,5 +1,5 @@
 # Task: IMP-102
-Status: todo
+Status: in-progress
 Story: 00-lobe-chat-framework-integration
 Created: 2025-09-20
 Type: chore
@@ -30,6 +30,7 @@ Concatenate `layer.content` ensuring newline separation. Consider trimming trail
 
 ## Progress Log
 - 2025-09-20 Pulled into pipeline as todo
+- 2025-09-20 Promoted to in-progress; adapter initial implementation present
 
 ## Legacy Body (for reference)
 ---

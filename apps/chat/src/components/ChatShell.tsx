@@ -1,7 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import { extractTaskDrafts } from '@taskly/ai';
+import { extractTaskDrafts } from '@taskly/ai'; // retained temporarily for inline send logic (will migrate fully)
 import { useMergedInstructions } from './useMergedInstructions';
+import { useTaskDraftExtraction } from './useTaskDraftExtraction';
 import { ChatMessage, InstructionLayer } from '@taskly/core';
 
 interface ChatEntry { id: string; role: 'user' | 'assistant'; content: string; tasks?: any[]; parse?: any; }
@@ -23,7 +24,7 @@ export const ChatShell: React.FC = () => {
     setLoading(true);
   setError(null);
   const chatMsg: ChatMessage = { id, role: 'user', content: text, createdAt: new Date().toISOString() };
-    const extraction = extractTaskDrafts(chatMsg);
+  const extraction = extractTaskDrafts(chatMsg); // future: route through hook for streaming / enrichment
     let parse: any = undefined;
     try {
       const res = await fetch('/api/nlp/parse', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
