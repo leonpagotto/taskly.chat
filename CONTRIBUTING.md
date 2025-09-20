@@ -1,9 +1,16 @@
 # Contributing
 
 ## Workflow Summary
-1. Start from a spec / backlog item inside `stories/*/Backlog/`.
-2. Move the file to an appropriate progress folder (process TBD) when you begin work.
-3. Implement changes in code referencing the task ID in commit messages.
+All canonical planning artifacts live under `speca-chat/`.
+
+1. Identify or create a story folder: `speca-chat/stories/story-<NNN>/`.
+2. Add or edit task metadata in `tasks/<ID>.task.yml` (paired optional `.task.md`).
+3. Set/update `status`, `type`, `summary`, `acceptance` (ensure criteria are actionable; avoid placeholders).
+4. (Optional) Add `related`, `owner`.
+5. Run or rely on pre-commit to execute: board generation + validation.
+6. Commit with conventional message referencing task IDs.
+
+Legacy folders under `archive/` are read-only.
 
 ## Code Principles
 - Keep `@taskly/core` pure (types + pure helpers only).
@@ -30,8 +37,25 @@ Copy `.env.example` to `.env.local` and set required keys.
 - `pnpm dev` – run all dev processes.
 - `pnpm build` – build packages/apps.
 - `pnpm typecheck` – TypeScript across workspace.
+- `node speca-chat/scripts/generate-board.mjs` – regenerate board refs.
+- `node speca-chat/scripts/validate-structure.mjs` – schema + structural validation + heuristics.
+- `node speca-chat/scripts/report-status-delta.mjs --out artifacts/status-delta.json` – legacy drift report.
+- `node speca-chat/scripts/update-task-timestamps.mjs --mode add-missing` – add `updated:` where missing.
+- `node speca-chat/scripts/lint-acceptance.mjs` – produce acceptance quality report.
 
-## Testing (Future)
-We will introduce Vitest in packages and Playwright for app-level flows.
+Artifacts stored in `artifacts/` for CI consumption.
+
+## Testing
+Data layer already uses Vitest. Extend with additional packages as features land. UI/E2E (Playwright) planned.
+
+## Governance Expectations
+Commits must pass validation (schema + board). Warnings (acceptance quality, related reciprocity) do not block but should be addressed iteratively.
+
+## Adding a New Task (Check List)
+1. Choose next incremental ID per prefix (e.g., `IMP-027`).
+2. Create `<ID>.task.yml` in the correct story folder with mandatory fields.
+3. Provide 2–6 acceptance criteria starting with actionable verbs.
+4. Run validation or stage & let the hook surface issues.
+5. Commit: `feat(spec): introduce X (IMP-027)`.
 
 ---

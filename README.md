@@ -92,32 +92,52 @@ Taskly.Chat is not just another project manager. It’s a **personal AI assistan
 
 ---
 
-## 🚀 Workflow (Unified)
+## � Canonical Spec & Task Governance
 
-The project now uses a **single canonical structure** under `speca-chat/`.
+All story + task source of truth lives under `speca-chat/`.
 
-Core elements:
+Essential layout:
 * Stories: `speca-chat/stories/<story-id>/story.{yml,md}`
-* Tasks: `speca-chat/stories/<story-id>/tasks/ID.task.{yml,md}` (paired metadata + narrative)
-* Board refs (generated): `speca-chat/board/<status>/*.yml` (DO NOT EDIT)
-* Story index: `speca-chat/stories/index.yml`
-* Schemas & project manifest: `speca-chat/*.schema.yml`, `speca-chat/project.index.yml`
+* Tasks: `speca-chat/stories/<story-id>/tasks/<TASK-ID>.task.{yml,md}`
+* Generated board refs: `speca-chat/board/<status>/<TASK-ID>.yml` (NEVER edit by hand)
+* Scripts: `speca-chat/scripts/*.mjs` (migration, validation, reporting, linting)
 
-Legacy `tasks/` and top-level `stories/` have been archived under `archive/`.
+Archived legacy markdown lives under `archive/<timestamp>/` for historical reference only.
 
-### 🔹 For Humans
+### Authoring Rules
+* Create / update tasks only within the story's `tasks/` directory.
+* Edit the task YAML `status`; run board generation script (auto in pre-commit) to sync board refs.
+* Provide actionable acceptance criteria (no generic placeholders like "Define criteria").
+* `related` must reference valid task IDs; reciprocity is warned (non-blocking).
+* `updated` timestamp is auto-added via script; do not hand-edit unless necessary.
 
-* Add or modify tasks only within the story-local `tasks/` folder.
-* Update status in the YAML; the board is regenerated automatically (pre-commit) or via `node speca-chat/scripts/generate-board.mjs`.
-* Never edit files under `speca-chat/board/` directly.
+### Tooling Scripts (Key)
+| Script | Purpose |
+| ------ | ------- |
+| `generate-board.mjs` | Derive `board/` refs from task YAML statuses. |
+| `validate-structure.mjs` | AJV schema + structural validation + acceptance heuristics + related checks. |
+| `report-status-delta.mjs` | Compares legacy vs current (status/type) with optional `--out` export (json|csv). |
+| `update-task-timestamps.mjs` | Adds or refreshes `updated:` fields (`--mode add-missing|touch-changed|set-all`). |
+| `lint-acceptance.mjs` | Heuristic acceptance lint; outputs `artifacts/acceptance-lint-report.json`. |
+| `cleanup-placeholder-acceptance.mjs` | Legacy migration cleanup (one-off). |
+| `migrate-archived-stories.mjs` / `enrich-migrated-statuses.mjs` | One-time migration & metadata enrichment. |
 
-### 🔹 For AI / Copilot
+Artifacts land in `artifacts/` (delta exports, acceptance lint report). These can be surfaced in CI later.
 
-Emit both files per task:
-1. `ID.task.yml` with fields: `id, story, title, status, type, acceptance` (and optional extras later).
-2. `ID.task.md` for rationale/context.
+### Pre-Commit Governance
+The hook (or manual sequence) runs:
+1. `node speca-chat/scripts/generate-board.mjs`
+2. `node speca-chat/scripts/validate-structure.mjs`
+3. (Optional) `node speca-chat/scripts/report-status-delta.mjs --out artifacts/status-delta.json`
 
-Then invoke the board generator. Structure validation runs pre-commit.
+Failure (schema/structure) blocks commit; warnings (acceptance quality, missing reciprocity) do not.
+
+### For AI / Automation
+Emit BOTH files per new task:
+1. Metadata: `<ID>.task.yml` (fields: `id, story, status, type, summary, acceptance, related?, owner?, created, updated?`)
+2. Narrative: `<ID>.task.md` (design notes / rationale; optional)
+
+Run board + validation before proposing commit.
 
 ## 🛠 Workflow Enforcement
 Pre-commit sequence:
@@ -375,29 +395,43 @@ We will progressively embed lobe-chat functionality instead of forking its repo:
 
 ---
 
-## 🧪 Task Governance & Automation
-Active scripts:
-* `speca-chat/scripts/generate-board.mjs`
-* `speca-chat/scripts/validate-structure.mjs`
-* `scripts/agent-check.mjs`
+## 🧪 Quality & Drift Monitoring
+Active governance includes:
+* Board regeneration (deterministic, idempotent)
+* Schema + structural validation (AJV)
+* Acceptance heuristics (verb presence, length) – reported as warnings
+* Related ID existence + reciprocity warnings
+* Legacy drift report (`report-status-delta.mjs`) – currently 0 differences across migrated tasks
+* Timestamp automation (`update-task-timestamps.mjs`) ensuring new/modified tasks carry `updated:`
+* Acceptance lint artifact for deeper review (`artifacts/acceptance-lint-report.json`)
 
-(Legacy validation scripts archived.)
+Planned future improvements:
+* Auto-fix suggestions for weak acceptance lines
+* Severity tiers (error vs advisory)
+* Owner normalization catalog
 
 ## 🗂 Board Interaction Model
 Future UI will consume generated board refs + task metadata. Prior direct file-move endpoints are deprecated and will be replaced with structured YAML mutations.
 
 ## 🔄 Planned Enhancements
-* Ordering manifest (per status) or weight field.
+* Ordering manifest or per-task weight field.
 * Story lifecycle states (proposed/active/archived).
-* Rich acceptance criteria (labels, effort).
-* Optional AJV JSON Schema enforcement.
+* Rich acceptance metadata (effort, risk, labels, blockedBy/blocks).
+* Auto-fix & rewriting pass for acceptance placeholders.
+* CI surfacing of delta + acceptance lint metrics.
 
 ## 📐 Ordering Strategy (Draft)
 Preferred: dedicated manifest per status (git-friendly) – to prototype.
 
 ## 🧩 CI / DX Recommendations
-- Add CI job: `node scripts/validate-tasks.mjs && node scripts/audit-tasks-drift.mjs > drift.json` and upload artifact.
-- Optionally surface drift metrics (age, AC coverage) in PR comments.
+Sample CI steps:
+```bash
+node speca-chat/scripts/generate-board.mjs
+node speca-chat/scripts/validate-structure.mjs
+node speca-chat/scripts/report-status-delta.mjs --out artifacts/status-delta.json
+node speca-chat/scripts/lint-acceptance.mjs
+```
+Upload `artifacts/` for PR review (drift + acceptance quality). Consider failing if delta differences > 0 for migrated IDs.
 
 ## 🗒 Developer Notes
 - When creating tasks programmatically ensure lowercase statuses.

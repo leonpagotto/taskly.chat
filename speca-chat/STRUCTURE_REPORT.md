@@ -139,11 +139,20 @@ Pre-commit recommended sequence:
 3. `node speca-chat/scripts/validate-structure.mjs`
 4. (Optional) `node speca-chat/scripts/report-status-delta.mjs` (warning only)
 
-## 15. Known Gaps / TODO
-- Cross-check `related` IDs existence.
-- Automatic insertion of `updated` timestamp on modifications.
-- Acceptance heuristic linting (imperative mood, measurable phrasing).
-- Owner normalization catalog.
+## 15. Quality Tooling Status & Remaining Gaps
+Implemented since initial draft:
+- Related ID existence validation (warnings on missing).
+- Acceptance heuristic linting (actionable verb / length) in validator + separate lint report.
+- Timestamp automation (`update-task-timestamps.mjs`) for adding `updated:`.
+- Delta export enhancements (`--out`, JSON/CSV) for drift tracking.
+
+Remaining / Proposed:
+- Auto-fix / suggestion engine for weak acceptance lines.
+- Reciprocal related link auto-suggestion (currently only warns if missing).
+- Owner normalization catalog & validation.
+- Optional severity levels (promote certain warnings to errors with flag).
+- Ordering manifest or weight field for board columns.
+- Extended schema fields (effort, risk, labels, blockedBy/blocks) once needed.
 
 ---
 This document is the authoritative reference for future tooling and AI-based generation. Update it atomically with any schema or process change.
