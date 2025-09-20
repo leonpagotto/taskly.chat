@@ -7,19 +7,25 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Develop Frontend for Calendar Connection and Reminder Display/Management
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Users can successfully connect/disconnect their external calendars.
+- [ ] Context-aware reminders are displayed clearly in the UI.
+- [ ] Users can interact with reminders (e.g., mark as complete, snooze, dismiss) from the frontend.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: DEV-009
 title: Develop Frontend for Calendar Connection and Reminder Display/Management

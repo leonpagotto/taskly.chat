@@ -7,19 +7,25 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Design Conversational and UI Flows for Context-Aware Reminders
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Wireframes and mockups for reminder management UI.
+- [ ] Detailed conversational flow diagrams for AI interaction.
+- [ ] User journey maps illustrating how users interact with suggested reminders.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: DES-006
 title: Design Conversational and UI Flows for Context-Aware Reminders

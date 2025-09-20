@@ -7,19 +7,27 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Conduct End-to-End Testing for Project AI Instructions Feature
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Test cases cover the full CRUD lifecycle of project instructions via the UI (create, read, update, delete) and verify data persistence.
+- [ ] Verification that the AI's output correctly adheres to various project instructions (e.g., 'Draft in bullet points', 'Summarize to 50 words', 'Use a professional tone').
+- [ ] API endpoints are tested for functionality, security vulnerabilities (e.g., unauthorized access, injection), and error handling.
+- [ ] Performance testing is conducted to ensure the feature does not introduce significant latency in AI responses or UI interactions.
+- [ ] Cross-browser and accessibility testing are performed for the new UI components.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: CON-002
 title: Conduct End-to-End Testing for Project AI Instructions Feature

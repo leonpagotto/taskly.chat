@@ -7,19 +7,27 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Develop Backend API Endpoints for Project AI Instruction Management
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] `POST /api/projects/{projectId}/ai-instructions`: Endpoint to create or update instructions for a specific project. It should accept markdown-formatted text.
+- [ ] `GET /api/projects/{projectId}/ai-instructions`: Endpoint to retrieve the instructions for a specific project.
+- [ ] `DELETE /api/projects/{projectId}/ai-instructions`: Endpoint to remove instructions from a specific project.
+- [ ] All endpoints implement robust authentication and authorization checks to ensure only authorized users can manage instructions.
+- [ ] Input validation is implemented to prevent malicious or malformed instruction text.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: DEV-016
 title: Develop Backend API Endpoints for Project AI Instruction Management

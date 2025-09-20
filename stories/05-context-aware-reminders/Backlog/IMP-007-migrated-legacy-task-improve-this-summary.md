@@ -7,19 +7,25 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Implement External Calendar Integration (OAuth 2.0 & Event Fetching)
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Successful OAuth 2.0 handshake with at least one major calendar provider (e.g., Google Calendar).
+- [ ] API endpoint capable of retrieving a user's calendar events for a specified date range.
+- [ ] Secure storage and refresh mechanism for user calendar credentials.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: IMP-007
 title: Implement External Calendar Integration (OAuth 2.0 & Event Fetching)

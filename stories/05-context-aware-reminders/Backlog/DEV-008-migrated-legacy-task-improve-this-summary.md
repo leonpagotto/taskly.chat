@@ -7,19 +7,25 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Develop NLP Model for Context-Aware Reminder Intent Detection and Contextualization
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] High accuracy (e.g., >90%) in detecting reminder intent in test conversations.
+- [ ] Ability to extract relevant entities (time, date, task) with high precision.
+- [ ] System can successfully link conversational cues with corresponding calendar events (e.g., "that meeting tomorrow" links to a calendar entry).
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: DEV-008
 title: Develop NLP Model for Context-Aware Reminder Intent Detection and Contextualization

@@ -7,19 +7,27 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Backend API for Retrieving Conversation History
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] API endpoint is authenticated and authorized, allowing users to only access their own history.
+- [ ] Retrieves messages ordered by timestamp (oldest to newest by default, or configurable).
+- [ ] Supports pagination parameters (e.g., `limit`, `offset`, or cursor-based) for efficient data loading.
+- [ ] Filters messages correctly based on the provided project or thread ID.
+- [ ] Returns an empty array if no conversation history exists for the specified context.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: BAC-002
 title: Backend API for Retrieving Conversation History

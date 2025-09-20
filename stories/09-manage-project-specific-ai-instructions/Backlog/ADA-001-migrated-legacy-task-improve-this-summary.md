@@ -7,19 +7,26 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Adapt AI Models to Adhere to Project-Specific Instructions
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] AI-generated output for a project demonstrably follows the specific instructions provided (e.g., uses bullet points if instructed, maintains a specific tone, focuses on certain aspects).
+- [ ] The integration of instructions does not significantly degrade AI model performance or increase response latency.
+- [ ] Mechanisms are in place to prioritize instructions or handle potential conflicts between multiple instructions gracefully.
+- [ ] Metrics are gathered to monitor the AI's adherence to instructions.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: ADA-001
 title: Adapt AI Models to Adhere to Project-Specific Instructions

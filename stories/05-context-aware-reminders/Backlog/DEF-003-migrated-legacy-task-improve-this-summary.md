@@ -7,19 +7,25 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Define Scope and Prioritize Integrations for Context-Aware Reminders
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Detailed product specification document outlining the V1 scope for context-aware reminders.
+- [ ] Prioritized list of external calendar services for integration.
+- [ ] Defined rules/heuristics for initial context understanding.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: DEF-003
 title: Define Scope and Prioritize Integrations for Context-Aware Reminders

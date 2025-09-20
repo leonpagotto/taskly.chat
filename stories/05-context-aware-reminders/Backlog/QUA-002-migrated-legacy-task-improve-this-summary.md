@@ -7,19 +7,26 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Quality Assurance for Context-Aware Reminders (End-to-End)
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Detailed test cases covering all aspects of calendar integration, AI context understanding, reminder scheduling, and notification.
+- [ ] All identified bugs are documented and tracked.
+- [ ] Confirmation that reminders are accurate, timely, and delivered reliably.
+- [ ] User flows for connecting calendars and managing reminders are smooth and error-free.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: QUA-002
 title: Quality Assurance for Context-Aware Reminders (End-to-End)

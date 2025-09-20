@@ -7,19 +7,27 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Frontend Component for Displaying Conversation History
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] Component integrates with the backend API to retrieve conversation history.
+- [ ] Messages are clearly displayed with sender identification (e.g., 'You', 'Taskly AI') and timestamps.
+- [ ] Handles loading states, error states, and gracefully displays when no history is available.
+- [ ] Implements pagination or infinite scrolling for large conversation histories.
+- [ ] Ensures responsive display across different screen sizes.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: FRO-001
 title: Frontend Component for Displaying Conversation History

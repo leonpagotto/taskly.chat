@@ -7,19 +7,23 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Create and Execute Nudge Configuration Test Plan
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] (Legacy acceptance criteria embedded in legacy body or to be refined)
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: CRE-001
 title: Create and Execute Nudge Configuration Test Plan

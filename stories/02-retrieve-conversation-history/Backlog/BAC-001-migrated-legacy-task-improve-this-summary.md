@@ -7,19 +7,26 @@ Related:
 Owner:
 
 ## Summary
-Migrated legacy task. Improve this summary.
+Backend API for Saving Conversation Messages
 
 ## Acceptance Criteria
-- [ ] Define criteria
+- [ ] API endpoint is authenticated and authorized.
+- [ ] Successfully stores message content, sender, timestamp, and associated project/thread ID.
+- [ ] Handles edge cases such as missing project/thread IDs or invalid input.
+- [ ] Returns a success response upon successful message persistence.
 
 ## Implementation Notes
 - Migrated by normalize-tasks script
 
+Auto-upgraded from legacy placeholder via upgrade-legacy-tasks script.
+
 ## Progress Log
 - 2025-09-19 Normalized legacy file
 
-## Legacy Body
+## Migration Note
+Upgraded in-place; original legacy body retained below.
 
+## Legacy Body
 ---
 id: BAC-001
 title: Backend API for Saving Conversation Messages
