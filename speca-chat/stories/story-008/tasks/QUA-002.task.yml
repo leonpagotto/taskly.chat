@@ -1,0 +1,8 @@
+id: QUA-002
+story: story-008
+title: QUA-002
+status: backlog
+created: 2025-09-20
+type: chore
+acceptance:
+  - Define acceptance criteria

@@ -15,3 +15,55 @@ stories:
     title: 10-engineering-automation
     status: active
     path: stories/story-004/story.yml
+  - id: story-005
+    title: 02-retrieve-conversation-history
+    status: active
+    path: stories/story-005/story.yml
+  - id: story-006
+    title: 03-ai-personalization-based-on-memory
+    status: active
+    path: stories/story-006/story.yml
+  - id: story-007
+    title: 04-set-global-ai-instructions
+    status: active
+    path: stories/story-007/story.yml
+  - id: story-008
+    title: 05-context-aware-reminders
+    status: active
+    path: stories/story-008/story.yml
+  - id: story-009
+    title: 06-unified-task-management
+    status: active
+    path: stories/story-009/story.yml
+  - id: story-010
+    title: 07-share-project-with-collaborator
+    status: active
+    path: stories/story-010/story.yml
+  - id: story-011
+    title: 08-integrate-with-google-calendar-read-only
+    status: active
+    path: stories/story-011/story.yml
+  - id: story-012
+    title: 09-manage-project-specific-ai-instructions
+    status: active
+    path: stories/story-012/story.yml
+  - id: story-013
+    title: 10-explicit-memory-management-ui
+    status: active
+    path: stories/story-013/story.yml
+  - id: story-014
+    title: 11-configure-smart-automation-nudges
+    status: active
+    path: stories/story-014/story.yml
+  - id: story-015
+    title: 12-define-collaboration-permissions
+    status: active
+    path: stories/story-015/story.yml
+  - id: story-016
+    title: 13-integrate-with-google-calendar-read-write
+    status: active
+    path: stories/story-016/story.yml
+  - id: story-017
+    title: 14-track-personal-habits
+    status: active
+    path: stories/story-017/story.yml

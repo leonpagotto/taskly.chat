@@ -6,7 +6,7 @@ created: 2025-09-19
 updated: 2025-09-19
 type: chore
 owner: system
-related: [[story:10-engineering-automation]]
+related: [story:10-engineering-automation]
 acceptance:
   - All story.md have a Status line
   - Existing Status values preserved if present

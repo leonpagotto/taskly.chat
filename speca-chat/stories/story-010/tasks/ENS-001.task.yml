@@ -1,0 +1,8 @@
+id: ENS-001
+story: story-010
+title: ENS-001
+status: backlog
+created: 2025-09-20
+type: chore
+acceptance:
+  - Define acceptance criteria

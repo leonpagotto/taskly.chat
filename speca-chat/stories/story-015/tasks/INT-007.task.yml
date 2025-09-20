@@ -1,0 +1,8 @@
+id: INT-007
+story: story-015
+title: INT-007
+status: backlog
+created: 2025-09-20
+type: chore
+acceptance:
+  - Define acceptance criteria

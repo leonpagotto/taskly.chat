@@ -6,7 +6,7 @@ created: 2025-09-19
 updated: 2025-09-19
 type: chore
 owner: system
-related: [[story:10-engineering-automation]]
+related: [story:10-engineering-automation]
 acceptance:
   - Script outputs deterministic ordering by story number
   - Includes columns: Story, Title, Status, Backlog, InProgress, Review, Done

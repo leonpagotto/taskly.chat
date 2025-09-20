@@ -6,7 +6,7 @@ created: 2025-09-19
 updated: 2025-09-19
 type: feature
 owner: system
-related: [[story:10-engineering-automation]]
+related: [story:10-engineering-automation]
 acceptance:
   - Validator fails on unsupported type
   - Error message lists allowed types

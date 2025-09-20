@@ -6,7 +6,7 @@ created: 2025-09-19
 updated: 2025-09-19
 type: feature
 owner: system
-related: [[story:10-engineering-automation]]
+related: [story:10-engineering-automation]
 acceptance:
   - Workflow triggers on push & pull_request
   - Runs `pnpm install`, `pnpm tasks:validate`

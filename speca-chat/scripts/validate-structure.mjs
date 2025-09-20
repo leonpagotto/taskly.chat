@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 import { promises as fs } from 'fs';
 import path from 'path';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { parse as parseYamlFull } from 'yaml';
 
 const ROOT = path.resolve(process.cwd(), 'speca-chat');
 const STORIES = path.join(ROOT, 'stories');
 const BOARD = path.join(ROOT, 'board');
 const STATUSES = new Set(['backlog','in-progress','review','done']);
 
-function parseYaml(raw){
-  const obj={};
-  for (const line of raw.split(/\r?\n/)) {
-    const m=line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/); if(m) obj[m[1]]=m[2];
-  }
-  return obj;
-}
+const parseYaml = (raw)=>parseYamlFull(raw);
 
 async function gatherStoryTasks(){
   const stories = await fs.readdir(STORIES,{withFileTypes:true});
@@ -25,7 +22,25 @@ async function gatherStoryTasks(){
     for (const te of taskEntries){
       if(te.isFile() && te.name.endsWith('.task.yml')){
         const full=path.join(tasksDir,te.name);
-        const meta=parseYaml(await fs.readFile(full,'utf8'));
+        let raw=await fs.readFile(full,'utf8');
+        // Extract acceptance block manually
+        const lines=raw.split(/\r?\n/);
+        const acceptance=[]; let inAccept=false; let yamlLines=[];
+        for (let i=0;i<lines.length;i++){
+          const line=lines[i];
+            if(/^acceptance:\s*$/.test(line)){ inAccept=true; yamlLines.push('acceptance:'); continue; }
+            if(inAccept){
+              if(/^\s*-\s+/.test(line)){
+                acceptance.push(line.replace(/^\s*-\s+/,'').trim());
+                continue;
+              } else if(line.trim()===''){ continue; } else { inAccept=false; }
+            }
+            if(!inAccept) yamlLines.push(line);
+        }
+        let meta;
+        try { meta=parseYaml(yamlLines.join('\n')); }
+        catch(err){ throw new Error(`YAML parse error in ${full}: ${err.message}`); }
+        if(acceptance.length) meta.acceptance=acceptance;
         if(!meta.id) throw new Error(`Missing id in ${full}`);
         if(ids.has(meta.id)) throw new Error(`Duplicate task id ${meta.id}`);
         ids.add(meta.id);
@@ -68,32 +83,42 @@ async function validateBoard(tasks){
   }
 }
 
-// Simple schema loader + validator (light-weight, not full JSON Schema implementation)
-async function loadSchema(name){
-  const file=path.join(ROOT, name);
-  const raw=await fs.readFile(file,'utf8');
-  const schema={};
-  for (const line of raw.split(/\r?\n/)) {
-    // extremely naive parse for 'required:' & 'pattern:' usage minimal
-    if (line.startsWith('required:')) {
-      const arr=line.match(/\[(.*)\]/);
-      if(arr) schema.required=arr[1].split(',').map(s=>s.trim()).filter(Boolean);
-    }
-  }
-  return schema;
+async function loadJsonSchemaYml(file){
+  const raw=await fs.readFile(path.join(ROOT,file),'utf8');
+  return parseYamlFull(raw);
 }
 
-function applySchema(meta, schema, file){
-  if(schema.required){
-    for (const r of schema.required){
-      if(!(r in meta)) throw new Error(`Missing required field '${r}' in ${file}`);
-    }
-  }
+async function buildAjv(){
+  const ajv = new Ajv({allErrors:true, strict:false, schemaId:'auto'});
+  // Add draft 2020-12 meta schema manually (AJV v8 includes drafts but ensure availability)
+  try {
+    // dynamic import of meta schema
+    const meta = await import('ajv/dist/refs/json-schema-draft-2020-12.json', { assert: { type: 'json' } }).catch(()=>null);
+    if(meta?.default) ajv.addMetaSchema(meta.default);
+  } catch {}
+  addFormats(ajv);
+  // Load individual schemas (task & board ref; story optional future)
+  const taskSchema = await loadJsonSchemaYml('task.schema.yml');
+  let boardRefSchema=null; try { boardRefSchema = await loadJsonSchemaYml('board-ref.schema.yml'); } catch {}
+  return { ajv, taskSchema, boardRefSchema };
 }
 
 async function validateSchemas(tasks){
-  const taskSchema=await loadSchema('task.schema.yml');
-  for (const t of tasks) applySchema(t, taskSchema, t.file);
+  const { ajv, taskSchema } = await buildAjv();
+  // Remove $schema to bypass external meta fetch requirement
+  if(taskSchema && taskSchema.$schema) delete taskSchema.$schema;
+  const validate = ajv.compile(taskSchema);
+  for (const t of tasks){
+    if(t.id==='DEV-001'){
+      // debug
+      // console.error('DEBUG DEV-001 meta', JSON.stringify(t,null,2));
+    }
+    const ok = validate(t);
+    if(!ok){
+      const msg = validate.errors.map(e=>`${e.instancePath||'(root)'} ${e.message}`).join('; ');
+      throw new Error(`Schema error in ${t.file}: ${msg}`);
+    }
+  }
 }
 
 async function main(){
