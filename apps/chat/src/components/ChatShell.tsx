@@ -14,6 +14,7 @@ export const ChatShell: React.FC = () => {
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const merged = mergeInstructionLayers(initialLayers);
 
   async function handleSend() {
@@ -22,7 +23,8 @@ export const ChatShell: React.FC = () => {
     const text = input;
     setInput('');
     setLoading(true);
-    const chatMsg: ChatMessage = { id, role: 'user', content: text, createdAt: new Date().toISOString() };
+  setError(null);
+  const chatMsg: ChatMessage = { id, role: 'user', content: text, createdAt: new Date().toISOString() };
     const extraction = extractTaskDrafts(chatMsg);
     let parse: any = undefined;
     try {
@@ -44,9 +46,11 @@ export const ChatShell: React.FC = () => {
         const data = await assistantRes.json();
         setMessages(prev => [...prev, { id: data.id, role: 'assistant', content: data.content }]);
       } else {
+        setError('Error generating response');
         setMessages(prev => [...prev, { id: 'assistant-' + Date.now(), role: 'assistant', content: '(error generating response)' }]);
       }
     } catch {
+      setError('Network error');
       setMessages(prev => [...prev, { id: 'assistant-' + Date.now(), role: 'assistant', content: '(network error)' }]);
     } finally {
       setLoading(false);
@@ -91,11 +95,12 @@ export const ChatShell: React.FC = () => {
             )}
           </div>
         ))}
-        {loading && <div style={{ fontSize: 12, opacity: 0.7 }}>Processing...</div>}
+  {loading && <div style={{ fontSize: 12, opacity: 0.7 }}>Processing...</div>}
+  {error && !loading && <div style={{ fontSize: 12, color: '#ff7575' }}>{error}</div>}
       </div>
       <form onSubmit={e => { e.preventDefault(); handleSend(); }} style={{ display: 'flex', gap: 8 }}>
         <input value={input} onChange={e => setInput(e.target.value)} placeholder="e.g. Create high priority task to update onboarding docs tomorrow" style={{ flex: 1, padding: 8, borderRadius: 4, border: '1px solid #444', background:'#111', color:'#eee' }} />
-        <button type="submit" style={{ padding: '8px 16px' }} disabled={loading}>Send</button>
+        <button type="submit" style={{ padding: '8px 16px' }} disabled={loading || !input.trim()}>{loading ? '...' : 'Send'}</button>
       </form>
     </div>
   );
