@@ -1,0 +1,17 @@
+id: IMP-025
+story: story-014
+title: Rule reliability & retry logic
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Add retry & dead-letter handling for rule evaluation and nudge dispatch failures.
+acceptance:
+  - Failed evaluation increments failure count; after 3 consecutive failures rule auto-disabled with log.
+  - Dispatch failure (mock send error) retries with exponential backoff (1s,2s,4s) then moves to dead-letter store.
+  - Dead-letter listing endpoint GET /api/automation/dead-letter returns items with reason & firstFailureAt.
+  - Retry all endpoint POST /api/automation/dead-letter/retry requeues eligible items and returns summary counts.
+  - Unit tests cover auto-disable path, retry sequence timing (mock timers), dead-letter enqueue, bulk retry.
+  - Metrics counters: rule_failures_total, nudges_dead_letter_total exported.
+notes: |
+  2025-09-20 Added reliability & retry criteria.

@@ -1,0 +1,17 @@
+id: ADA-001
+story: story-012
+title: Instruction conflict adaptation logic
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Determine precedence resolution when project instructions conflict with global instructions.
+acceptance:
+  - Precedence policy: project scope overrides global when referencing same behavioral dimension (dimension extracted via key phrase heuristics) documented in notes.
+  - Conflict detector flags overlapping directives (e.g., tone: friendly vs tone: formal) and logs structured warning.
+  - Adaptation function merges instructions returning ordered list: project-high, project-neutral, global-non-conflicting.
+  - Unit tests cover conflicting tone, conflicting confidentiality directive, additive non-conflicting instructions.
+  - Performance: merge executes < 2ms average for 20 instructions in benchmark test.
+  - Output includes provenance metadata per instruction (source: global|project).
+notes: |
+  2025-09-20 Added precedence and conflict adaptation acceptance.

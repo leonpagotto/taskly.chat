@@ -1,0 +1,17 @@
+id: WRI-001
+story: story-015
+title: Permissions documentation authoring
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+summary: Write human-readable permissions guide for contributors & users.
+acceptance:
+  - Guide includes overview, role descriptions, action catalog table, examples (invite collaborator, change role), FAQ.
+  - Examples show least privilege recommendation for inviting editors vs owners.
+  - Glossary defines terms: role, action, permission, capability.
+  - Changelog section notes initial version referencing story-015.
+  - Markdown passes lint (no trailing spaces, headings incremental, link validity script passes).
+  - README or docs index links to new guide section.
+notes: |
+  2025-09-20 Added permissions documentation acceptance.

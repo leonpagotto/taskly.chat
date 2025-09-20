@@ -1,0 +1,13 @@
+id: DEF-006
+story: story-011
+title: DEF-006
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Calendar provider interface documented (`docs/ARCHITECTURE.md` addendum) describing methods: listEvents(start,end), normalizeEvent(raw).
+  - Type definitions exported via `@taskly/integration` for event shape (id,start,end,summary,source).
+  - Fallback strategy defined for missing OAuth token (returns empty array, no throw) and documented.
+  - Timezone handling explicitly converts events to user profile timezone.
+  - Unit test covers listEvents normal path and empty response.

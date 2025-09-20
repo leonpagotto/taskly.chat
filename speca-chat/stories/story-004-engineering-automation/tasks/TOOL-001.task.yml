@@ -1,0 +1,15 @@
+id: TOOL-001
+story: story-004
+title: TOOL-001
+status: done
+created: 2025-09-19
+updated: 2025-09-19
+type: chore
+owner: system
+related: []
+acceptance:
+  - Script outputs deterministic ordering by story number
+  - Includes columns: Story, Title, Status, Backlog, InProgress, Review, Done
+  - Skips non-story directories
+  - Handles missing status folders gracefully (zero counts)
+  - Available via `pnpm spec:index`

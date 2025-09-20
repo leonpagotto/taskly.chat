@@ -1,0 +1,17 @@
+id: INT-007
+story: story-015
+title: Integration permission mapping (future external services)
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Prepare mapping layer for external service permission alignment (placeholder for future calendar/task sync rights).
+acceptance:
+  - Mapping document lists external capability placeholders (calendar.read, calendar.write, task.sync) and mapped internal actions.
+  - Layer code structure stubbed with TODO implementations returning permission denied for unmapped external capability.
+  - Unit test ensures unknown capability returns explicit UNSUPPORTED_CAPABILITY error.
+  - Extensibility note documents how to add new external capabilities (steps list).
+  - No runtime effect yet (guarded behind feature flag config).
+  - Feature flag default off state documented.
+notes: |
+  2025-09-20 Added integration mapping acceptance.

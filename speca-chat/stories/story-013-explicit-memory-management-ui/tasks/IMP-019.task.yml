@@ -1,0 +1,17 @@
+id: IMP-019
+story: story-013
+title: Memory tagging enhancements
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Enhance tagging with suggestions and normalization.
+acceptance:
+  - Tag normalization lowercases & trims; duplicates prevented.
+  - Suggestions endpoint returns top tags by frequency (limit param) within user’s memories.
+  - Adding tag updates frequency counts for subsequent suggestions.
+  - Removing tag decrements frequency; counts never drop below zero.
+  - Bulk add tags to multiple selected memories endpoint processes <=50 ids.
+  - Unit tests cover normalization, duplicate prevention, frequency updates.
+notes: |
+  2025-09-20 Added tagging criteria.

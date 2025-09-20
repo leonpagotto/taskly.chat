@@ -1,9 +1,0 @@
-id: DES-005
-story: story-007
-title: DES-005
-status: backlog
-created: 2025-09-20
-updated: 2025-09-20
-type: chore
-acceptance:
-  - Define acceptance criteria

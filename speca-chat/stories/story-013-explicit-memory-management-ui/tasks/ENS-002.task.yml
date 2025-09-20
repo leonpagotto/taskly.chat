@@ -1,0 +1,17 @@
+id: ENS-002
+story: story-013
+title: Memory privacy & permission enforcement
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Enforce user-only access and redact sensitive content in logs/export.
+acceptance:
+  - API rejects access to memories not owned by requesting user with 404 (avoid enumeration).
+  - Export function redacts fields flagged sensitive using pattern list (PII keywords placeholder documented).
+  - Attempt to approve/delete another user’s memory returns 404.
+  - Audit events store actorUserId; retrieval for other user returns 404.
+  - Unit tests cover unauthorized read, unauthorized delete, export redaction.
+  - Rate limiting (burst 20/min) applied to memory export endpoint.
+notes: |
+  2025-09-20 Added privacy & permission criteria.

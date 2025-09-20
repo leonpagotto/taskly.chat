@@ -1,0 +1,17 @@
+id: IMP-022
+story: story-013
+title: Memory pagination & keyset navigation
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement efficient keyset pagination for memories list.
+acceptance:
+  - API supports ?cursor= opaque token (base64 createdAt+id) and ?limit=.
+  - Page envelope: { items, page: { nextCursor, hasMore, limit } } returned.
+  - Keyset strategy validated by EXPLAIN plan (index usage) and absence of OFFSET.
+  - Boundary test ensures last page sets hasMore false and nextCursor null.
+  - Request with invalid cursor returns 400 with error code CURSOR_INVALID.
+  - Unit tests cover first page, middle page, final page scenarios.
+notes: |
+  2025-09-20 Added pagination criteria.

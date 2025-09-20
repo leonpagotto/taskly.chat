@@ -1,0 +1,16 @@
+id: FRO-001
+story: story-005
+title: FRO-001
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Frontend calls retrieval endpoint with correct query params (date range, cursor) only when user scroll/load-more action occurs.
+  - Debounces rapid scroll triggers to max one request per 300ms.
+  - Displays messages in chronological order; adding new page does not reorder existing DOM nodes unexpectedly.
+  - Shows loading indicator while fetching next page; removed within 100ms of completion.
+  - Handles 400/401/403/429 errors with distinct user feedback messages.
+  - Unit or component tests cover success, empty, error, pagination continuation, and rate limit states.
+notes: |
+  2025-09-20 Added frontend implementation acceptance.

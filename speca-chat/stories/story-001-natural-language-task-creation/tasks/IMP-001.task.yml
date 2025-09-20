@@ -1,0 +1,13 @@
+id: IMP-001
+story: story-001
+title: IMP-001
+status: backlog
+created: 2025-09-19
+updated: 2025-09-19
+type: chore
+acceptance:
+  - Command `pnpm extract:tasks` processes a sample message and outputs structured JSON with at least fields: id (temp), title, rawText.
+  - Extraction returns an empty array (not error) for messages containing no actionable verbs.
+  - Extraction runtime completes under 500ms for a 500-character message on local dev.
+  - Invalid UTF-8 input is safely rejected with descriptive error (no crash).
+  - Log line emitted with count of extracted task drafts.

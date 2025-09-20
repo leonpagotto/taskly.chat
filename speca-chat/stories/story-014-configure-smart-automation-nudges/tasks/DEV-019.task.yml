@@ -1,0 +1,17 @@
+id: DEV-019
+story: story-014
+title: Nudge scheduling & dispatch
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Schedule and send nudge notifications derived from rule actions.
+acceptance:
+  - Scheduler persists pending nudges with fields: id, userId, ruleId, actionType, payload JSON, scheduledFor, sentAt nullable, canceledAt nullable.
+  - Worker job scans due nudges every minute and dispatches (placeholder: log or mock send) then sets sentAt.
+  - Nudge cancellation endpoint DELETE /api/nudges/:id sets canceledAt if not already sent.
+  - Missed nudge (scheduler downtime) logic sends any overdue < 15m old on restart.
+  - Unit tests: create scheduled, dispatch on time, cancel prevents send, overdue catch-up.
+  - Metrics event emitted: nudge_dispatched with latency (actual - scheduledFor) ms.
+notes: |
+  2025-09-20 Added scheduling & dispatch criteria.

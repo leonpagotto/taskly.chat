@@ -1,0 +1,18 @@
+id: DEV-015
+story: story-011
+title: Calendar OAuth initiation & token storage
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement Google OAuth flow (read-only calendar scope) and secure token persistence.
+acceptance:
+  - OAuth flow uses scope https://www.googleapis.com/auth/calendar.readonly only.
+  - State parameter used and validated; mismatch returns 400.
+  - Access + refresh tokens encrypted at rest (document encryption mechanism: e.g., libsodium secretbox) with key not committed to repo.
+  - Token refresh logic renews before expiry (<=5 min) and updates storage atomically.
+  - Revoking integration removes stored tokens and marks integration disabled.
+  - Unit tests mock Google endpoints covering: auth callback success, state mismatch, refresh success, refresh failure (fallback error path).
+  - Security note added explaining why offline access refresh token retained.
+notes: |
+  2025-09-20 Added OAuth + token handling criteria.

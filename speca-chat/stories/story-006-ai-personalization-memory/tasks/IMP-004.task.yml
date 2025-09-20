@@ -1,0 +1,16 @@
+id: IMP-004
+story: story-006
+title: IMP-004
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Ranking algorithm scores memories using recency decay + pin boost + type weight; formula documented.
+  - Recency decay function parameters configurable (e.g., half-life) via environment or config file.
+  - Pinned memories always appear above unpinned regardless of decay score.
+  - Deterministic ordering for equal scores (tie-breaker by createdAt ascending or id).
+  - Performance: ranking of 1000 candidate memories executes < 50ms in local dev.
+  - Tests cover scoring formula, pin override, deterministic tie-break, configurable decay.
+notes: |
+  2025-09-20 Added ranking algorithm acceptance.

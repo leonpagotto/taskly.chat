@@ -1,0 +1,18 @@
+id: INT-005
+story: story-009
+title: External task import normalization
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Normalize imported tasks (e.g., Trello/Jira) into unified model.
+acceptance:
+  - Import function maps external fields (id, title/name, description, status, due) into model fields with deterministic source=imported.
+  - Duplicate externalId within same source skipped with recorded skip count.
+  - Status mapping table defined (external -> internal) and includes fallback to backlog for unmapped states; fallback occurrences counted.
+  - Tag extraction parses external labels into tags preserving case normalization (lowercase unique) and de-duplicates.
+  - Import summary returns counts: created, skippedDuplicates, unmappedStatuses, errors; errors array includes at least id + message.
+  - Large batch (>=500 items) processed in streaming or chunked fashion without exceeding memory threshold (document measurement in notes).
+  - Unit/integration test covers duplicate handling, unmapped status fallback, tag normalization.
+notes: |
+  2025-09-20 Added import normalization acceptance.

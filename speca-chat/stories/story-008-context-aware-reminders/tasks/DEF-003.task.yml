@@ -1,0 +1,16 @@
+id: DEF-003
+story: story-008
+title: DEF-003
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Reminder rule model defined (id, userId, triggerType, windowStart, windowEnd, payload, status, createdAt, updatedAt).
+  - Supports trigger types: time-based, follow-up, context-keyword (enumerated constant).
+  - Validation rejects overlapping active time windows for identical triggerType + payload key.
+  - Status enum documented (active, paused, disabled) with allowed transitions.
+  - Indexes created for userId + triggerType + windowStart for scheduler efficiency.
+  - Unit tests cover valid creation, overlap rejection, enum restriction.
+notes: |
+  2025-09-20 Added reminder model acceptance.

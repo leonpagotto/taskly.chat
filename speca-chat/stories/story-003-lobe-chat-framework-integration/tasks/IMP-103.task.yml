@@ -1,0 +1,14 @@
+id: IMP-103
+story: story-003
+title: IMP-103
+status: done
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+related: [IMP-101, IMP-102, RES-010]
+acceptance:
+  - Hook `useTaskDraftExtraction` created under `apps/chat/src/components/` (or `hooks/`).
+  - Accepts latest user message content and returns extracted `TaskDraft[]` plus raw parse (future-proof for enrichment).
+  - Graceful handling of empty or whitespace messages (returns empty drafts array).
+  - Side-effect free (no direct fetch) – delegates parsing to existing local utilities (placeholder) for now.
+  - Unit test scaffold or clear TODO markers for future test coverage. (Implemented `useTaskDraftExtraction.spec.tsx`).

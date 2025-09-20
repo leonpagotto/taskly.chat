@@ -1,0 +1,18 @@
+id: ENS-001
+story: story-010
+title: Security & permission enforcement
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Enforce role-based access for project collaboration actions.
+acceptance:
+  - Permission matrix documented: owner (all), editor (read tasks/memory, create tasks, invite? no, change roles? no), viewer (read-only tasks/memory).
+  - APIs reject unauthorized write operations with 403 and error code PERMISSION_DENIED.
+  - Role change endpoint restricted to owner role only; test covers editor attempt 403.
+  - Invitation creation restricted to owner only (if design later allows editor, update notes & tests accordingly).
+  - Audit log event (stub or model) recorded for: invite created, invite accepted, role changed, member revoked.
+  - At least one security test attempts IDOR (access project membership of another project) and is denied (404 or 403 consistent policy).
+  - Threat model note added covering token guessing mitigation (length, randomness, rate limiting placeholder).
+notes: |
+  2025-09-20 Added security & permission criteria.

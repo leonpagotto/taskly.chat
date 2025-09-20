@@ -1,0 +1,16 @@
+id: IMP-006
+story: story-007
+title: IMP-006
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Instruction injection layer merges global instruction with system base prompt without duplication.
+  - If global instruction absent, fallback uses default baseline only.
+  - Merge order documented (global below baseline to allow baseline overrides where safe).
+  - Truncation logic ensures combined prompt <= model token budget threshold (configurable) with graceful elision note.
+  - Logging records final prompt length and truncation events (info level, no user secrets logged).
+  - Tests cover merge present, merge absent, truncation path, logging call.
+notes: |
+  2025-09-20 Added orchestration merge acceptance.

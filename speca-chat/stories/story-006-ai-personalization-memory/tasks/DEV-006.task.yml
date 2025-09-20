@@ -1,0 +1,16 @@
+id: DEV-006
+story: story-006
+title: DEV-006
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Update endpoint allows modifying content and pinned flag only (other fields immutable) with optimistic concurrency (version or updatedAt check).
+  - Attempt to modify immutable fields returns 400 with specific error code.
+  - Conflict (stale version) returns 409 with guidance to refetch.
+  - Audit log entry created for each update including changed fields.
+  - Partial updates supported (omitted fields untouched) via PATCH semantics.
+  - Tests cover success, immutable field attempt, stale conflict, partial update, audit logging.
+notes: |
+  2025-09-20 Added update endpoint acceptance.

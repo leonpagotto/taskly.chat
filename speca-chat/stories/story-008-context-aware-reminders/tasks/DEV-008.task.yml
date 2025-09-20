@@ -1,0 +1,16 @@
+id: DEV-008
+story: story-008
+title: DEV-008
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - API supports create/update/delete/list reminder rules for authenticated user.
+  - Cannot modify another user's rule (403) even if id guessed.
+  - Create rejects invalid triggerType with 400 code INVALID_TRIGGER.
+  - List endpoint supports filtering by status and triggerType.
+  - Soft delete sets status=disabled and does not remove record physically.
+  - Tests cover CRUD happy path, invalid trigger, forbidden modify, list filtering.
+notes: |
+  2025-09-20 Added reminder CRUD API acceptance.

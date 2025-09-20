@@ -1,0 +1,17 @@
+id: DEF-004
+story: story-009
+title: Task domain model defined
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Define unified task domain model covering all creation sources.
+acceptance:
+  - Model includes fields: id (ULID), source(enum: manual|extracted|imported|integration), title, description, status(enum backlog|todo|in-progress|review|done|archived), createdAt, updatedAt, dueAt (nullable), priority (nullable enum low|medium|high|urgent), originMetadata (JSON), projectId (nullable), ownerId (nullable), tags (string[]), deletedAt (nullable), recurrenceRule (nullable string RFC5545), blockingIds (string[]), blockedByIds (string[]).
+  - Database schema created/migrated with indexes on (status), (projectId,status), (ownerId,status), (dueAt) and GIN/JSON index for originMetadata->>'externalId'.
+  - All enum values validated at persistence layer; invalid value insertion returns descriptive error.
+  - Unit tests cover: status transition validation (forward only), adding/removing tags (idempotent), blocking relation cycle prevention.
+  - Blocking relationship write rejects cycles with explicit error message including offending path.
+  - Soft delete sets deletedAt and prevents appearance in default list queries.
+notes: |
+  2025-09-20 Added concrete model acceptance replacing placeholder.

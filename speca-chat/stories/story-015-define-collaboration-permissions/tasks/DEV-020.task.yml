@@ -1,0 +1,17 @@
+id: DEV-020
+story: story-015
+title: Permission check middleware
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement middleware to enforce action permission before controller logic.
+acceptance:
+  - Middleware accepts required action id(s) array; denies if user lacks any required.
+  - Denied response returns 403 with error PERMISSION_DENIED and missing action id list.
+  - Owner short-circuit: owner role always allowed unless action flagged restricted (none currently) documented.
+  - Middleware caches role->actions mapping in-memory with TTL (configurable) to reduce DB queries.
+  - Unit tests: allowed path, denied path, cached path (no DB call), multiple required actions failing second.
+  - Performance: added overhead < 2ms per request under test harness.
+notes: |
+  2025-09-20 Added permission middleware acceptance.

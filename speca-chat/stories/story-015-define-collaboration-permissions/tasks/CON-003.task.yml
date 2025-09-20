@@ -1,0 +1,17 @@
+id: CON-003
+story: story-015
+title: Permission matrix & action catalog
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Define canonical list of actions and role mapping.
+acceptance:
+  - Action catalog enumerated with ids (TASK_CREATE, TASK_EDIT, TASK_DELETE, TASK_VIEW, MEMORY_VIEW, MEMORY_APPROVE, PROJECT_INVITE, ROLE_CHANGE, INSTRUCTION_EDIT, AUTOMATION_RULE_CREATE, AUTOMATION_RULE_EDIT, AUTOMATION_RULE_DELETE).
+  - Roles: owner, editor, viewer each mapped to allowed action id set; matrix documented in markdown table added to docs.
+  - Inheritance policy: owner superset, editor subset, viewer read-only documented.
+  - Gap analysis identifies any UI action without catalog entry (none remaining) documented.
+  - JSON manifest file (permissions.manifest.json) added for programmatic consumption.
+  - Review sign-off (notes entry) recorded once validated.
+notes: |
+  2025-09-20 Added permission matrix acceptance.

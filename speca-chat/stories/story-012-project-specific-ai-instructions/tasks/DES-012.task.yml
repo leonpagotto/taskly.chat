@@ -1,0 +1,18 @@
+id: DES-012
+story: story-012
+title: Instruction diff & preview design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Show preview of final merged instruction set and highlight overrides.
+acceptance:
+  - Preview panel design lists merged instructions with badges (override, global, project-only).
+  - Diff highlight style (e.g., strike-through superseded global lines) documented.
+  - Tooltip or info icon explains precedence rules succinctly.
+  - Loading/skeleton state specified for first load.
+  - Copy guidance area includes best-practice writing tips (3 bullets) in design.
+  - Color usage meets contrast guidelines for diff indicators.
+  - Export button placement and disabled state rules defined.
+notes: |
+  2025-09-20 Added diff & preview design acceptance.

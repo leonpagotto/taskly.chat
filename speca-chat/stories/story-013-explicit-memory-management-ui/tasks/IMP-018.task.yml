@@ -1,0 +1,17 @@
+id: IMP-018
+story: story-013
+title: Memory list performance optimization
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize memory list rendering & backend query for large volumes.
+acceptance:
+  - Server query uses pagination with keyset (createdAt,id) ordering; no OFFSET for pages >1.
+  - Virtualized list renders <= 40 DOM nodes for 1000 memory dataset.
+  - First page fetch + render < 300ms local test (document numbers).
+  - Search filter (text) latency < 250ms on dataset 10k memories using trigram or index strategy.
+  - Memory usage snapshot stable across 5 rapid filter changes (<10% variance).
+  - Performance test script documented with reproducible seed generator.
+notes: |
+  2025-09-20 Added performance criteria.

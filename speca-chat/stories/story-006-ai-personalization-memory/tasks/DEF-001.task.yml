@@ -1,0 +1,16 @@
+id: DEF-001
+story: story-006
+title: DEF-001
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Memory entity schema defined (id, type, source, content, embeddingRef, createdAt, lastAccessedAt) and documented.
+  - Schema supports versioning or evolution path (field addition) without destructive migration.
+  - Validation rejects memory entries lacking required fields with meaningful error codes.
+  - Embedding reference decoupled from raw content (content stored plainly; vector id stored separately).
+  - Data retention policy field or strategy documented (how stale memories may be pruned).
+  - Unit tests cover valid creation, invalid payloads, and version forward-compat scenario.
+notes: |
+  2025-09-20 Added schema definition acceptance replacing placeholder.

@@ -1,0 +1,16 @@
+id: DEV-004
+story: story-006
+title: DEV-004
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - API for creating memory entry persists record and returns 201 with id & timestamps.
+  - Validation errors return 400 with field-level error descriptors.
+  - Duplicate suppression implemented (same content hash within 24h returns existing id) and documented.
+  - Embedding generation queued asynchronously; create endpoint responds before vector write completion.
+  - Observability: logs include memory id and source type at info level.
+  - Unit tests cover create success, duplicate path, invalid payload, async embedding dispatch.
+notes: |
+  2025-09-20 Added backend creation endpoint acceptance.

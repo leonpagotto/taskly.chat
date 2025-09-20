@@ -1,0 +1,18 @@
+id: DEV-014
+story: story-010
+title: Collaboration API endpoints
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Expose REST endpoints for invitations and membership management.
+acceptance:
+  - POST /api/projects/:projectId/invitations creates invite; returns 201 with id, email, role, expiresAt.
+  - POST /api/invitations/:token/accept exchanges token; returns 200 membership object; invalid/expired token returns 410 with error INVITE_INVALID.
+  - DELETE /api/invitations/:id revokes invite; returns 204; already revoked returns 409.
+  - GET /api/projects/:projectId/members lists active members with roles + lastActiveAt.
+  - PATCH /api/projects/:projectId/members/:memberId changes role (cannot remove last remaining owner; returns 422 LAST_OWNER if attempted).
+  - Response bodies conform to documented schema contract in OpenAPI spec update.
+  - Integration tests exercise each endpoint: success + at least one failure branch.
+notes: |
+  2025-09-20 Added collaboration API criteria.

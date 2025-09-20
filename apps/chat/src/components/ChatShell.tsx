@@ -1,5 +1,7 @@
 'use client';
 import React, { useState } from 'react';
+import { useConversationHistory, ConversationMessage } from '../app/hooks/useConversationHistory';
+import { useEffect, useRef, useState as useReactState } from 'react';
 import { extractTaskDrafts } from '@taskly/ai'; // will be removed after full hook integration of historical messages
 import { useMergedInstructions } from './useMergedInstructions';
 import { useTaskDraftExtraction } from './useTaskDraftExtraction';
@@ -10,6 +12,25 @@ interface ChatEntry { id: string; role: 'user' | 'assistant'; content: string; t
 const initialLayers: InstructionLayer[] = [];
 
 export const ChatShell: React.FC = () => {
+  const [startDate, setStartDate] = useReactState<string | null>(null);
+  const [endDate, setEndDate] = useReactState<string | null>(null);
+  const history = useConversationHistory(30, { start: startDate, end: endDate });
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const el = loadMoreRef.current;
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          history.loadMore();
+        }
+      });
+    }, { root: el.parentElement, rootMargin: '200px 0px 0px 0px', threshold: 0 });
+    obs.observe(el);
+    return () => { obs.disconnect(); };
+  }, [history]);
   const [messages, setMessages] = useState<ChatEntry[]>([]);
   const [accepted, setAccepted] = useState<any[]>([]);
   function acceptDraft(d: any) {
@@ -81,7 +102,43 @@ export const ChatShell: React.FC = () => {
           </ul>
         </div>
       </section>
-      <div style={{ flex: 1, minHeight: 300, background: '#1b1b1b', padding: 12, borderRadius: 8 }}>
+      <div style={{ display:'flex', gap:12, alignItems:'flex-start' }}>
+        <div style={{ flex: 1, maxHeight: 480, overflowY:'auto', background:'#161616', padding:10, borderRadius:8, border:'1px solid #2a2a2a' }}>
+          <div style={{ position:'sticky', top:0, background:'#161616', paddingBottom:6 }}>
+            <strong style={{ fontSize:13 }}>Conversation History</strong>
+            <div style={{ display:'flex', gap:6, marginTop:6, flexWrap:'wrap' }}>
+              <input type="date" value={startDate ?? ''} onChange={e=>setStartDate(e.target.value||null)} style={{ background:'#111', color:'#eee', border:'1px solid #333', borderRadius:4, padding:'2px 4px', fontSize:11 }} />
+              <input type="date" value={endDate ?? ''} onChange={e=>setEndDate(e.target.value||null)} style={{ background:'#111', color:'#eee', border:'1px solid #333', borderRadius:4, padding:'2px 4px', fontSize:11 }} />
+              {(startDate||endDate) && <button onClick={()=>{setStartDate(null); setEndDate(null);}} style={{ fontSize:11, padding:'2px 6px', background:'#272727', border:'1px solid #444', borderRadius:4 }}>Clear</button>}
+            </div>
+          </div>
+          {history.messages.length === 0 && !history.loading && !history.error && (
+            <div style={{ fontSize:12, opacity:0.6, padding:'12px 4px' }}>No messages in this range.</div>
+          )}
+          {history.messages.length === 0 && history.loading && (
+            <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              {Array.from({ length: 5 }).map((_,i)=>(<div key={i} style={{ height:14, background:'#222', borderRadius:4, animation:'pulse 1.5s infinite', opacity:0.5 }} />))}
+            </div>
+          )}
+          {groupMessagesByDay(history.messages).map(g => (
+            <div key={g.day} style={{ marginBottom:12 }}>
+              <div style={{ position:'sticky', top:0, background:'#161616', fontSize:10, opacity:0.55, textTransform:'uppercase', letterSpacing:1, padding:'2px 0' }}>{g.day}</div>
+              {g.items.map(m => (
+                <div key={m.id} style={{ marginBottom:8, fontSize:12 }}>
+                  <span style={{ opacity:0.5 }}>{timeOf(m.createdAt)}</span>
+                  <span style={{ marginLeft:6, fontWeight:600 }}>{m.role}</span>: {m.content}
+                </div>
+              ))}
+            </div>
+          ))}
+          {history.loading && <div style={{ fontSize:11, opacity:0.7 }}>Loading…</div>}
+          {history.error && <div style={{ fontSize:11, color:'#ff6b6b' }}>Err: {history.error}</div>}
+          <div ref={loadMoreRef} style={{ height:1 }} />
+          {history.hasMore && !history.loading && history.messages.length > 0 && (
+            <div style={{ textAlign:'center', padding:'4px 0', fontSize:10, opacity:0.5 }}>Scroll to load more…</div>
+          )}
+        </div>
+        <div style={{ flex: 2, minHeight: 300, background: '#1b1b1b', padding: 12, borderRadius: 8 }}>
         {messages.map(m => (
           <div key={m.id} style={{ marginBottom: 20 }}>
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -131,8 +188,9 @@ export const ChatShell: React.FC = () => {
             )}
           </div>
         ))}
-  {loading && <div style={{ fontSize: 12, opacity: 0.7 }}>Processing...</div>}
-  {error && !loading && <div style={{ fontSize: 12, color: '#ff7575' }}>{error}</div>}
+        {loading && <div style={{ fontSize: 12, opacity: 0.7 }}>Processing...</div>}
+        {error && !loading && <div style={{ fontSize: 12, color: '#ff7575' }}>{error}</div>}
+        </div>
       </div>
       <form onSubmit={e => { e.preventDefault(); handleSend(); }} style={{ display: 'flex', gap: 8 }}>
         <input value={input} onChange={e => setInput(e.target.value)} placeholder="e.g. Create high priority task to update onboarding docs tomorrow" style={{ flex: 1, padding: 8, borderRadius: 4, border: '1px solid #444', background:'#111', color:'#eee' }} />
@@ -149,3 +207,18 @@ export const ChatShell: React.FC = () => {
     </div>
   );
 };
+
+function groupMessagesByDay(messages: ConversationMessage[]): { day: string; items: ConversationMessage[] }[] {
+  const groups: Record<string, ConversationMessage[]> = {};
+  for (const m of messages) {
+    const d = new Date(m.createdAt);
+    const key = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(m);
+  }
+  return Object.entries(groups).map(([day, items]) => ({ day, items }));
+}
+
+function timeOf(iso: string): string {
+  return new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+}

@@ -1,0 +1,18 @@
+id: DES-014
+story: story-014
+title: Automation rules UX design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design list and creation/edit flows for automation rules & nudges.
+acceptance:
+  - Figma includes: Rules List, Create Rule, Edit Rule screens.
+  - Rules List row shows: name, active toggle, condition summary (first 2 then "+n"), next run estimate, overflow menu.
+  - Create screen supports adding up to 10 conditions with Add Condition button disabled at limit.
+  - Visual token legend for each field type (date, status, tag) present in design.
+  - Error inline states for invalid value, missing name, exceeding limits.
+  - Mobile layout stacks list cards with toggle and quick edit icon.
+  - Accessibility annotations: aria labels for toggles, keyboard order for condition reorder.
+notes: |
+  2025-09-20 Added UX design acceptance.

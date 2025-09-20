@@ -1,0 +1,17 @@
+id: TES-001
+story: story-005
+title: Conversation history test coverage
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+summary: Add tests covering pagination, date filtering, empty state for conversation history API & hook.
+acceptance:
+  - Test seeds mock data with > 60 messages spanning at least 3 distinct days.
+  - Pagination test asserts page size limit respected and nextCursor chain ends with hasMore=false.
+  - Date filter test returns only messages within narrowed range boundaries inclusive.
+  - Empty state test confirms zero results returns empty array without error property.
+  - Hook test (React) verifies incremental append vs reset on filter change.
+  - Coverage for route + hook files >=85% statements.
+notes: |
+  2025-09-20 Added test coverage criteria.

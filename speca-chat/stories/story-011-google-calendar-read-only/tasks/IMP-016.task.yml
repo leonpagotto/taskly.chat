@@ -1,0 +1,17 @@
+id: IMP-016
+story: story-011
+title: Timezone & daylight savings accuracy
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Ensure events display correct local times across DST transitions.
+acceptance:
+  - Event normalization converts start/end to user profile timezone using IANA zone (no fixed offsets).
+  - DST boundary test (event spanning transition) displays correct local wall times (document test case references).
+  - Comparison against Google UI for sample DST event matches both start and end times.
+  - Library choice for timezone handling documented (e.g., Luxon or date-fns-tz) with justification.
+  - Unit tests include at least 2 zones with opposite DST rules (e.g., America/New_York, Europe/London).
+  - No naive Date parsing of ISO strings without explicit zone handling (grep check included in notes).
+notes: |
+  2025-09-20 Added timezone accuracy criteria.

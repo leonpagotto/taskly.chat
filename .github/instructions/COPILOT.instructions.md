@@ -37,12 +37,12 @@ Taskly.chat is an AI-powered personal assistant blending conversation, persisten
 
 ---
 ## 4. Repository Knowledge Model (speca-chat authoritative model)
-Canonical planning artifacts now live under `speca-chat/` (NOT the legacy `docs/` structure):
+Canonical planning artifacts now live under `speca-chat/` (NOT the legacy `docs/` structure). Story directory names now include both zero‑padded number and slug for readability (`story-<NNN>-<slug>`). The canonical story id remains `story-<NNN>` inside YAML regardless of directory suffix:
 ```
 speca-chat/
   stories/
-    story-<NNN>/
-      story.yml          # Required minimal metadata (id, slug, title, status, created, summary)
+    story-<NNN>-<slug>/
+      story.yml          # Required minimal metadata (id: story-<NNN>, slug, title, status, created, summary)
       story.md           # Optional narrative / rationale
       tasks/
         <TASK-ID>.task.yml  # Canonical task metadata (authoritative)
@@ -57,7 +57,7 @@ Key shifts from legacy model:
 - Board state derives from each task's `status` field; generator produces mirror refs under `board/`.
 - Status changes occur by editing `status:` in the task YAML then regenerating board refs (never hand-edit `board/`).
 - Optional `.task.md` houses richer narrative; absence is acceptable.
-Story folders use zero‑padded numbering: `story-001`, `story-002`, etc. `story.yml` holds structured metadata. Acceptance criteria live at task level, not in `story.yml`.
+Story folders use zero‑padded numbering plus slug: e.g., `story-001-natural-language-task-creation`. The canonical id (referenced by tasks, board refs, and `story.yml id:`) is still `story-001`. Tools should treat everything after the second hyphen as descriptive only. Acceptance criteria live at task level, not in `story.yml`.
 ---
 ## 5. Golden Governance Rules
 - Authoritative planning root: `speca-chat/`.
@@ -153,7 +153,7 @@ Scripts (run via `pnpm` or `node`):
 - `speca-chat/scripts/report-status-delta.mjs` → legacy vs current drift (export JSON/CSV with `--out`).
 - `speca-chat/scripts/update-task-timestamps.mjs` → manage `updated:` fields.
 - `speca-chat/scripts/lint-acceptance.mjs` → detailed acceptance quality report (`artifacts/acceptance-lint-report.json`).
-- `speca-chat/scripts/scaffold-story.mjs` → create new story directory + `story.yml` + narrative from template.
+- `speca-chat/scripts/scaffold-story.mjs` → create new story directory (`story-<NNN>-<slug>`) + `story.yml` + narrative from template.
 - `speca-chat/scripts/scaffold-task.mjs` → create new task YAML + narrative markdown using templates.
 
 Review readiness criteria (before setting `status: review`):

@@ -1,0 +1,17 @@
+id: INT-006
+story: story-011
+title: Google events normalization integration
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Normalize raw Google Calendar events into internal event shape.
+acceptance:
+  - Normalizer maps: id, summary->title, start.dateTime or start.date (all-day) to start, end.*, htmlLink to htmlUrl, attendees length, organizer email.
+  - All-day events flagged with allDay true and end exclusive adjustment documented.
+  - Cancelled events filtered out.
+  - Recurring event instances expanded using Google API expansions (no manual RRULE parsing in this slice) and have a recurrenceInstanceId field.
+  - Description truncated to 500 chars for preview field (full retained separately or omitted; documented choice).
+  - Unit tests cover all-day, recurring, cancelled, missing summary fallback ("(No title)").
+notes: |
+  2025-09-20 Added event normalization criteria.

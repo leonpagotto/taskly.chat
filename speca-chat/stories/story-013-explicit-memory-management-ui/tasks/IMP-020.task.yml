@@ -1,0 +1,17 @@
+id: IMP-020
+story: story-013
+title: Memory search relevance tuning
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Improve search ranking across title, body, tags.
+acceptance:
+  - Full text index combined weighting: title A, tags B, body C documented.
+  - Relevance test dataset shows exact title match ranks above body-only match.
+  - Prefix search supported with index strategy (trigram) validated by EXPLAIN plan.
+  - Search returns stable ordering for identical score (tie-break createdAt desc).
+  - Query latency < 200ms for 10k memories test dataset.
+  - Unit tests verify ordering scenarios (exact vs partial vs body mention).
+notes: |
+  2025-09-20 Added search relevance criteria.

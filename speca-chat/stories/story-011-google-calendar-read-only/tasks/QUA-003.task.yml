@@ -1,0 +1,17 @@
+id: QUA-003
+story: story-011
+title: Calendar integration quality & edge tests
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+summary: Comprehensive tests for edge cases in read-only calendar integration.
+acceptance:
+  - Test covers API rate limit error returning graceful fallback (cached data or empty with warning flag).
+  - Network failure test triggers retry (max 2) then logs structured error without crashing process.
+  - Event with missing end uses start + default 30m duration rule (document rationale) and marks inferredEnd true.
+  - Overlapping events scenario ensures display order stable (sorted by start, then duration desc).
+  - Large dataset (1000 events) normalization completes under 1.5s in test environment.
+  - Mutation safety verified: original raw event objects remain unmodified post-normalization (deep freeze test).
+notes: |
+  2025-09-20 Added quality & edge case criteria.

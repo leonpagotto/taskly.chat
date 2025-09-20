@@ -1,0 +1,18 @@
+id: DES-011
+story: story-012
+title: Project instructions settings UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design interface to view and edit project-level AI instructions.
+acceptance:
+  - Figma frame shows list of existing instructions with: title, truncated body, status toggle, edit & archive actions.
+  - Add instruction modal design includes fields: Title (<=80 chars), Body (multiline with char count), Category dropdown (tone, style, constraints, domain).
+  - Empty state design with CTA button when no instructions exist.
+  - Error inline patterns for validation (title required, body min 10 chars) documented.
+  - Mobile layout (<=640px) stacks fields with full-width actions.
+  - Accessibility: focus order & label associations annotated.
+  - Visual distinction for project vs global (badge or color) if global instructions previewed in UI.
+notes: |
+  2025-09-20 Added design criteria for settings UI.

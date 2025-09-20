@@ -1,0 +1,16 @@
+id: IMP-008
+story: story-008
+title: IMP-008
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - User can convert a suggestion into active reminder via single API call.
+  - Conversion call validates suggestion freshness (<5 minutes old) else returns 410 GONE.
+  - Duplicate suggestion conversion for same underlying context within 10 minutes returns existing reminder id.
+  - Audit log entry created (suggestionId, reminderId, userId, createdAt).
+  - Response returns full reminder rule payload after creation.
+  - Tests cover convert success, stale, duplicate, audit log.
+notes: |
+  2025-09-20 Added conversion acceptance.

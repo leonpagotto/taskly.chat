@@ -1,0 +1,18 @@
+id: DEV-016
+story: story-012
+title: Project instruction CRUD API
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: REST endpoints for creating, listing, updating, archiving project instructions.
+acceptance:
+  - POST /api/projects/:id/instructions creates active instruction with validation: title required <=80 chars; body min 10 chars.
+  - GET /api/projects/:id/instructions returns array ordered by createdAt desc excluding archived unless ?includeArchived=true.
+  - PATCH /api/projects/:id/instructions/:instructionId allows title/body update and active toggle; archived instructions cannot be edited (409 ARCHIVED).
+  - DELETE /api/projects/:id/instructions/:instructionId performs soft archive (sets archivedAt) returns 204.
+  - OpenAPI/contract updated with schemas and error codes (ARCHIVED, VALIDATION_ERROR).
+  - Integration tests cover create, list, update toggle, archive, edit archived failure.
+  - Rate limiting (basic) placeholder enforced (document rule) returning 429 when exceeded in test.
+notes: |
+  2025-09-20 Added CRUD API acceptance.

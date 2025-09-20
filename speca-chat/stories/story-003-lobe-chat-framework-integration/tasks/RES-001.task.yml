@@ -1,0 +1,17 @@
+id: RES-001
+story: story-003
+title: Framework integration research
+status: backlog
+created: 2025-09-19
+updated: 2025-09-19
+type: research
+summary: Evaluate integration approaches between existing chat framework and new orchestration layer.
+acceptance:
+  - Document compares at least 3 integration patterns (middleware hook, event bus adapter, direct SDK wrapper).
+  - Each pattern evaluated on criteria: latency impact, testability, isolation, complexity (scored 1-5) with rationale.
+  - Recommendation section selects one pattern with justification referencing scores.
+  - Risk list includes at least 3 concrete risks with mitigation steps.
+  - POC snippet included demonstrating message pass-through for chosen approach.
+  - Document stored under docs/ with clear filename and linked from architecture index.
+notes: |
+  2025-09-20 Added research evaluation criteria.

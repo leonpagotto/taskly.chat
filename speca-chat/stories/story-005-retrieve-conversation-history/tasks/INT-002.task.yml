@@ -1,0 +1,16 @@
+id: INT-002
+story: story-005
+title: INT-002
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Integration test seeds at least 200 messages across >1 day span and validates full retrieval across pages.
+  - Verifies auth enforcement (unauthorized attempt blocked) and rate limit path after threshold.
+  - Confirms no duplicate message ids across sequential page fetches.
+  - Validates timestamp ordering and boundary inclusion/exclusion logic (inclusive start, exclusive end documented).
+  - Asserts performance budget: combined 3-page retrieval under 1.2s wall clock in test environment.
+  - Test artifacts (seed script/log) stored or referenced for reproducibility.
+notes: |
+  2025-09-20 Added integration verification acceptance.

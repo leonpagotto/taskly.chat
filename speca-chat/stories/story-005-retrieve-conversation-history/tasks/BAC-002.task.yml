@@ -1,0 +1,16 @@
+id: BAC-002
+story: story-005
+title: BAC-002
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Conversation retrieval endpoint enforces per-user authorization (cannot access another user's messages).
+  - Requests without valid auth token return 401; insufficient scope returns 403 with error code.
+  - Rate limiting applied: more than 60 retrieval requests/minute per user returns 429 with retry-after header.
+  - All access attempts logged with user id, time, page size, and filter usage (date range present?).
+  - PII fields (if any) excluded or redacted per data classification policy (no raw access tokens, internal ids exposed).
+  - Security unit tests cover auth success, unauthorized, forbidden, rate limit, and redaction scenarios.
+notes: |
+  2025-09-20 Replaced placeholder with security & governance acceptance.

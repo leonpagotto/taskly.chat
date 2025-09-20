@@ -1,0 +1,16 @@
+id: IMP-101
+story: story-003
+title: IMP-101
+status: done
+created: 2025-09-19
+updated: 2025-09-20
+type: chore
+related: [IMP-102, IMP-103, RES-010]
+acceptance:
+  - Stub component `LobeChatMount` exists under `apps/chat/src/components/`.
+  - Component shows merged system prompt panel.
+  - `ChatShell` replaced on home page.
+  - Real Lobe dependency integrated (or minimal vendored subset) replacing stub (implemented minimal provider + interface under `packages/integration/src/lobe/`).
+  - Instruction adapter (IMP-102) still injects layers unchanged (no code changes required; tests passing).
+  - Draft extraction hook (IMP-103) still functions with no regression (existing tests + manual usage unaffected).
+  - System prompt segment rendering unchanged post integration (verified same prop pass-through).

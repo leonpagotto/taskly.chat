@@ -24,7 +24,9 @@ const id = `story-${storyNumber}`;
 const created = new Date().toISOString().slice(0,10);
 
 const storiesRoot = path.resolve(__dirname, '..', 'stories');
-const storyDir = path.join(storiesRoot, id);
+// Directory now includes slug for readability, but canonical id remains story-<NNN>
+const storyDirName = `${id}-${slug}`;
+const storyDir = path.join(storiesRoot, storyDirName);
 if (fs.existsSync(storyDir)) {
   console.error(`Directory already exists: ${storyDir}`);
   process.exit(1);
@@ -40,4 +42,4 @@ let mdTemplate = fs.readFileSync(templatePath, 'utf8');
 mdTemplate = mdTemplate.replace('<Human Readable Title>', titleHuman);
 fs.writeFileSync(path.join(storyDir, 'story.md'), mdTemplate, 'utf8');
 
-console.log(`Scaffolded ${id} at ${storyDir}`);
+console.log(`Scaffolded ${id} (${slug}) at ${storyDir}`);

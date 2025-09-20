@@ -1,0 +1,18 @@
+id: BUI-001
+story: story-014
+title: Rule builder UI foundational components
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Build reusable condition + action component primitives for automation rule authoring.
+acceptance:
+  - Components created: ConditionRow, ActionRow, ComparatorSelect, ValueInput, SchedulePicker.
+  - Each component exposes typed props and emits onChange payload with shape { id, field, operator, value }.
+  - ConditionRow supports field select (task.status, task.dueAt, memory.tag), operator select (auto changes list based on field type), value input (date picker for dueAt, multi-select for status).
+  - ActionRow supports action types: sendReminder, addTag, setPriority; parameters validated (e.g., tag non-empty).
+  - Storybook stories added for each component with at least default + interactive states.
+  - Accessibility: all interactive elements reachable via keyboard, visible focus rings.
+  - Unit tests cover operator list switching and value change emission.
+notes: |
+  2025-09-20 Added foundational rule builder component criteria.

@@ -1,0 +1,18 @@
+id: DES-008
+story: story-010
+title: Invite & manage collaborators UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design project settings section for invitations and membership management.
+acceptance:
+  - Figma screen includes: member list table, invite form, pending invitations list, role dropdown, revoke action.
+  - Member list row shows avatar/initials, name, email (truncated), role pill, last active relative timestamp.
+  - Role change interaction defined (button or inline select) with confirmation for demoting self from owner.
+  - Empty state illustrations & copy for: no members (excluding self), no pending invitations.
+  - Mobile breakpoint layout (<=640px) stacks invite form above member list with accessible tap targets >=44px height.
+  - Error state design for failed invite send displayed inline below email field.
+  - Accessibility annotations for tab order and ARIA labels on role controls.
+notes: |
+  2025-09-20 Added detailed UI design criteria.

@@ -1,0 +1,17 @@
+id: IMP-011
+story: story-009
+title: Task data integrity & constraints
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Add DB-level constraints and guards for unified model.
+acceptance:
+  - Unique constraint prevents duplicate externalId within same source in originMetadata (enforced via functional index or trigger).
+  - Constraint ensures dueAt >= createdAt; attempt to violate returns database-level error handled into 400 response upstream.
+  - Trigger updates updatedAt on any row mutation (excluding updatedAt itself) without relying on application code.
+  - Foreign key constraints validated for projectId and ownerId referencing respective tables (or placeholder tables stubbed if not yet implemented, documented in notes).
+  - Migration is reversible with down script restoring previous state.
+  - Automated migration test applies up then down with no residual schema drift.
+notes: |
+  2025-09-20 Added constraints & integrity acceptance.

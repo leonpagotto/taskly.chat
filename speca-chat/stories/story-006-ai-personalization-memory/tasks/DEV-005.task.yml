@@ -1,0 +1,16 @@
+id: DEV-005
+story: story-006
+title: DEV-005
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Retrieval API returns prioritized list: pinned first, then recent (lastAccessedAt desc), capped at 100.
+  - Supports filter by memory type; unsupported type param returns 400.
+  - Response includes embedding availability flag (hasVector: boolean).
+  - Access updates lastAccessedAt asynchronously (non-blocking to response time).
+  - Average retrieval response < 150ms in local dev with 5k memory items.
+  - Tests cover filter, ordering, cap enforcement, missing type, performance budget simulated.
+notes: |
+  2025-09-20 Added retrieval endpoint acceptance.

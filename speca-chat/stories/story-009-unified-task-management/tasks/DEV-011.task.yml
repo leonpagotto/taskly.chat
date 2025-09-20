@@ -1,0 +1,18 @@
+id: DEV-011
+story: story-009
+title: Task service layer
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Add business logic for status transitions, blocking, recurrence expansion.
+acceptance:
+  - Service rejects status regression (e.g., review -> in-progress) with explicit error code STATUS_REGRESSION.
+  - Completing a task (done) automatically sets completedAt (new field transient) returned in DTO but not persisted if model excludes (documented) OR persisted if added (decide & implement; doc in notes).
+  - Adding blocking relation triggers cycle detection via repository helper; cycles prevented with BLOCKING_CYCLE error.
+  - Recurring task with recurrenceRule expands next occurrence on completion (creates new task instance with incremented dueAt) when dueAt present.
+  - Bulk status update function processes up to 100 ids and returns per-id success/failure array.
+  - Service enforces max 50 tags per task; attempt to exceed returns TAG_LIMIT error.
+  - Unit tests cover transition matrix, recurrence expansion, bulk update, tag limit, blocking cycles.
+notes: |
+  2025-09-20 Drafted criteria; refine completedAt persistence approach during implementation.

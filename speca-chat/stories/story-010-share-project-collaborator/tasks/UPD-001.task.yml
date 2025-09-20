@@ -1,0 +1,17 @@
+id: UPD-001
+story: story-010
+title: Documentation & onboarding update for collaboration
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+summary: Update README/handbook with collaborator invitation & roles section.
+acceptance:
+  - README (or docs section) adds "Collaboration" header explaining roles and permissions table.
+  - Step-by-step guide: invite collaborator, accept invite, change role, revoke access.
+  - Security note about token expiration and not sharing invite links publicly.
+  - Example API calls documented (curl) for creating invite and accepting.
+  - Changelog entry added referencing story-010 and new endpoints.
+  - Internal onboarding checklist updated to include inviting a test collaborator.
+notes: |
+  2025-09-20 Added documentation & onboarding criteria.

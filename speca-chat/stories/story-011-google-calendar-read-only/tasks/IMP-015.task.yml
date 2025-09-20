@@ -1,0 +1,17 @@
+id: IMP-015
+story: story-011
+title: Event fetch batching performance
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize fetching events to minimize API calls and latency.
+acceptance:
+  - Batch request strategy limits to <=1 API call per distinct calendar during initial load.
+  - Caching layer stores normalized events for 60s; repeated list within window hits cache (validated via instrumentation logs).
+  - Average end-to-end fetch (network + normalization) < 800ms for 3 calendars with 50 events each in test harness.
+  - Parallelization strategy documented (Promise.all or queue) and avoids exceeding Google rate limits.
+  - Performance test script outputs timing metrics and is checked into repo.
+  - Log includes event count + source calendars per fetch for observability.
+notes: |
+  2025-09-20 Added performance batching criteria.

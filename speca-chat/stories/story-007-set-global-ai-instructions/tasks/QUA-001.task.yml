@@ -1,0 +1,16 @@
+id: QUA-001
+story: story-007
+title: QUA-001
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Load test (synthetic) of 50 concurrent instruction updates completes with zero 500 errors.
+  - Mutation error rate < 1% under simulated latency injection (200ms p95 DB delay) in test harness.
+  - Prompt merge length never exceeds configured budget in tests; any overflows counted & asserted zero.
+  - Static analysis/lint passes with no new warnings for instruction code paths.
+  - Security review checklist completed (no logging of raw tokens, PII exposure avoided).
+  - Test report stored or summarized in task notes.
+notes: |
+  2025-09-20 Added quality/perf acceptance.

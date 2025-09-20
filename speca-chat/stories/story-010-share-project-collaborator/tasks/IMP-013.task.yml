@@ -1,0 +1,17 @@
+id: IMP-013
+story: story-010
+title: Invite flow UX improvements
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize user experience sending multiple invitations quickly.
+acceptance:
+  - Bulk email entry supported (comma or newline separated) with validation feedback per address.
+  - Successful invite send clears only valid addresses, leaving invalid highlighted.
+  - Keyboard-only flow: paste emails, press Enter, confirm send, get success toast, focus returns to input.
+  - Loading state disables submit and shows spinner within button; a11y aria-busy applied.
+  - Sending 10 invites completes under 2 seconds in local test (mock mail send) documented.
+  - Analytics event emitted: invite_batch_sent with counts total, success, invalid.
+notes: |
+  2025-09-20 Added invite UX improvement criteria.

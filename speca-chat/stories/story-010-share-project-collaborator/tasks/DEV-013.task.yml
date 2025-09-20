@@ -1,0 +1,18 @@
+id: DEV-013
+story: story-010
+title: Invitation service logic
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement create, accept, revoke, and expiry handling for invitations.
+acceptance:
+  - createInvitation(email, role, projectId, inviterId) enforces no duplicate active invite for same email + project; returns invitation with redacted token preview (first 4 chars + ellipsis).
+  - Accepting invitation marks acceptedAt, creates ProjectMembership row, invalidates other active invites for same email+project.
+  - Revoking invitation sets revokedAt and prevents future accept.
+  - Expired invitations (expiresAt < now) rejected with INVITE_EXPIRED error.
+  - Token verification constant-time compare to stored hash.
+  - Background cleanup job (or on-demand function) archives invites older than 30d past expiry.
+  - Unit tests cover: duplicate prevention, happy accept, expired accept failure, revoke then accept failure, token mismatch.
+notes: |
+  2025-09-20 Added invitation service criteria.

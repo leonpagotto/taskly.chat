@@ -1,0 +1,16 @@
+id: DEV-002
+story: story-001
+title: Task candidate dedup & merge
+status: backlog
+created: 2025-09-19
+updated: 2025-09-19
+type: feature
+summary: Merge similar extracted task titles to reduce duplicates before user confirmation.
+acceptance:
+  - mergeCandidates(list) consolidates titles with Levenshtein distance <=2 or Jaccard similarity >=0.85.
+  - Merged item retains highest confidence and aggregated phrase variants array.
+  - Runtime processes 20 candidates under 5ms average.
+  - Stop words ignored during similarity comparison (common English list documented).
+  - Unit tests: near-duplicate merge, distinct items remain separate, performance benchmark stub.
+notes: |
+  2025-09-20 Added dedup merge criteria.

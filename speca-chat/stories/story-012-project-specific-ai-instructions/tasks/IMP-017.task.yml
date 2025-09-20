@@ -1,0 +1,17 @@
+id: IMP-017
+story: story-012
+title: Instruction quality guidance & linting
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Provide lint feedback to improve clarity and consistency of instructions.
+acceptance:
+  - Lint function flags: passive voice (>30% sentences), vague terms ("optimize", "improve"), length > 800 chars, missing punctuation end.
+  - Severity levels: warning (passive ratio), error (length > 800) documented.
+  - UI displays inline lint messages under body field with category icon.
+  - Unit tests cover each lint rule violation + clean text.
+  - Performance: lint on 1000 char body < 5ms average.
+  - Lint output structured JSON { ruleId, severity, message, start, end }.
+notes: |
+  2025-09-20 Added instruction linting acceptance.

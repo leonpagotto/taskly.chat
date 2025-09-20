@@ -1,0 +1,16 @@
+id: IMP-003
+story: story-006
+title: IMP-003
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Embedding job consumes queued memory entries and writes vector id on success.
+  - Failures retried with exponential backoff up to 5 attempts then marked error state.
+  - Error state memories excluded from retrieval ranking but still queryable by id.
+  - Metrics emitted: jobs processed, failures, average embedding latency.
+  - Batch processing supported (processes up to N=20 jobs per cycle) to optimize throughput.
+  - Tests (unit/integration) simulate success, retry, terminal failure.
+notes: |
+  2025-09-20 Added embedding pipeline acceptance.

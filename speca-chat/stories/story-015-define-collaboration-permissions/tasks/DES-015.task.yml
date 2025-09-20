@@ -1,0 +1,18 @@
+id: DES-015
+story: story-015
+title: Permission management UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design interface for viewing role permissions and adjusting members.
+acceptance:
+  - Figma includes: Permissions Overview, Member Role Edit dialog.
+  - Overview lists roles with expandable action list (collapsible) showing check marks.
+  - Member Role Edit dialog warns when demoting last owner (distinct style) with required confirmation step.
+  - Mobile variant collapses action list into accordion pattern.
+  - Accessibility annotations for expand/collapse button labels and ARIA roles.
+  - Empty state design for no additional members besides self.
+  - Color tokens align with design system; no new ad-hoc colors introduced.
+notes: |
+  2025-09-20 Added permission UI design acceptance.

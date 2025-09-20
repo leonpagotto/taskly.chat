@@ -1,0 +1,17 @@
+id: IMP-021
+story: story-013
+title: Memory lifecycle status signals
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Add status field transitions (pending->approved/rejected) with reasoning capture.
+acceptance:
+  - Status enum added to model (pending default, approved, rejected).
+  - Approve endpoint records approvedAt timestamp and optional reason (<=200 chars).
+  - Reject endpoint records rejectedAt and mandatory reason.
+  - Pending memories excluded from default retrieval for LLM context (flag applied in query).
+  - Unit tests: approve flow, reject flow, invalid double-approve attempt (idempotent or error documented choice), reason length validation.
+  - Audit events (COM-002) include status transitions with reason snippet.
+notes: |
+  2025-09-20 Added lifecycle status criteria.

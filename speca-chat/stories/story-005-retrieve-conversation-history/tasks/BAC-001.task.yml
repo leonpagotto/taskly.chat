@@ -1,0 +1,18 @@
+id: BAC-001
+story: story-005
+title: BAC-001
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Endpoint specification for conversation retrieval documented (path, params, pagination) in story notes.
+  - Supports filtering by date range (start & end ISO timestamps) returning only messages within bounds.
+  - Pagination uses cursor or ISO timestamp; response includes next cursor when more results exist.
+  - Maximum page size enforced (<=100 messages) with default of 50 when size not provided.
+  - Results sorted ascending by creation time; no duplicates across sequential page fetches.
+  - 95th percentile response time for typical 30-day query under 400ms in local dev with seed data.
+  - Returns structured JSON: { messages: [...], page: { nextCursor, hasMore } } with stable field names.
+  - Invalid date range (start after end) returns 400 with machine-readable error code.
+notes: |
+  2025-09-20 Added concrete acceptance replacing placeholder. Focus on backend endpoint contract and performance baseline.

@@ -1,0 +1,16 @@
+id: DES-003
+story: story-005
+title: DES-003
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - UX wireframe shows conversation history section with clear date boundaries & lazy load affordance.
+  - Loading state skeleton distinct from empty state (empty explains no prior messages found for range).
+  - Error state displays retry action & preserves previously loaded messages.
+  - Infinite scroll or load-more button behavior defined (trigger threshold or button label, respectively).
+  - Accessibility: history region labeled for screen readers and announces newly loaded batch count.
+  - Timezone display clarified (shows local user time with relative time tooltip on hover/focus).
+notes: |
+  2025-09-20 Added design acceptance clarifying UI states & accessibility.

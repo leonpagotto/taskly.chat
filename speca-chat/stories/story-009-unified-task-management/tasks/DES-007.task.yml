@@ -1,0 +1,18 @@
+id: DES-007
+story: story-009
+title: Unified task list UX design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Produce Figma spec for consolidated task list & filters.
+acceptance:
+  - Figma frame shows desktop layout with: left filter panel, main task list, right detail drawer.
+  - Filter panel includes controls: status multi-select, source multi-select, date range (due), text search, priority multi-select, tag picker.
+  - List row design displays: checkbox, title, status pill, due date (relative if <7d), priority icon, source icon, tag overflow indicator.
+  - Hover state and selected row state specified with color + elevation tokens referencing existing design system variables.
+  - Empty state artwork + copy included for zero results after filter applied.
+  - Accessibility notes specify minimum 4.5:1 contrast for text and focus ring style.
+  - Developer handoff notes enumerate spacing (px), font sizes, and color tokens.
+notes: |
+  2025-09-20 Replaced placeholder with concrete design deliverables.

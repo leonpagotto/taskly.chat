@@ -1,0 +1,16 @@
+id: DAT-001
+story: story-005
+title: DAT-001
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Indexed fields (userId, createdAt) exist to support date range + pagination queries efficiently.
+  - Query for last 30 days of messages for active user executes < 50ms in local dev dataset (>=10k messages) excluding network latency.
+  - Database migration adds required composite index without dropping existing data.
+  - Rollback script or plan documented for migration.
+  - Explain analyze output captured for representative query and stored in task notes.
+  - No full table scans observed in retrieval query under normal filter usage.
+notes: |
+  2025-09-20 Added data-layer performance and indexing criteria.

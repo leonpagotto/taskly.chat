@@ -1,0 +1,16 @@
+id: QUA-002
+story: story-008
+title: QUA-002
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Load test simulating 500 reminders across scheduler cycle fires < 5% late (outside window by >10s).
+  - Memory usage of scheduler process stable (<50MB increase over 30 cycles) under load test.
+  - No unhandled promise rejections in logs during stress test run.
+  - Lint + typecheck produce zero errors/warnings for reminder modules.
+  - Security review: no PII leakage in logs; redact payload where sensitive.
+  - Test summary documented in task notes.
+notes: |
+  2025-09-20 Added quality/performance acceptance.

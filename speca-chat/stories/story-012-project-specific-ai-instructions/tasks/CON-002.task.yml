@@ -1,0 +1,17 @@
+id: CON-002
+story: story-012
+title: Instruction context retrieval pipeline
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Retrieve and prepare layered instruction context (global + project) for LLM calls.
+acceptance:
+  - Retrieval function loads global instructions (active) and project instructions (active) in single DB round trip.
+  - Instructions filtered to exclude archived/disabled entries.
+  - Order applied: project overrides inserted before conflicting global; non-conflicting global appended.
+  - Output truncated if combined token length > configured max; truncation strategy favors project-specific content (document algorithm).
+  - Unit tests cover: only global present, only project present, conflict override, token limit truncation.
+  - Telemetry event emitted when truncation occurs with counts pre/post.
+notes: |
+  2025-09-20 Added retrieval pipeline acceptance.

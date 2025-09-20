@@ -1,0 +1,16 @@
+id: IMP-005
+story: story-006
+title: IMP-005
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Personalization API returns top K (config default 20) ranked memories with score field.
+  - Supports override param k (<=50) else returns 400 for exceeding limit.
+  - Includes debug mode (optional param) that returns component score breakdowns when enabled.
+  - Latency budget: 95th percentile personalization response < 250ms (excluding cold start).
+  - Caches results for identical k + user within 30s window to reduce load; cache invalidated on memory create/update.
+  - Tests cover k limit, debug mode, caching behavior, latency measurement instrumentation stub.
+notes: |
+  2025-09-20 Added personalization API acceptance.

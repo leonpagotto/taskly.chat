@@ -1,0 +1,16 @@
+id: IMP-007
+story: story-008
+title: IMP-007
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Context extraction identifies relevant keywords/entities from last N (>=20) messages for reminder suggestion.
+  - Suggestion algorithm ranks potential reminders with score (0-1) and threshold configurable.
+  - False-positive rate in test corpus under 15% (document sample size & calculation method).
+  - Supports ignoring keywords already used in existing active reminders.
+  - Performance: suggestion pass completes < 150ms for 20 messages local.
+  - Tests cover ranking, threshold filtering, ignore existing, performance budget envelope.
+notes: |
+  2025-09-20 Added context suggestion acceptance.

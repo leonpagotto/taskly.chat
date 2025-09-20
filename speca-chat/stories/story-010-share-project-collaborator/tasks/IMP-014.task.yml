@@ -1,0 +1,17 @@
+id: IMP-014
+story: story-010
+title: Member list performance & scalability
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Ensure member list handles large projects efficiently.
+acceptance:
+  - Virtualized rendering strategy used when members > 50; verified by DOM node count < 60 for 500 members.
+  - Search/filter input (by name/email) returns results under 150ms with 500 member dataset.
+  - No layout shift > 0.02 when filtering.
+  - Role change action on scrolled item preserves scroll position post-update.
+  - Performance profile shows less than 5ms scripting time per scroll frame in large dataset scenario.
+  - Memory leak test (navigate away & back 5x) shows no increase >5% retained nodes snapshot.
+notes: |
+  2025-09-20 Added performance/scalability criteria.

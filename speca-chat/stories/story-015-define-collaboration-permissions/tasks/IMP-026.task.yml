@@ -1,0 +1,17 @@
+id: IMP-026
+story: story-015
+title: Permission system observability improvements
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Add tracing & metrics for permission checks and role changes.
+acceptance:
+  - Metrics: permission_check_total (labels: actionId, outcome), permission_check_latency histogram, role_change_total.
+  - Trace spans added around middleware evaluation with attributes: userRole, actionIds, outcome.
+  - Log sampling strategy: first denial logged at info; repeated same user/action suppressed for 5m (dedupe mechanism documented).
+  - Dashboard (placeholder JSON spec) listing key metrics defined and saved to repo.
+  - Unit tests mock metrics emitter verifying increment & labels.
+  - Performance overhead of metrics collection <5% vs baseline (document numbers).
+notes: |
+  2025-09-20 Added observability criteria.

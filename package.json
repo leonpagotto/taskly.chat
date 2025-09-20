@@ -11,6 +11,7 @@
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "husky": "9.0.11",
+    "localtunnel": "^2.0.2",
     "typescript": "5.9.2",
     "vitest": "^3.2.4",
     "yaml": "^2.8.1"
@@ -38,9 +39,11 @@
     "task:status": "node scripts/update-task-status.mjs",
     "tasks:archive": "node scripts/archive-done-tasks.mjs",
     "spec:index:json": "node scripts/generate-spec-index.mjs --json",
-  "guard:legacy-paths": "node scripts/check-legacy-paths.mjs",
-  "spec:board": "node speca-chat/scripts/generate-board.mjs",
-  "spec:validate": "node speca-chat/scripts/validate-structure.mjs",
+    "guard:legacy-paths": "node scripts/check-legacy-paths.mjs",
+    "spec:board": "node speca-chat/scripts/generate-board.mjs",
+    "spec:validate": "node speca-chat/scripts/validate-structure.mjs",
+    "spec:lint:placeholders": "node speca-chat/scripts/lint-placeholders.mjs",
+    "tunnel": "lt --port 3000 --print-requests",
     "prepare": "husky"
   }
 }

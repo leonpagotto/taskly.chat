@@ -1,0 +1,17 @@
+id: IMP-023
+story: story-013
+title: Memory bulk operations efficiency
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize bulk approve/delete/tag operations for up to 500 memories.
+acceptance:
+  - Bulk approve endpoint processes up to 500 IDs in <= 2 DB round trips (excluding audit inserts).
+  - Bulk delete soft-deletes (sets deletedAt) and enqueues background vector store purge (placeholder event emission).
+  - Bulk tag add/remove operations return per-id success/failure array.
+  - Invalid ID handling does not abort entire batch; failures aggregated.
+  - Performance test (script) demonstrates bulk approve of 500 averages < 1s locally.
+  - Unit tests: partial failure scenario, empty list (400), max size boundary.
+notes: |
+  2025-09-20 Added bulk operation criteria.

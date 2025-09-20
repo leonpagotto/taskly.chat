@@ -1,0 +1,16 @@
+id: DEV-001
+story: story-001
+title: NLP task extraction prototype
+status: backlog
+created: 2025-09-19
+updated: 2025-09-19
+type: feature
+summary: Prototype function extracting task candidates from a freeform user message.
+acceptance:
+  - extractTasks(text) returns array of objects { title, confidence }.
+  - Confidence is float 0-1 and >=0.7 for clear imperative sentences in test set (list documented examples).
+  - Maximum tasks per input capped at 5; longer list truncated with note (boolean flag truncated=true) on result set.
+  - Sentences containing scheduling words ("tomorrow", specific date) include them in title normalization.
+  - Unit tests cover: multiple tasks in one sentence, no tasks case (empty array), truncation path.
+notes: |
+  2025-09-20 Replaced placeholder with concrete extraction prototype criteria.

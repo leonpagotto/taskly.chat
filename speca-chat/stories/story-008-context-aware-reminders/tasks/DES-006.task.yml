@@ -1,0 +1,17 @@
+id: DES-006
+story: story-008
+title: Reminder creation UX design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design form & flows for context-aware reminder creation.
+acceptance:
+  - Figma shows reminder form fields: Title, Trigger (time/date or contextual), Related Task (optional), Notes.
+  - Contextual trigger section includes pattern examples ("when I finish X", "at start of workday") with guidance copy.
+  - Validation states (missing title, invalid date, ambiguous trigger) documented with visual treatment.
+  - Preview panel design shows computed trigger summary sentence before save.
+  - Mobile layout adapts form to single column with persistent save button.
+  - Accessibility focus order and labels for each input annotated.
+notes: |
+  2025-09-20 Added reminder creation UX design criteria.

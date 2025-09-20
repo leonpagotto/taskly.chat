@@ -1,0 +1,16 @@
+id: INT-004
+story: story-007
+title: INT-004
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Integration test seeds user with existing instruction and verifies retrieval + merge into conversation request.
+  - Updating instruction invalidates any cached merged prompt representation.
+  - Test simulates stale version conflict and asserts 409 path.
+  - End-to-end call shows global instruction text present in first assistant response context variable.
+  - Performance: additional merge step adds < 10ms overhead (measured in test env stub timing).
+  - Artifacts (logs or debug output) captured to verify truncation scenario.
+notes: |
+  2025-09-20 Added integration acceptance.

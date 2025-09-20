@@ -1,0 +1,17 @@
+id: DEV-017
+story: story-012
+title: Instruction merge & precedence module
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement merging logic producing ordered final instruction list with provenance.
+acceptance:
+  - Merge function takes arrays (global, project) returns ordered output array each item { id?, text, source, precedenceRank }.
+  - Conflicts identified via category + key phrase overlap (case-insensitive) and global version suppressed (excluded) with record in metadata.
+  - Deterministic ordering: project instructions first by createdAt asc, then remaining global by createdAt asc.
+  - Token length limit respected (configurable) with last entries trimmed while preserving at least first 3 project items.
+  - Unit tests cover: no conflict, single conflict, multiple conflict, token limit trimming, stable ordering (snapshot).
+  - Complexity O(n log n) or better with n = total instructions; documented.
+notes: |
+  2025-09-20 Added merge module acceptance.

@@ -1,0 +1,18 @@
+id: CRE-001
+story: story-014
+title: Rule creation & persistence API
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Persist automation rules with conditions & actions and expose create/list/delete endpoints.
+acceptance:
+  - Rule model: id ULID, userId, name, isActive, conditions JSON[], actions JSON[], createdAt, updatedAt, lastRunAt nullable.
+  - POST /api/automation/rules creates rule validating: at least 1 condition & 1 action, name <= 80 chars.
+  - GET /api/automation/rules lists user rules ordered by createdAt desc.
+  - DELETE /api/automation/rules/:id soft deletes (sets deletedAt) returns 204.
+  - Conditions validation: max 10 per rule; actions max 5; failure returns 422 with code LIMIT_EXCEEDED.
+  - Integration tests: create success, invalid (no conditions), delete then list (excluded).
+  - OpenAPI/contract updated for new endpoints.
+notes: |
+  2025-09-20 Added rule creation API criteria.

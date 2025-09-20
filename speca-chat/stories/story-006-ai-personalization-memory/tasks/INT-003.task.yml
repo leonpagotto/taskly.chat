@@ -1,0 +1,17 @@
+id: INT-003
+story: story-006
+title: Memory store integration service
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Provide integration layer bridging raw memory extraction events to persistence repository.
+acceptance:
+  - ingestMemory(event) validates payload fields (text, userId, source) and rejects missing text with error INVALID_MEMORY_INPUT.
+  - Deduplicates new memory if identical text exists for user within last 24h returning existing id.
+  - Applies basic enrichment (token length, tag suggestions placeholder) before save.
+  - Emits memory.created event after successful persistence with new id.
+  - Unit tests: dedupe path, validation error, enrichment applied flag.
+  - Average ingestion path under 15ms in local benchmark for simple payload.
+notes: |
+  2025-09-20 Added integration service criteria.

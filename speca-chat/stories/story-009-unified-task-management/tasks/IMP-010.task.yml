@@ -1,0 +1,17 @@
+id: IMP-010
+story: story-009
+title: Task list UX responsiveness
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Ensure unified task list renders smoothly across breakpoints.
+acceptance:
+  - Layout gracefully collapses filter panel into a slide-over on screens < 960px.
+  - Initial list render (first 50 tasks) completes under 200ms in Lighthouse performance profile on mid-tier laptop.
+  - Scroll FPS remains >=55fps while rapidly scrolling through 500 task virtualized list.
+  - Keyboard navigation (Up/Down, Enter to open detail) works in both desktop and mobile views.
+  - Focus outline visible for interactive elements with 3:1 contrast ratio.
+  - CLS for task list interactions < 0.02 measured via Lighthouse.
+notes: |
+  2025-09-20 Added responsiveness & performance UX criteria.

@@ -1,0 +1,17 @@
+id: COM-001
+story: story-010
+title: Collaborator invite communication copy
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Draft and approve email + in-app copy for collaborator invitation.
+acceptance:
+  - Email subject line includes project name and action ("Invitation to collaborate on <Project>").
+  - Email body contains: inviter name, project name, brief purpose sentence, CTA button, fallback plain URL, support contact.
+  - In-app notification copy fits within 140 characters while conveying inviter name and project title.
+  - Copy reviewed for inclusive language (no gendered assumptions) and reading level <= grade 8 (using readability tool; score documented).
+  - Fallback text for expired token contains link to request new invite.
+  - All dynamic placeholders (<Project>, <InviterName>, <ExpiryDate>) enumerated in implementation notes.
+notes: |
+  2025-09-20 Added concrete communication copy criteria.

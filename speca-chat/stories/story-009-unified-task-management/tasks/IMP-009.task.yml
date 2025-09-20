@@ -1,0 +1,16 @@
+id: IMP-009
+story: story-009
+title: Task indexing & query performance
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize DB indexes and query plans for high-volume task listing.
+acceptance:
+  - EXPLAIN ANALYZE on baseline list query (filters: status in 3 values, ownerId, dueBefore) shows total cost reduced >=30% versus unindexed baseline (captured in notes) using added composite indexes.
+  - Added covering index for (ownerId,status,dueAt,id) used by planner for typical dashboard query.
+  - Query with tag[] filter uses GIN index on tags array (or join table) verified via EXPLAIN.
+  - No new sequential scans on tasks table for filtered queries in performance test set (list documented cases in notes).
+  - Performance test script added under scripts/perf or similar location with reproducible steps.
+notes: |
+  2025-09-20 Added performance optimization criteria.

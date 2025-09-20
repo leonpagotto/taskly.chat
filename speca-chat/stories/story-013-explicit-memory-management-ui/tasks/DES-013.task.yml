@@ -1,0 +1,18 @@
+id: DES-013
+story: story-013
+title: Memory management UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design list, detail, and edit flows for memories.
+acceptance:
+  - Figma shows list view with columns: Type, Summary, Created (relative), Status (pending|approved|rejected), Actions.
+  - Detail panel design includes full text, tags, source metadata, event history section.
+  - Bulk select design for multi-delete/approve with confirmation modal.
+  - Empty state + search no-results state each with distinct illustration/copy.
+  - Responsive layout spec for mobile stacking detail below list.
+  - Accessibility annotations for focus order, ARIA labels for status pills and action buttons.
+  - Color contrast meets WCAG AA for text & interactive elements.
+notes: |
+  2025-09-20 Added UI design acceptance.

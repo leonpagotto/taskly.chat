@@ -1,0 +1,16 @@
+id: DEV-007
+story: story-007
+title: DEV-007
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - API allows create/update/fetch global instructions for authenticated user only.
+  - POST creates new when none exists; PUT updates existing with version check.
+  - GET returns current instruction or 404 if none set.
+  - Unauthorized call returns 401; accessing another user's instruction impossible (scoped by auth token).
+  - Input sanitized (trim whitespace, collapse >2 consecutive blank lines).
+  - Tests cover create, update, get empty, unauthorized, version conflict.
+notes: |
+  2025-09-20 Added API CRUD acceptance.

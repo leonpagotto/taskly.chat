@@ -1,0 +1,16 @@
+id: DEV-009
+story: story-008
+title: DEV-009
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Scheduler scans due active reminders every minute (configurable interval) without drifting >5s over 10 cycles.
+  - Idempotency ensured: same reminder not fired twice within its window.
+  - Execution records persisted (reminderId, firedAt) for audit.
+  - Paused reminders skipped; disabled ignored.
+  - Metrics collected: remindersChecked, remindersFired, skippedPaused, skippedDisabled.
+  - Tests simulate firing, idempotency, pause/disable, timing drift.
+notes: |
+  2025-09-20 Added scheduler acceptance.

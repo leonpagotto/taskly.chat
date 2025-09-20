@@ -1,0 +1,18 @@
+id: DEF-005
+story: story-010
+title: Collaborator domain & invitation model
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Define DB schema for project membership and invitation lifecycle.
+acceptance:
+  - Tables created: ProjectMembership(id, projectId, userId, role, createdAt, updatedAt, revokedAt nullable); ProjectInvitation(id ULID, projectId, inviterUserId, email, roleSuggested, token (secure random 32+ chars), expiresAt, acceptedAt nullable, revokedAt nullable, createdAt).
+  - Unique constraint prevents multiple active invitations for same (projectId,email) pair.
+  - Role enum defined (owner|editor|viewer) documented in notes.
+  - Invitation token indexed and one-way hashed (store hash, not raw) with method to verify input token.
+  - Expired invitations excluded from active queries.
+  - Migration includes down script reversing schema.
+  - Unit tests: uniqueness constraint violation, token verification success/failure, expiry exclusion.
+notes: |
+  2025-09-20 Added membership + invitation schema acceptance.

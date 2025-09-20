@@ -1,0 +1,17 @@
+id: IMP-024
+story: story-014
+title: Rule execution performance tuning
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Optimize rule evaluation throughput for high event volume.
+acceptance:
+  - Benchmark: 500 rules evaluated against event in < 250ms average (document hardware).
+  - Hot paths profiled; at least one micro-optimization (e.g., precompiled predicate) implemented with measured gain.
+  - Memory usage snapshot after 10k evaluations shows no sustained growth (>5% increase) indicating no leaks.
+  - Caching layer introduced for static condition parsing reducing per-eval allocations (document improvement numbers).
+  - Benchmark script committed with reproducible dataset.
+  - Results recorded in notes including baseline vs optimized metrics.
+notes: |
+  2025-09-20 Added performance tuning criteria.

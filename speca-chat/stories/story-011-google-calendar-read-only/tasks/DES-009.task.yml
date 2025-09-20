@@ -1,0 +1,18 @@
+id: DES-009
+story: story-011
+title: Calendar panel UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design read-only calendar sidebar/panel showing upcoming events.
+acceptance:
+  - Figma shows panel with sections: Today, Tomorrow, Later This Week (group headers).
+  - Event row includes: start time (localized 12/24h per user), title (truncate with ellipsis), duration badge if > 60m, source icon.
+  - Hover state reveals tooltip with full title and time range.
+  - Empty state illustration + copy for no remaining events today.
+  - Loading skeleton design for 5 placeholder rows documented.
+  - Focus/keyboard navigation order documented for accessibility.
+  - Color tokens used reference existing design system variables (no hard-coded hex values in spec).
+notes: |
+  2025-09-20 Added concrete UI design acceptance criteria.

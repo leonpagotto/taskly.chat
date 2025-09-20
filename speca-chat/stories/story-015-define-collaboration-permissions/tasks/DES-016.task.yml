@@ -1,0 +1,17 @@
+id: DES-016
+story: story-015
+title: Action catalog documentation layout design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design docs layout for action catalog & matrix (developer + stakeholder clarity).
+acceptance:
+  - Layout includes: summary, role definitions, action table, change log section.
+  - Responsive formatting for narrow width (table collapses to definition list) specified.
+  - Iconography or badge style for risk level (low/medium/high) prepared (placeholder risk mapping instructions).
+  - Print-friendly styling guidelines (monochrome legibility) noted.
+  - Accessibility: table headers associated (scope=col/row) and caption included.
+  - Version tag component style for next revisions included.
+notes: |
+  2025-09-20 Added documentation layout design acceptance.

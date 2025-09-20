@@ -1,9 +1,0 @@
-id: COM-001
-story: story-010
-title: COM-001
-status: backlog
-created: 2025-09-20
-updated: 2025-09-20
-type: chore
-acceptance:
-  - Define acceptance criteria

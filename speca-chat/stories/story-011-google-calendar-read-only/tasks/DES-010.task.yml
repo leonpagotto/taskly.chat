@@ -1,0 +1,13 @@
+id: DES-010
+story: story-011
+title: DES-010
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - Low-fidelity UI mock includes: upcoming events list (next 7 days), refresh control, empty-state messaging.
+  - Active event (occurring now) visually distinguished (e.g., accent border) per design tokens.
+  - Skeleton loading state specified for initial fetch (2–5 placeholders) with accessibility labels.
+  - Error state copy defined for network/auth failure distinct from empty state.
+  - Interaction specification notes keyboard navigation order and focus outline.

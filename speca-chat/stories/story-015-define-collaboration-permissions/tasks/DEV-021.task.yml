@@ -1,0 +1,17 @@
+id: DEV-021
+story: story-015
+title: Role assignment & change service
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Service layer to change member role ensuring last owner constraints.
+acceptance:
+  - changeRole(memberId,newRole,actorId) prevents removal of last owner (throws LAST_OWNER error code) unless simultaneously promoting another (bulk not in scope; documented).
+  - Idempotent: setting role to existing returns no-op result object with flag unchanged=true.
+  - Event emitted (membership.role.changed) with before/after roles.
+  - Unit tests: happy path, last owner violation, idempotent no change, downgrade self scenario.
+  - Service logs structured audit entry with actorId, memberId, oldRole, newRole.
+  - Transaction safe: either membership row updates or error thrown (no partial state).
+notes: |
+  2025-09-20 Added role change service acceptance.

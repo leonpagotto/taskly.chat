@@ -1,0 +1,19 @@
+id: DEV-012
+story: story-009
+title: Task API endpoints
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Expose REST/HTTP routes for task CRUD and listing.
+acceptance:
+  - POST /api/tasks validates required fields (title, source) and returns 201 with JSON body (id,...fields).
+  - GET /api/tasks/:id returns 404 JSON {error:"NOT_FOUND"} for missing or deleted task.
+  - PATCH /api/tasks/:id allows partial updates; attempting to modify source returns 400 with error SOURCE_IMMUTABLE.
+  - GET /api/tasks supports documented filters (status, source, projectId, ownerId, dueBefore, dueAfter, tag[], text) + pagination (?cursor, ?limit) returning envelope { items, page: { nextCursor, hasMore, total } }.
+  - DELETE /api/tasks/:id performs soft delete and returns 204.
+  - Input validation errors return 422 with field-specific messages array.
+  - OpenAPI (or typed contract) spec generated/updated reflecting endpoints & schemas.
+  - Integration tests cover happy path + 1 validation error + 1 not found case per endpoint.
+notes: |
+  2025-09-20 Added detailed API acceptance criteria.

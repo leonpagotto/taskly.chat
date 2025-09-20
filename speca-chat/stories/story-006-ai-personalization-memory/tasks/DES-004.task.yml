@@ -1,0 +1,16 @@
+id: DES-004
+story: story-006
+title: DES-004
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+acceptance:
+  - UX mock shows memory inspection panel with sections: recent, pinned, suggested merges.
+  - Visual distinction between user-authored memory and system-inferred memory.
+  - Edit & delete affordances visible on focus/hover with keyboard accessibility.
+  - Empty states provide guidance (e.g., no pinned memories yet) without generic placeholders.
+  - Privacy inline explanation present (how data used) with link to settings.
+  - Color and contrast meet WCAG AA for text & interactive elements.
+notes: |
+  2025-09-20 Added design acceptance criteria.

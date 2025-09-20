@@ -1,0 +1,19 @@
+id: DEV-010
+story: story-009
+title: Task repository implementation
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement data repository with CRUD + filtered list queries.
+acceptance:
+  - CreateTask persists model fields (excluding derived) and returns saved entity with ULID id.
+  - GetTask returns null for soft-deleted tasks.
+  - UpdateTask supports partial updates; immutable fields (id, createdAt, source) unaffected.
+  - ListTasks supports filters: status[]; source[]; projectId; ownerId; dueBefore; dueAfter; text (ILIKE on title+description); tag[] (intersection) and returns total count + page items.
+  - Query results ordered by dueAt asc NULLS LAST then priority desc then createdAt desc.
+  - Pagination via cursor (opaque encoded createdAt+id) with stable ordering; unit tests cover page boundaries.
+  - Repository method to compute blocking graph returns adjacency without cycles for given task id.
+  - 90%+ branch coverage for repository file(s).
+notes: |
+  2025-09-20 Added concrete repo criteria.

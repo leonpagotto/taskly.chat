@@ -1,0 +1,17 @@
+id: COM-002
+story: story-013
+title: Memory change event feed & audit
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Implement event logging for memory create/update/delete/approve actions.
+acceptance:
+  - Event model fields: id ULID, memoryId, type(enum created|updated|deleted|approved|rejected), actorUserId, diff(JSON), createdAt.
+  - Diff stores before/after for updated events (fields changed only).
+  - Log entry created within same transaction as memory mutation.
+  - API endpoint GET /api/memories/:id/events returns chronological list (asc) limited 100 with pagination cursor.
+  - Unit tests cover create/update/delete generating appropriate event types and diff shape.
+  - Redaction: personally sensitive fields (if any classification flag) excluded from diff (placeholder logic documented).
+notes: |
+  2025-09-20 Added audit event acceptance.

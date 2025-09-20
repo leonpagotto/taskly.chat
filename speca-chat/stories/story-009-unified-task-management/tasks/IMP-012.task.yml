@@ -1,0 +1,17 @@
+id: IMP-012
+story: story-009
+title: Task search relevance tuning
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Improve text search relevance for tasks (title+description+tags).
+acceptance:
+  - Full text search implemented (e.g., PostgreSQL tsvector) combining title (weight A), tags (weight B), description (weight C) with documented weighting.
+  - Search endpoint (?q=) returns results ordered by ts_rank with deterministic tiebreaker (createdAt desc).
+  - Query with multi-term input returns tasks containing all terms unless quoted phrase used.
+  - Partial term search (prefix) supported via trigram or GIN pending performance evaluation documented in notes.
+  - Relevance test dataset (>=20 tasks) demonstrates higher relevance scores for exact title matches vs partial description matches.
+  - Explain plan for search query shows index usage (GIN/GIST) without sequential scan on large dataset sample.
+notes: |
+  2025-09-20 Added search relevance criteria.

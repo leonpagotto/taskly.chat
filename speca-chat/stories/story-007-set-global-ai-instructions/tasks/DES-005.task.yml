@@ -1,0 +1,17 @@
+id: DES-005
+story: story-007
+title: Global instructions management UI design
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Design interface to add, edit, archive global AI instructions.
+acceptance:
+  - Figma includes listing view with instruction title, truncated body, active toggle, edit action.
+  - Add/edit modal defines validation messaging (title required <=80 chars, body min 10 chars) with inline states.
+  - Archive action confirmation dialog design includes consequence text (no longer applied) and undo pattern decision (documented).
+  - Badge style differentiates global vs project instructions (color or icon) for shared components.
+  - Mobile layout stacks list items full-width with overflow menu.
+  - Accessibility annotations cover modal focus trap and toggle labels.
+notes: |
+  2025-09-20 Added global instructions UI design criteria.

@@ -1,0 +1,13 @@
+id: TOOL-008
+story: story-004
+title: TOOL-008
+status: done
+created: 2025-09-19
+updated: 2025-09-19
+type: feature
+owner: system
+related: []
+acceptance:
+  - Validator fails on unsupported type
+  - Error message lists allowed types
+  - Existing tasks updated to conform (default unknown replaced with chore or doc as appropriate)

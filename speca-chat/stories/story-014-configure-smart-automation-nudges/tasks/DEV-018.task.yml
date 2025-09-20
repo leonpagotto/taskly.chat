@@ -1,0 +1,18 @@
+id: DEV-018
+story: story-014
+title: Rule evaluation engine
+status: backlog
+created: 2025-09-20
+updated: 2025-09-20
+type: feature
+summary: Evaluate stored rules against task/memory events and produce action payloads.
+acceptance:
+  - Engine supports operators: equals, notEquals, in, notIn, exists, before, after, contains.
+  - Evaluation triggers on task created/updated events (mock event bus) and memory approved events.
+  - Matching returns array of actions with resolved variables (e.g., {{task.id}}) substituted.
+  - Performance: evaluating 50 rules against single task event completes < 30ms average.
+  - Rule short-circuits false conditions early (AND semantics) documented.
+  - Unit tests cover each operator, multi-condition rule, and variable substitution.
+  - Malformed rule detection logs error and skips without crashing.
+notes: |
+  2025-09-20 Added evaluation engine acceptance.
