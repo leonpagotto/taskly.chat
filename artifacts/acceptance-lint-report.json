@@ -1,0 +1,1392 @@
+{
+  "generated": "2025-09-20T14:19:32.070Z",
+  "totalFindings": 159,
+  "findings": [
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/DEV-001.task.yml",
+      "index": 1,
+      "item": "Define criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/DEV-002.task.yml",
+      "index": 1,
+      "item": "Define criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/IMP-001.task.yml",
+      "index": 1,
+      "item": "Define criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/task-001.task.yml",
+      "index": 1,
+      "item": "Interface `LobeChatProvider` defined",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/task-001.task.yml",
+      "index": 2,
+      "item": "Heuristic implementation present",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-001/tasks/task-001.task.yml",
+      "index": 3,
+      "item": "Exported through integration package",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-201.task.yml",
+      "index": 1,
+      "item": "UI allows local folder selection (File System Access API fallback docs if unsupported).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-201.task.yml",
+      "index": 2,
+      "item": "UI accepts GitHub HTTPS URL (public) and validates accessibility.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-201.task.yml",
+      "index": 3,
+      "item": "Basic validation errors surfaced (unreachable, empty, unsupported structure).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-201.task.yml",
+      "index": 4,
+      "item": "Emits normalized source descriptor object to ingestion pipeline.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-202.task.yml",
+      "index": 1,
+      "item": "Supports story headers & task headers per structure doc.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-202.task.yml",
+      "index": 2,
+      "item": "Ignores unknown header lines gracefully.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-202.task.yml",
+      "index": 3,
+      "item": "Associates tasks to stories via `Story:` field or sets NONE.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-202.task.yml",
+      "index": 4,
+      "item": "Reports malformed files (missing Task ID or Status) with warnings list.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-203.task.yml",
+      "index": 1,
+      "item": "Columns derived from existing status directories (backlog, todo, in-progress, review, done).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-203.task.yml",
+      "index": 2,
+      "item": "Stable ordering for tasks within a column preserved unless user reorders.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-002/tasks/IMP-203.task.yml",
+      "index": 3,
+      "item": "Provides diff of ordering vs last synced state.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 1,
+      "item": "Stub component `LobeChatMount` exists under `apps/chat/src/components/`.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 2,
+      "item": "Component shows merged system prompt panel.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 3,
+      "item": "`ChatShell` replaced on home page.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 4,
+      "item": "Real Lobe dependency integrated (or minimal vendored subset) replacing stub (implemented minimal provider + interface under `packages/integration/src/lobe/`).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 5,
+      "item": "Instruction adapter (IMP-102) still injects layers unchanged (no code changes required; tests passing).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 6,
+      "item": "Draft extraction hook (IMP-103) still functions with no regression (existing tests + manual usage unaffected).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-101.task.yml",
+      "index": 7,
+      "item": "System prompt segment rendering unchanged post integration (verified same prop pass-through).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-102.task.yml",
+      "index": 1,
+      "item": "Gracefully handles empty layers (returns minimal array or placeholder)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-102.task.yml",
+      "index": 2,
+      "item": "Flattens layer content into ordered string segments preserving priority",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-102.task.yml",
+      "index": 3,
+      "item": "Excludes disabled layers (future-proof: skip if `enabled === false` when field exists)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-102.task.yml",
+      "index": 4,
+      "item": "Exported utility available via `@taskly/ai`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-102.task.yml",
+      "index": 5,
+      "item": "Unit test scaffold placeholder (implemented as `packages/ai/src/instructionAdapter.spec.ts`)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-103.task.yml",
+      "index": 1,
+      "item": "Hook `useTaskDraftExtraction` created under `apps/chat/src/components/` (or `hooks/`).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-103.task.yml",
+      "index": 2,
+      "item": "Accepts latest user message content and returns extracted `TaskDraft[]` plus raw parse (future-proof for enrichment).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-103.task.yml",
+      "index": 3,
+      "item": "Graceful handling of empty or whitespace messages (returns empty drafts array).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-103.task.yml",
+      "index": 4,
+      "item": "Side-effect free (no direct fetch) – delegates parsing to existing local utilities (placeholder) for now.",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/IMP-103.task.yml",
+      "index": 5,
+      "item": "Unit test scaffold or clear TODO markers for future test coverage. (Implemented `useTaskDraftExtraction.spec.tsx`).",
+      "issues": [
+        "missing-strong-verb",
+        "trailing-period"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-003/tasks/RES-001.task.yml",
+      "index": 1,
+      "item": "Define criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-001.task.yml",
+      "index": 1,
+      "item": "Script outputs deterministic ordering by story number",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-001.task.yml",
+      "index": 2,
+      "item": "Includes columns: Story, Title, Status, Backlog, InProgress, Review, Done",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-001.task.yml",
+      "index": 3,
+      "item": "Skips non-story directories",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-001.task.yml",
+      "index": 4,
+      "item": "Handles missing status folders gracefully (zero counts)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-001.task.yml",
+      "index": 5,
+      "item": "Available via `pnpm spec:index`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 1,
+      "item": "Exits with non-zero if any task invalid",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 2,
+      "item": "Reports file path + missing/invalid fields",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 3,
+      "item": "Required fields: Task Title (line 1), Status, Story, Created, Type",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 4,
+      "item": "Status must be one of Backlog|InProgress|Review|Done",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 5,
+      "item": "Supports optional fields (Updated, Related, Owner) without failing",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-002.task.yml",
+      "index": 6,
+      "item": "Wire to `pnpm tasks:validate`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-003.task.yml",
+      "index": 1,
+      "item": "Husky installed with `prepare` script",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-003.task.yml",
+      "index": 2,
+      "item": "Pre-commit runs `pnpm tasks:validate`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-003.task.yml",
+      "index": 3,
+      "item": "Commit blocked if validator fails",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-003.task.yml",
+      "index": 4,
+      "item": "Commit blocked if staged paths match `apps/*/.next/`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-003.task.yml",
+      "index": 5,
+      "item": "Document workflow in CONTRIBUTING",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-004.task.yml",
+      "index": 1,
+      "item": "All task files in status folders begin with `# Task:` line",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-004.task.yml",
+      "index": 2,
+      "item": "Required header fields present (Status, Story, Created, Type)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-004.task.yml",
+      "index": 3,
+      "item": "Original content preserved under `## Legacy Body` if body existed without template",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-004.task.yml",
+      "index": 4,
+      "item": "Validator passes with zero errors post-migration",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-005.task.yml",
+      "index": 1,
+      "item": "All story.md have a Status line",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-005.task.yml",
+      "index": 2,
+      "item": "Existing Status values preserved if present",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-005.task.yml",
+      "index": 3,
+      "item": "Newly inferred status defaults to Draft",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-006.task.yml",
+      "index": 1,
+      "item": "Reports unresolved story references",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-006.task.yml",
+      "index": 2,
+      "item": "Reports unresolved task references",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-006.task.yml",
+      "index": 3,
+      "item": "Warns (not fails) on missing reciprocal links",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-006.task.yml",
+      "index": 4,
+      "item": "Exit code non-zero only on unresolved references",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-007.task.yml",
+      "index": 1,
+      "item": "Workflow triggers on push & pull_request",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-007.task.yml",
+      "index": 2,
+      "item": "Runs `pnpm install`, `pnpm tasks:validate`",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-007.task.yml",
+      "index": 3,
+      "item": "Runs `pnpm spec:index` and fails if working tree dirty afterward",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-007.task.yml",
+      "index": 4,
+      "item": "Uses node 20.x",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-008.task.yml",
+      "index": 1,
+      "item": "Validator fails on unsupported type",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-008.task.yml",
+      "index": 3,
+      "item": "Existing tasks updated to conform (default unknown replaced with chore or doc as appropriate)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-009.task.yml",
+      "index": 1,
+      "item": "Adds columns: %Done, LastUpdated",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-009.task.yml",
+      "index": 2,
+      "item": "%Done = DoneTasks / TotalTasks (rounded 0 decimals, show `--` if 0 total)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-009.task.yml",
+      "index": 3,
+      "item": "LastUpdated = latest mtime among story tasks (ISO date)",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-004/tasks/TOOL-009.task.yml",
+      "index": 4,
+      "item": "JSON mode via `--json` flag outputs structured array",
+      "issues": [
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/BAC-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/BAC-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/DAT-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/DES-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/FRO-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/INT-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-005/tasks/TES-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/DEF-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/DES-004.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/DEV-004.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/DEV-005.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/DEV-006.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/IMP-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/IMP-004.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/IMP-005.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-006/tasks/INT-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/DEF-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/DES-005.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/DEV-007.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/IMP-006.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/INT-004.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-007/tasks/QUA-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/DEF-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/DES-006.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/DEV-008.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/DEV-009.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/IMP-007.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/IMP-008.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-008/tasks/QUA-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/DEF-004.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/DES-007.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/DEV-010.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/DEV-011.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/DEV-012.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/IMP-009.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/IMP-010.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/IMP-011.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/IMP-012.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-009/tasks/INT-005.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/COM-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/DEF-005.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/DES-008.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/DEV-013.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/DEV-014.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/ENS-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/IMP-013.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/IMP-014.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-010/tasks/UPD-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/DEF-006.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/DES-009.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/DES-010.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/DEV-015.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/IMP-015.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/IMP-016.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/INT-006.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-011/tasks/QUA-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/ADA-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/CON-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/DES-011.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/DES-012.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/DEV-016.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/DEV-017.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-012/tasks/IMP-017.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/COM-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/DES-013.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/ENS-002.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-018.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-019.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-020.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-021.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-022.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-013/tasks/IMP-023.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/BUI-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/CRE-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/DES-014.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/DEV-018.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/DEV-019.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/IMP-024.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-014/tasks/IMP-025.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/CON-003.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/DES-015.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/DES-016.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/DEV-020.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/DEV-021.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/IMP-026.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/INT-007.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    },
+    {
+      "file": "/Users/leo.de.souza1/taskly.chat/speca-chat/stories/story-015/tasks/WRI-001.task.yml",
+      "index": 1,
+      "item": "Define acceptance criteria",
+      "issues": [
+        "placeholder",
+        "missing-strong-verb"
+      ]
+    }
+  ]
+}

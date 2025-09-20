@@ -3,6 +3,7 @@ story: story-014
 title: BUI-001
 status: backlog
 created: 2025-09-20
+updated: 2025-09-20
 type: chore
 acceptance:
   - Define acceptance criteria

@@ -125,7 +125,42 @@ async function main(){
   const tasks = await gatherStoryTasks();
   await validateSchemas(tasks);
   await validateBoard(tasks);
-  console.log(`Structure valid: ${tasks.length} tasks (board consistent).`);
+  // Build ID set for related validation
+  const idSet = new Set(tasks.map(t=>t.id));
+  let warnings = 0;
+  const issue = (msg)=>{ console.warn(`WARN: ${msg}`); warnings++; };
+
+  // Acceptance lint heuristics
+  const strongVerb = /^(add|allow|display|show|store|persist|return|list|create|update|delete|sync|render|log|emit|calculate|validate|send|receive|schedule|track|generate)\b/i;
+  // Build map for reciprocal related checking
+  const relatedMap = new Map();
+  for (const t of tasks){ if(Array.isArray(t.related)) relatedMap.set(t.id, new Set(t.related)); }
+
+  for (const t of tasks){
+    // related existence & reciprocity
+    if (Array.isArray(t.related)){
+      for (const rid of t.related){
+        if(!idSet.has(rid)) {
+          issue(`${t.file} references missing related task id '${rid}'`);
+        } else {
+          const other = relatedMap.get(rid);
+            if(!other || !other.has(t.id)){
+              issue(`${t.file} related '${rid}' not reciprocated`);
+            }
+        }
+      }
+    }
+    // acceptance presence & quality
+    if(!Array.isArray(t.acceptance) || t.acceptance.length===0){
+      issue(`${t.file} has no acceptance criteria`);
+    } else {
+      for (const a of t.acceptance){
+        if(a.length < 8) issue(`${t.file} acceptance item too short: '${a}'`);
+        if(!strongVerb.test(a)) issue(`${t.file} acceptance item may lack actionable verb: '${a}'`);
+      }
+    }
+  }
+  console.log(`Structure valid: ${tasks.length} tasks (board consistent). Warnings: ${warnings}.`);
 }
 
 main().catch(e=>{ console.error(e.message||e); process.exit(2); });
