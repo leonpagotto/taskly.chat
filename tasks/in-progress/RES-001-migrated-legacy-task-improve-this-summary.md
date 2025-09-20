@@ -1,5 +1,5 @@
 # Task: RES-001
-Status: in-progress
+Status: backlog
 Story: 00-lobe-chat-framework-integration
 Created: 2025-09-19
 Type: chore

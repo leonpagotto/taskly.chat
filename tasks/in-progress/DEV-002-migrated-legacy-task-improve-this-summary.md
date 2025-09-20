@@ -1,5 +1,5 @@
 # Task: DEV-002
-Status: in-progress
+Status: backlog
 Story: 01-natural-language-task-creation
 Created: 2025-09-19
 Type: chore

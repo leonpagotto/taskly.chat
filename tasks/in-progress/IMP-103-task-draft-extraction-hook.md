@@ -1,5 +1,5 @@
 # Task: IMP-103
-Status: todo
+Status: in-progress
 Story: 00-lobe-chat-framework-integration
 Created: 2025-09-20
 Type: feature
@@ -28,6 +28,7 @@ Return value memoized by input string.
 
 ## Progress Log
 - 2025-09-20 Created task file in todo
+- 2025-09-20 Promoted to in-progress; initial hook stub present
 
 ## Future Enhancements
 - Integrate streaming parse endpoint

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { extractTaskDrafts } from '@taskly/ai'; // retained temporarily for inline send logic (will migrate fully)
+import { extractTaskDrafts } from '@taskly/ai'; // will be removed after full hook integration of historical messages
 import { useMergedInstructions } from './useMergedInstructions';
 import { useTaskDraftExtraction } from './useTaskDraftExtraction';
 import { ChatMessage, InstructionLayer } from '@taskly/core';
@@ -16,15 +16,22 @@ export const ChatShell: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const merged = useMergedInstructions(initialLayers);
 
+  const [pendingDraftSource, setPendingDraftSource] = useState<string | undefined>(undefined);
+  const extractionHook = useTaskDraftExtraction(pendingDraftSource);
+
   async function handleSend() {
     if (!input.trim()) return;
     const id = crypto.randomUUID();
     const text = input;
-    setInput('');
-    setLoading(true);
+  setInput('');
+  setPendingDraftSource(text);
+  setLoading(true);
   setError(null);
   const chatMsg: ChatMessage = { id, role: 'user', content: text, createdAt: new Date().toISOString() };
-  const extraction = extractTaskDrafts(chatMsg); // future: route through hook for streaming / enrichment
+    // Use hook result (memoized) based on pendingDraftSource
+    const extraction = extractionHook.drafts && pendingDraftSource === text
+      ? { drafts: extractionHook.drafts }
+      : extractTaskDrafts(chatMsg);
     let parse: any = undefined;
     try {
       const res = await fetch('/api/nlp/parse', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
@@ -36,7 +43,7 @@ export const ChatShell: React.FC = () => {
     } catch (e) {
       parse = { error: true };
     }
-    const userEntry: ChatEntry = { id, role: 'user', content: text, tasks: extraction.drafts, parse };
+  const userEntry: ChatEntry = { id, role: 'user', content: text, tasks: extraction.drafts, parse };
     setMessages(prev => [...prev, userEntry]);
     // Call Gemini backend for assistant reply.
     try {

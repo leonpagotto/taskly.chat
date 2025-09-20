@@ -10,7 +10,9 @@ export interface AdaptedInstructionSegment { role: 'system'; content: string }
 export function adaptInstructionLayers(layers: InstructionLayer[]): AdaptedInstructionSegment[] {
   if (!layers || layers.length === 0) return [];
   // Reuse ordering logic: global -> project -> ephemeral (context)
-  const ordered = [...layers].sort((a, b) => rank(a) - rank(b));
+  const ordered = [...layers]
+    .filter(l => (l as any).enabled !== false) // skip disabled layers when flag present
+    .sort((a, b) => rank(a) - rank(b));
   return ordered.map(l => ({ role: 'system', content: formatLayerContent(l) }));
 }
 
@@ -21,5 +23,7 @@ function rank(layer: InstructionLayer): number {
 }
 
 function formatLayerContent(layer: InstructionLayer): string {
-  return `# ${layer.id}\n${layer.content.trim()}`.trim();
+  const body = (layer.content ?? '').trim();
+  if (!body) return `# ${layer.id}`; // allow empty heading-only layer
+  return `# ${layer.id}\n${body}`.trim();
 }
