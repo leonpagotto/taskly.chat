@@ -41,7 +41,7 @@ Primary domain knowledge and workflow artifacts live under: `docs/taskly-chat/`
 Primary domain knowledge and workflow artifacts live under: `docs/`
 - `stories/<number>-<slug>/story.md` → Story root specification
 - `stories/<number>-<slug>/Backlog/` → Story-scoped ideation tasks
-- Global task pipeline: `tasks/{todo,in-progress,review,done}/` (single canonical flow)
+- Global task pipeline: `tasks/{todo,in-progress,review,done}/` (single canonical flow; backlog exists ONLY inside each story's `Backlog/` directory)
 - `docs/SPEC-INDEX.md` (auto-generated) → Catalog of backlog counts + pipeline snapshot
 
 Story numbering is ascending; slugs are stable. Tasks are single markdown files whose location (folder) = state.
@@ -52,7 +52,7 @@ Story numbering is ascending; slugs are stable. Tasks are single markdown files 
 ---
 ## 5. Golden Governance Rules
 - Specs & Stories: `stories/*/story.md`
-- Story Backlog Tasks: `stories/*/Backlog/*.md`
+- Story Backlog Tasks: `stories/*/Backlog/*.md` (sole backlog location)
 - Active Tasks: `tasks/{todo,in-progress,review,done}/*.md`
 - Process Reference: `docs/PROCESS.md`
 - Copilot Context: `.github/instructions/COPILOT.instructions.md`
@@ -105,7 +105,7 @@ Transition invariants:
 ## 10. Task File Canonical Template
 ```
 # Task: <Concise Title>
-Status: Backlog | InProgress | Review | Done
+Status: backlog | todo | in-progress | review | done (MUST be lowercase; folder = truth)
 Story: <story-number-slug>
 Created: <YYYY-MM-DD>
 Updated: <YYYY-MM-DD>
@@ -142,11 +142,21 @@ Notation guidelines:
 
 ---
 ## 12. Working a Task (Agent Behavior)
-1. Ensure file resides in `InProgress/` before modifying code tied to it.
+1. Ensure file resides in `tasks/in-progress/` before modifying code tied to it.
 2. Append progress entries; never delete historical lines.
 3. Keep Implementation Notes additive (delta oriented).
-4. On completion: check all acceptance boxes; move to `Review/`.
-5. When validated/merged: move to `Done/` + closing log entry.
+4. While progressing: immediately mark each satisfied Acceptance Criterion by changing `- [ ]` → `- [x]` (never remove lines; do not reorder).
+5. On completion (all criteria `- [x]`): move to `tasks/review/`.
+6. When validated/merged: move to `tasks/done/` + closing log entry.
+
+Lowercase Status Enforcement:
+- Header `Status:` value MUST exactly match its parent folder name.
+- If mismatch detected, move file or update header before further edits.
+
+Acceptance Criteria Hygiene:
+- Each criterion should be testable.
+- Partial progress? Do NOT add new unchecked lines mid-task without rationale in Implementation Notes.
+- If new criteria emerge mid-implementation, append them at the end of the list (timestamp rationale in Progress Log) and only then continue.
 
 ---
 ## 13. Review Gate Criteria

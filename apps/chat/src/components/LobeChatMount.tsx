@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { resolveLobeProvider } from '@taskly/integration';
 
 interface LobeChatMountProps {
   mergedSystemPrompt: string;
@@ -15,6 +16,8 @@ export const LobeChatMount: React.FC<LobeChatMountProps> = ({ mergedSystemPrompt
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
 
+  const providerRef = useRef(resolveLobeProvider());
+
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || sending) return;
@@ -22,12 +25,16 @@ export const LobeChatMount: React.FC<LobeChatMountProps> = ({ mergedSystemPrompt
     setInput('');
     setSending(true);
     setLocalMessages(prev => [...prev, user]);
-    // Placeholder assistant echo (will be replaced by real framework interaction)
-    setTimeout(() => {
-      const assistant = { id: crypto.randomUUID(), role: 'assistant' as const, content: `(placeholder) You said: ${user.content}` };
+    try {
+      const reply = await providerRef.current.generateReply([...localMessages, user]);
+      const assistant = { id: reply.id, role: 'assistant' as const, content: reply.content };
       setLocalMessages(prev => [...prev, assistant]);
+    } catch {
+      const assistant = { id: crypto.randomUUID(), role: 'assistant' as const, content: '(provider error)' };
+      setLocalMessages(prev => [...prev, assistant]);
+    } finally {
       setSending(false);
-    }, 250);
+    }
   }
 
   return (

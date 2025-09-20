@@ -1,0 +1,14 @@
+id: TOOL-007
+story: story-004
+title: TOOL-007
+status: done
+created: 2025-09-19
+updated: 2025-09-19
+type: feature
+owner: system
+related: [[story:10-engineering-automation]]
+acceptance:
+  - Workflow triggers on push & pull_request
+  - Runs `pnpm install`, `pnpm tasks:validate`
+  - Runs `pnpm spec:index` and fails if working tree dirty afterward
+  - Uses node 20.x

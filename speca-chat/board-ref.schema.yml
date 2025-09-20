@@ -1,0 +1,11 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: board-ref.schema.yml
+title: BoardRef
+type: object
+required: [id,story,status,path]
+properties:
+  id: { type: string }
+  story: { type: string }
+  status: { type: string, enum: [backlog,in-progress,review,done] }
+  path: { type: string }
+additionalProperties: false

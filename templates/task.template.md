@@ -1,5 +1,5 @@
 # Task: <TASK_ID>
-Status: Backlog
+Status: backlog
 Story: <story-slug|NONE>
 Created: <YYYY-MM-DD>
 Type: feature

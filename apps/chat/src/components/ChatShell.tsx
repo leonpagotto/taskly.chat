@@ -5,12 +5,16 @@ import { useMergedInstructions } from './useMergedInstructions';
 import { useTaskDraftExtraction } from './useTaskDraftExtraction';
 import { ChatMessage, InstructionLayer } from '@taskly/core';
 
-interface ChatEntry { id: string; role: 'user' | 'assistant'; content: string; tasks?: any[]; parse?: any; }
+interface ChatEntry { id: string; role: 'user' | 'assistant'; content: string; tasks?: any[]; parse?: any; intent?: string; drafts?: any[]; }
 
 const initialLayers: InstructionLayer[] = [];
 
 export const ChatShell: React.FC = () => {
   const [messages, setMessages] = useState<ChatEntry[]>([]);
+  const [accepted, setAccepted] = useState<any[]>([]);
+  function acceptDraft(d: any) {
+    setAccepted(prev => prev.find(p=>p.title===d.title) ? prev : [...prev, { ...d, acceptedAt: Date.now() }]);
+  }
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,13 +48,13 @@ export const ChatShell: React.FC = () => {
       parse = { error: true };
     }
   const userEntry: ChatEntry = { id, role: 'user', content: text, tasks: extraction.drafts, parse };
-    setMessages(prev => [...prev, userEntry]);
+  setMessages(prev => [...prev, userEntry]);
     // Call Gemini backend for assistant reply.
     try {
-      const assistantRes = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [chatMsg], systemPrompt: merged.systemPrompt }) });
+      const assistantRes = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [...messages, chatMsg], systemPrompt: merged.systemPrompt }) });
       if (assistantRes.ok) {
         const data = await assistantRes.json();
-        setMessages(prev => [...prev, { id: data.id, role: 'assistant', content: data.content }]);
+        setMessages(prev => [...prev, { id: data.id, role: 'assistant', content: data.content, intent: data.intent, drafts: data.drafts }]);
       } else {
         setError('Error generating response');
         setMessages(prev => [...prev, { id: 'assistant-' + Date.now(), role: 'assistant', content: '(error generating response)' }]);
@@ -80,12 +84,30 @@ export const ChatShell: React.FC = () => {
       <div style={{ flex: 1, minHeight: 300, background: '#1b1b1b', padding: 12, borderRadius: 8 }}>
         {messages.map(m => (
           <div key={m.id} style={{ marginBottom: 20 }}>
-            <div><strong>{m.role}:</strong> {m.content}</div>
+            <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <strong>{m.role}:</strong>
+              <div style={{ whiteSpace:'pre-wrap' }}>{m.content}</div>
+              {m.intent && <span style={{ fontSize:10, background:'#333', padding:'2px 4px', borderRadius:4 }}>intent:{m.intent}</span>}
+            </div>
             {m.tasks && m.tasks.length > 0 && (
               <div style={{ marginTop: 4, padding: 6, background: '#333', borderRadius: 4 }}>
                 <em>Draft Tasks:</em>
                 <ul style={{ margin: '4px 0 0 16px' }}>
-                  {m.tasks.map((t, i) => (<li key={i}>{t.title} ({Math.round(t.confidence * 100)}%)</li>))}
+                  {m.tasks.map((t, i) => (<li key={i} style={{ display:'flex', alignItems:'center', gap:6 }}>
+                    <span>{t.title} ({Math.round(t.confidence * 100)}%)</span>
+                    <button style={{ fontSize:10, padding:'2px 6px', background:'#1b4d2b', border:'1px solid #2f7d47', borderRadius:3, cursor:'pointer' }} onClick={()=>acceptDraft(t)}>accept</button>
+                  </li>))}
+                </ul>
+              </div>
+            )}
+            {m.drafts && m.drafts.length > 0 && (
+              <div style={{ marginTop:4, padding:6, background:'#2d2d2d', borderRadius:4 }}>
+                <div style={{ fontSize:12, opacity:0.8 }}>Heuristic Drafts:</div>
+                <ul style={{ margin:'4px 0 0 16px' }}>
+                  {m.drafts.map((d,i)=>(<li key={i} style={{ display:'flex', gap:6, alignItems:'center' }}>
+                    <span>{d.title} ({Math.round((d.confidence||0)*100)}%)</span>
+                    <button style={{ fontSize:10, padding:'2px 6px', background:'#1b2b4d', border:'1px solid #314d7d', borderRadius:3, cursor:'pointer' }} onClick={()=>acceptDraft(d)}>accept</button>
+                  </li>))}
                 </ul>
               </div>
             )}
@@ -116,6 +138,14 @@ export const ChatShell: React.FC = () => {
         <input value={input} onChange={e => setInput(e.target.value)} placeholder="e.g. Create high priority task to update onboarding docs tomorrow" style={{ flex: 1, padding: 8, borderRadius: 4, border: '1px solid #444', background:'#111', color:'#eee' }} />
         <button type="submit" style={{ padding: '8px 16px' }} disabled={loading || !input.trim()}>{loading ? '...' : 'Send'}</button>
       </form>
+      {accepted.length > 0 && (
+        <div style={{ marginTop:12, padding:10, background:'#202e1f', border:'1px solid #335533', borderRadius:6 }}>
+          <div style={{ fontSize:12, fontWeight:600 }}>Accepted Drafts ({accepted.length})</div>
+          <ul style={{ margin:'6px 0 0 16px', fontSize:12 }}>
+            {accepted.map((a,i)=>(<li key={i}>{a.title}</li>))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

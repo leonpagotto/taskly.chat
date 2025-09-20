@@ -1,0 +1,8 @@
+version: 1
+updated: 2025-09-20
+storiesIndex: stories/index.yml
+boardRoot: board
+schemas:
+  story: story.schema.yml
+  task: task.schema.yml
+  boardRef: board-ref.schema.yml

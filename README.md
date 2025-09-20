@@ -92,34 +92,44 @@ Taskly.Chat is not just another project manager. It’s a **personal AI assistan
 
 ---
 
-## 🚀 Workflow
+## 🚀 Workflow (Unified)
 
-This project uses a **Spec-driven workflow**:
+The project now uses a **single canonical structure** under `speca-chat/`.
 
-* All work starts from a **Spec → Plan → Tasks**.
-* Tasks are stored as files inside project version folders.
-* Progress is tracked using a **Kanban board**, which is a visualization of the folder structure under `docs/tasks/` (`Backlog/`, `InProgress/`, `Review/`, `Done/`).
+Core elements:
+* Stories: `speca-chat/stories/<story-id>/story.{yml,md}`
+* Tasks: `speca-chat/stories/<story-id>/tasks/ID.task.{yml,md}` (paired metadata + narrative)
+* Board refs (generated): `speca-chat/board/<status>/*.yml` (DO NOT EDIT)
+* Story index: `speca-chat/stories/index.yml`
+* Schemas & project manifest: `speca-chat/*.schema.yml`, `speca-chat/project.index.yml`
+
+Legacy `tasks/` and top-level `stories/` have been archived under `archive/`.
 
 ### 🔹 For Humans
 
-* Always work from existing task files.
-* Move tasks between status folders as you progress.
-* Commit changes regularly so the Kanban board stays in sync.
+* Add or modify tasks only within the story-local `tasks/` folder.
+* Update status in the YAML; the board is regenerated automatically (pre-commit) or via `node speca-chat/scripts/generate-board.mjs`.
+* Never edit files under `speca-chat/board/` directly.
 
 ### 🔹 For AI / Copilot
 
-The Copilot follows strict rules for creating, managing, and implementing tasks.
-👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
-👉 Spec Index: `docs/SPEC-INDEX.md`
+Emit both files per task:
+1. `ID.task.yml` with fields: `id, story, title, status, type, acceptance` (and optional extras later).
+2. `ID.task.md` for rationale/context.
+
+Then invoke the board generator. Structure validation runs pre-commit.
 
 ## 🛠 Workflow Enforcement
-We operate under a Spec > Plan > Task > Implement flow.
-- Specs & Stories: `stories/*/story.md`
-- Tasks: `stories/*/Backlog/*.md` (move across status folders)
-- Process Reference: `docs/PROCESS.md`
-- Copilot Context: `.github/instructions/COPILOT.instruction.md`
+Pre-commit sequence:
+1. Agent guidance check (`scripts/agent-check.mjs`).
+2. Board regeneration (`speca-chat/scripts/generate-board.mjs`).
+3. Structure validation (`speca-chat/scripts/validate-structure.mjs`).
 
-Rule: No implementation PR without referencing at least one task ID.
+Rules:
+* Every task has at least one acceptance criterion.
+* Board refs must match task statuses (auto-enforced).
+* Only stories listed in the story index are active.
+* No manual edits to `speca-chat/board/`.
 
 ---
 
@@ -207,31 +217,8 @@ SQLite for dev; Postgres migration path. Participants & meta stored as JSON stri
 4. Memory personalization story
 5. Calendar integration stories
 
-## 🗂 Legacy Task Migration Scripts
-The original one-off migration utilities have been moved under `scripts/legacy/` and should not be run in normal development:
-- `scripts/legacy/migrate-task-types.mjs`
-- `scripts/legacy/migrate-task-structure.mjs`
-
-They are retained for historical reference only. Future structural changes should introduce new purpose-built scripts rather than modifying these.
-
-### Incremental Task Sync (Automation)
-To fetch only changed task files between runs:
-```
-node scripts/sync-tasks-manifest.mjs
-node scripts/generate-changed-tasks.mjs      # writes changed-tasks.json (added/modified)
-```
-Diff against a historical git ref without updating snapshot:
-```
-node scripts/generate-changed-tasks.mjs --since HEAD~1
-```
-Emit a full listing (adds `all` array):
-```
-node scripts/generate-changed-tasks.mjs --full
-```
-Use the `hash` field in `tasks.json` to validate integrity and decide which task Markdown files to re-fetch.
-
----
-<!-- removed obsolete merge conflict remnants -->
+## 🗂 Archival & Legacy
+All previous markdown-only task and story files live in `archive/<timestamp>/`. They are excluded from governance and may be referenced for historical context only.
 
 Taskly.Chat is an **AI-powered personal assistant** that blends conversation, memory, and automation into a single experience. Unlike traditional productivity tools or project managers, Taskly.Chat is designed to work the way people naturally think and talk — through **conversation**.
 
@@ -326,35 +313,7 @@ Taskly.Chat is not just another project manager. It’s a **personal AI assistan
 ---
 
 
-## 🚀 Workflow
-
-This project uses a **Spec-driven workflow**:
-
-* All work starts from a **Spec → Plan → Tasks**.
-* Tasks are stored as files inside project version folders.
-* Progress is tracked using a **Kanban board**, which is a visualization of the folder structure under `docs/tasks/` (`Backlog/`, `InProgress/`, `Review/`, `Done/`).
-
-### 🔹 For Humans
-
-* Always work from existing task files.
-* Move tasks between status folders as you progress.
-* Commit changes regularly so the Kanban board stays in sync.
-
-### 🔹 For AI / Copilot
-
-The Copilot follows strict rules for creating, managing, and implementing tasks.
-👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
-👉 Spec Index: `docs/SPEC-INDEX.md`
-_______
-
-## 🛠 Workflow Enforcement
-We operate under a Spec > Plan > Task > Implement flow.
-- Specs & Stories: `stories/*/story.md`
-- Tasks: `stories/*/Backlog/*.md` (move across status folders)
-- Process Reference: `docs/PROCESS.md`
-- Copilot Context: `.github/instructions/COPILOT.instruction.md`
-
-Rule: No implementation PR without referencing at least one task ID.
+<!-- Removed duplicated legacy workflow block -->
 
 ---
 
@@ -415,3 +374,32 @@ We will progressively embed lobe-chat functionality instead of forking its repo:
 4. Implement lightweight memory store abstraction.
 
 ---
+
+## 🧪 Task Governance & Automation
+Active scripts:
+* `speca-chat/scripts/generate-board.mjs`
+* `speca-chat/scripts/validate-structure.mjs`
+* `scripts/agent-check.mjs`
+
+(Legacy validation scripts archived.)
+
+## 🗂 Board Interaction Model
+Future UI will consume generated board refs + task metadata. Prior direct file-move endpoints are deprecated and will be replaced with structured YAML mutations.
+
+## 🔄 Planned Enhancements
+* Ordering manifest (per status) or weight field.
+* Story lifecycle states (proposed/active/archived).
+* Rich acceptance criteria (labels, effort).
+* Optional AJV JSON Schema enforcement.
+
+## 📐 Ordering Strategy (Draft)
+Preferred: dedicated manifest per status (git-friendly) – to prototype.
+
+## 🧩 CI / DX Recommendations
+- Add CI job: `node scripts/validate-tasks.mjs && node scripts/audit-tasks-drift.mjs > drift.json` and upload artifact.
+- Optionally surface drift metrics (age, AC coverage) in PR comments.
+
+## 🗒 Developer Notes
+- When creating tasks programmatically ensure lowercase statuses.
+- Do not bypass update API when moving a task; manual file moves skip header rewrite.
+

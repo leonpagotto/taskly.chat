@@ -1,0 +1,13 @@
+id: task-001
+story: story-001
+title: Create Lobe provider interface
+status: done
+created: 2025-09-20
+updated: 2025-09-20
+type: chore
+owner: frontend
+related: []
+acceptance:
+  - Interface `LobeChatProvider` defined
+  - Heuristic implementation present
+  - Exported through integration package

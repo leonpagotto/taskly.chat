@@ -1,0 +1,17 @@
+stories:
+  - id: story-001
+    title: 01-natural-language-task-creation
+    status: active
+    path: stories/story-001/story.yml
+  - id: story-002
+    title: 15-import-render-sync-tasks-stories
+    status: active
+    path: stories/story-002/story.yml
+  - id: story-003
+    title: 00-lobe-chat-framework-integration
+    status: active
+    path: stories/story-003/story.yml
+  - id: story-004
+    title: 10-engineering-automation
+    status: active
+    path: stories/story-004/story.yml

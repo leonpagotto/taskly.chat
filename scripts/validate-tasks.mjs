@@ -7,7 +7,8 @@ const PIPELINE_ROOT = path.resolve(process.cwd(), 'tasks');
 const REQUIRED = ['Status','Story','Created','Type'];
 // Canonical story (backlog) status + pipeline statuses
 // Accept both canonical lowercase and legacy TitleCase 'Backlog' for story backlog tasks
-const STATUS_VALUES = new Set(['backlog','Backlog','todo','in-progress','review','done']);
+// Canonical lowercase pipeline statuses
+const STATUS_VALUES = new Set(['backlog','todo','in-progress','review','done']);
 const TYPE_VALUES = new Set(['feature','bug','refactor','research','chore','spike','ops','doc']);
 
 function parseHeader(lines) {
@@ -36,6 +37,23 @@ async function validateTask(file) {
     } else if (!TYPE_VALUES.has(t)) {
       errors.push(`Invalid Type: ${header.Type} (allowed: ${[...TYPE_VALUES].join(', ')})`);
     }
+  }
+  // Acceptance Criteria section validation
+  const acIndex = lines.findIndex(l => l.trim().toLowerCase() === '## acceptance criteria');
+  if (acIndex === -1) {
+    errors.push('Missing Acceptance Criteria section');
+  } else {
+    // Collect until next heading starting with ## (excluding the same line)
+    let i = acIndex + 1;
+    const acLines = [];
+    while (i < lines.length) {
+      const line = lines[i];
+      if (/^##\s+/.test(line)) break;
+      acLines.push(line);
+      i++;
+    }
+    const hasChecklist = acLines.some(l => /^- \[( |x|X)\]/.test(l.trim()));
+    if (!hasChecklist) errors.push('Acceptance Criteria has no checklist items');
   }
   return { file, errors };
 }
@@ -72,6 +90,7 @@ async function collectStoryBacklogTasks(root, acc=[]) {
 }
 
 async function collectPipelineTasks(root, acc=[]) {
+  // Only active pipeline states (backlog now lives exclusively under story Backlog folders)
   const statuses = ['todo','in-progress','review','done'];
   for (const st of statuses) {
     const dir = path.join(root, st);
@@ -237,8 +256,24 @@ async function main() {
       const raw = await fs.readFile(storyFile,'utf8');
       const lines = raw.split(/\r?\n/).slice(0,15);
       const requiredStory = ['# Story:','Slug:','Status:','Created:'];
-      for (const req of requiredStory) if (!lines.some(l => l.startsWith(req))) {
-        console.warn(`\n⚠ Story header missing '${req}' in ${storyFile}`);
+      const orderIndices = [];
+      for (const req of requiredStory) {
+        const idx = lines.findIndex(l => l.startsWith(req));
+        if (idx === -1) {
+          invalid++;
+            console.error(`\n✗ Story header missing '${req}' in ${storyFile}`);
+        } else {
+          orderIndices.push(idx);
+        }
+      }
+      // Check order only if all present
+      if (orderIndices.length === requiredStory.length) {
+        const sorted = [...orderIndices].sort((a,b)=>a-b);
+        const inOrder = orderIndices.every((v,i)=>v===sorted[i]);
+        if (!inOrder) {
+          invalid++;
+          console.error(`\n✗ Story header fields out of order in ${storyFile}`);
+        }
       }
     } catch {}
   }

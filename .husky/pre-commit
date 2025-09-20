@@ -1,19 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-set -euo pipefail
+echo "🔍 Running task governance checks..."
+node scripts/agent-check.mjs || exit 1
 
-# Block .next artifacts
-if git diff --cached --name-only | grep -E '/\.next/' >/dev/null; then
-  echo "❌ Commit blocked: .next build artifacts are staged. Remove them before committing." >&2
-  exit 2
-fi
+echo "🗂  Generating speca board refs..."
+node speca-chat/scripts/generate-board.mjs || exit 1
 
-# Validate tasks
-echo "▶ Running task validator..."
-if ! pnpm tasks:validate; then
-  echo "❌ Commit blocked: Task validation failed." >&2
-  exit 3
-fi
+echo "🔎 Validating speca structure..."
+node speca-chat/scripts/validate-structure.mjs || exit 1
 
-echo "✅ Pre-commit checks passed."
+echo "✅ Pre-commit checks passed"

@@ -1,0 +1,9 @@
+id: DEV-002
+story: story-001
+title: DEV-002
+status: backlog
+created: 2025-09-19
+updated: 2025-09-19
+type: chore
+acceptance:
+  - Define criteria
