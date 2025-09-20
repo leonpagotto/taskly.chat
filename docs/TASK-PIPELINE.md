@@ -63,7 +63,7 @@ Effects per moved file:
 
 ## Spec Index Adaptation
 
-`pnpm spec:index` now generates `docs/taskly-chat/SPEC-INDEX.md` with two sections:
+`pnpm spec:index` now generates `docs/SPEC-INDEX.md` with two sections:
 - Stories (Backlog Only): counts of backlog tasks per story.
 - Global Task Pipeline: aggregate counts of `todo / in-progress / review / done` and % completion.
 

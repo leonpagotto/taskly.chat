@@ -110,7 +110,7 @@ This project uses a **Spec-driven workflow**:
 
 The Copilot follows strict rules for creating, managing, and implementing tasks.
 👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
-👉 Spec Index: `docs/specs/SPEC-INDEX.md`
+👉 Spec Index: `docs/SPEC-INDEX.md`
 
 ## 🛠 Workflow Enforcement
 We operate under a Spec > Plan > Task > Implement flow.
@@ -344,7 +344,7 @@ This project uses a **Spec-driven workflow**:
 
 The Copilot follows strict rules for creating, managing, and implementing tasks.
 👉 Canonical instructions: `.github/instructions/COPILOT.instruction.md`
-👉 Spec Index: `docs/specs/SPEC-INDEX.md`
+👉 Spec Index: `docs/SPEC-INDEX.md`
 _______
 
 ## 🛠 Workflow Enforcement

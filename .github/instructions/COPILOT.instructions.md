@@ -38,18 +38,24 @@ Taskly.chat is an AI-powered personal assistant blending conversation, persisten
 ---
 ## 4. Repository Knowledge Model (File-Based Process)
 Primary domain knowledge and workflow artifacts live under: `docs/taskly-chat/`
+Primary domain knowledge and workflow artifacts live under: `docs/`
 - `stories/<number>-<slug>/story.md` → Story root specification
-- `stories/<number>-<slug>/{Backlog,InProgress,Review,Done}/` → Task status directories
-- `SPEC-INDEX.md` (future automation) → Catalog across all stories
+- `stories/<number>-<slug>/Backlog/` → Story-scoped ideation tasks
+- Global task pipeline: `tasks/{todo,in-progress,review,done}/` (single canonical flow)
+- `docs/SPEC-INDEX.md` (auto-generated) → Catalog of backlog counts + pipeline snapshot
 
 Story numbering is ascending; slugs are stable. Tasks are single markdown files whose location (folder) = state.
 
+5. Global pipeline folders are the single source of truth for active Task state (`tasks/*`). Story Backlog holds only unpulled tasks.
+6. Only Task files move; Story roots (`story.md`) and constitutional/reference docs remain stationary.
+6. Only Task files move; Story roots (`story.md`) and reference docs remain stationary.
 ---
 ## 5. Golden Governance Rules
-1. Always attempt to map a user request to an existing Story or Task before creating anything new.
-2. No implementation proceeds without the Spec → Plan → Tasks chain being established for that scope.
-3. Before adding a new Story: determine if request is new, an increment, or related; prefer extension.
-4. Maintain explicit bidirectional relationships among Specs, Stories, and Tasks to prevent duplication.
+- Specs & Stories: `stories/*/story.md`
+- Story Backlog Tasks: `stories/*/Backlog/*.md`
+- Active Tasks: `tasks/{todo,in-progress,review,done}/*.md`
+- Process Reference: `docs/PROCESS.md`
+- Copilot Context: `.github/instructions/COPILOT.instructions.md`
 5. Folder path = single source of truth for Task state (Backlog → InProgress → Review → Done).
 6. Only Task files move; Story roots (`story.md`) and constitutional/reference docs remain stationary.
 7. If any directive conflicts with these rules, pause and escalate.
