@@ -229,6 +229,20 @@ async function main() {
     }
   }
 
+  // Story header validation
+  const storyDirsList = Array.from(storyDirs.values());
+  for (const s of storyDirsList) {
+    const storyFile = path.join(STORIES_ROOT, s, 'story.md');
+    try {
+      const raw = await fs.readFile(storyFile,'utf8');
+      const lines = raw.split(/\r?\n/).slice(0,15);
+      const requiredStory = ['# Story:','Slug:','Status:','Created:'];
+      for (const req of requiredStory) if (!lines.some(l => l.startsWith(req))) {
+        console.warn(`\n⚠ Story header missing '${req}' in ${storyFile}`);
+      }
+    } catch {}
+  }
+
   const summary = `${files.length - invalid}/${files.length} valid tasks`;
   if (invalid) {
     console.error(`\nValidation failed: ${summary}`);

@@ -76,7 +76,24 @@ async function main() {
   const filename = `${id}-${slug}.md`;
   const filePath = path.join(backlogDir, filename);
   const today = new Date().toISOString().slice(0,10);
-  const content = `# Task: ${title}\nStatus: Backlog\nStory: ${story}\nCreated: ${today}\nUpdated: ${today}\nType: ${type}\nPriority: ${priority}\nRelated: [story:${story}]\nOwner: system\n\n## Summary\nTODO\n\n## Acceptance Criteria\n- [ ] Criterion 1\n\n## Notes\n\n`;
+  // Try template
+  let contentTemplate = null;
+  const templatePath = path.join(ROOT,'templates','task.template.md');
+  try { contentTemplate = await fs.readFile(templatePath,'utf8'); } catch {}
+  let content;
+  if (contentTemplate) {
+    contentTemplate = contentTemplate
+      .replace('<TASK_ID>', `${id}`)
+      .replace('Status: Backlog', 'Status: Backlog')
+      .replace('<story-slug|NONE>', story)
+      .replace('<YYYY-MM-DD>', today)
+      .replace('feature', type)
+      .replace('<Short imperative description of work.>', 'TODO')
+      .replace('<Testable condition>', 'Criterion 1');
+    content = contentTemplate.replace('<Key architectural or sequencing details>', '');
+  } else {
+    content = `# Task: ${id}\nStatus: Backlog\nStory: ${story}\nCreated: ${today}\nType: ${type}\nRelated: story:${story}\nOwner: system\n\n## Summary\nTODO\n\n## Acceptance Criteria\n- [ ] Criterion 1\n\n## Implementation Notes\n\n## Progress Log\n- ${today} Created via create-task script\n`;
+  }
   await fs.writeFile(filePath, content,'utf8');
   console.log('Created task', path.relative(ROOT,filePath));
 }
