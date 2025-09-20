@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "next": "14.2.3",
@@ -19,8 +20,13 @@
     "@taskly/integration": "workspace:*"
   },
   "devDependencies": {
-  "typescript": "5.9.2",
+    "typescript": "5.9.2",
     "@types/react": "18.2.21",
-    "@types/node": "20.11.0"
+    "@types/node": "20.11.0",
+    "vitest": "^1.6.0",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/dom": "^9.3.4",
+    "@types/testing-library__jest-dom": "^5.14.9",
+    "jsdom": "^24.0.0"
   }
 }
