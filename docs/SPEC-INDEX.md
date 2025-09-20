@@ -1,7 +1,12 @@
-# SPEC INDEX
-Generated: 2025-09-19T23:03:40.743Z
+# Specification Index
 
-## Stories (Backlog Only)
+Unified specification index consolidating previous duplicated indices.
+
+## Project Overview
+- [Taskly.Chat (v1.0.0)](./PROJECT_OVERVIEW.md)
+
+## Stories (Backlog Snapshot)
+Source: previously `docs/taskly-chat/SPEC-INDEX.md` (generated 2025-09-19T23:03:40.743Z)
 
 | Story | Title | Status | Backlog |
 |-------|-------|--------|---------|
@@ -22,8 +27,13 @@ Generated: 2025-09-19T23:03:40.743Z
 | 13-integrate-with-google-calendar-read-write |  | Draft | 0 |
 | 14-track-personal-habits |  | Draft | 0 |
 
-## Global Task Pipeline
+## Global Task Pipeline Snapshot
 
 | Todo | In-Progress | Review | Done | Total | %Done | LastUpdated |
 |------|-------------|--------|------|-------|-------|-------------|
 | 0 | 4 | 0 | 9 | 13 | 69% | 2025-09-19T21:15:47.468Z |
+
+## Notes
+- This file replaces: `docs/taskly-chat/SPEC-INDEX.md` and earlier minimal index.
+- Regeneration script (if/when added) should update the tables above in place.
+
