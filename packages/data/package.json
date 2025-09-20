@@ -10,12 +10,13 @@
     "clean": "rimraf dist",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
-    "test": "vitest run"
+  "test": "dotenv -e .env.test -- sh -c 'prisma db push --skip-generate && vitest run'"
   },
   "dependencies": {
     "@prisma/client": "^5.18.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^7.3.0",
     "typescript": "^5.4.0",
     "rimraf": "^5.0.5",
     "prisma": "^5.18.0",
