@@ -79,23 +79,84 @@ function table(rows){
   return lines.join('\n');
 }
 
+function parseArgs(){
+  const args=process.argv.slice(2);
+  const opts={ format:'json', out:null };
+  for (let i=0;i<args.length;i++){
+    const a=args[i];
+    if(a==='--out'){ opts.out=args[++i]; }
+    else if(a==='--format'){ opts.format=args[++i]; }
+    else if(a==='--help'||a==='-h'){
+      console.log(`Usage: report-status-delta [--out <file>] [--format json|csv]\n`+
+        `Outputs legacy/current status+type drift plus optional export file.`);
+      process.exit(0);
+    }
+  }
+  return opts;
+}
+
+function toCSV(obj){
+  // obj: { matched:[], changed:[], legacyOnly:[], currentOnly:[] }
+  const lines=[];
+  lines.push('section,id,legacy_status,current_status,legacy_type,current_type');
+  for (const r of obj.matched){
+    lines.push(['matched',r.id,r.legacy.status,r.current.status,r.legacy.type,r.current.type].join(','));
+  }
+  for (const r of obj.changed){
+    lines.push(['changed',r.id,r.legacy.status,r.current.status,r.legacy.type,r.current.type].join(','));
+  }
+  for (const id of obj.legacyOnly){
+    lines.push(['legacyOnly',id,'','','',''].join(','));
+  }
+  for (const id of obj.currentOnly){
+    lines.push(['currentOnly',id,'','','',''].join(','));
+  }
+  return lines.join('\n');
+}
+
 async function main(){
+  const opts=parseArgs();
   const legacy=await indexLegacy();
   const current=await collectCurrent();
-  const rows=[]; const json=[];
+  const rows=[]; const changedJSON=[]; const matchedJSON=[];
+  const legacyOnly=new Set(Object.keys(legacy));
+  const currentOnly=new Set(Object.keys(current));
   for (const [id,h] of Object.entries(legacy)){
     const cur=current[id]; if(!cur) continue;
+    legacyOnly.delete(id);
+    currentOnly.delete(id);
     const lStatus=(h.status||'').toLowerCase();
     const cStatus=(cur.status||'').toLowerCase();
     const lType=(h.type||'').toLowerCase();
     const cType=(cur.type||'').toLowerCase();
     const changed = lStatus!==cStatus || (lType && lType!==cType);
     rows.push({id,lStatus,cStatus,lType,cType,changed});
-    if(changed) json.push({id,legacy:{status:lStatus,type:lType}, current:{status:cStatus,type:cType}});
+    const record={id,legacy:{status:lStatus,type:lType}, current:{status:cStatus,type:cType}};
+    matchedJSON.push(record);
+    if(changed) changedJSON.push(record);
   }
   console.log(table(rows));
-  console.log('\nChanged Entries JSON:\n'+JSON.stringify(json,null,2));
-  console.log(`\nTotals: ${rows.length} matched, ${json.length} with differences.`);
+  console.log('\nChanged Entries JSON:\n'+JSON.stringify(changedJSON,null,2));
+  console.log(`\nTotals: ${rows.length} matched, ${changedJSON.length} with differences.`);
+  console.log(`Legacy-only (not in current): ${legacyOnly.size}`);
+  console.log(`Current-only (no legacy record): ${currentOnly.size}`);
+
+  if(opts.out){
+    const exportObj={
+      matched: matchedJSON,
+      changed: changedJSON,
+      legacyOnly: Array.from(legacyOnly),
+      currentOnly: Array.from(currentOnly)
+    };
+    const dir=path.dirname(opts.out);
+    await fs.mkdir(dir,{recursive:true});
+    if(opts.format==='csv'){
+      await fs.writeFile(opts.out,toCSV(exportObj),'utf8');
+    } else {
+      await fs.writeFile(opts.out,JSON.stringify(exportObj,null,2),'utf8');
+    }
+    console.log(`\nExport written: ${opts.out} (${opts.format})`);
+  }
 }
 
 main().catch(e=>{ console.error(e); process.exit(1); });

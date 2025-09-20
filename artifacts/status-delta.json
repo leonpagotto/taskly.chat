@@ -1,0 +1,316 @@
+{
+  "matched": [
+    {
+      "id": "DEV-001",
+      "legacy": {
+        "status": "backlog",
+        "type": "chore"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "DEV-002",
+      "legacy": {
+        "status": "backlog",
+        "type": "chore"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "IMP-001",
+      "legacy": {
+        "status": "backlog",
+        "type": "chore"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "IMP-201",
+      "legacy": {
+        "status": "backlog",
+        "type": "feature"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "IMP-202",
+      "legacy": {
+        "status": "backlog",
+        "type": "feature"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "IMP-203",
+      "legacy": {
+        "status": "backlog",
+        "type": "feature"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "RES-001",
+      "legacy": {
+        "status": "backlog",
+        "type": "chore"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "RES-010",
+      "legacy": {
+        "status": "backlog",
+        "type": "research"
+      },
+      "current": {
+        "status": "backlog",
+        "type": "research"
+      }
+    },
+    {
+      "id": "IMP-101",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "IMP-102",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "IMP-103",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "TOOL-001",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "TOOL-002",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "TOOL-003",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "TOOL-004",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "TOOL-005",
+      "legacy": {
+        "status": "done",
+        "type": "chore"
+      },
+      "current": {
+        "status": "done",
+        "type": "chore"
+      }
+    },
+    {
+      "id": "TOOL-006",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "TOOL-007",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "TOOL-008",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    },
+    {
+      "id": "TOOL-009",
+      "legacy": {
+        "status": "done",
+        "type": "feature"
+      },
+      "current": {
+        "status": "done",
+        "type": "feature"
+      }
+    }
+  ],
+  "changed": [],
+  "legacyOnly": [],
+  "currentOnly": [
+    "task-001",
+    "BAC-001",
+    "BAC-002",
+    "DAT-001",
+    "DES-003",
+    "FRO-001",
+    "INT-002",
+    "TES-001",
+    "DEF-001",
+    "DES-004",
+    "DEV-004",
+    "DEV-005",
+    "DEV-006",
+    "IMP-003",
+    "IMP-004",
+    "IMP-005",
+    "INT-003",
+    "DEF-002",
+    "DES-005",
+    "DEV-007",
+    "IMP-006",
+    "INT-004",
+    "QUA-001",
+    "DEF-003",
+    "DES-006",
+    "DEV-008",
+    "DEV-009",
+    "IMP-007",
+    "IMP-008",
+    "QUA-002",
+    "DEF-004",
+    "DES-007",
+    "DEV-010",
+    "DEV-011",
+    "DEV-012",
+    "IMP-009",
+    "IMP-010",
+    "IMP-011",
+    "IMP-012",
+    "INT-005",
+    "COM-001",
+    "DEF-005",
+    "DES-008",
+    "DEV-013",
+    "DEV-014",
+    "ENS-001",
+    "IMP-013",
+    "IMP-014",
+    "UPD-001",
+    "DEF-006",
+    "DES-009",
+    "DES-010",
+    "DEV-015",
+    "IMP-015",
+    "IMP-016",
+    "INT-006",
+    "QUA-003",
+    "ADA-001",
+    "CON-002",
+    "DES-011",
+    "DES-012",
+    "DEV-016",
+    "DEV-017",
+    "IMP-017",
+    "COM-002",
+    "DES-013",
+    "ENS-002",
+    "IMP-018",
+    "IMP-019",
+    "IMP-020",
+    "IMP-021",
+    "IMP-022",
+    "IMP-023",
+    "BUI-001",
+    "CRE-001",
+    "DES-014",
+    "DEV-018",
+    "DEV-019",
+    "IMP-024",
+    "IMP-025",
+    "CON-003",
+    "DES-015",
+    "DES-016",
+    "DEV-020",
+    "DEV-021",
+    "IMP-026",
+    "INT-007",
+    "WRI-001"
+  ]
+}
