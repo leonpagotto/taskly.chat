@@ -152,30 +152,30 @@ const ChecklistCard: React.FC<{
       <div className={`relative ${isAnimatingOut ? 'animate-slide-out-down' : ''}`}>
         <div className={`flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
           <div className="flex items-center min-w-0 flex-1 gap-3">
+            {category && (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
+                <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
+              </div>
+            )}
+            <StaticName
+              text={checklist.name}
+              Tag="span"
+              className={`flex-1 truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
+            />
+          </div>
+          <div className="flex items-center flex-shrink-0 ml-2">
+            <div ref={menuRef} className="relative">
+              <button onClick={() => setMenuOpen(p => !p)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"><MoreVertIcon /></button>
+              {isMenuOpen && (
+                <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
+                  <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
+                  <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
+                </div>
+              )}
+            </div>
             <button onClick={() => onToggleSingleTaskCompletion(checklist.id)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" aria-label={`Toggle task: ${checklist.name}`}>
               {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
             </button>
-            <div className="flex items-center min-w-0 flex-1 gap-3">
-              {category && (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
-                  <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
-                </div>
-              )}
-              <StaticName
-                text={checklist.name}
-                Tag="span"
-                className={`flex-1 truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
-              />
-            </div>
-          </div>
-          <div ref={menuRef} className="relative flex-shrink-0 ml-2">
-            <button onClick={() => setMenuOpen(p => !p)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"><MoreVertIcon /></button>
-            {isMenuOpen && (
-              <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
-                <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
-                <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -190,11 +190,8 @@ const ChecklistCard: React.FC<{
   
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''} ${isAnimatingOut ? 'animate-slide-out-down' : ''}`}>
-      <div className="flex items-center justify-between p-3 gap-3 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <div className="flex items-center min-w-0 flex-1 gap-3">
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-                {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
-            </div>
+    <div className="flex items-center justify-between p-3 gap-3 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+    <div className="flex items-center min-w-0 flex-1 gap-3">
             {category && (
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
                     <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
@@ -226,11 +223,14 @@ const ChecklistCard: React.FC<{
                 </div>
               )}
             </div>
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 ml-1">
+                {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
+            </div>
             {/* Chevron removed; collapse behavior retained via onClick */}
         </div>
       </div>
       {isExpanded && (
-        <div className="pl-[88px] pr-3 pb-3">
+        <div className="pl-[56px] pr-3 pb-3">
             <main className="space-y-1">
                 {checklist.tasks.map(task => (
                 <TaskItem
