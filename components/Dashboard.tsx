@@ -379,6 +379,7 @@ interface DashboardProps {
   onNewTask: (date: string) => void;
   onNewHabit: () => void;
   onNewEvent: (date: string) => void;
+  onNewEventAt?: (date: string, startTime: string, endTime: string) => void; // optional precise time creation
   onNewNote: (details: {}) => void;
   onNewProject: () => void;
   onEditItem: (item: Checklist | Habit | Event) => void;
@@ -400,6 +401,43 @@ interface DailyItemWrapper {
   type: 'task' | 'habit' | 'event';
   id: string;
 }
+
+type EventLiveStatus = 'upcoming' | 'live' | 'done';
+
+const isSameDayDate = (d1: Date, d2: Date) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
+
+const parseEventDateTime = (date: string | null, time: string | null) => {
+  if (!date) return null;
+  if (time === null || time === undefined) return new Date(`${date}T00:00:00`);
+  return new Date(`${date}T${time}`);
+};
+
+const formatHM = (date: Date) =>
+  date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+const getEventStatusForNow = (event: Event, now: Date): EventLiveStatus => {
+  // All-day events are considered live for the selected date
+  if (event.isAllDay) return 'live';
+  const start = parseEventDateTime(event.startDate, event.startTime);
+  const end = parseEventDateTime(event.endDate, event.endTime) || start;
+  if (!start) return 'upcoming';
+  if (now < start) return 'upcoming';
+  if (end && now > end) return 'done';
+  return 'live';
+};
+
+const getCountdownLabel = (target: Date, now: Date) => {
+  const diffMs = target.getTime() - now.getTime();
+  if (diffMs <= 0) return 'now';
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem ? `${hours}h ${rem}m` : `${hours}h`;
+};
 
 const MonthlyCalendar: React.FC<{
   selectedDate: Date;
@@ -839,13 +877,12 @@ const DashboardMultiTaskList: React.FC<{
                             </div>
                             {list.dueTime && <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{list.dueTime}</span>}
                         </div>
-                        <div className="flex items-center text-xs text-gray-600 dark:text-gray-300 gap-2 -mt-2 md:mt-0">
-                          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
-                        </div>
+                        {/* Progress moved to the right side */}
                       </div>
                     </div>
                 </div>
-                <div className="flex items-center ml-3 flex-shrink-0">
+        <div className="flex items-center ml-3 gap-2 flex-shrink-0">
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
                     <div className="w-8 h-8 flex items-center justify-center" aria-label={`View tasks for ${list.name}`}>
                        {isCompletedForDate ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
                     </div>
@@ -908,15 +945,14 @@ const DashboardHabitCard: React.FC<{
                             <EditIcon className="text-base"/>
                           </button>
                         </div>
-                        {habit.type === 'checklist' && totalTasks > 0 && (
-                          <div className="flex items-center text-xs text-gray-600 dark:text-gray-300 gap-2 -mt-2 md:mt-0">
-                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
-                          </div>
-                        )}
+                        {/* Progress moved to the right side */}
                       </div>
                     </div>
                 </div>
-                <div className="flex items-center ml-3 flex-shrink-0">
+        <div className="flex items-center ml-3 gap-2 flex-shrink-0">
+          {habit.type === 'checklist' && totalTasks > 0 && (
+            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
+          )}
                     <div className="w-8 h-8 flex items-center justify-center">
                         {isCompletedOnSelectedDate ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
                     </div>
@@ -929,38 +965,462 @@ const DashboardHabitCard: React.FC<{
 }
 
 const DashboardEventCard: React.FC<{
-    event: Event;
-    category?: UserCategory;
-    onEdit: () => void;
-}> = ({ event, category, onEdit }) => {
-    const timeText = event.isAllDay ? 'All-day' : `${event.startTime}${event.endTime ? ` - ${event.endTime}` : ''}`;
+  event: Event;
+  color?: string;
+  onEdit: () => void;
+}> = ({ event, color, onEdit }) => {
+  const now = new Date();
+  const isToday = isSameDayDate(now, new Date(event.startDate + 'T00:00:00'));
+  const start = parseEventDateTime(event.startDate, event.startTime) || new Date(event.startDate + 'T00:00:00');
+  const end = parseEventDateTime(event.endDate, event.endTime) || start;
+  const status: EventLiveStatus = event.isAllDay ? 'live' : getEventStatusForNow(event, now);
+
+  const withinAnHour = !event.isAllDay && status === 'upcoming' && start.getTime() - now.getTime() <= 60 * 60 * 1000;
+  const countdown = withinAnHour ? getCountdownLabel(start, now) : null;
+  const timeText = event.isAllDay ? 'All-day' : `${event.startTime || formatHM(start)}${event.endTime ? ` - ${event.endTime}` : ''}`;
+    // Only keep an 'Ongoing' badge when event is live; remove all other badges
+    const statusBadge = (() => {
+      if (!isToday) return null;
+      if (status === 'live') return <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-600/20 text-green-300">Ongoing</span>;
+      return null;
+    })();
+    const isDone = status === 'done';
     
-    return (
-        <div onClick={onEdit} className="flex items-center justify-between p-2.5 rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer">
-            <div className="flex items-center min-w-0 flex-1 gap-3">
-                {category ? (
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
-                        <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
-                    </div>
-                ) : (
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700">
-                        <EventNoteIcon className="text-xl text-gray-500" />
-                    </div>
-                )}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 min-w-0">
-                            <span className="truncate text-gray-800 dark:text-gray-200">{event.title}</span>
-                            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 md:hidden" aria-label={`Edit ${event.title}`}>
-                                <EditIcon className="text-base"/>
-                            </button>
-                        </div>
-                        <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{timeText}</span>
-                    </div>
-                </div>
+  return (
+    <div onClick={onEdit} className={`relative overflow-hidden rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer min-h-[56px] ${isDone ? 'opacity-60' : ''}`}>
+      <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ backgroundColor: color || 'var(--color-primary-600)' }} />
+      <div className="flex items-center justify-between p-2.5 h-full">
+        <div className="flex items-center min-w-0 flex-1 gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={`truncate ${isDone ? 'text-gray-400' : 'text-gray-800 dark:text-gray-200'}`}>{event.title}</span>
+                {statusBadge}
+                <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 md:hidden" aria-label={`Edit ${event.title}`}>
+                  <EditIcon className="text-base"/>
+                </button>
+              </div>
+              <span className={`ml-2 text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${isDone ? 'bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400' : 'bg-gray-200 dark:bg-gray-700/80'}`}>{timeText}</span>
             </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
+};
+
+// Desktop-only day grid timeline for events
+const DayEventsTimeline: React.FC<{
+  events: Event[];
+  projects: Project[];
+  selectedDate: Date;
+  onEditItem: (ev: Event) => void;
+  onNewEventAt?: (date: string, startTime: string, endTime: string) => void;
+}> = ({ events, projects, selectedDate, onEditItem, onNewEventAt }) => {
+  // Zoom density state (persisted)
+  const HOUR_MIN = 28;
+  const HOUR_MAX = 112;
+  const HOUR_STEP = 8;
+  const LS_KEY = 'today.timeline.hourPx.v1';
+  const [hourPx, setHourPx] = useState<number>(() => {
+    if (typeof window === 'undefined') return 56;
+    const v = Number(localStorage.getItem(LS_KEY));
+    return Number.isFinite(v) && v >= HOUR_MIN && v <= HOUR_MAX ? v : 56;
+  });
+  const MIN_PX = hourPx / 60; // pixels per minute
+  const gapX = 6; // px gap between overlapping columns
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [jumpHour, setJumpHour] = useState<number>(7);
+  const [isDragging, setIsDragging] = useState<{
+    id: string;
+    mode: 'move' | 'resize';
+    originY: number;
+    baseStart: number; // minutes at drag start
+    baseEnd: number;   // minutes at drag start
+    start: number;     // preview current
+    end: number;       // preview current
+  } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(LS_KEY, String(hourPx));
+  }, [hourPx]);
+
+  const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n));
+
+  const toMinutes = (dateStr: string, timeStr: string | null | undefined) => {
+    if (!timeStr) return 0;
+    const [h, m] = timeStr.split(':').map(Number);
+    return (h || 0) * 60 + (m || 0);
+  };
+
+  const minutesToHM = (mins: number) => {
+    const clamped = Math.max(0, Math.min(24 * 60, Math.round(mins)));
+    const h = Math.floor(clamped / 60);
+    const m = clamped % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
+  const dayStart = new Date(selectedDate);
+  dayStart.setHours(0, 0, 0, 0);
+
+  const allDay = events.filter(e => e.isAllDay);
+  const timedRaw = events.filter(e => !e.isAllDay).map(e => {
+    const startMin = toMinutes(e.startDate, e.startTime);
+    let endMin: number;
+    if (e.endDate && e.endTime) {
+      endMin = toMinutes(e.endDate, e.endTime);
+      // If event spans multiple days and selected day is start or middle/end, clamp to the day bounds
+      const startDate = new Date(e.startDate + 'T00:00:00');
+      const endDate = new Date((e.endDate) + 'T00:00:00');
+      if (startDate < dayStart && endDate > dayStart) {
+        // spans over this day without explicit times -> use full day
+        endMin = 24 * 60;
+      }
+    } else {
+      endMin = startMin + 60; // default 1h if no end specified
+    }
+    const s = clamp(startMin, 0, 24 * 60);
+    const eMin = clamp(endMin, 0, 24 * 60);
+    return { ev: e, start: s, end: Math.max(eMin, s + 15) }; // min 15m duration
+  });
+
+  // Build clusters of overlapping events
+  type TimedItem = { ev: Event; start: number; end: number; col?: number; cols?: number };
+  const timedSorted: TimedItem[] = timedRaw.sort((a, b) => a.start - b.start || a.end - b.end);
+
+  let i = 0;
+  const output: TimedItem[] = [];
+  while (i < timedSorted.length) {
+    // find cluster where events overlap
+    let cluster: TimedItem[] = [];
+    let clusterEnd = -1;
+    let j = i;
+    while (j < timedSorted.length) {
+      const item = timedSorted[j];
+      if (cluster.length === 0 || item.start < clusterEnd) {
+        cluster.push(item);
+        clusterEnd = Math.max(clusterEnd, item.end);
+        j++;
+      } else {
+        break;
+      }
+      // Extend cluster if subsequent events start before current clusterEnd
+      while (j < timedSorted.length && timedSorted[j].start < clusterEnd) {
+        cluster.push(timedSorted[j]);
+        clusterEnd = Math.max(clusterEnd, timedSorted[j].end);
+        j++;
+      }
+    }
+
+    // Assign columns greedily
+    const columns: TimedItem[][] = [];
+    const MAX_COLS = 3;
+    for (const item of cluster) {
+      let placed = false;
+      for (let c = 0; c < Math.min(columns.length, MAX_COLS); c++) {
+        const last = columns[c][columns[c].length - 1];
+        if (last.end <= item.start) {
+          columns[c].push(item);
+          item.col = c;
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        if (columns.length < MAX_COLS) {
+          columns.push([item]);
+          item.col = columns.length - 1;
+        } else {
+          // Stack into last column if exceeding MAX_COLS
+          columns[columns.length - 1].push(item);
+          item.col = MAX_COLS - 1;
+        }
+      }
+    }
+    const usedCols = Math.min(columns.length, MAX_COLS);
+    for (const item of cluster) {
+      item.cols = usedCols;
+      output.push(item);
+    }
+    i = j;
+  }
+
+  const isToday = isSameDayDate(new Date(), selectedDate);
+
+  const scrollToHour = (hour: number, behavior: ScrollBehavior = 'smooth') => {
+    const y = hour * 60 * MIN_PX;
+    containerRef.current?.scrollTo({ top: Math.max(0, y - 20), behavior });
+  };
+
+  const scrollToNow = () => {
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    const y = minutes * MIN_PX;
+    containerRef.current?.scrollTo({ top: Math.max(0, y - 40), behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    // Auto-scroll to 07:00 when date/timeline renders
+    scrollToHour(7, 'auto');
+  }, [hourPx, selectedDate]);
+
+  return (
+    <div ref={containerRef} className="p-2 overflow-y-auto min-h-0 h-full" style={{ maxHeight: '100%' }}>
+      {/* Sticky tiny controls */}
+      <div className="sticky top-0 z-10 flex justify-end items-center p-1 bg-gradient-to-b from-gray-100/95 dark:from-gray-800/95 to-transparent rounded-t-xl">
+        {/* Zoom controls only */}
+        <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300">
+          <button
+            onClick={() => setHourPx(h => Math.max(HOUR_MIN, h - HOUR_STEP))}
+            className="px-2 py-1 rounded-md bg-gray-200 dark:bg-gray-700/60 hover:bg-gray-300 dark:hover:bg-gray-700"
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            −
+          </button>
+          <button
+            onClick={() => setHourPx(h => Math.min(HOUR_MAX, h + HOUR_STEP))}
+            className="px-2 py-1 rounded-md bg-gray-200 dark:bg-gray-700/60 hover:bg-gray-300 dark:hover:bg-gray-700"
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            +
+          </button>
+        </div>
+      </div>
+      {/* All-day row */}
+      {allDay.length > 0 && (
+        <div className="mb-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 px-1">All Day</div>
+          <div className="flex flex-wrap gap-2">
+            {allDay.map(ev => {
+              const project = ev.projectId ? projects.find(p => p.id === ev.projectId) : undefined;
+              const color = project?.color;
+              return (
+                <button key={ev.id} onClick={() => onEditItem(ev)} className="relative px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-700/60 hover:bg-gray-300 dark:hover:bg-gray-700 text-sm flex items-center gap-2">
+                  <span className="block w-1 h-4 rounded" style={{ backgroundColor: color || 'var(--color-primary-600)' }} />
+                  <span className="truncate max-w-[16rem]">{ev.title}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Timeline */}
+      <div className="grid grid-cols-[48px_1fr] gap-2">
+        {/* Hour labels */}
+        <div className="relative" style={{ height: hourPx * 24 }}>
+          {Array.from({ length: 24 }, (_, h) => (
+            <div key={h} className="absolute left-0 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400 pr-1" style={{ top: h * hourPx }}>
+              {String(h).padStart(2, '0')}
+            </div>
+          ))}
+        </div>
+        {/* Events track */}
+        <div
+          className="relative events-track"
+          style={{ height: hourPx * 24 }}
+          onClick={(e) => {
+            if (!onNewEventAt) return;
+            const el = (e.target instanceof Element) ? e.target : null;
+            const isInEvent = !!el?.closest('.event-card');
+            const isInHandle = !!el?.closest('.resize-handle');
+            if (isInEvent || isInHandle) return;
+            const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+            const y = e.clientY - rect.top; // px from top of track
+            let minutes = y / MIN_PX;
+            const SNAP = 5;
+            minutes = Math.round(minutes / SNAP) * SNAP;
+            // Avoid creating events ending at 24:00 which some time inputs don't accept
+            const MAX_MINUTE = 24 * 60 - SNAP; // 23:55 for SNAP=5
+            minutes = Math.max(0, Math.min(MAX_MINUTE, minutes));
+            const startH = Math.floor(minutes / 60);
+            const startM = Math.round(minutes % 60);
+            const startHM = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+            const duration = 30; // default 30m
+            let endMin = Math.min(MAX_MINUTE + SNAP, minutes + duration); // allow end to reach 24:00 equivalent but clamp to 23:55
+            const endH = Math.floor(endMin / 60);
+            const endM = Math.round(endMin % 60);
+            const endHM = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+            onNewEventAt(getISODate(selectedDate), startHM, endHM);
+          }}
+        >
+          {/* Hour grid lines */}
+          {Array.from({ length: 25 }, (_, h) => (
+            <div key={h} className="absolute left-0 right-0 border-t border-dashed border-gray-300 dark:border-gray-700" style={{ top: h * hourPx }} />
+          ))}
+          {/* Half-hour lines */}
+          {Array.from({ length: 24 }, (_, h) => (
+            <div key={`half-${h}`} className="absolute left-0 right-0 border-t border-dashed border-gray-300/60 dark:border-gray-700/60" style={{ top: h * hourPx + hourPx / 2 }} />
+          ))}
+
+          {/* Now marker */}
+          {isToday && (() => {
+            const now = new Date();
+            const minutes = now.getHours() * 60 + now.getMinutes();
+            const top = minutes * MIN_PX;
+            return (
+              <div className="absolute left-0 right-0" style={{ top }}>
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--color-primary-600)]" />
+                <div className="h-0.5 bg-[var(--color-primary-600)] opacity-70" />
+              </div>
+            )
+          })()}
+
+          {/* Timed events */}
+          {output.map(item => {
+            const { ev, start, end, col = 0, cols = 1 } = item;
+            const project = ev.projectId ? projects.find(p => p.id === ev.projectId) : undefined;
+            const leftPct = (100 / cols) * col;
+            const widthPct = 100 / cols;
+            const top = start * MIN_PX;
+            const height = Math.max(28, (end - start) * MIN_PX);
+            const status = getEventStatusForNow(ev, new Date());
+            const isDone = status === 'done' && isToday;
+            const startHM = ev.startTime || '00:00';
+            const endHM = ev.endTime || '';
+            const attendees = ev.attendees && ev.attendees.length > 0 ? (() => {
+              const [first, second, ...rest] = ev.attendees as string[];
+              if (!second) return first;
+              const extra = rest.length > 0 ? ` +${rest.length}` : '';
+              return `${first}, ${second}${extra}`;
+            })() : null;
+
+            // Apply dragging preview if this item is being dragged
+            const isThisDragging = isDragging && isDragging.id === ev.id;
+            const dragTop = isThisDragging ? (isDragging.start * MIN_PX) : top;
+            const dragHeight = isThisDragging ? Math.max(28, (isDragging.end - isDragging.start) * MIN_PX) : height;
+            return (
+              <div
+                key={ev.id}
+                onMouseDown={(e) => {
+                  // start move unless target is resize handle
+                  const target = e.target as HTMLElement;
+                  const isHandle = target.closest?.('.resize-handle');
+                  const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+                  const offsetY = e.clientY - rect.top; // in px inside card
+                  const originY = e.clientY;
+                  if (isHandle) {
+                    setIsDragging({ id: ev.id, mode: 'resize', originY, baseStart: start, baseEnd: end, start, end });
+                  } else {
+                    setIsDragging({ id: ev.id, mode: 'move', originY, baseStart: start, baseEnd: end, start, end });
+                  }
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  // Always stop propagation to avoid container click creating a new event
+                  e.stopPropagation();
+                  if (isDragging) { e.preventDefault(); return; }
+                  onEditItem(ev);
+                }}
+                className={`event-card absolute rounded-lg overflow-hidden cursor-pointer group hover:bg-gray-200/70 dark:hover:bg-gray-700/50 ${isDone ? 'opacity-60' : ''}`}
+                style={{
+                  top: dragTop,
+                  height: dragHeight,
+                  left: `calc(${leftPct}% + ${col * (gapX / 2)}px)`,
+                  width: `calc(${widthPct}% - ${gapX}px)`,
+                  background: 'transparent',
+                }}
+              >
+                {/* Card background */}
+                <div className="w-full h-full bg-white/90 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/60 backdrop-blur-sm">
+                  <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ backgroundColor: project?.color || 'var(--color-primary-600)' }} />
+                  <div className="h-full flex items-start justify-between gap-2 px-2.5 py-1">
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm leading-tight">{ev.title}</p>
+                      {(ev.location || attendees) && (
+                        <p className="truncate text-[11px] text-gray-600 dark:text-gray-300 leading-tight">{[ev.location, attendees].filter(Boolean).join(' • ')}</p>
+                      )}
+                    </div>
+                  </div>
+                  {/* Resize handle */}
+                  <div className="resize-handle absolute left-1 right-1 bottom-0 h-2 cursor-ns-resize opacity-60 hover:opacity-100">
+                    <div className="mx-auto w-8 h-0.5 bg-gray-400 dark:bg-gray-500 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Global mouse listeners for drag/resize */}
+      {isDragging && (
+        <DragHandlers
+          isDragging={isDragging}
+          minPx={MIN_PX}
+          onUpdate={(next) => setIsDragging(cur => cur && cur.id === next.id ? next : cur)}
+          onCancel={() => setIsDragging(null)}
+          onCommit={() => {
+            if (!isDragging) return;
+            const { id, start, end } = isDragging;
+            const ev = events.find(e => e.id === id);
+            if (!ev) { setIsDragging(null); return; }
+            const newStart = clamp(start, 0, 24 * 60);
+            const newEnd = clamp(Math.max(end, newStart + 5), 0, 24 * 60);
+            const updated: Event = {
+              ...ev,
+              startTime: minutesToHM(newStart),
+              endTime: minutesToHM(newEnd),
+              // keep dates the same; multi-day edits are out-of-scope here
+            };
+            setIsDragging(null);
+            onEditItem(updated);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+// Helper component for handling mousemove/mouseup during drag/resize
+const DragHandlers: React.FC<{
+  isDragging: { id: string; mode: 'move' | 'resize'; originY: number; baseStart: number; baseEnd: number; start: number; end: number };
+  minPx: number; // pixels per minute
+  onUpdate: (next: { id: string; mode: 'move' | 'resize'; originY: number; baseStart: number; baseEnd: number; start: number; end: number }) => void;
+  onCancel: () => void;
+  onCommit: () => void;
+}> = ({ isDragging, minPx, onUpdate, onCancel, onCommit }) => {
+  useEffect(() => {
+    const SNAP_MIN = 5; // snap to 5-minute increments
+    const handleMove = (e: MouseEvent) => {
+      const dyPx = e.clientY - isDragging.originY;
+      const deltaMinRaw = dyPx / minPx;
+      const deltaMin = Math.round(deltaMinRaw / SNAP_MIN) * SNAP_MIN;
+      if (isDragging.mode === 'move') {
+        const dur = isDragging.baseEnd - isDragging.baseStart;
+        let nextStart = isDragging.baseStart + deltaMin;
+        nextStart = Math.max(0, Math.min(24 * 60 - 5, nextStart));
+        onUpdate({ ...isDragging, start: nextStart, end: nextStart + dur });
+      } else {
+        let nextEnd = isDragging.baseEnd + deltaMin;
+        nextEnd = Math.max(isDragging.baseStart + 5, Math.min(24 * 60, nextEnd));
+        onUpdate({ ...isDragging, end: nextEnd });
+      }
+    };
+    const handleUp = () => {
+      onCommit();
+      cleanup();
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCancel();
+        cleanup();
+      }
+    };
+    const cleanup = () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('keydown', handleKey);
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('keydown', handleKey);
+    return cleanup;
+  }, [isDragging, minPx, onUpdate, onCancel, onCommit]);
+  return null;
 };
 
 const DateScroller: React.FC<{
@@ -1007,7 +1467,7 @@ const DateScroller: React.FC<{
   return (
     <div
       ref={scrollerRef}
-      className="flex items-center space-x-2 overflow-x-auto pb-3 scrollbar-hide px-4 sm:px-6"
+      className="flex items-center space-x-2 overflow-x-auto pb-2.5 scrollbar-hide px-4 sm:px-6"
     >
       {allDates.map((date) => {
           const isSelected = isSameDay(date, selectedDate)
@@ -1051,36 +1511,37 @@ const ProjectFilterDropdown: React.FC<{
         setIsOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (projects.length === 0) {
-    return null;
-  }
-  
+  if (projects.length === 0) return null;
+
   return (
     <div ref={dropdownRef} className={`relative ${className}`}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
+      <button
+        onClick={() => setIsOpen(v => !v)}
         className="w-full flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
       >
         <Icon name="folder" className="text-base flex-shrink-0" />
-        <span className="truncate flex-1 text-left">{selectedProject ? selectedProject.name : "All Projects"}</span>
+        <span className="truncate flex-1 text-left">{selectedProject ? selectedProject.name : 'All Projects'}</span>
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
         <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             <li>
-              <button onClick={() => { onSelectProject('all'); setIsOpen(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600">
+              <button
+                onClick={() => { onSelectProject('all'); setIsOpen(false); }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
                 All Projects
               </button>
             </li>
             {projects.map(p => (
               <li key={p.id}>
-                <button 
-                  onClick={() => { onSelectProject(p.id); setIsOpen(false); }} 
+                <button
+                  onClick={() => { onSelectProject(p.id); setIsOpen(false); }}
                   className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedProjectId === p.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {p.name}
@@ -1114,6 +1575,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     onNewTask,
     onNewHabit,
     onNewEvent,
+    onNewEventAt,
     onNewNote,
     onEditItem,
     onUpdateItemPriority,
@@ -1130,10 +1592,13 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [orderedDailyItems, setOrderedDailyItems] = useState<DailyItemWrapper[]>([]);
+  const [eventsForDay, setEventsForDay] = useState<Event[]>([]);
+  const [eventsSorted, setEventsSorted] = useState<Event[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>('all');
   const [priorityModalItem, setPriorityModalItem] = useState<Checklist | Habit | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isOnboardingOpen, setOnboardingOpen] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'events' | 'tasks'>('events');
 
   const formatNoteDate = (isoDate: string) => {
     const noteDate = new Date(isoDate);
@@ -1217,11 +1682,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
         return checkDate >= eventStartDate && checkDate <= eventEndDate;
       });
 
-      const dailyItems: DailyItemWrapper[] = [
-          ...tasksForRender.map((task): DailyItemWrapper => ({ item: task, type: 'task' as const, id: task.id })),
-          ...habitsForRender.map((habit): DailyItemWrapper => ({ item: habit, type: 'habit' as const, id: habit.id })),
-          ...eventsForRender.map((event): DailyItemWrapper => ({ item: event, type: 'event' as const, id: event.id })),
-      ];
+    const dailyItems: DailyItemWrapper[] = [
+      ...tasksForRender.map((task): DailyItemWrapper => ({ item: task, type: 'task' as const, id: task.id })),
+      ...habitsForRender.map((habit): DailyItemWrapper => ({ item: habit, type: 'habit' as const, id: habit.id })),
+    ];
       
       const isItemCompleted = (itemWrapper: DailyItemWrapper, isoDate: string): boolean => {
         if (itemWrapper.type === 'event') return false; // Events don't have completion status
@@ -1263,8 +1727,44 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             return (a.item as any).name.localeCompare((b.item as any).name);
       });
       setOrderedDailyItems(sortedItems);
+      setEventsForDay(eventsForRender);
 
   }, [checklists, habits, events, selectedDate, selectedISODate, selectedProjectId]);
+
+  // Recompute and sort events for the selected day; update minutely when viewing today
+  useEffect(() => {
+    const recompute = () => {
+      const now = new Date();
+      const isTodayView = isSameDayDate(now, selectedDate);
+      const sorted = [...eventsForDay].sort((a, b) => {
+        if (!isTodayView) {
+          // Static ordering: all-day first, then start time
+          if (a.isAllDay && !b.isAllDay) return -1;
+          if (!a.isAllDay && b.isAllDay) return 1;
+          const ta = a.startTime || '00:00';
+          const tb = b.startTime || '00:00';
+          return ta.localeCompare(tb);
+        }
+        // Today: order by live status: live > upcoming > done; within groups, by time
+        const sa = getEventStatusForNow(a, now);
+        const sb = getEventStatusForNow(b, now);
+        const orderVal = (s: EventLiveStatus) => (s === 'live' ? 0 : s === 'upcoming' ? 1 : 2);
+        const oa = orderVal(sa);
+        const ob = orderVal(sb);
+        if (oa !== ob) return oa - ob;
+        // If both upcoming: sooner start first
+        const aStart = parseEventDateTime(a.startDate, a.startTime) || new Date(`${a.startDate}T00:00:00`);
+        const bStart = parseEventDateTime(b.startDate, b.startTime) || new Date(`${b.startDate}T00:00:00`);
+        return aStart.getTime() - bStart.getTime();
+      });
+      setEventsSorted(sorted);
+    };
+    recompute();
+    if (isSameDayDate(new Date(), selectedDate)) {
+      const id = window.setInterval(recompute, 60_000);
+      return () => window.clearInterval(id);
+    }
+  }, [eventsForDay, selectedDate]);
   
   const projectFilteredNotes = notes.filter(n => selectedProjectId === 'all' || n.projectId === selectedProjectId);
   
@@ -1272,7 +1772,9 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
     .slice(0, 5)
     
-  const isEmpty = orderedDailyItems.length === 0
+  const hasTasksOrHabits = orderedDailyItems.length > 0;
+  const hasEvents = eventsForDay.length > 0;
+  const isEmpty = !hasTasksOrHabits && !hasEvents;
   const isTrulyEmpty = checklists.length === 0 && habits.length === 0 && events.length === 0 && projects.length === 0 && notes.length === 0 && userCategories.length === 0;
   
   const allDailyItems = [...checklists, ...habits];
@@ -1327,19 +1829,19 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
         />}
 
     <div className="sticky top-0 z-30 bg-gray-100 dark:bg-gray-800">
-            <Header
-                title={formatDateForHeader(selectedDate)}
-                onToggleSidebar={onToggleSidebar}
-            >
-                <div className="flex items-center gap-1 sm:gap-2">
-                    <button onClick={() => setIsSearchOpen(true)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Search"><SearchIcon /></button>
-                    <button onClick={() => setIsCalendarOpen(true)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Open calendar"><CalendarTodayIcon /></button>
-                    <button onClick={() => setOnboardingOpen(true)} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Help"><HelpOutlineIcon /></button>
-                </div>
-            </Header>
-      <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
+      <Header
+        title={formatDateForHeader(selectedDate)}
+        onToggleSidebar={onToggleSidebar}
+      >
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Search" title="Search"><SearchIcon /></button>
+          <button onClick={() => setIsCalendarOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Open calendar" title="Open calendar"><CalendarTodayIcon /></button>
+          <button onClick={() => setOnboardingOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Help" title="Help & Tips"><HelpOutlineIcon /></button>
         </div>
-      <main className="flex-1 overflow-y-auto px-4 sm:px-6 text-gray-800 dark:text-white">
+      </Header>
+      <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
+    </div>
+      <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto lg:overflow-hidden min-h-0">
         
         {isTrulyEmpty ? (
           <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center h-full">
@@ -1353,95 +1855,179 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col lg:grid lg:grid-cols-3 lg:gap-6">
-            <div className="lg:col-span-2">
-              <div className="pb-1">
-                <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
-                <div className="flex items-center justify-between gap-2 mt-2">
-                    <div className="flex-1 min-w-0">
-                        <ProjectFilterDropdown projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId}/>
-                    </div>
-                    {!isEmpty && (
-          <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2">
-                        {/* Mobile & Tablet: Icon only (w-9 h-9 matches selector perceived height) */}
-            <button onClick={() => onNewTask(selectedISODate)} className="md:hidden w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Task"><NewTaskIcon /></button>
-            <button onClick={() => onNewEvent(selectedISODate)} className="md:hidden w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Event"><CalendarAddOnIcon /></button>
-            <button onClick={onNewHabit} className="md:hidden w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Habit"><NewHabitIcon /></button>
-            {/* Desktop: Icon + Text */}
-            <button onClick={() => onNewTask(selectedISODate)} className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors">
-                            <NewTaskIcon /> <span>New Task</span>
-                        </button>
-            <button onClick={() => onNewEvent(selectedISODate)} className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors">
-                            <CalendarAddOnIcon /> <span>New Event</span>
-                        </button>
-            <button onClick={onNewHabit} className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors">
-                            <NewHabitIcon /> <span>New Habit</span>
-                        </button>
-                    </div>
-                    )}
+          <div className="flex flex-col lg:grid lg:grid-cols-4 lg:gap-6 h-full min-h-0">
+            {/* Left area (3/4): controls + two columns (Tasks/Habits | Events) */}
+            <div className="lg:col-span-3 flex flex-col min-h-0">
+              {/* Sticky within left/middle columns only */}
+              <div className="bg-gray-100 dark:bg-gray-800 lg:sticky lg:top-0 z-20">
+                <div className="pt-1.5">
+                  <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
                 </div>
+                <div className="px-0 sm:px-0 pb-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <ProjectFilterDropdown projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
+                    </div>
+                    {!isTrulyEmpty && (
+                      <div className="flex-shrink-0 flex items-center gap-2">
+                        {/* Mobile/Tablet: Toggle + icon-only actions in the same row */}
+                        <div className="lg:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-full">
+                          <button onClick={() => setMobileTab('events')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Events</button>
+                          <button onClick={() => setMobileTab('tasks')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Tasks</button>
+                        </div>
+
+                        {/* Icon-only actions for <lg */}
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+
+                        {/* Desktop: Icon-only actions (>=lg) */}
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
               </div>
               <div>
                 {isEmpty ? (
-                    <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
-                      <EmptyStateIcon icon={<CheckCircleIcon />} size="lg" />
-                      <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-1">Organize your day</h3>
-                      <p className="max-w-md text-sm mb-5">You have no tasks, habits, or events for this date. Add what matters and get going.</p>
-                      <div className="flex gap-3">
-                        <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5">
-                          <NewTaskIcon /> <span>New Task</span>
-                        </button>
-                        <button onClick={onNewHabit} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center gap-1.5">
-                          <NewHabitIcon /> <span>New Habit</span>
-                        </button>
+                  <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
+                    <EmptyStateIcon icon={<CheckCircleIcon />} size="lg" />
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-1">Organize your day</h3>
+                    <p className="max-w-md text-sm mb-5">You have no tasks, habits, or events for this date. Add what matters and get going.</p>
+                    <div className="flex gap-3">
+                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5">
+                        <NewTaskIcon /> <span>New Task</span>
+                      </button>
+                      <button onClick={onNewHabit} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center gap-1.5">
+                        <NewHabitIcon /> <span>New Habit</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Mobile: content below (toggle is in the control row) */}
+                    <div className="lg:hidden mt-2 space-y-2">
+                      {mobileTab === 'events'
+                        ? (
+                          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col h-[65vh]">
+                            <DayEventsTimeline
+                              events={eventsForDay}
+                              projects={projects}
+                              selectedDate={selectedDate}
+                              onEditItem={onEditItem}
+                              onNewEventAt={onNewEventAt}
+                            />
+                          </div>
+                        )
+                        : orderedDailyItems.map(itemWrapper => {
+                            const { item, type } = itemWrapper;
+                            const category = userCategories.find(c => c.id === item.categoryId);
+                            const isRecentlyCompleted = recentlyCompletedItemId === item.id;
+                            const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                            const isCompleting = completingItemIds.has(item.id);
+                            if (isCompleting && isCompleted) return null;
+                            return (
+                              <div key={item.id}>
+                                {type === 'task' ? (
+                                  (item as Checklist).tasks.length === 0 ? (
+                                    <DashboardSingleTask task={item as Checklist} category={category} onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)} onEdit={() => onEditItem(item)} isCompleted={isCompleted} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
+                                  ) : (
+                                    <DashboardMultiTaskList list={item as Checklist} category={category} onOpenModal={(list) => setModalItemId(list.id)} onEdit={() => onEditItem(item)} selectedDate={selectedDate} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
+                                  )
+                                ) : (
+                                  <DashboardHabitCard habit={item as Habit} category={category} selectedDate={selectedDate} onToggleHabitCompletion={onToggleHabitCompletion} onOpenSubtaskModal={(habit) => setModalItemId(habit.id)} onEdit={() => onEditItem(item)} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Habit)} isCompleting={isCompleting} />
+                                )}
+                              </div>
+                            );
+                          })}
+                    </div>
+
+                    {/* Desktop: split the 3/4 area into two equal columns (Tasks/Habits | Events) */}
+                    <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 mt-2 flex-1 min-h-0">
+                      {/* Left of 3/4: Tasks & Habits */}
+                      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
+                        <div className="p-2 space-y-2 overflow-y-auto min-h-0 flex-1">
+                        {orderedDailyItems.map(itemWrapper => {
+                          const { item, type } = itemWrapper;
+                          const category = userCategories.find(c => c.id === item.categoryId);
+                          const isRecentlyCompleted = recentlyCompletedItemId === item.id;
+                          const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                          const isCompleting = completingItemIds.has(item.id);
+                          if (isCompleting && isCompleted) return null;
+                          return (
+                            <div key={item.id}>
+                              {type === 'task' ? (
+                                (item as Checklist).tasks.length === 0 ? (
+                                  <DashboardSingleTask
+                                    task={item as Checklist}
+                                    category={category}
+                                    onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
+                                    onEdit={() => onEditItem(item)}
+                                    isCompleted={isCompleted}
+                                    isRecentlyCompleted={isRecentlyCompleted}
+                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                    isCompleting={isCompleting}
+                                  />
+                                ) : (
+                                  <DashboardMultiTaskList
+                                    list={item as Checklist}
+                                    category={category}
+                                    onOpenModal={(list) => setModalItemId(list.id)}
+                                    onEdit={() => onEditItem(item)}
+                                    selectedDate={selectedDate}
+                                    isRecentlyCompleted={isRecentlyCompleted}
+                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                    isCompleting={isCompleting}
+                                  />
+                                )
+                              ) : (
+                                <DashboardHabitCard
+                                  habit={item as Habit}
+                                  category={category}
+                                  selectedDate={selectedDate}
+                                  onToggleHabitCompletion={onToggleHabitCompletion}
+                                  onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
+                                  onEdit={() => onEditItem(item)}
+                                  isRecentlyCompleted={isRecentlyCompleted}
+                                  onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
+                                  isCompleting={isCompleting}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                        {orderedDailyItems.length === 0 && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">No tasks or habits.</p>
+                        )}
+                        </div>
+                      </div>
+
+                      {/* Right of 3/4: Events */}
+                      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
+                        <div className="flex-1 min-h-0">
+                          <DayEventsTimeline events={eventsForDay} projects={projects} selectedDate={selectedDate} onEditItem={onEditItem} onNewEventAt={onNewEventAt} />
+                        </div>
                       </div>
                     </div>
-                ) : (
-                    <div>
-                      {orderedDailyItems.map((itemWrapper) => {
-                         const { item, type } = itemWrapper;
-                         const category = userCategories.find(c => c.id === item.categoryId);
-                         const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                         
-                         if(type === 'event') {
-                             return <DashboardEventCard key={item.id} event={item as Event} category={category} onEdit={() => onEditItem(item)} />
-                         }
-
-                         const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
-                         const isCompleting = completingItemIds.has(item.id);
-                         if (isCompleting && isCompleted) return null;
-
-                         return (
-                           <div key={item.id}>
-                            <div>
-                            {type === 'task' ? (
-                                (item as Checklist).tasks.length === 0 ? (
-                                  <DashboardSingleTask task={item as Checklist} category={category} onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)} onEdit={() => onEditItem(item)} isCompleted={isCompleted} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
-                                ) : (
-                                  <DashboardMultiTaskList list={item as Checklist} category={category} onOpenModal={(list) => setModalItemId(list.id)} onEdit={() => onEditItem(item)} selectedDate={selectedDate} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
-                                )
-                            ) : (
-                               <DashboardHabitCard habit={item as Habit} category={category} selectedDate={selectedDate} onToggleHabitCompletion={onToggleHabitCompletion} onOpenSubtaskModal={(habit) => setModalItemId(habit.id)} onEdit={() => onEditItem(item)} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Habit)} isCompleting={isCompleting} />
-                            )}
-                            </div>
-                           </div>
-                         );
-                      })}
-                    </div>
+                  </>
                 )}
               </div>
               <div className="my-2 h-px bg-gray-200 dark:bg-gray-700/50 lg:hidden" />
             </div>
-            
-            <div className="hidden lg:block space-y-6 lg:col-span-1">
-              <div>
-                <div className="flex items-center justify-between mb-3 px-2">
+
+            {/* Right column (lg): Notes */}
+            <div className="hidden lg:flex lg:flex-col lg:col-span-1 min-h-0">
+              <div className="flex flex-col min-h-0 flex-1">
+                <div className="flex items-center justify-between mb-3 px-2 pt-2.5">
                     <h2 className="text-base font-semibold">{t('recent_notes')}</h2>
-                    <button onClick={() => onNewNote({})} className="p-2 text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note">
-                        <NoteAddIcon />
-                    </button>
+          <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note" title="New Note">
+            <NoteAddIcon />
+          </button>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-3 overflow-y-auto min-h-0">
                     {recentNotes.map((note, index) => {
                       const color = noteColors[index % noteColors.length];
                       const formattedDate = formatNoteDate(note.lastModified);
@@ -1464,9 +2050,9 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 <div className="flex items-center justify-between mb-3 px-2">
                     <h2 className="text-base font-semibold">{t('recent_notes')}</h2>
                     <div>
-                        <button onClick={() => onNewNote({})} className="p-2 text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note">
-                            <NoteAddIcon />
-                        </button>
+            <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note" title="New Note">
+              <NoteAddIcon />
+            </button>
                     </div>
                 </div>
                 <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">

@@ -922,7 +922,7 @@ const defaultPreferences: UserPreferences = {
 export type ViewAction = 
     | { type: 'newTask', payload?: Partial<Checklist> } 
     | { type: 'newHabit' } 
-    | { type: 'newEvent', payload: { startDate: string } }
+    | { type: 'newEvent', payload: Partial<Event> }
     | { type: 'editTask', payload: Checklist } 
     | { type: 'editHabit', payload: Habit } 
     | { type: 'editEvent', payload: Event }
@@ -949,7 +949,9 @@ const App: React.FC = () => {
   const [previousView, setPreviousView] = useState<AppView | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [autoCollapsedByViewport, setAutoCollapsedByViewport] = useState(false);
+    const viewportRangeRef = useRef<'mobile' | 'tablet' | 'desktop' | null>(null);
   const [projectModalData, setProjectModalData] = useState<Project | 'new' | null>(null);
   const [categoryModalData, setCategoryModalData] = useState<UserCategory | 'new' | null>(null);
   const onCategoryCreateCallbackRef = useRef<((newCategoryId: string) => void) | null>(null);
@@ -1041,12 +1043,54 @@ const App: React.FC = () => {
                     const w = window.innerWidth;
                     if (w >= 768 && w < 1024) {
                         setSidebarCollapsed(true);
+                        setAutoCollapsedByViewport(true);
                     }
                 }
             }
 
     } catch (error) { console.error("Failed to load data from localStorage", error); }
   }, []);
+
+    // Track viewport range changes and auto-collapse/restore accordingly
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const getRange = (w: number): 'mobile' | 'tablet' | 'desktop' => {
+            if (w < 768) return 'mobile';
+            if (w < 1024) return 'tablet';
+            return 'desktop';
+        };
+
+        // Initialize range ref
+        viewportRangeRef.current = getRange(window.innerWidth);
+
+        const handleResize = () => {
+            const w = window.innerWidth;
+            const newRange = getRange(w);
+            const prevRange = viewportRangeRef.current;
+            if (newRange !== prevRange) {
+                // Entering tablet: collapse by default if not already collapsed
+                if (newRange === 'tablet') {
+                    if (!isSidebarCollapsed) {
+                        setSidebarCollapsed(true);
+                        setAutoCollapsedByViewport(true);
+                    }
+                }
+                // Returning to desktop: restore if it was auto-collapsed
+                if (newRange === 'desktop') {
+                    if (autoCollapsedByViewport) {
+                        setSidebarCollapsed(false);
+                        setAutoCollapsedByViewport(false);
+                    }
+                }
+                // On mobile we don't force any change; mobile drawer handles visibility
+                viewportRangeRef.current = newRange;
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isSidebarCollapsed, autoCollapsedByViewport]);
 
         const handleLoadSampleData = () => {
             const bundle = getCombinedSampleData();
@@ -1144,9 +1188,12 @@ const App: React.FC = () => {
               const delay = reminderTime.getTime() - now.getTime();
               if (delay > 0) {
                   const timeoutId = window.setTimeout(() => {
+                      const minsUntil = Math.max(0, Math.round((eventDateTime.getTime() - new Date().getTime()) / 60000));
+                      const timeLabel = minsUntil === 0 ? 'now' : minsUntil < 60 ? `${minsUntil} min` : `${Math.floor(minsUntil/60)}h ${minsUntil%60 ? (minsUntil%60)+'m' : ''}`;
+                      const body = event.description ? `${event.description}` : `Starts ${reminder === 'start' ? 'now' : `in ${timeLabel}`} (${event.startTime})`;
                       new Notification(event.title, {
-                          body: event.description || `Starts at ${event.startTime}`,
-                          icon: '/vite.svg' // You can customize this
+                          body,
+                          icon: '/vite.svg',
                       });
                   }, delay);
                   newTimeouts.push(timeoutId);
@@ -1270,7 +1317,11 @@ const App: React.FC = () => {
     setSelectedNoteId(null);
   };
   
-  const handleToggleSidebarCollapse = () => setSidebarCollapsed(prev => !prev);
+    const handleToggleSidebarCollapse = () => {
+        // User manually toggled; disable auto behavior until next breakpoint change
+        setAutoCollapsedByViewport(false);
+        setSidebarCollapsed(prev => !prev);
+    };
 
   // Project Handlers
   const handleCreateProject = (projectData: Omit<Project, 'id'>) => {
@@ -1724,6 +1775,9 @@ const App: React.FC = () => {
     const handleNewEvent = (date: string) => {
         setViewAction({ type: 'newEvent', payload: { startDate: date } });
     };
+    const handleNewEventAt = (date: string, startTime: string, endTime: string) => {
+        setViewAction({ type: 'newEvent', payload: { startDate: date, endDate: date, startTime, endTime } });
+    };
 
     // Stories Handlers (lifted to component scope)
     const handleCreateStory = (payload?: Partial<Story>) => {
@@ -1966,6 +2020,7 @@ const App: React.FC = () => {
                             onNewTask={(date) => setViewAction({ type: 'newTask', payload: { dueDate: date } })}
                             onNewHabit={() => setViewAction({ type: 'newHabit' })}
                             onNewEvent={(date) => handleNewEvent(date)}
+                              onNewEventAt={handleNewEventAt}
                             onNewNote={handleCreateNote}
                             onNewProject={() => setProjectModalData('new')}
                             onEditItem={(item) => {
@@ -2077,6 +2132,7 @@ const App: React.FC = () => {
                             onEditStory={handleSelectStory}
                             onDeleteStory={handleDeleteStory}
                             onMoveStory={handleMoveStoryStatus}
+                            onLoadSampleData={handleLoadSampleData}
                         />
                     ) : currentView === 'storyEditor' && activeStory ? (
                         <StoryEditorPage
@@ -2089,6 +2145,18 @@ const App: React.FC = () => {
                             onDelete={() => handleDeleteStory(activeStory.id)}
                             onLinkTask={(checklistId) => handleUpdateStory(activeStory.id, { linkedTaskIds: Array.from(new Set([...(activeStory.linkedTaskIds || []), checklistId])) })}
                             onUnlinkTask={(checklistId) => handleUpdateStory(activeStory.id, { linkedTaskIds: (activeStory.linkedTaskIds || []).filter(id => id !== checklistId) })}
+                            onCreateLinkedTask={(name) => {
+                                const data: Omit<Checklist, 'id'> = {
+                                    name,
+                                    completionHistory: [],
+                                    tasks: [],
+                                    projectId: activeStory.projectId,
+                                    categoryId: activeStory.categoryId,
+                                };
+                                const created = handleCreateChecklist(data);
+                                handleUpdateStory(activeStory.id, { linkedTaskIds: Array.from(new Set([...(activeStory.linkedTaskIds || []), created.id])) });
+                                setToastMessage('Task created and linked!');
+                            }}
                         />
                     ) : currentView === 'projects' ? (
                         <ProjectsListPage

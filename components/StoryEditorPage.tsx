@@ -13,6 +13,7 @@ type Props = {
 	onDelete: () => void;
 	onLinkTask: (checklistId: string) => void;
 	onUnlinkTask: (checklistId: string) => void;
+    onCreateLinkedTask?: (name: string) => void;
 };
 
 const statusOptions: { value: StoryStatus; label: string }[] = [
@@ -22,14 +23,17 @@ const statusOptions: { value: StoryStatus; label: string }[] = [
 	{ value: 'done', label: 'Done' },
 ];
 
-const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, checklists, onBack, onUpdate, onDelete, onLinkTask, onUnlinkTask }) => {
+const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, checklists, onBack, onUpdate, onDelete, onLinkTask, onUnlinkTask, onCreateLinkedTask }) => {
 	const [local, setLocal] = useState<Story>(story);
 	const [newCriterion, setNewCriterion] = useState('');
+	const [newLinkedTaskName, setNewLinkedTaskName] = useState('');
+	const [selectedChecklistId, setSelectedChecklistId] = useState<string>('');
 	const linkedSet = useMemo(() => new Set(local.linkedTaskIds || []), [local.linkedTaskIds]);
 
 	useEffect(() => {
+		// Sync when story changes in parent (including updates like link/unlink or save)
 		setLocal(story);
-	}, [story.id]);
+	}, [story.id, story.updatedAt]);
 
 	const handleField = <K extends keyof Story>(key: K, value: Story[K]) => {
 		setLocal(prev => ({ ...prev, [key]: value, updatedAt: new Date().toISOString() }));
@@ -79,6 +83,15 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
 
 	const availableChecklists = useMemo(() => checklists.filter(cl => !linkedSet.has(cl.id)), [checklists, linkedSet]);
 
+	// Keep a controlled selection for the link dropdown
+	useEffect(() => {
+		if (availableChecklists.length > 0) {
+			setSelectedChecklistId(prev => prev && availableChecklists.some(c => c.id === prev) ? prev : availableChecklists[0].id);
+		} else {
+			setSelectedChecklistId('');
+		}
+	}, [availableChecklists]);
+
 	const projectName = (pid?: string) => projects.find(p => p.id === pid)?.name || 'No Project';
 	const categoryName = (cid?: string) => userCategories.find(c => c.id === cid)?.name || 'No Category';
 
@@ -117,37 +130,7 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
 							/>
 						</div>
 
-						<div className="bg-white dark:bg-gray-700 rounded-xl p-4">
-							<h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Acceptance Criteria</h3>
-							<div className="space-y-2">
-								{(local.acceptanceCriteria || []).map(c => (
-									<div key={c.id} className="flex items-center gap-2 group">
-										<button onClick={() => toggleCriterion(c.id)}>
-											{c.done ? <CheckCircleIcon className="text-blue-500 text-xl" /> : <RadioButtonUncheckedIcon className="text-gray-500 text-xl" />}
-										</button>
-										<input
-											type="text"
-											value={c.text}
-											onChange={e => handleField('acceptanceCriteria', (local.acceptanceCriteria || []).map(ac => ac.id === c.id ? { ...ac, text: e.target.value } : ac))}
-											className={`flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${c.done ? 'line-through text-gray-500' : ''}`}
-										/>
-										<button onClick={() => removeCriterion(c.id)} className="p-2 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><DeleteIcon /></button>
-									</div>
-								))}
-								<div className="flex items-center gap-2 pt-1">
-									<input
-										type="text"
-										value={newCriterion}
-										onChange={e => setNewCriterion(e.target.value)}
-										placeholder="Add criterion"
-										className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none"
-										onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCriterion(); } }}
-									/>
-									<button onClick={addCriterion} className="px-3 py-2 rounded-full bg-gray-200 dark:bg-gray-600 text-sm font-semibold flex items-center gap-1"><AddIcon className="text-base" /> Add</button>
-								</div>
-							</div>
-						</div>
-
+						{/* Status / Estimation Block moved above Acceptance Criteria */}
 						<div className="bg-white dark:bg-gray-700 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
 							<div>
 								<label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Status</label>
@@ -166,6 +149,37 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
 							<div>
 								<label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Time Estimate</label>
 								<input type="text" value={local.estimateTime || ''} onChange={e => handleField('estimateTime', e.target.value)} placeholder="e.g., 3h, 1d" className="w-full bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none" />
+							</div>
+						</div>
+
+						<div className="bg-white dark:bg-gray-700 rounded-xl p-4">
+							<h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Acceptance Criteria</h3>
+							<div className="space-y-2">
+								{(local.acceptanceCriteria || []).map(c => (
+									<div key={c.id} className="flex items-center gap-2 group">
+										<button onClick={() => toggleCriterion(c.id)}>
+											{c.done ? <CheckCircleIcon className="text-blue-500 text-xl" /> : <RadioButtonUncheckedIcon className="text-gray-500 text-xl" />}
+										</button>
+										<input
+											type="text"
+											value={c.text}
+											onChange={e => handleField('acceptanceCriteria', (local.acceptanceCriteria || []).map(ac => ac.id === c.id ? { ...ac, text: e.target.value } : ac))}
+											className={`flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none ${c.done ? 'line-through text-gray-500' : ''}`}
+										/>
+										<button onClick={() => removeCriterion(c.id)} className="p-2 text-gray-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Remove"><DeleteIcon /></button>
+									</div>
+								))}
+								<div className="flex items-center gap-2 pt-1">
+									<input
+										type="text"
+										value={newCriterion}
+										onChange={e => setNewCriterion(e.target.value)}
+										placeholder="Add criterion"
+										className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none"
+										onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCriterion(); } }}
+									/>
+									<button onClick={addCriterion} className="px-3 py-2 rounded-full bg-gray-200 dark:bg-gray-600 text-sm font-semibold flex items-center gap-1" title="Add"><AddIcon className="text-base" /></button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -200,7 +214,7 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
 							</div>
 						</div>
 
-						<div className="bg-white dark:bg-gray-700 rounded-xl p-4">
+							<div className="bg-white dark:bg-gray-700 rounded-xl p-4">
 							<h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Linked Tasks</h3>
 							<div className="space-y-2">
 								{(local.linkedTaskIds || []).length === 0 && (
@@ -215,30 +229,65 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
 												<div className="text-sm font-medium truncate">{cl.name}</div>
 												<div className="text-xs text-gray-500 truncate">{projectName(cl.projectId)} • {categoryName(cl.categoryId)}</div>
 											</div>
-											<button onClick={() => onUnlinkTask(id)} className="px-2 py-1 rounded-full text-xs bg-red-600/20 text-red-400 hover:bg-red-600/30">Unlink</button>
+											<button
+												onClick={() => { onUnlinkTask(id); setLocal(prev => ({ ...prev, linkedTaskIds: (prev.linkedTaskIds || []).filter(x => x !== id) })); }}
+												className="p-2 rounded-full text-xs bg-red-600/20 text-red-400 hover:bg-red-600/30"
+												title="Unlink"
+											>
+												<DeleteIcon />
+											</button>
 										</div>
 									);
 								})}
 							</div>
 							{availableChecklists.length > 0 && (
 								<div className="mt-3 flex items-center gap-2">
-									<select id="linkSelect" className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none">
+									<select
+										value={selectedChecklistId}
+										onChange={(e) => setSelectedChecklistId(e.target.value)}
+										className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none"
+									>
 										{availableChecklists.map(cl => (
 											<option key={cl.id} value={cl.id}>{cl.name}</option>
 										))}
 									</select>
 									<button
 										onClick={() => {
-											const el = document.getElementById('linkSelect') as HTMLSelectElement | null;
-											const id = el?.value;
-											if (id) onLinkTask(id);
+											if (selectedChecklistId) {
+												onLinkTask(selectedChecklistId);
+												setLocal(prev => ({ ...prev, linkedTaskIds: Array.from(new Set([...(prev.linkedTaskIds || []), selectedChecklistId])) }));
+											}
 										}}
-										className="px-3 py-2 rounded-full bg-gray-200 dark:bg-gray-600 text-sm font-semibold flex items-center gap-1"
+										className="p-2 rounded-full bg-gray-200 dark:bg-gray-600 text-sm font-semibold flex items-center gap-1"
+										title="Link"
 									>
-										<AddIcon className="text-base" /> Link
+										<AddIcon className="text-base" />
 									</button>
 								</div>
 							)}
+
+								{/* Create-and-link new task */}
+								<div className="mt-3 pt-3 border-t border-gray-600/40">
+									<div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2">Create and link a new task</div>
+									<div className="flex items-center gap-2">
+										<input
+											type="text"
+											value={newLinkedTaskName}
+											onChange={(e) => setNewLinkedTaskName(e.target.value)}
+											placeholder="Task name"
+											className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none"
+											onKeyDown={(e) => { if (e.key === 'Enter' && newLinkedTaskName.trim()) { onCreateLinkedTask?.(newLinkedTaskName.trim()); setNewLinkedTaskName(''); } }}
+										/>
+										<button
+											disabled={!newLinkedTaskName.trim()}
+											onClick={() => { if (newLinkedTaskName.trim()) { onCreateLinkedTask?.(newLinkedTaskName.trim()); setNewLinkedTaskName(''); } }}
+											className="p-2 rounded-full bg-gray-200 dark:bg-gray-600 text-sm font-semibold flex items-center gap-1 disabled:opacity-50"
+											title="Create & Link"
+										>
+											<AddIcon className="text-base" />
+										</button>
+									</div>
+								</div>
 						</div>
 
 						<div className="bg-white dark:bg-gray-700 rounded-xl p-4">

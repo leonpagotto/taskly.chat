@@ -89,11 +89,11 @@ interface EventModalProps {
 
 const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, onUpdate, onDelete, userCategories, projects }) => {
     const isEditing = !!initialData?.id;
-    const [localData, setLocalData] = useState<Partial<Event>>({
+  const [localData, setLocalData] = useState<Partial<Event>>({
         title: '', description: '', categoryId: '', projectId: '', 
         startDate: new Date().toISOString().split('T')[0], startTime: '09:00',
         endDate: new Date().toISOString().split('T')[0], endTime: '10:00',
-        isAllDay: false, reminders: [],
+    isAllDay: false, reminders: ['15m'],
         ...initialData
     });
   const [isConfirmingDelete, setConfirmingDelete] = useState(false);
@@ -143,8 +143,8 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
         </div>
     );
     
-    const reminderOptions: {value: ReminderSetting, label: string}[] = [
-        {value: 'start', label: 'At event time'}, {value: '5m', label: '5 min before'}, {value: '15m', label: '15 min before'}, {value: '1h', label: '1 hour before'}, {value: '1d', label: '1 day before'}
+  const reminderOptions: {value: ReminderSetting, label: string}[] = [
+    {value: 'start', label: 'At event time'}, {value: '5m', label: '5 min before'}, {value: '15m', label: '15 min before (default)'}, {value: '1h', label: '1 hour before'}, {value: '1d', label: '1 day before'}
     ];
 
   return (

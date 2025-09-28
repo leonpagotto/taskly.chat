@@ -10,9 +10,9 @@ Stories (Enterprise)
 - [x] Filters row below header (All Projects, All Categories)
 - [x] View toggle with labels/icons (List: view_list, Board: view_kanban)
 - [x] Filters/search panel with status + sort styled like selectors
-- [ ] Create/Edit Story full page with acceptance criteria (reuse checklist), estimation, linked tasks
-- [ ] Board drag-and-drop; keep list/board in sync
-- [ ] Stories sample data
+- [x] Create/Edit Story full page with acceptance criteria (reuse checklist), estimation, linked tasks
+- [x] Board drag-and-drop; keep list/board in sync
+- [x] Stories sample data
 
 Today
 - [x] Mobile quick action buttons perfectly circular; match selector height
@@ -92,6 +92,11 @@ Notes: The remaining backlog below stays as source of truth; we’ll keep append
   - Introduced a shared ModalOverlay to unify z-index above sidebar; applied to Event, NoteToTask, Category, FilePreview, and ProjectLink modals
   - Ensured backdrop click-to-dismiss where appropriate and centered desktop layout for Event modal
   - Made modal footers sticky with safe-area padding for mobile (Event/Category/NoteToTask), preventing CTA obstruction by bottom bars
+
+- DONE: Stories editor, board DnD, sample data (28 Sep 2025)
+  - StoryEditorPage provides full-page create/edit with acceptance criteria (checklist-style), estimates, and task linking
+  - Kanban board supports drag-and-drop and syncs status with list view via lifted state in App
+  - Sample data now includes example Stories across profiles; Dashboard CTA loads them
 
 
 Stories implemented and lost from Today - implement them all:

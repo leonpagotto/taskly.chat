@@ -47,7 +47,7 @@ const NavItem: React.FC<{
   // Compact, consistent padding for all items
   const baseClasses = `flex items-center rounded-full text-sm transition-colors`;
   const shapeClasses = isCollapsed 
-    ? 'w-11 h-11 justify-center' // Perfect circle hit area when collapsed
+    ? 'w-11 h-11 justify-center mx-auto' // Perfect circle hit area when collapsed, centered
     : 'w-full p-1.5 md:p-2 space-x-3';
   
   const variantClasses = {
@@ -65,7 +65,7 @@ const NavItem: React.FC<{
       title={isCollapsed ? label : ''}
       className={`${baseClasses} ${shapeClasses} ${appliedVariant}`}
     >
-      {icon}
+  <div className={isCollapsed ? 'flex items-center justify-center' : ''}>{icon}</div>
       {!isCollapsed && <span>{label}</span>}
     </button>
   );
@@ -110,13 +110,13 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center' : 'w-full p-1 md:p-1.5'} flex items-center rounded-full text-sm transition-colors text-left ${
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-1 md:p-1.5'} flex items-center rounded-full text-sm transition-colors text-left ${
         isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
       }`}
     >
       <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2'}`}>
         {isCollapsed ? (
-          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">{itemIcon}</div>
+          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">{itemIcon}</div>
         ) : (
           <>
             <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">{itemIcon}</div>
@@ -204,11 +204,13 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-          className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center' : 'w-full p-1 md:p-1.5 space-x-3'} flex items-center rounded-full text-sm cursor-pointer transition-colors ${
+          className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-1 md:p-1.5 space-x-3'} flex items-center rounded-full text-sm cursor-pointer transition-colors ${
               isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
           }`}
         >
-            <Icon name={iconName} className="text-xl flex-shrink-0" style={{ color }}/>
+            <div className={isCollapsed ? 'mx-auto' : ''}>
+              <Icon name={iconName} className="text-xl flex-shrink-0" style={{ color }}/>
+            </div>
             {!isCollapsed && <span className="truncate font-normal">{project.name}</span>}
             {/* Kebab */}
             {!isCollapsed && (
@@ -271,8 +273,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   
   return (
     <>
-      <div className={`fixed inset-0 bg-gray-900/60 z-[55] md:hidden ${isMobileOpen ? 'block' : 'hidden'}`} onClick={onMobileClose}></div>
-      <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen p-2 md:p-3 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-72'}`}>
+    <div className={`fixed inset-0 bg-gray-900/60 z-[55] md:hidden ${isMobileOpen ? 'block' : 'hidden'}`} onClick={onMobileClose}></div>
+  <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen p-2 md:p-3 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
   <div className={`flex items-center mb-4 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
             <div className="flex items-center ml-2">
@@ -290,14 +292,14 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         </div>
 
     <div className="flex-grow flex flex-col min-h-0">
-      <div className="flex-grow overflow-y-auto pr-1 space-y-1">
+      <div className="flex-grow overflow-y-auto pr-1">
               {/* Primary Actions */}
-    <nav className="space-y-1">
+    <nav className="space-y-0">
           <NavItem variant="outline" icon={<ChatAddOnIcon className="text-xl"/>} label={t('new_chat')} isCollapsed={isCollapsed} onClick={() => onNewChat()} />
         </nav>
 
               {/* Main Views */}
-              <nav className="space-y-0.5">
+              <nav className="space-y-0">
                   <NavItem icon={<TodayIcon className="text-xl"/>} label={t('dashboard')} isActive={currentView === 'dashboard'} isCollapsed={isCollapsed} onClick={() => onSelectView('dashboard')} />
                   <NavItem icon={<ListAltIcon className="text-xl"/>} label={t('tasks')} isActive={currentView === 'lists'} isCollapsed={isCollapsed} onClick={() => onSelectView('lists')} />
                   <NavItem icon={<NewHabitIcon className="text-xl"/>} label={t('habits')} isActive={currentView === 'habits'} isCollapsed={isCollapsed} onClick={() => onSelectView('habits')} />

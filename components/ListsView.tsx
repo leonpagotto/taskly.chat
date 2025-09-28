@@ -110,6 +110,7 @@ const ChecklistCard: React.FC<{
   onDuplicate: () => void;
   isRecentlyCompleted: boolean;
   completingItemIds: Set<string>;
+  period?: 'today' | 'week' | 'month';
 }> = ({
   checklist,
   category,
@@ -122,7 +123,8 @@ const ChecklistCard: React.FC<{
   onEdit,
   onDuplicate,
   isRecentlyCompleted,
-  completingItemIds
+  completingItemIds,
+  period
 }) => {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -203,14 +205,16 @@ const ChecklistCard: React.FC<{
                     Tag="span"
                     className={`truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
                 />
-                <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-2 -mt-1">
-                    <span>{completedTasks}/{totalTasks}</span>
-                    <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--color-primary-600)] transition-all" style={{ width: `${progress}%` }}></div>
-                    </div>
-                    {/* FIX: Pass title prop to AutorenewIcon for tooltip display. */}
-                    {checklist.recurrence && <AutorenewIcon className="text-base" title={getRecurrenceText(checklist.recurrence)} />}
-                </div>
+                {period !== 'today' && (
+                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-2 -mt-1">
+                      <span>{completedTasks}/{totalTasks}</span>
+                      <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-[var(--color-primary-600)] transition-all" style={{ width: `${progress}%` }}></div>
+                      </div>
+                      {/* FIX: Pass title prop to AutorenewIcon for tooltip display. */}
+                      {checklist.recurrence && <AutorenewIcon className="text-base" title={getRecurrenceText(checklist.recurrence)} />}
+                  </div>
+                )}
             </div>
         </div>
         <div className="flex items-center">
@@ -223,6 +227,15 @@ const ChecklistCard: React.FC<{
                 </div>
               )}
             </div>
+            {period === 'today' && (
+              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-2 mr-1">
+                <span>{completedTasks}/{totalTasks}</span>
+                <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-[var(--color-primary-600)] transition-all" style={{ width: `${progress}%` }}></div>
+                </div>
+                {checklist.recurrence && <AutorenewIcon className="text-base" title={getRecurrenceText(checklist.recurrence)} />}
+              </div>
+            )}
             <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 ml-1">
                 {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
             </div>
@@ -368,28 +381,35 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         </button>
       </Header>
       <div className="flex-1 overflow-y-auto">
+        {/* Full-width toolbar bar with optional divider */}
+        <div className={`${period !== 'today' ? 'border-b border-gray-200 dark:border-gray-700' : ''} bg-gray-100 dark:bg-gray-800`}>
+          <div className="px-4 sm:px-6">
+            <div className="mx-auto w-full max-w-5xl">
+              <div className="py-4">
+                <UnifiedToolbar
+                  projects={projects}
+                  userCategories={userCategories}
+                  selectedProjectId={selectedProjectId}
+                  selectedCategoryId={selectedCategoryId}
+                  onChangeProject={(id) => setSelectedProjectId(id)}
+                  onChangeCategory={(id) => setSelectedCategoryId(id)}
+                  period={period}
+                  onChangePeriod={(p) => setPeriod(p)}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="px-4 sm:px-6">
           <div className="mx-auto w-full max-w-5xl">
-            <div className="py-4 border-b border-gray-200 dark:border-gray-700">
-              <UnifiedToolbar
-                projects={projects}
-                userCategories={userCategories}
-                selectedProjectId={selectedProjectId}
-                selectedCategoryId={selectedCategoryId}
-                onChangeProject={(id) => setSelectedProjectId(id)}
-                onChangeCategory={(id) => setSelectedCategoryId(id)}
-                period={period}
-                onChangePeriod={(p) => setPeriod(p)}
-              />
-            </div>
             <main className="py-4 sm:py-6">
               {/* KPI row */}
         {checklists.length > 0 && (
           <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-4">
-            <KPI label="Completed" value={completed} icon={<CheckCircleIcon className="text-xl text-green-600 dark:text-green-400" />} active={statusFilter==='completed'} onClick={() => setStatusFilter(statusFilter==='completed'?'all':'completed')} />
-            <KPI label="Overdue" value={overdue} icon={<WarningIcon className="text-xl text-red-600 dark:text-red-400" />} active={statusFilter==='overdue'} onClick={() => setStatusFilter(statusFilter==='overdue'?'all':'overdue')} />
-            <KPI label="To do" value={todo} icon={<Icon name="not_started" className="text-xl text-amber-600 dark:text-amber-400" />} active={statusFilter==='todo'} onClick={() => setStatusFilter(statusFilter==='todo'?'all':'todo')} />
             <KPI label="Total" value={total} icon={<Icon name="list_alt_check" className="text-xl text-blue-600 dark:text-blue-400" />} active={statusFilter==='all'} onClick={() => setStatusFilter('all')} />
+            <KPI label="To do" value={todo} icon={<Icon name="not_started" className="text-xl text-amber-600 dark:text-amber-400" />} active={statusFilter==='todo'} onClick={() => setStatusFilter(statusFilter==='todo'?'all':'todo')} />
+            <KPI label="Overdue" value={overdue} icon={<WarningIcon className="text-xl text-red-600 dark:text-red-400" />} active={statusFilter==='overdue'} onClick={() => setStatusFilter(statusFilter==='overdue'?'all':'overdue')} />
+            <KPI label="Completed" value={completed} icon={<CheckCircleIcon className="text-xl text-green-600 dark:text-green-400" />} active={statusFilter==='completed'} onClick={() => setStatusFilter(statusFilter==='completed'?'all':'completed')} />
           </div>
         )}
         {checklists.length === 0 ? (
@@ -420,6 +440,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                 isRecentlyCompleted={recentlyCompletedItemId === list.id}
                 completingItemIds={completingItemIds}
                 onToggleSingleTaskCompletion={onToggleSingleTaskCompletion}
+                period={period}
               />
             ))}
           </div>

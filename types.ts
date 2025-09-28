@@ -113,6 +113,8 @@ export type Event = {
   id: string;
   title: string;
   description?: string;
+  location?: string;
+  attendees?: string[]; // names or emails
   startDate: string; // YYYY-MM-DD
   startTime: string | null; // HH:MM
   endDate: string | null; // YYYY-MM-DD

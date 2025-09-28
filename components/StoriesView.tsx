@@ -15,17 +15,50 @@ interface StoriesViewProps {
 	onDeleteStory?: (id: string) => void;
 	onToggleSidebar?: () => void;
 	onMoveStory?: (id: string, status: StoryStatus) => void;
+  onLoadSampleData?: () => void;
 }
 
-const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCategories, onCreateStory, onSelectStory, onEditStory, onDeleteStory, onToggleSidebar, onMoveStory }) => {
+const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCategories, onCreateStory, onSelectStory, onEditStory, onDeleteStory, onToggleSidebar, onMoveStory, onLoadSampleData }) => {
 	const getCategory = (catId?: string) => userCategories.find(c => c.id === catId);
 	const getProject = (projId?: string) => projects.find(p => p.id === projId);
-	const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>('all');
-	const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>('all');
-	const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
-	const [isFilterOpen, setFilterOpen] = useState(false);
-	const [statusFilter, setStatusFilter] = useState<'all' | StoryStatus>('all');
-	const [sortBy, setSortBy] = useState<'updated' | 'created'>('updated');
+	const STORAGE_KEY = 'stories.filters.v1';
+	type Persisted = {
+		projectId: 'all' | string;
+		categoryId: 'all' | string;
+		viewMode: 'list' | 'board';
+		isFilterOpen: boolean;
+		status: 'all' | StoryStatus;
+		sortBy: 'updated' | 'created';
+	};
+	const loadPersisted = (): Persisted => {
+		try {
+			const raw = localStorage.getItem(STORAGE_KEY);
+			if (!raw) return { projectId: 'all', categoryId: 'all', viewMode: 'list', isFilterOpen: false, status: 'all', sortBy: 'updated' };
+			const data = JSON.parse(raw) as Partial<Persisted>;
+			return {
+				projectId: (data.projectId as any) ?? 'all',
+				categoryId: (data.categoryId as any) ?? 'all',
+				viewMode: (data.viewMode as any) ?? 'list',
+				isFilterOpen: !!data.isFilterOpen,
+				status: (data.status as any) ?? 'all',
+				sortBy: (data.sortBy as any) ?? 'updated',
+			};
+		} catch { return { projectId: 'all', categoryId: 'all', viewMode: 'list', isFilterOpen: false, status: 'all', sortBy: 'updated' }; }
+	};
+
+	const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(() => (typeof window !== 'undefined' ? loadPersisted().projectId : 'all'));
+	const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(() => (typeof window !== 'undefined' ? loadPersisted().categoryId : 'all'));
+	const [viewMode, setViewMode] = useState<'list' | 'board'>(() => (typeof window !== 'undefined' ? loadPersisted().viewMode : 'list'));
+	const [isFilterOpen, setFilterOpen] = useState(() => (typeof window !== 'undefined' ? loadPersisted().isFilterOpen : false));
+	const [statusFilter, setStatusFilter] = useState<'all' | StoryStatus>(() => (typeof window !== 'undefined' ? loadPersisted().status : 'all'));
+	const [sortBy, setSortBy] = useState<'updated' | 'created'>(() => (typeof window !== 'undefined' ? loadPersisted().sortBy : 'updated'));
+
+	useEffect(() => {
+		try {
+			const toSave: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, viewMode, isFilterOpen, status: statusFilter, sortBy };
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+		} catch {}
+	}, [selectedProjectId, selectedCategoryId, viewMode, isFilterOpen, statusFilter, sortBy]);
 
 	const filteredStories = useMemo(() => {
 		return stories.filter(s => {
@@ -147,60 +180,67 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 							<EmptyStateIcon icon={<Icon name="auto_stories" />} size="lg" />
 							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No stories yet</h2>
 							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">Create your first story to track narrative progress.</p>
-							<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">New Story</button>
+							<div className="flex items-center gap-2">
+								<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">New Story</button>
+								{onLoadSampleData && (
+									<button onClick={onLoadSampleData} className="px-6 py-3 rounded-full font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Load sample data</button>
+								)}
+							</div>
 						</div>
 					) : viewMode === 'list' ? (
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-							{sortedStories.map(story => {
-								const category = getCategory(story.categoryId);
-								const project = getProject(story.projectId);
-								return (
-									<div key={story.id} className="bg-white dark:bg-gray-700 p-3 rounded-xl group transition-all hover:shadow-md cursor-pointer" onClick={() => onSelectStory?.(story.id)}>
-										<div className="flex items-start gap-3">
-											<div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
-												<Icon name={category?.icon || project?.icon || 'auto_stories'} style={{ color: category?.color || project?.color || '#64748B' }} className="text-2xl" />
-											</div>
-											<div className="min-w-0 flex-1">
-												<div className="flex items-center gap-2">
-													<h3 className="text-base font-medium text-gray-900 dark:text-white truncate">{story.title}</h3>
-													{story.status && (
-														<span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200">{story.status}</span>
-													)}
-												</div>
-												{(project || category) && (
-													<div className="mt-1 text-xs text-gray-500 dark:text-gray-300 flex items-center gap-2">
-														{project && <span className="truncate">{project.name}</span>}
-														{project && category && <span>•</span>}
-														{category && (
-															<span className="inline-flex items-center gap-1 truncate"><Icon name={category.icon} className="text-sm" style={{ color: category.color }} />{category.name}</span>
+						<div className="bg-transparent">
+							<div className="divide-y divide-gray-200 dark:divide-gray-700 rounded-xl overflow-hidden">
+								{sortedStories.map(story => {
+									const category = getCategory(story.categoryId);
+									const project = getProject(story.projectId);
+									return (
+										<div key={story.id} className="bg-white dark:bg-gray-700 p-3 hover:bg-gray-50/80 dark:hover:bg-gray-600/70 transition-colors group">
+											<button onClick={() => onSelectStory?.(story.id)} className="w-full text-left">
+												<div className="flex items-center gap-3">
+													<div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
+														<Icon name={category?.icon || project?.icon || 'auto_stories'} style={{ color: category?.color || project?.color || '#64748B' }} className="text-2xl" />
+													</div>
+													<div className="flex-1 min-w-0">
+														<div className="text-base font-medium text-gray-900 dark:text-white truncate">{story.title}</div>
+													</div>
+													<div className="hidden sm:block">
+														{story.status && (
+															<span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 capitalize">{story.status.replace('_',' ')}</span>
 														)}
 													</div>
-												)}
-											</div>
-											<div className="flex-shrink-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-												<div className="flex items-center gap-1">
-													<button className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-gray-600/50" onClick={(e) => { e.stopPropagation(); onEditStory?.(story.id); }} title="Edit">
-														<Icon name="edit" />
-													</button>
-													<button className="w-8 h-8 flex items-center justify-center rounded-full text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={(e) => { e.stopPropagation(); onDeleteStory?.(story.id); }} title="Delete">
-														<Icon name="delete" />
-													</button>
+													<div className="hidden md:block text-sm text-gray-500 dark:text-gray-300 truncate min-w-[140px]">{project?.name || '—'}</div>
+													<div className="hidden lg:flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300 truncate min-w-[160px]">
+														{category ? (<><Icon name={category.icon} className="text-sm" style={{ color: category.color }} />{category.name}</>) : '—'}
+													</div>
+													<div className="hidden xl:block text-xs text-gray-500 dark:text-gray-300 min-w-[100px] text-right pr-2">
+														{(story.estimatePoints ?? story.estimateTime) ? (
+															<span>{story.estimatePoints ? `${story.estimatePoints} pts` : ''}{story.estimatePoints && story.estimateTime ? ' • ' : ''}{story.estimateTime || ''}</span>
+														) : ' '}
+													</div>
+													<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+														<button className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-gray-600/50" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEditStory?.(story.id); }} title="Edit">
+															<Icon name="edit" />
+														</button>
+														<button className="w-8 h-8 flex items-center justify-center rounded-full text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteStory?.(story.id); }} title="Delete">
+															<Icon name="delete" />
+														</button>
+													</div>
 												</div>
-											</div>
+											</button>
 										</div>
-									</div>
-								);
-							})}
+									);
+								})}
+							</div>
 						</div>
 					) : (
 						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 							{(['Backlog', 'In Progress', 'Review', 'Done'] as const).map(col => {
-								const statusMap: Record<typeof col, StoryStatus> = {
+								const statusMap: Record<string, StoryStatus> = {
 									'Backlog': 'backlog',
 									'In Progress': 'in_progress',
 									'Review': 'review',
 									'Done': 'done'
-								} as any;
+								};
 								const columnStatus = statusMap[col];
 								return (
 									<div key={col} className="bg-white dark:bg-gray-700 rounded-xl p-3"

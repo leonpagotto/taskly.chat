@@ -320,19 +320,26 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
         </button>
       </Header>
             <div className="flex-1 overflow-y-auto">
+                {/* Full-width toolbar bar with divider */}
+                <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div className="px-4 sm:px-6">
+                        <div className="mx-auto w-full max-w-5xl">
+                            <div className="py-4">
+                                <UnifiedToolbar 
+                                    projects={projects} 
+                                    userCategories={userCategories} 
+                                    selectedProjectId={selectedProjectId} 
+                                    selectedCategoryId={selectedCategoryId} 
+                                    onChangeProject={setSelectedProjectId} 
+                                    onChangeCategory={setSelectedCategoryId}
+                                    showPeriod={false}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="px-4 sm:px-6">
                     <div className="mx-auto w-full max-w-5xl">
-                                                <div className="py-4 border-b border-gray-200 dark:border-gray-700">
-                                                        <UnifiedToolbar 
-                                                            projects={projects} 
-                                                            userCategories={userCategories} 
-                                                            selectedProjectId={selectedProjectId} 
-                                                            selectedCategoryId={selectedCategoryId} 
-                                                            onChangeProject={setSelectedProjectId} 
-                                                            onChangeCategory={setSelectedCategoryId}
-                                                            showPeriod={false}
-                                                        />
-                                                </div>
                         <main className="py-4 sm:py-6">
                 {filteredHabits.length > 0 ? (
                     <div className="space-y-4">

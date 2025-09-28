@@ -106,11 +106,11 @@ const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
       <FilterDropdown items={userCategories} selectedId={selectedCategoryId} onSelect={onChangeCategory} type="category" />
 
       {(period && onChangePeriod && showPeriod) && (
-        <div className="flex items-center gap-2 ml-auto w-full sm:w-auto">
-          <div className="inline-flex rounded-full bg-gray-200 dark:bg-gray-700/50 p-1 text-sm font-semibold">
-            <button onClick={() => onChangePeriod('today')} className={`px-3 py-1.5 rounded-full ${period==='today' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>Today</button>
-            <button onClick={() => onChangePeriod('week')} className={`px-3 py-1.5 rounded-full ${period==='week' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Week</button>
-            <button onClick={() => onChangePeriod('month')} className={`px-3 py-1.5 rounded-full ${period==='month' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Month</button>
+        <div className="flex items-center gap-2 ml-0 sm:ml-auto w-full sm:w-auto">
+          <div className="flex w-full sm:inline-flex sm:w-auto rounded-full bg-gray-200 dark:bg-gray-700/50 p-1 text-sm font-semibold">
+            <button onClick={() => onChangePeriod('today')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='today' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>Today</button>
+            <button onClick={() => onChangePeriod('week')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='week' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Week</button>
+            <button onClick={() => onChangePeriod('month')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='month' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Month</button>
           </div>
         </div>
       )}
