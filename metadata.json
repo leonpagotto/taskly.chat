@@ -1,0 +1,7 @@
+{
+  "name": "Taskly.Chat",
+  "description": "A chat-first interface for productivity, combining conversational AI with project, task, and habit management. Organize your work, track your progress, and generate content all within a single, intelligent workspace.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
