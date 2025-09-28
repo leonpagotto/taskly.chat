@@ -9,6 +9,7 @@ if (API_KEY && typeof API_KEY === 'string' && API_KEY.trim()) {
 } else {
   console.warn('Gemini API key is not set. Set VITE_API_KEY in your environment to enable AI features.');
 }
+// NOTE: We use text-only interactions. Do not attach images or other binary parts.
 const model = "gemini-2.5-flash";
 
 const safetySettings = [
@@ -113,20 +114,18 @@ export const parseAIResponse = async (
   }
   systemInstruction += actionPrompt;
 
-  // Process files for context
+  // Process files for context (text-only). Image inputs are intentionally ignored.
   if (filesForContext && filesForContext.length > 0) {
-      for (const file of filesForContext) {
-          if (file.mimeType.startsWith('image/')) {
-              parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
-          } else if (file.mimeType === 'text/plain' || file.mimeType === 'text/markdown') {
-              try {
-                  const textContent = atob(file.data);
-                  promptText += `\n\n--- FILE CONTENT (${file.name}) ---\n${textContent}\n--- END FILE CONTENT ---`;
-              } catch (e) {
-                  console.error(`Failed to decode base64 for file ${file.name}:`, e);
-              }
-          }
+    for (const file of filesForContext) {
+      if (file.mimeType === 'text/plain' || file.mimeType === 'text/markdown') {
+        try {
+          const textContent = atob(file.data);
+          promptText += `\n\n--- FILE CONTENT (${file.name}) ---\n${textContent}\n--- END FILE CONTENT ---`;
+        } catch (e) {
+          console.error(`Failed to decode base64 for file ${file.name}:`, e);
+        }
       }
+    }
   }
   parts.push({ text: promptText });
 
