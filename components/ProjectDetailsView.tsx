@@ -161,13 +161,17 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                             <h2 className="text-xl font-semibold flex items-center gap-2"><ChatBubbleIcon className="text-gray-500"/> {t('conversations')}</h2>
                             <button onClick={onNewChat} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
-                        <ul className="space-y-1">
-                          {conversations.length > 0 ? conversations.map(c => 
-                            <li key={c.id} onClick={() => onSelectChat(c.id)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer truncate">
-                              {c.name}
-                            </li>
-                          ) : <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">{t('project_no_conversations')}</p>}
-                        </ul>
+                                                <ul className="space-y-1 min-h-[84px]">
+                                                    {conversations.length > 0 ? conversations.map(c => 
+                                                        <li key={c.id} onClick={() => onSelectChat(c.id)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer truncate">
+                                                            {c.name}
+                                                        </li>
+                                                    ) : (
+                                                        <div className="h-full flex items-center justify-center">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('project_no_conversations')}</p>
+                                                        </div>
+                                                    )}
+                                                </ul>
                     </div>
                     {/* Tasks Card */}
                     <div className="lg:col-span-1 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">
@@ -175,10 +179,14 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                             <h2 className="text-xl font-semibold flex items-center gap-2"><ListAltIcon className="text-gray-500"/> {t('pending_tasks')}</h2>
                              <button onClick={() => setIsCreatingTask(true)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {allTasks.length > 0 ? allTasks.map(task => (
+                                                <div className="space-y-2 max-h-96 overflow-y-auto min-h-[84px]">
+                                                        {allTasks.length > 0 ? allTasks.map(task => (
                                 <TaskItem key={task.id} task={task} onToggle={onToggleTask} />
-                            )) : <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">{t('project_no_tasks')}</p>}
+                                                        )) : (
+                                                            <div className="h-full flex items-center justify-center">
+                                                                <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('project_no_tasks')}</p>
+                                                            </div>
+                                                        )}
                         </div>
                     </div>
                      {/* Notes Card */}
@@ -187,13 +195,17 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                             <h2 className="text-xl font-semibold flex items-center gap-2"><DescriptionIcon className="text-gray-500"/> {t('notes')}</h2>
                              <button onClick={() => onCreateNoteInProject(project.id)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
-                        <ul className="space-y-1">
-                          {notes.length > 0 ? notes.map(n => 
-                            <li key={n.id} onClick={() => onSelectNote(n.id)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer truncate">
-                              {n.name}
-                            </li>
-                          ) : <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">{t('project_no_notes_linked')}</p>}
-                        </ul>
+                                                <ul className="space-y-1 min-h-[84px]">
+                                                    {notes.length > 0 ? notes.map(n => 
+                                                        <li key={n.id} onClick={() => onSelectNote(n.id)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer truncate">
+                                                            {n.name}
+                                                        </li>
+                                                    ) : (
+                                                        <div className="h-full flex items-center justify-center">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('project_no_notes_linked')}</p>
+                                                        </div>
+                                                    )}
+                                                </ul>
                     </div>
                      {/* Files Card */}
                     <div className="md:col-span-2 lg:col-span-3 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">

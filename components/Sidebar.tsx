@@ -46,14 +46,14 @@ const NavItem: React.FC<{
   rightSlot?: React.ReactNode;
 }> = ({ icon, label, isActive, isCollapsed, onClick, onDoubleClick, variant = 'default', rightSlot }) => {
   // Compact, consistent padding for all items
-  const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors`;
+  const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors transition-transform`;
   // Desktop standard height: 36px (h-9). Apply to both collapsed and expanded.
   const shapeClasses = isCollapsed 
-    ? 'w-9 h-9 justify-center mx-auto' 
-    : 'w-full h-9 px-2 space-x-3';
+    ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' 
+    : 'w-full h-11 md:h-10 lg:h-9 px-1.5 space-x-2';
   
   const variantClasses = {
-    default: `text-gray-300 hover:bg-gray-700/50`,
+  default: `text-gray-300 hover:bg-gray-700/50`,
     outline: `bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:from-[var(--color-primary-700)] hover:to-purple-700`
   } as const;
 
@@ -76,18 +76,20 @@ const NavItem: React.FC<{
       title={isCollapsed ? label : ''}
       className={[
         baseClasses,
-        'w-full text-left',
+        // Use square shape on collapsed, full-width on expanded
         appliedVariant,
-  variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-9 h-9 mx-auto' : 'w-full h-9'}` : '',
-  variant !== 'outline' ? shapeClasses : '',
-        // Slightly darker than hover for selected items
-  isActive && variant !== 'outline' ? 'bg-gray-700/70' : '',
+        variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 mx-auto' : 'w-full h-11 md:h-10 lg:h-9'}` : '',
+        variant !== 'outline' ? shapeClasses : '',
+        !isCollapsed ? 'w-full text-left' : '',
+    // Selected items: slightly darker, tighter padding feel
+        isActive && variant !== 'outline' ? 'bg-gray-700/70' : '',
         // Add subtle inner-shadow circle only for collapsed + active
         isCollapsed && isActive && variant !== 'outline' ? 'relative nav-active-collapsed' : '',
+        isCollapsed ? 'hover:scale-105' : '',
       ].join(' ')}
     >
       {variant === 'outline' ? (
-  <div className={`${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3 px-2 w-full'} bg-gray-900 rounded-[10px] w-full h-full`}>
+  <div className={`${isCollapsed ? 'flex items-center justify-center' : 'flex items-center w-full h-full px-1.5 space-x-2'} bg-gray-900 rounded-[10px] w-full h-full`}>
           <div className={isCollapsed ? '' : 'w-6 h-6 flex items-center justify-center'}>
             {normalizeIcon(icon, true)}
           </div>
@@ -151,9 +153,9 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      className={`group relative ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' : 'w-full h-11 md:h-10 lg:h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
-  <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2 px-2'}`}>
+  <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2 px-1.5'}`}>
         {isCollapsed ? (
           <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">
             {renderHistoryIcon(!!isActive)}
@@ -247,9 +249,9 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-      className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+  className={`group relative ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' : 'w-full h-11 md:h-10 lg:h-9 space-x-2'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
         >
-            <div className={isCollapsed ? 'mx-auto' : 'pl-2'}>
+    <div className={isCollapsed ? 'mx-auto' : 'pl-1.5'}>
               <Icon 
                 name={iconName} 
                 className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} 
@@ -319,8 +321,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   return (
     <>
     <div className={`fixed inset-0 bg-gray-900/60 z-[55] md:hidden ${isMobileOpen ? 'block' : 'hidden'}`} onClick={onMobileClose}></div>
-  <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen p-2 md:p-2 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
-  <div className={`flex items-center mb-2 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+  <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen pt-4 pb-2 px-2 md:pt-4 md:pb-2 md:px-2 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
+  <div className={`flex items-center mb-4 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
             <div className="flex items-center ml-2">
               <span className="text-xl font-bold text-white">Taskly.Chat</span>

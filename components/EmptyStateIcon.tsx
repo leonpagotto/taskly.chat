@@ -29,7 +29,7 @@ interface EmptyStateIconProps {
  */
 const EmptyStateIcon: React.FC<EmptyStateIconProps> = ({ icon, size = 'lg', circleClassName = '', iconClassName = '' }) => {
   // Add a small default margin-bottom (~10px) to create breathing room before titles
-  const circleClasses = `${sizeMap[size]} rounded-full bg-gray-200 dark:bg-gray-700/50 flex items-center justify-center shadow-sm mb-[10px] ${circleClassName}`;
+  const circleClasses = `${sizeMap[size]} rounded-full bg-gray-200 dark:bg-gray-700/50 flex items-center justify-center shadow-sm mb-[10px] mx-auto ${circleClassName}`;
   const gradientClasses = `bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent`;
   const enforcedSize = iconSizeMap[size];
 

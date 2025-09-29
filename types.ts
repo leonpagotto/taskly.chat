@@ -194,6 +194,8 @@ export type UserPreferences = {
   language: AppLanguage;
   size: AppSize;
   pulseWidgets: PulseWidgetConfig[];
+  // Controls how much project context is sent to the AI
+  aiSnapshotVerbosity?: 'concise' | 'detailed';
 };
 
 

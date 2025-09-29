@@ -53,7 +53,7 @@ Metrics & Onboarding
 - [ ] Improve onboarding modal for mobile; enhance command help access from Today help
 
 AI & Performance
-- [ ] Configure Gemini key input and ensure prompt latency improvements; concise chat titles
+- [x] Configure Gemini key input and ensure prompt latency improvements; concise chat titles
 
 
 Status Updates (work-in-progress log)
@@ -98,6 +98,18 @@ Notes: The remaining backlog below stays as source of truth; we’ll keep append
   - StoryEditorPage provides full-page create/edit with acceptance criteria (checklist-style), estimates, and task linking
   - Kanban board supports drag-and-drop and syncs status with list view via lifted state in App
   - Sample data now includes example Stories across profiles; Dashboard CTA loads them
+
+- DONE: Onboarding modal + AI help (29 Sep 2025)
+  - Added a comprehensive Onboarding modal with AI command examples, tips, and sticky footer
+  - Accessible from Today page help (?) and auto-opens on first run (localStorage flag)
+
+- DONE: Gemini key input + concise titles (29 Sep 2025)
+  - Settings > AI tab now lets users store a Gemini API key locally; service reads env then local override
+  - Title generation made concise (max ~5 words), with safe heuristics when AI is disabled
+  - Minor latency tuning by simplifying system prompts for title requests
+
+- DONE: Profile basics (29 Sep 2025)
+  - Settings > Profile tab: added mock Account section with Upgrade (paywall modal) and Logout (clears mock auth and reloads)
 
 
 Stories implemented and lost from Today - implement them all:

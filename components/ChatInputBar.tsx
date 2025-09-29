@@ -145,6 +145,33 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
     }
   }, [isMobileOverlay, initialMode]);
 
+  // Listen for global quick prompts to prefill or auto-send
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const ce = e as CustomEvent<{ text?: string; send?: boolean }>;
+      const text = ce.detail?.text || '';
+      const send = !!ce.detail?.send;
+      if (!text) return;
+
+      // Stop listening if currently recording
+      if (isListening && recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+
+      setInput(text);
+      // Focus the input so the user can edit when not auto-sending
+      if (!send) {
+        setTimeout(() => textareaRef.current?.focus(), 0);
+      }
+      if (send && !isLoading) {
+        onSendMessage(text.trim());
+        setInput('');
+      }
+    };
+    window.addEventListener('taskly.quickPrompt', handler as EventListener);
+    return () => window.removeEventListener('taskly.quickPrompt', handler as EventListener);
+  }, [isListening, isLoading, onSendMessage]);
+
   const handleSend = () => {
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
@@ -193,7 +220,8 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
         ? "fixed bottom-0 left-0 right-0 z-50 p-2 bg-gray-100 dark:bg-gray-800 animate-slide-in-up" 
         : "p-4 bg-gray-100 dark:bg-gray-800 flex-shrink-0"
       }>
-        <div style={{ minHeight: '52px' }} className="bg-gray-200 dark:bg-gray-700 rounded-[26px] flex items-center py-1 px-2">
+        <div className="mx-auto w-full max-w-[52rem]">
+        <div style={{ minHeight: '52px' }} className="bg-gray-200 dark:bg-gray-700 rounded-[14px] flex items-center py-1 px-2">
           {isMobileOverlay && (
             <button onClick={onClose} className="w-10 h-10 rounded-[var(--radius-button)] text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center mr-1">
               <CloseIcon className="text-2xl" />
@@ -227,6 +255,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
           >
             <SendIcon className="text-2xl" />
           </button>
+        </div>
         </div>
       </div>
     </>

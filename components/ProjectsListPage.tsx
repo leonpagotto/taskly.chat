@@ -23,7 +23,7 @@ const ProjectCard: React.FC<{
 }> = ({ project, category, onSelect }) => {
   const color = category?.color || '#64748B';
   return (
-    <div onClick={onSelect} className="bg-white dark:bg-gray-700 p-3 rounded-xl flex flex-col gap-2 group transition-all hover:shadow-md cursor-pointer">
+  <div onClick={onSelect} className="bg-white dark:bg-gray-700/50 p-3 rounded-xl flex flex-col gap-2 group transition-all hover:shadow-md cursor-pointer">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
           <Icon name={category?.icon || 'folder'} style={{ color }} className="text-2xl" />

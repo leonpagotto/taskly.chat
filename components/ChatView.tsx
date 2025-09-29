@@ -96,12 +96,32 @@ const ChatView: React.FC<ChatViewProps> = (props) => {
         scrollToBottom();
     }, [conversation?.messages, isLoading]);
 
-    const title = conversation?.name || "AI Assistant";
-    const projectName = project?.name;
+  const title = conversation?.name || "AI Assistant";
+  const projectName = project?.name;
 
     const category = project?.categoryId ? userCategories.find(c => c.id === project.categoryId) : undefined;
     const projectColor = project?.color || category?.color;
     const projectIcon = project?.icon || category?.icon || 'folder';
+
+    // Resolve a friendly nickname for the greeting
+    const getNickname = (): string => {
+      try {
+        const raw = window.localStorage.getItem('preferences') || window.localStorage.getItem('user.preferences');
+        if (raw) {
+          const obj = JSON.parse(raw);
+          return obj?.nickname || obj?.name || 'there';
+        }
+      } catch {}
+      return 'there';
+    };
+
+    const nickname = getNickname();
+
+    const quickPrompt = (text: string, send = false) => {
+      try {
+        window.dispatchEvent(new CustomEvent('taskly.quickPrompt', { detail: { text, send } }));
+      } catch {}
+    };
 
     return (
     <>
@@ -131,26 +151,61 @@ const ChatView: React.FC<ChatViewProps> = (props) => {
                         <Icon name={projectIcon} className="text-xl text-gray-500 dark:text-gray-400" style={{color: projectColor}} /> 
                         : <ChatBubbleIcon className="text-xl text-gray-500 dark:text-gray-400" />
                     }
-                    <div className="truncate flex-1">
-                        {projectName && <span className="text-sm text-gray-500 dark:text-gray-400">{projectName} / </span>}
-                        <span className="truncate font-semibold text-xl">{title}</span>
-                    </div>
+          <div className="truncate flex-1">
+            <span className="truncate font-semibold text-xl">{title}</span>
+          </div>
                 </div>
-                <div className="flex-shrink-0">
-                    <button onClick={() => setIsProjectModalOpen(true)} className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700">
-                        <CreateNewFolderIcon className="text-base" />
-                        <span>Add to a project</span>
-                    </button>
-                </div>
+        <div className="flex-shrink-0">
+          {project ? (
+            <button onClick={() => setIsProjectModalOpen(true)} className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700">
+              <Icon name={projectIcon} className="text-base" style={{ color: projectColor }} />
+              <span className="truncate max-w-[36ch]">{projectName}</span>
+            </button>
+          ) : (
+            <button onClick={() => setIsProjectModalOpen(true)} className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700">
+              <CreateNewFolderIcon className="text-base" />
+              <span>Add to a project</span>
+            </button>
+          )}
+        </div>
             </header>
       <main className="flex-1 overflow-y-auto">
         <div className="px-4 sm:px-6">
-          <div className="mx-auto w-full max-w-3xl py-4 sm:py-6">
+          <div className="mx-auto w-full max-w-[52rem] py-4 sm:py-6">
                 {conversation.messages.length === 0 && !isLoading ? (
-                    <div className="text-center text-gray-500 dark:text-gray-400 h-full flex items-center justify-center">
-                        <div className="max-w-md">
-                            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">New Chat</h1>
-                            <p>Start the conversation by typing your first message below. What can I help you with today?</p>
+                    <div className="text-center text-gray-500 dark:text-gray-400">
+                        <div className="mx-auto max-w-2xl pt-16 sm:pt-20 pb-6">
+                          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+                            {`How can I help you, ${nickname}?`}
+                          </h1>
+                          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
+                            <button onClick={() => quickPrompt('Create a task to …')} className="px-3 sm:px-4 py-1.5 rounded-full text-sm bg-white/5 dark:bg-white/5 hover:bg-white/10 text-white/90 border border-white/10">
+                              ✨ Create
+                            </button>
+                            <button onClick={() => quickPrompt('Explore my projects and suggest priorities')} className="px-3 sm:px-4 py-1.5 rounded-full text-sm bg-white/5 dark:bg-white/5 hover:bg-white/10 text-white/90 border border-white/10">
+                              📂 Explore
+                            </button>
+                            <button onClick={() => quickPrompt('Generate code for …')} className="px-3 sm:px-4 py-1.5 rounded-full text-sm bg-white/5 dark:bg-white/5 hover:bg-white/10 text-white/90 border border-white/10">
+                              💻 Code
+                            </button>
+                            <button onClick={() => quickPrompt('Teach me about …')} className="px-3 sm:px-4 py-1.5 rounded-full text-sm bg-white/5 dark:bg-white/5 hover:bg-white/10 text-white/90 border border-white/10">
+                              📚 Learn
+                            </button>
+                          </div>
+                          <div className="mx-auto max-w-xl text-left text-gray-700 dark:text-gray-300/80">
+                            <button onClick={() => quickPrompt('Plan my day with 3 top tasks and quick wins', true)} className="w-full text-left py-3 border-b border-white/10 hover:text-white/90">
+                              How should I plan my day?
+                            </button>
+                            <button onClick={() => quickPrompt('Add “Buy milk” to my Groceries list', true)} className="w-full text-left py-3 border-b border-white/10 hover:text-white/90">
+                              Add “Buy milk” to Groceries
+                            </button>
+                            <button onClick={() => quickPrompt('Create a weekly habit for reading 30 minutes', true)} className="w-full text-left py-3 border-b border-white/10 hover:text-white/90">
+                              Create a reading habit
+                            </button>
+                            <button onClick={() => quickPrompt('Summarize the status of Project Alpha and next steps', true)} className="w-full text-left py-3 hover:text-white/90">
+                              Summarize Project Alpha
+                            </button>
+                          </div>
                         </div>
                     </div>
                 ) : (

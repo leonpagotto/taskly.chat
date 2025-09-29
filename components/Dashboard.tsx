@@ -47,6 +47,7 @@ import {
 import PulseWidget from './PulseWidget';
 import Header from './Header';
 import EmptyStateIcon from './EmptyStateIcon';
+import OnboardingModal from './OnboardingModal';
 
 
 const Icon: React.FC<{
@@ -59,64 +60,7 @@ const Icon: React.FC<{
   </span>
 )
 
-const OnboardingModal: React.FC<{onClose: () => void}> = ({onClose}) => {
-    const [step, setStep] = useState(0);
-    const steps = [
-        {
-            icon: <DragPanIcon className="text-5xl text-blue-400" />,
-            title: "Reorder with Drag & Drop",
-            description: "To move an activity up or down the list, press and hold its icon until you can drag it to a new position."
-        },
-        {
-            icon: <CheckCircleIcon className="text-5xl text-green-400" />,
-            title: "Complete with a Click",
-            description: "Click on any item in the to-do list to mark it as complete or to update its state."
-        },
-        {
-            icon: <SwipeIcon className="text-5xl text-purple-400" />,
-            title: "Swipe for More Actions",
-            description: "Swipe right to adjust the priority of an item. Swipe left to edit the activity."
-        },
-        {
-            icon: <MicIcon className="text-5xl text-red-400" />,
-      title: "Use AI Commands",
-      description: "Tap the chat button. Try: ‘Create an event tomorrow 9am Standup’, ‘Add a habit Drink water’, or ‘Make a shopping list with milk, eggs, bread’."
-        }
-    ];
-
-    const currentStep = steps[step];
-
-    return (
-    <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
-                <div className="w-20 h-20 mx-auto bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                    {currentStep.icon}
-                </div>
-                <h2 className="text-xl font-semibold mb-2">{currentStep.title}</h2>
-                <p className="text-gray-400 mb-6 min-h-[72px]">{currentStep.description}</p>
-                <div className="flex justify-center items-center gap-2 mb-6">
-                    {steps.map((_, i) => (
-                        <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === step ? 'bg-blue-500' : 'bg-gray-600'}`}></div>
-                    ))}
-                </div>
-                <div className="flex items-center gap-4">
-          <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className="px-6 py-2 rounded-[var(--radius-button)] bg-gray-600 hover:bg-gray-500 font-semibold transition-colors disabled:opacity-50 flex-1">
-                        Back
-                    </button>
-                    {step < steps.length - 1 ? (
-            <button onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))} className="px-6 py-2 rounded-[var(--radius-button)] bg-blue-600 hover:bg-blue-500 font-semibold transition-colors flex-1">
-                            Next
-                        </button>
-                    ) : (
-      <button onClick={onClose} className="px-6 py-2 rounded-[var(--radius-button)] bg-green-600 hover:bg-green-500 font-semibold transition-colors flex-1">
-                            Got it!
-                        </button>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
+// Replaced inline onboarding with shared OnboardingModal component
 
 const SearchModal: React.FC<{
     onClose: () => void;
@@ -239,8 +183,8 @@ const SearchModal: React.FC<{
         )
     };
 
-    return (
-        <div className="fixed inset-0 bg-gray-900/80 z-50 p-4" onClick={onClose}>
+  return (
+    <div className="fixed inset-0 bg-gray-900/80 z-[70] p-4" onClick={onClose}>
             <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-2xl mx-auto max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="p-4 flex items-center gap-3 border-b border-gray-700">
                     <SearchIcon className="text-2xl text-gray-400" />
@@ -343,6 +287,23 @@ const getRecurrenceText = (rule: RecurrenceRule): string => {
             return `Every ${rule.interval || 1} days`;
         default: return 'Recurring';
     }
+};
+
+// Short recurrence label for compact headers
+const getRecurrenceShort = (rule: RecurrenceRule): string => {
+  switch (rule.type) {
+    case 'daily':
+      return 'Daily';
+    case 'weekly': {
+      if (!rule.daysOfWeek || rule.daysOfWeek.length === 0) return 'Weekly';
+      if (rule.daysOfWeek.length === 7) return 'Daily';
+      return rule.daysOfWeek.map(d => d.slice(0, 3)).join(',');
+    }
+    case 'interval':
+      return `${rule.interval || 1}d`;
+    default:
+      return '';
+  }
 };
 
 const DetailItem: React.FC<{ icon: string; label: string; children: React.ReactNode }> = ({ icon, label, children }) => {
@@ -464,7 +425,7 @@ const MonthlyCalendar: React.FC<{
   const handleNextMonth = () => setDisplayDate(new Date(year, month + 1, 1));
 
   return (
-    <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm p-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <button onClick={handlePrevMonth} className="p-2 rounded-full hover:bg-gray-700"><ChevronLeftIcon /></button>
@@ -511,7 +472,7 @@ const PriorityModal: React.FC<{
         setPriority(p => Math.max(1, Math.min(99, p + amount)));
     }
     return (
-        <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
             <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-xs p-6" onClick={e => e.stopPropagation()}>
                 <h2 className="text-lg font-semibold text-center mb-4">Set a priority</h2>
                 <div className="flex items-center justify-center gap-4 mb-4">
@@ -589,90 +550,96 @@ const DashboardItemsModal: React.FC<{
 
   const tasksToShow = getSubtasks();
 
+  const DueBadge = !isHabit && (item as Checklist).dueDate ? (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-gray-200 text-xs">
+      <CalendarTodayIcon className="text-xs text-gray-200" />
+      {new Date((item as Checklist).dueDate + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+    </span>
+  ) : null;
+
+  const ProjectBadge = project ? (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-gray-200 text-xs max-w-[40%]">
+      <Icon name={project.icon || 'folder'} className="text-xs" style={{ color: project.color }} />
+      <span className="truncate">{project.name}</span>
+    </span>
+  ) : null;
+
+  const CategoryBadge = category ? (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-gray-200 text-xs">
+      <Icon name={category.icon} className="text-xs" style={{ color: category.color }} />
+      {category.name}
+    </span>
+  ) : null;
+
+  const RepeatBadge = item.recurrence ? (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-gray-200 text-xs" title={getRecurrenceText(item.recurrence)}>
+      <AutorenewIcon className="text-xs text-gray-200" />
+      {getRecurrenceShort(item.recurrence)}
+    </span>
+  ) : null;
+
   return (
-    <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm md:max-w-4xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm md:max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         <header className="p-4 flex items-center justify-between border-b border-gray-700/50 flex-shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold truncate">{item.name}</h2>
+            <div className="mt-1 flex items-center gap-2 flex-wrap text-xs text-gray-300">
+              {CategoryBadge}
+              {ProjectBadge}
+              {RepeatBadge}
+              {DueBadge}
+            </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
-        </header>
-
-        <div className="flex-1 md:flex md:flex-row min-h-0">
-          {/* Left Column - Details */}
-          <div className="p-6 md:w-2/5 md:border-r border-gray-700/50 space-y-6 overflow-y-auto">
-            <DetailItem icon="category" label="Category">
-              {category ? (
-                <div className="flex items-center gap-2">
-                  <Icon name={category.icon} style={{ color: category.color }} className="text-lg" />
-                  <span>{category.name}</span>
-                </div>
-              ) : <span className="text-gray-500">No category</span>}
-            </DetailItem>
-
-            <DetailItem icon="folder" label="Project">
-              {project ? <span>{project.name}</span> : <span className="text-gray-500">Not in a project</span>}
-            </DetailItem>
-
-            {!isHabit && (item as Checklist).dueDate && (
-              <DetailItem icon="calendar_today" label="Due Date">
-                <span>{new Date((item as Checklist).dueDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              </DetailItem>
-            )}
-
-            {item.recurrence && (
-              <DetailItem icon="autorenew" label="Repeats">
-                <span>{getRecurrenceText(item.recurrence)}</span>
-              </DetailItem>
-            )}
-            
+          <div className="flex items-center gap-1">
             <button
               onClick={() => { onEditRequest(item); onClose(); }}
-              className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-[var(--radius-button)] hover:bg-gray-700"
+              aria-label="Edit"
+              title="Edit"
             >
-              <EditIcon className="text-base"/> Edit Details
+              <EditIcon />
             </button>
+            <button onClick={onClose} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-700" aria-label="Close"><CloseIcon /></button>
           </div>
+        </header>
 
-          {/* Right Column - Checklist */}
-          <div className="flex flex-col md:w-3/5">
-            <main className="p-6 overflow-y-auto space-y-2 flex-1">
-              {!hasSubtasks ? (
-                <div className="text-center text-gray-400 py-8">
-                    <p className="mb-4">This is a single item. Add more items to turn it into a checklist.</p>
-          <button onClick={() => { onEditRequest(item); onClose(); }} className="px-4 py-2 bg-blue-600 text-white rounded-[var(--radius-button)] font-semibold hover:bg-blue-500 transition-colors">
-                        Add Items
-                    </button>
-                </div>
-              ) : tasksToShow.length > 0 ? tasksToShow.map(task => {
-                const handleToggle = () => {
-                  if (isHabit) { onToggleHabitTask?.(item.id, task.id, selectedISODate); } 
-                  else { onToggleTask?.(item.id, task.id); }
-                };
-                return (
-                  <div key={task.id} onClick={handleToggle} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-700/60 cursor-pointer transition-colors">
-                    <span className={`text-sm ${task.completedAt ? 'line-through text-gray-500' : 'text-gray-200'}`}>{task.text}</span>
-                    <div className="w-6 h-6 flex items-center justify-center">
-                        {task.completedAt ? <HabitCheckCircle className="w-full h-full" /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
-                    </div>
+        <div className="flex-1 flex flex-col min-h-0">
+          <main className="p-4 overflow-y-auto space-y-2 flex-1">
+            {!hasSubtasks ? (
+              <div className="text-center text-gray-400 py-8">
+                <p className="mb-4">This is a single item. Add more items to turn it into a checklist.</p>
+                <button onClick={() => { onEditRequest(item); onClose(); }} className="px-4 py-2 bg-blue-600 text-white rounded-[var(--radius-button)] font-semibold hover:bg-blue-500 transition-colors">
+                  Add Items
+                </button>
+              </div>
+            ) : tasksToShow.length > 0 ? tasksToShow.map(task => {
+              const handleToggle = () => {
+                if (isHabit) { onToggleHabitTask?.(item.id, task.id, selectedISODate); }
+                else { onToggleTask?.(item.id, task.id); }
+              };
+              return (
+                <div key={task.id} onClick={handleToggle} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-700/60 cursor-pointer transition-colors">
+                  <span className={`text-sm ${task.completedAt ? 'line-through text-gray-500' : 'text-gray-200'}`}>{task.text}</span>
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {task.completedAt ? <HabitCheckCircle className="w-full h-full" /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
                   </div>
-                );
-              }) : (
-                <p className="text-center text-gray-500 py-8">No sub-items in this list.</p>
-              )}
-            </main>
-            {hasSubtasks && (
-                <footer className="p-4 border-t border-gray-700/50 flex-shrink-0">
-                    <AddTaskForm
-                        onAddTask={(text) => {
-                            if (isHabit) { onAddTaskToHabit?.(item.id, text); } 
-                            else { onCreateTask?.(item.id, text); }
-                        }}
-                    />
-                </footer>
+                </div>
+              );
+            }) : (
+              <p className="text-center text-gray-500 py-8">No sub-items in this list.</p>
             )}
-          </div>
+          </main>
+          {hasSubtasks && (
+            <footer className="p-4 border-t border-gray-700/50 flex-shrink-0">
+              <AddTaskForm
+                onAddTask={(text) => {
+                  if (isHabit) { onAddTaskToHabit?.(item.id, text); }
+                  else { onCreateTask?.(item.id, text); }
+                }}
+              />
+            </footer>
+          )}
         </div>
       </div>
     </div>
@@ -752,84 +719,85 @@ const useSwipeAndHold = (
 };
 
 const DashboardSingleTask: React.FC<{
-  task: Checklist
-  category?: UserCategory
+  task: Checklist;
+  category?: UserCategory;
   onToggleCompletion: () => void;
   onEdit: () => void;
+  onOpenModal: () => void;
   isCompleted: boolean;
   isRecentlyCompleted: boolean;
   onOpenPriorityModal: () => void;
   isCompleting: boolean;
-}> = ({ task, category, onToggleCompletion, onEdit, isCompleted, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
-    const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
-
-    const handleClick = () => {
-        if (!isSwiping) onToggleCompletion();
-    };
-
-    return (
-        <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''}`} {...touchHandlers}>
-            <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}>
-                <EditIcon className="text-white text-2xl" />
-            </div>
-            <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}>
-                <Icon name="flag" className="text-white text-2xl" />
-            </div>
-            <div
-                ref={itemRef}
-                style={{ transform: `translateX(${translation}px)` }}
-                className="relative z-10"
-            >
-                <div onClick={handleClick} className={`flex items-center justify-between p-2.5 rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
-                    <div className="flex items-center min-w-0 flex-1 gap-3">
-                        
-                        <div className="flex items-center min-w-0 flex-1 gap-3">
-                            {category ? (
-                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
-                                    <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
-                                </div>
-                            ) : (
-                                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700">
-                                    <ListAltIcon className="text-xl text-gray-500" />
-                                </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <span className={`truncate ${isCompleted ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>
-                                            {task.name}
-                                        </span>
-                                        <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 md:hidden" aria-label={`Edit ${task.name}`}>
-                                            <EditIcon className="text-base"/>
-                                        </button>
-                                    </div>
-                                    {task.dueTime && <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{task.dueTime}</span>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-          <div className="flex items-center ml-3 flex-shrink-0">
-            <div className="w-8 h-8 flex items-center justify-center" aria-label={`Toggle ${task.name}`}>
-              {isCompleted ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
+}> = ({ task, category, onToggleCompletion, onEdit, onOpenModal, isCompleted, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
+  const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
+  const handleRowClick = () => { if (!isSwiping) onOpenModal(); };
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRowClick(); }
+  };
+  return (
+    <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''}`} {...touchHandlers}>
+      <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}>
+        <EditIcon className="text-white text-2xl" />
+      </div>
+      <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}>
+        <Icon name="flag" className="text-white text-2xl" />
+      </div>
+      <div ref={itemRef} style={{ transform: `translateX(${translation}px)` }} className="relative z-10">
+        <div
+          onClick={handleRowClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          className={`flex items-center justify-between p-2.5 rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+        >
+          <div className="flex items-center min-w-0 flex-1 gap-3">
+            {category ? (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
+                <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700">
+                <ListAltIcon className="text-xl text-gray-500" />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`truncate ${isCompleted ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{task.name}</span>
+                </div>
+                {task.dueTime && (
+                  <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{task.dueTime}</span>
+                )}
+              </div>
             </div>
           </div>
-                </div>
-            </div>
+          <div className="flex items-center ml-3 flex-shrink-0">
+            <button
+              onClick={(e) => { e.stopPropagation(); setTimeout(() => onToggleCompletion(), 300); }}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-300/50 dark:hover:bg-gray-700/50"
+              aria-label={`Toggle ${task.name}`}
+            >
+              {isCompleted ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
+            </button>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 
 const DashboardMultiTaskList: React.FC<{
   list: Checklist
   category?: UserCategory
+  project?: Project
   onOpenModal: (list: Checklist) => void
   onEdit: () => void
   selectedDate: Date
   isRecentlyCompleted: boolean;
   onOpenPriorityModal: () => void;
   isCompleting: boolean;
-}> = ({ list, category, onOpenModal, onEdit, selectedDate, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
+}> = ({ list, category, project, onOpenModal, onEdit, selectedDate, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
   const selectedISODate = getISODate(selectedDate);
   const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
 
@@ -842,8 +810,10 @@ const DashboardMultiTaskList: React.FC<{
       }
       return true; // Non-recurring, any completion counts.
   }).length;
-  
-  const isCompletedForDate = list.completionHistory.includes(selectedISODate);
+  // Consider a list completed when all subtasks are completed for the selected date (or overall for non-recurring)
+  const isCompletedForDate = totalTasks > 0
+    ? (list.recurrence ? completedTasks === totalTasks : tasks.every(t => !!t.completedAt))
+    : list.completionHistory.includes(selectedISODate);
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : (isCompletedForDate ? 100 : 0);
 
   const handleClick = () => {
@@ -855,7 +825,13 @@ const DashboardMultiTaskList: React.FC<{
         <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}><EditIcon className="text-white text-2xl" /></div>
         <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}><Icon name="flag" className="text-white text-2xl" /></div>
         <div ref={itemRef} style={{ transform: `translateX(${translation}px)` }} className="relative z-10">
-            <div onClick={handleClick} className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
+            <div
+              onClick={handleClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+              className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center min-w-0 flex-1 gap-3">
                      
@@ -867,23 +843,20 @@ const DashboardMultiTaskList: React.FC<{
                       ) : (
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700"><ListAltIcon className="text-xl text-gray-500" /></div>
                       )}
-                      <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <p className={`font-medium truncate ${isCompletedForDate ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{list.name}</p>
-                              <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 md:hidden" aria-label={`Edit ${list.name}`}>
-                                <EditIcon className="text-base"/>
-                              </button>
-                            </div>
-                            {list.dueTime && <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{list.dueTime}</span>}
+                          <div className="flex items-center gap-2 min-w-0">
+                            <p className={`font-medium truncate ${isCompletedForDate ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{list.name}</p>
+                          </div>
+                          {list.dueTime && <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{list.dueTime}</span>}
                         </div>
-                        {/* Progress moved to the right side */}
+                        {/* Removed project and recurrence badges from the item card */}
                       </div>
                     </div>
                 </div>
         <div className="flex items-center ml-3 gap-2 flex-shrink-0">
-          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
-                    <div className="w-8 h-8 flex items-center justify-center" aria-label={`View tasks for ${list.name}`}>
+          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-900/10 dark:bg-white/10 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
+                    <div className="w-8 h-8 flex items-center justify-center" aria-label={`View tasks for ${list.name}`}> 
                        {isCompletedForDate ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
                     </div>
                 </div>
@@ -897,6 +870,7 @@ const DashboardMultiTaskList: React.FC<{
 const DashboardHabitCard: React.FC<{
   habit: Habit
   category?: UserCategory
+  project?: Project
   selectedDate: Date
   onToggleHabitCompletion: (habitId: string, date: string) => void
   onOpenSubtaskModal: (habit: Habit) => void
@@ -904,7 +878,7 @@ const DashboardHabitCard: React.FC<{
   isRecentlyCompleted: boolean;
   onOpenPriorityModal: () => void;
   isCompleting: boolean;
-}> = ({ habit, category, selectedDate, onToggleHabitCompletion, onOpenSubtaskModal, onEdit, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
+}> = ({ habit, category, project, selectedDate, onToggleHabitCompletion, onOpenSubtaskModal, onEdit, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
   const selectedISODate = getISODate(selectedDate)
   const isCompletedOnSelectedDate = habit.completionHistory.includes(selectedISODate)
   const isSingleCheckOff = habit.type === 'daily_check_off';
@@ -917,7 +891,7 @@ const DashboardHabitCard: React.FC<{
 
   const handleClick = () => {
     if (!isSwiping) {
-        isSingleCheckOff ? onToggleHabitCompletion(habit.id, selectedISODate) : onOpenSubtaskModal(habit);
+      onOpenSubtaskModal(habit);
     }
   };
 
@@ -926,7 +900,13 @@ const DashboardHabitCard: React.FC<{
         <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}><EditIcon className="text-white text-2xl" /></div>
         <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}><Icon name="flag" className="text-white text-2xl" /></div>
         <div ref={itemRef} style={{ transform: `translateX(${translation}px)` }} className="relative z-10">
-            <div onClick={handleClick} className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
+            <div
+              onClick={handleClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+              className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+            >
               <div className={`flex items-center justify-between`}>
                 <div className="flex items-center flex-1 min-w-0 gap-3">
                    
@@ -941,11 +921,8 @@ const DashboardHabitCard: React.FC<{
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
                           <p className={`font-medium truncate ${isCompletedOnSelectedDate ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{habit.name}</p>
-                          <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 md:hidden" aria-label={`Edit ${habit.name}`}>
-                            <EditIcon className="text-base"/>
-                          </button>
                         </div>
-                        {/* Progress moved to the right side */}
+                        {/* Removed project and recurrence badges from the item card */}
                       </div>
                     </div>
                 </div>
@@ -953,9 +930,14 @@ const DashboardHabitCard: React.FC<{
           {habit.type === 'checklist' && totalTasks > 0 && (
             <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
           )}
-                    <div className="w-8 h-8 flex items-center justify-center">
+                    <button
+                      onClick={(e) => { if (!isSingleCheckOff) return; e.stopPropagation(); setTimeout(() => onToggleHabitCompletion(habit.id, selectedISODate), 300); }}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full ${isSingleCheckOff ? 'hover:bg-gray-300/50 dark:hover:bg-gray-700/50' : 'cursor-default'}`}
+                      aria-label={`Toggle ${habit.name}`}
+                      disabled={!isSingleCheckOff}
+                    >
                         {isCompletedOnSelectedDate ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
-                    </div>
+                    </button>
                 </div>
               </div>
             </div>
@@ -1189,7 +1171,7 @@ const DayEventsTimeline: React.FC<{
           </button>
         </div>
       </div>
-      {/* All-day row */}
+      {/* All-day row: events only (untimed habits are not plotted here) */}
       {allDay.length > 0 && (
         <div className="mb-2">
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-1 px-1">All Day</div>
@@ -1473,10 +1455,10 @@ const DateScroller: React.FC<{
           const isSelected = isSameDay(date, selectedDate)
           const isToday = isSameDay(date, today);
           return (
-          <button
+      <button
               key={date.toISOString()}
               onClick={() => onDateSelect(date)}
-              className={`flex-shrink-0 flex flex-col items-center justify-center w-11 h-14 rounded-2xl transition-colors relative shadow-md
+        className={`flex-shrink-0 flex flex-col items-center justify-center w-11 h-14 rounded-[var(--radius-button)] transition-colors relative shadow-md
               ${isSelected ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white date-item-selected' : 'bg-gray-200 dark:bg-gray-700/50 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'}
               ${isToday ? 'date-item-today' : ''}
               `}
@@ -1521,7 +1503,7 @@ const ProjectFilterDropdown: React.FC<{
     <div ref={dropdownRef} className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
       >
         <Icon name="folder" className="text-base flex-shrink-0" />
         <span className="truncate flex-1 text-left">{selectedProject ? selectedProject.name : 'All Projects'}</span>
@@ -1545,6 +1527,69 @@ const ProjectFilterDropdown: React.FC<{
                   className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedProjectId === p.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {p.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CategoryFilterDropdown: React.FC<{
+  categories: UserCategory[];
+  selectedCategoryId: string | 'all';
+  onSelectCategory: (categoryId: string | 'all') => void;
+  className?: string;
+}> = ({ categories, selectedCategoryId, onSelectCategory, className }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  if (categories.length === 0) return null;
+
+  return (
+    <div ref={dropdownRef} className={`relative ${className || ''}`}>
+      <button
+        onClick={() => setIsOpen(v => !v)}
+        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+      >
+        <Icon name="category" className="text-base flex-shrink-0" />
+        <span className="truncate flex-1 text-left">{selectedCategory ? selectedCategory.name : 'All Categories'}</span>
+        <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+          <ul className="max-h-72 overflow-y-auto">
+            <li>
+              <button
+                onClick={() => { onSelectCategory('all'); setIsOpen(false); }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                All Categories
+              </button>
+            </li>
+            {categories.map(c => (
+              <li key={c.id}>
+                <button
+                  onClick={() => { onSelectCategory(c.id); setIsOpen(false); }}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedCategoryId === c.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <Icon name={c.icon} style={{ color: c.color }} className="text-base" />
+                    <span className="truncate">{c.name}</span>
+                  </span>
                 </button>
               </li>
             ))}
@@ -1598,6 +1643,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const [priorityModalItem, setPriorityModalItem] = useState<Checklist | Habit | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isOnboardingOpen, setOnboardingOpen] = useState(false);
+  // Category filter
+  const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>('all');
   // First-run onboarding
   useEffect(() => {
     try {
@@ -1668,9 +1715,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   }, [modalToClose, modalItemId, onModalClosed]);
   
   useEffect(() => {
-      const projectFilteredChecklists = checklists.filter(c => selectedProjectId === 'all' || c.projectId === selectedProjectId);
-      const projectFilteredHabits = habits.filter(h => selectedProjectId === 'all' || h.projectId === selectedProjectId);
-      const projectFilteredEvents = events.filter(e => selectedProjectId === 'all' || e.projectId === selectedProjectId);
+    const categoryMatch = (categoryId?: string) => selectedCategoryId === 'all' || (categoryId && categoryId === selectedCategoryId);
+    const projectFilteredChecklists = checklists.filter(c => (selectedProjectId === 'all' || c.projectId === selectedProjectId) && categoryMatch(c.categoryId));
+    const projectFilteredHabits = habits.filter(h => (selectedProjectId === 'all' || h.projectId === selectedProjectId) && categoryMatch(h.categoryId));
+    const projectFilteredEvents = events.filter(e => (selectedProjectId === 'all' || e.projectId === selectedProjectId) && categoryMatch(e.categoryId as any));
 
       const tasksForRender = projectFilteredChecklists.filter((task) => {
         if (!isTaskDueOnDate(task, selectedDate)) return false;
@@ -1739,7 +1787,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
       setOrderedDailyItems(sortedItems);
       setEventsForDay(eventsForRender);
 
-  }, [checklists, habits, events, selectedDate, selectedISODate, selectedProjectId]);
+  }, [checklists, habits, events, selectedDate, selectedISODate, selectedProjectId, selectedCategoryId]);
 
   // Recompute and sort events for the selected day; update minutely when viewing today
   useEffect(() => {
@@ -1776,7 +1824,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     }
   }, [eventsForDay, selectedDate]);
   
-  const projectFilteredNotes = notes.filter(n => selectedProjectId === 'all' || n.projectId === selectedProjectId);
+  const projectFilteredNotes = notes.filter(n => (selectedProjectId === 'all' || n.projectId === selectedProjectId) && (selectedCategoryId === 'all' || n.categoryId === selectedCategoryId));
   
   const recentNotes = [...projectFilteredNotes]
     .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
@@ -1823,7 +1871,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 }}
             />
         )}
-        {isOnboardingOpen && <OnboardingModal onClose={() => setOnboardingOpen(false)} />}
+  {isOnboardingOpen && <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setOnboardingOpen(false)} />}
         {isSearchOpen && <SearchModal 
             onClose={() => setIsSearchOpen(false)} 
             checklists={checklists}
@@ -1866,24 +1914,29 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
           </div>
         ) : (
           <div className="flex flex-col md:grid md:grid-cols-4 md:gap-6 h-full min-h-0">
-            {/* Main area (3/4 on >=md): controls + two columns (Tasks/Habits | Events) */}
+            {/* Main area (3/4 on >=md): controls + content */}
             <div className="md:col-span-3 flex flex-col min-h-0">
               {/* Sticky within left/middle columns only */}
               <div className="bg-gray-100 dark:bg-gray-800 md:sticky md:top-0 z-20">
                 <div className="pt-1.5">
                   <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
                 </div>
-                <div className="px-0 sm:px-0 pb-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <ProjectFilterDropdown projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
+                <div className="px-0 sm:px-0 pt-2 pb-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="flex-1 min-w-0">
+                        <ProjectFilterDropdown projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <CategoryFilterDropdown categories={userCategories} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
+                      </div>
                     </div>
                     {!isTrulyEmpty && (
                       <div className="flex-shrink-0 flex items-center gap-2">
                         {/* Mobile/Tablet: Toggle + icon-only actions in the same row */}
-                        <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-full">
-                          <button onClick={() => setMobileTab('events')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Events</button>
-                          <button onClick={() => setMobileTab('tasks')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Tasks</button>
+                        <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)]">
+                          <button onClick={() => setMobileTab('events')} className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Events</button>
+                          <button onClick={() => setMobileTab('tasks')} className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Tasks</button>
                         </div>
 
                         {/* Icon-only actions for <lg */}
@@ -1899,9 +1952,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     )}
                   </div>
                 </div>
-                <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
               </div>
-              <div>
+              <div className="flex-1 min-h-0">
                 {isEmpty ? (
                   <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
                     <EmptyStateIcon icon={<CheckCircleIcon />} size="lg" />
@@ -1916,7 +1968,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                       </button>
                     </div>
                   </div>
-                ) : (
+                  ) : (
                   <>
                     {/* Mobile: content below (toggle is in the control row) */}
                     <div className="md:hidden mt-2 space-y-2">
@@ -1932,7 +1984,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                             />
                           </div>
                         )
-                        : orderedDailyItems.map(itemWrapper => {
+                        : (orderedDailyItems.length > 0 ? (
+                          orderedDailyItems.map(itemWrapper => {
                             const { item, type } = itemWrapper;
                             const category = userCategories.find(c => c.id === item.categoryId);
                             const isRecentlyCompleted = recentlyCompletedItemId === item.id;
@@ -1943,77 +1996,94 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                               <div key={item.id}>
                                 {type === 'task' ? (
                                   (item as Checklist).tasks.length === 0 ? (
-                                    <DashboardSingleTask task={item as Checklist} category={category} onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)} onEdit={() => onEditItem(item)} isCompleted={isCompleted} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
+                                    <DashboardSingleTask task={item as Checklist} category={category} onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)} onEdit={() => onEditItem(item)} onOpenModal={() => setModalItemId(item.id)} isCompleted={isCompleted} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
                                   ) : (
-                                    <DashboardMultiTaskList list={item as Checklist} category={category} onOpenModal={(list) => setModalItemId(list.id)} onEdit={() => onEditItem(item)} selectedDate={selectedDate} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
+                                    <DashboardMultiTaskList list={item as Checklist} category={category} project={projects.find(p => p.id === (item as Checklist).projectId)} onOpenModal={(list) => setModalItemId(list.id)} onEdit={() => onEditItem(item)} selectedDate={selectedDate} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
                                   )
                                 ) : (
-                                  <DashboardHabitCard habit={item as Habit} category={category} selectedDate={selectedDate} onToggleHabitCompletion={onToggleHabitCompletion} onOpenSubtaskModal={(habit) => setModalItemId(habit.id)} onEdit={() => onEditItem(item)} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Habit)} isCompleting={isCompleting} />
+                                  <DashboardHabitCard habit={item as Habit} category={category} project={projects.find(p => p.id === (item as Habit).projectId)} selectedDate={selectedDate} onToggleHabitCompletion={onToggleHabitCompletion} onOpenSubtaskModal={(habit) => setModalItemId(habit.id)} onEdit={() => onEditItem(item)} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Habit)} isCompleting={isCompleting} />
                                 )}
                               </div>
                             );
-                          })}
+                          })
+                        ) : (
+                          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm">
+                            <div className="p-6 flex items-center justify-center text-center">
+                              <p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p>
+                            </div>
+                          </div>
+                        ))}
                     </div>
 
                     {/* >=md: split the 3/4 area into two equal columns (Tasks/Habits | Events) */}
                     <div className="hidden md:grid md:grid-cols-2 md:gap-6 mt-2 flex-1 min-h-0">
                       {/* Left of 3/4: Tasks & Habits */}
                       <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
-                        <div className="p-2 space-y-2 overflow-y-auto min-h-0 flex-1">
-                        {orderedDailyItems.map(itemWrapper => {
-                          const { item, type } = itemWrapper;
-                          const category = userCategories.find(c => c.id === item.categoryId);
-                          const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                          const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
-                          const isCompleting = completingItemIds.has(item.id);
-                          if (isCompleting && isCompleted) return null;
+                        {(() => {
+                          const centerFewItems = orderedDailyItems.length > 0 && orderedDailyItems.length <= 3;
                           return (
-                            <div key={item.id}>
-                              {type === 'task' ? (
-                                (item as Checklist).tasks.length === 0 ? (
-                                  <DashboardSingleTask
-                                    task={item as Checklist}
-                                    category={category}
-                                    onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
-                                    onEdit={() => onEditItem(item)}
-                                    isCompleted={isCompleted}
-                                    isRecentlyCompleted={isRecentlyCompleted}
-                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
-                                    isCompleting={isCompleting}
-                                  />
-                                ) : (
-                                  <DashboardMultiTaskList
-                                    list={item as Checklist}
-                                    category={category}
-                                    onOpenModal={(list) => setModalItemId(list.id)}
-                                    onEdit={() => onEditItem(item)}
-                                    selectedDate={selectedDate}
-                                    isRecentlyCompleted={isRecentlyCompleted}
-                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
-                                    isCompleting={isCompleting}
-                                  />
-                                )
-                              ) : (
-                                <DashboardHabitCard
-                                  habit={item as Habit}
-                                  category={category}
-                                  selectedDate={selectedDate}
-                                  onToggleHabitCompletion={onToggleHabitCompletion}
-                                  onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
-                                  onEdit={() => onEditItem(item)}
-                                  isRecentlyCompleted={isRecentlyCompleted}
-                                  onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
-                                  isCompleting={isCompleting}
-                                />
+                            <div className={`p-2 space-y-2 overflow-y-auto min-h-0 flex-1 ${centerFewItems ? 'flex flex-col justify-center' : ''}`}>
+                              {orderedDailyItems.map(itemWrapper => {
+                                const { item, type } = itemWrapper;
+                                const category = userCategories.find(c => c.id === item.categoryId);
+                                const isRecentlyCompleted = recentlyCompletedItemId === item.id;
+                                const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                                const isCompleting = completingItemIds.has(item.id);
+                                if (isCompleting && isCompleted) return null;
+                                return (
+                                  <div key={item.id}>
+                                    {type === 'task' ? (
+                                      (item as Checklist).tasks.length === 0 ? (
+                                        <DashboardSingleTask
+                                          task={item as Checklist}
+                                          category={category}
+                                          onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
+                                          onEdit={() => onEditItem(item)}
+                                          onOpenModal={() => setModalItemId(item.id)}
+                                          isCompleted={isCompleted}
+                                          isRecentlyCompleted={isRecentlyCompleted}
+                                          onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                          isCompleting={isCompleting}
+                                        />
+                                      ) : (
+                                        <DashboardMultiTaskList
+                                          list={item as Checklist}
+                                          category={category}
+                                          project={projects.find(p => p.id === (item as Checklist).projectId)}
+                                          onOpenModal={(list) => setModalItemId(list.id)}
+                                          onEdit={() => onEditItem(item)}
+                                          selectedDate={selectedDate}
+                                          isRecentlyCompleted={isRecentlyCompleted}
+                                          onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                          isCompleting={isCompleting}
+                                        />
+                                      )
+                                    ) : (
+                                      <DashboardHabitCard
+                                        habit={item as Habit}
+                                        category={category}
+                                        project={projects.find(p => p.id === (item as Habit).projectId)}
+                                        selectedDate={selectedDate}
+                                        onToggleHabitCompletion={onToggleHabitCompletion}
+                                        onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
+                                        onEdit={() => onEditItem(item)}
+                                        isRecentlyCompleted={isRecentlyCompleted}
+                                        onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
+                                        isCompleting={isCompleting}
+                                      />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                              {orderedDailyItems.length === 0 && (
+                                <div className="flex items-center justify-center py-10">
+                                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p>
+                                </div>
                               )}
                             </div>
                           );
-                        })}
-                        {orderedDailyItems.length === 0 && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">No tasks or habits.</p>
-                        )}
+                        })()}
                         </div>
-                      </div>
 
                       {/* Right of 3/4: Events */}
                       <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
@@ -2023,7 +2093,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                       </div>
                     </div>
                   </>
-                )}
+                  )}
               </div>
               <div className="my-2 h-px bg-gray-200 dark:bg-gray-700/50 md:hidden" />
             </div>

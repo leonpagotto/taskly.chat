@@ -41,12 +41,12 @@ const generalProfessional = (): SampleBundle => {
       { id: 't-gen-1', text: 'Check header links', completedAt: null },
       { id: 't-gen-2', text: 'Verify mobile layout', completedAt: null },
       { id: 't-gen-3', text: 'Run Lighthouse audit', completedAt: null },
-    ], categoryId: catWork.id, projectId: project.id, priority: 5 },
+    ], categoryId: catWork.id, projectId: project.id, priority: 5, dueDate: today, dueTime: '09:30' },
     { id: 'cl-gen-2', name: 'Grocery list', completionHistory: [], tasks: [
       { id: 't-gen-4', text: 'Milk', completedAt: null },
       { id: 't-gen-5', text: 'Bread', completedAt: null },
-    ], categoryId: catPersonal.id, priority: 8 },
-    { id: 'cl-gen-3', name: 'Call accountant', completionHistory: [], tasks: [], categoryId: catPersonal.id, priority: 3, dueDate: today },
+    ], categoryId: catPersonal.id, priority: 8, dueDate: today, dueTime: '18:00' },
+    { id: 'cl-gen-3', name: 'Call accountant', completionHistory: [], tasks: [], categoryId: catPersonal.id, priority: 3, dueDate: today, dueTime: '11:15' },
   ];
 
   const stories: Story[] = [
@@ -106,7 +106,7 @@ const fitness = (): SampleBundle => {
       { id: 't-fit-1', text: 'Chicken breast', completedAt: null },
       { id: 't-fit-2', text: 'Brown rice', completedAt: null },
       { id: 't-fit-3', text: 'Broccoli', completedAt: null },
-    ], categoryId: catNutri.id },
+    ], categoryId: catNutri.id, dueDate: today, dueTime: '17:30' },
   ];
 
   const stories: Story[] = [
@@ -153,7 +153,7 @@ const student = (): SampleBundle => {
     { id: 'cl-stu-1', name: 'Assignment 1', completionHistory: [], tasks: [
       { id: 't-stu-1', text: 'Read chapter 1', completedAt: null },
       { id: 't-stu-2', text: 'Implement algorithm', completedAt: null },
-    ], categoryId: catStudy.id, projectId: project.id, dueDate: today, priority: 4 },
+    ], categoryId: catStudy.id, projectId: project.id, dueDate: today, dueTime: '08:30', priority: 4 },
   ];
 
   const stories: Story[] = [
@@ -197,7 +197,7 @@ const researcher = (): SampleBundle => {
     { id: 'cl-res-1', name: 'Revise introduction', completionHistory: [], tasks: [
       { id: 't-res-1', text: 'Add background refs', completedAt: null },
       { id: 't-res-2', text: 'Clarify hypothesis', completedAt: null },
-    ], categoryId: catWriting.id, projectId: project.id, priority: 5 },
+    ], categoryId: catWriting.id, projectId: project.id, priority: 5, dueDate: today, dueTime: '10:00' },
   ];
 
   const stories: Story[] = [
@@ -240,8 +240,8 @@ const coder = (): SampleBundle => {
       { id: 't-cod-1', text: 'Auth flow', completedAt: null },
       { id: 't-cod-2', text: 'Task list UI', completedAt: null },
       { id: 't-cod-3', text: 'Local storage sync', completedAt: today },
-    ], categoryId: catCode.id, projectId: project.id, priority: 4 },
-    { id: 'cl-cod-2', name: 'Provision CI', completionHistory: [], tasks: [], categoryId: catDevOps.id, priority: 6 },
+    ], categoryId: catCode.id, projectId: project.id, priority: 4, dueDate: today, dueTime: '14:45' },
+    { id: 'cl-cod-2', name: 'Provision CI', completionHistory: [], tasks: [], categoryId: catDevOps.id, priority: 6, dueDate: today, dueTime: '16:15' },
   ];
 
   const stories: Story[] = [
@@ -283,8 +283,8 @@ const retired = (): SampleBundle => {
     { id: 'cl-ret-1', name: 'Plant shopping', completionHistory: [], tasks: [
       { id: 't-ret-1', text: 'Lavender', completedAt: null },
       { id: 't-ret-2', text: 'Tomato seedlings', completedAt: null },
-    ], categoryId: catHobby.id, projectId: project.id },
-    { id: 'cl-ret-2', name: 'Call grandchildren', completionHistory: [], tasks: [], categoryId: catFamily.id, priority: 2, dueDate: today },
+    ], categoryId: catHobby.id, projectId: project.id, dueDate: today, dueTime: '11:45' },
+    { id: 'cl-ret-2', name: 'Call grandchildren', completionHistory: [], tasks: [], categoryId: catFamily.id, priority: 2, dueDate: today, dueTime: '09:00' },
   ];
 
   const stories: Story[] = [

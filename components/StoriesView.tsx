@@ -22,43 +22,40 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 	const getCategory = (catId?: string) => userCategories.find(c => c.id === catId);
 	const getProject = (projId?: string) => projects.find(p => p.id === projId);
 	const STORAGE_KEY = 'stories.filters.v1';
-	type Persisted = {
+	  type Persisted = {
 		projectId: 'all' | string;
 		categoryId: 'all' | string;
 		viewMode: 'list' | 'board';
-		isFilterOpen: boolean;
 		status: 'all' | StoryStatus;
 		sortBy: 'updated' | 'created';
 	};
 	const loadPersisted = (): Persisted => {
 		try {
 			const raw = localStorage.getItem(STORAGE_KEY);
-			if (!raw) return { projectId: 'all', categoryId: 'all', viewMode: 'list', isFilterOpen: false, status: 'all', sortBy: 'updated' };
+				if (!raw) return { projectId: 'all', categoryId: 'all', viewMode: 'list', status: 'all', sortBy: 'updated' };
 			const data = JSON.parse(raw) as Partial<Persisted>;
 			return {
 				projectId: (data.projectId as any) ?? 'all',
 				categoryId: (data.categoryId as any) ?? 'all',
 				viewMode: (data.viewMode as any) ?? 'list',
-				isFilterOpen: !!data.isFilterOpen,
 				status: (data.status as any) ?? 'all',
 				sortBy: (data.sortBy as any) ?? 'updated',
 			};
-		} catch { return { projectId: 'all', categoryId: 'all', viewMode: 'list', isFilterOpen: false, status: 'all', sortBy: 'updated' }; }
+			} catch { return { projectId: 'all', categoryId: 'all', viewMode: 'list', status: 'all', sortBy: 'updated' }; }
 	};
 
 	const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(() => (typeof window !== 'undefined' ? loadPersisted().projectId : 'all'));
 	const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(() => (typeof window !== 'undefined' ? loadPersisted().categoryId : 'all'));
 	const [viewMode, setViewMode] = useState<'list' | 'board'>(() => (typeof window !== 'undefined' ? loadPersisted().viewMode : 'list'));
-	const [isFilterOpen, setFilterOpen] = useState(() => (typeof window !== 'undefined' ? loadPersisted().isFilterOpen : false));
 	const [statusFilter, setStatusFilter] = useState<'all' | StoryStatus>(() => (typeof window !== 'undefined' ? loadPersisted().status : 'all'));
 	const [sortBy, setSortBy] = useState<'updated' | 'created'>(() => (typeof window !== 'undefined' ? loadPersisted().sortBy : 'updated'));
 
 	useEffect(() => {
 		try {
-			const toSave: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, viewMode, isFilterOpen, status: statusFilter, sortBy };
+			const toSave: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, viewMode, status: statusFilter, sortBy };
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
 		} catch {}
-	}, [selectedProjectId, selectedCategoryId, viewMode, isFilterOpen, statusFilter, sortBy]);
+	}, [selectedProjectId, selectedCategoryId, viewMode, statusFilter, sortBy]);
 
 	const filteredStories = useMemo(() => {
 		return stories.filter(s => {
@@ -74,6 +71,41 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 
 	// Use shared UnifiedToolbar instead of local FilterDropdowns
 
+	const StatusDropdown: React.FC<{ value: 'all' | StoryStatus; onChange: (v: 'all' | StoryStatus) => void; }> = ({ value, onChange }) => {
+		const [open, setOpen] = useState(false);
+		const ref = useRef<HTMLDivElement>(null);
+		useEffect(() => {
+			const onDocClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+			document.addEventListener('mousedown', onDocClick);
+			return () => document.removeEventListener('mousedown', onDocClick);
+		}, []);
+		const label = value === 'all' ? 'All status' : value.replace('_',' ');
+		return (
+			<div ref={ref} className="relative sm:w-52 w-full">
+				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+					<div className="flex items-center gap-2 truncate">
+						<Icon name="flag" className="text-base flex-shrink-0" />
+						<span className="truncate capitalize">{label}</span>
+					</div>
+					<ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
+				</button>
+				{open && (
+					<div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+						<ul className="max-h-72 overflow-y-auto">
+							{(['all','backlog','in_progress','review','done'] as const).map(opt => (
+								<li key={opt}>
+									<button onClick={() => { onChange(opt); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
+										{opt === 'all' ? 'All status' : opt.replace('_',' ')}
+									</button>
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
+		);
+	};
+
 	const SortDropdown: React.FC<{ value: 'updated' | 'created'; onChange: (v: 'updated' | 'created') => void; }> = ({ value, onChange }) => {
 		const [open, setOpen] = useState(false);
 		const ref = useRef<HTMLDivElement>(null);
@@ -85,7 +117,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 		const label = value === 'updated' ? 'Latest updated' : 'Latest created';
 		return (
 			<div ref={ref} className="relative sm:w-52">
-				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
 					<div className="flex items-center gap-2 truncate">
 						<Icon name="sort" className="text-base flex-shrink-0" />
 						<span className="truncate">{label}</span>
@@ -121,7 +153,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 			{/* Primary filter bar (full width background) */}
 			<div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 				<div className="px-4 sm:px-6">
-					<div className="mx-auto w-full max-w-5xl py-4">
+					<div className="w-full py-4">
 						<UnifiedToolbar
 							projects={projects}
 							userCategories={userCategories}
@@ -129,28 +161,20 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 							selectedCategoryId={selectedCategoryId}
 							onChangeProject={setSelectedProjectId}
 							onChangeCategory={setSelectedCategoryId}
-							chips={[
-								{ key: 'all', label: 'all' },
-								{ key: 'backlog', label: 'backlog' },
-								{ key: 'in_progress', label: 'in progress' },
-								{ key: 'review', label: 'review' },
-								{ key: 'done', label: 'done' },
-							]}
-							activeChipKey={statusFilter}
-							onChangeChip={(key) => setStatusFilter(key as any)}
+							hideCategory
+							compactHeight="h10"
+							inlineExtras={<StatusDropdown value={statusFilter} onChange={setStatusFilter} />}
 							rightExtras={
 								<>
-									<div className="p-1 bg-gray-200 dark:bg-gray-700/50 rounded-full flex">
-										<button onClick={() => setViewMode('list')} className={`px-3 py-1.5 rounded-full text-sm font-semibold ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+									<div className="bg-gray-200 dark:bg-gray-700/50 flex items-center h-10 px-1 rounded-[12px]">
+										<button onClick={() => setViewMode('list')} className={`h-8 px-3 rounded-[12px] text-sm font-semibold ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_list" className="text-base" /> <span className="hidden sm:inline">List</span></span>
 										</button>
-										<button onClick={() => setViewMode('board')} className={`px-3 py-1.5 rounded-full text-sm font-semibold ${viewMode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+										<button onClick={() => setViewMode('board')} className={`h-8 px-3 rounded-[12px] text-sm font-semibold ${viewMode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_kanban" className="text-base" /> <span className="hidden sm:inline">Board</span></span>
 										</button>
 									</div>
-									<button onClick={() => setFilterOpen(v => !v)} className="px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
-										<span className="inline-flex items-center gap-1"><Icon name="search" className="text-base" /> Filters</span>
-									</button>
+									<div className="ml-2"><SortDropdown value={sortBy} onChange={setSortBy} /></div>
 								</>
 							}
 						/>
@@ -158,23 +182,9 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 					</div>
 				</div>
 
-			{/* Secondary filter bar (sort only) */}
-			{isFilterOpen && (
-				<div className="bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
-					<div className="px-4 sm:px-6">
-						<div className="mx-auto w-full max-w-5xl py-3 flex items-center gap-2">
-							<div className="ml-auto flex items-center gap-2">
-								{/* Sort dropdown styled like the filter selectors */}
-								<SortDropdown value={sortBy} onChange={setSortBy} />
-							</div>
-						</div>
-					</div>
-				</div>
-			)}
-
 			{/* Main content area */}
 			<div className="px-4 sm:px-6">
-				<div className="mx-auto w-full max-w-5xl py-4 sm:py-6">
+				<div className="w-full py-4 sm:py-6">
 					{sortedStories.length === 0 ? (
 						<div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
 							<EmptyStateIcon icon={<Icon name="auto_stories" />} size="lg" />
@@ -194,7 +204,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 									const category = getCategory(story.categoryId);
 									const project = getProject(story.projectId);
 									return (
-										<div key={story.id} className="bg-white dark:bg-gray-700 p-3 hover:bg-gray-50/80 dark:hover:bg-gray-600/70 transition-colors group">
+										<div key={story.id} className="bg-white dark:bg-gray-700/50 p-3 hover:shadow-md transition-all group">
 											<button onClick={() => onSelectStory?.(story.id)} className="w-full text-left">
 												<div className="flex items-center gap-3">
 													<div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
@@ -243,7 +253,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 								};
 								const columnStatus = statusMap[col];
 								return (
-									<div key={col} className="bg-white dark:bg-gray-700 rounded-xl p-3"
+									<div key={col} className="bg-white dark:bg-gray-700/50 rounded-xl p-3"
 										onDragOver={(e) => e.preventDefault()}
 										onDrop={(e) => {
 											const storyId = e.dataTransfer.getData('text/plain');
@@ -266,7 +276,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 															draggable
 															onDragStart={(e) => e.dataTransfer.setData('text/plain', s.id)}
 															onClick={() => onSelectStory?.(s.id)}
-															className="w-full text-left p-2 rounded-lg bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+															className="w-full text-left p-2 rounded-lg bg-gray-100 dark:bg-gray-600 hover:shadow-md transition-all"
 														>
 															<div className="flex items-start gap-2">
 																<div className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>

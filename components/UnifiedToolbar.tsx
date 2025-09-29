@@ -16,6 +16,13 @@ interface UnifiedToolbarProps {
   selectedCategoryId: string | 'all';
   onChangeProject: (id: string | 'all') => void;
   onChangeCategory: (id: string | 'all') => void;
+  // Hide category filter (e.g., for Stories page)
+  hideCategory?: boolean;
+  // Hide project filter (for narrow clones like period-only rows)
+  hideProject?: boolean;
+
+  // Compact uniform control height (40px) and 12px radius for this row
+  compactHeight?: 'default' | 'h10';
 
   // Period toggle (optional)
   period?: Period;
@@ -29,6 +36,16 @@ interface UnifiedToolbarProps {
 
   // Right aligned extras (e.g., view mode toggle, extra buttons)
   rightExtras?: React.ReactNode;
+  // Inline middle extras (e.g., compact selects like Status)
+  inlineExtras?: React.ReactNode;
+
+  // Sort control (optional)
+  sortBy?: 'time' | 'priority' | 'name';
+  onChangeSortBy?: (v: 'time' | 'priority' | 'name') => void;
+  sortOptions?: { value: 'time' | 'priority' | 'name'; label: string }[];
+
+  // Make controls expand to take full row width and allow wrapping
+  fluidControls?: boolean;
 }
 
 const FilterDropdown: React.FC<{
@@ -36,7 +53,9 @@ const FilterDropdown: React.FC<{
   selectedId: string | 'all';
   onSelect: (id: string | 'all') => void;
   type: 'project' | 'category';
-}> = ({ items, selectedId, onSelect, type }) => {
+  buttonClassName?: string;
+  containerClassName?: string;
+}> = ({ items, selectedId, onSelect, type, buttonClassName, containerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const selectedItem = items.find(p => p.id === selectedId);
@@ -53,11 +72,12 @@ const FilterDropdown: React.FC<{
 
   const defaultLabel = type === 'project' ? 'All Projects' : 'All Categories';
 
+  const wrapperClass = containerClassName || "relative flex-1 sm:flex-initial sm:w-52 min-w-0";
   return (
-    <div ref={dropdownRef} className="relative flex-1 sm:flex-initial sm:w-52 min-w-0">
+    <div ref={dropdownRef} className={wrapperClass}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"}
       >
         <div className="flex items-center gap-2 truncate">
           <Icon name={type === 'project' ? 'folder' : 'category'} className="text-base flex-shrink-0" />
@@ -90,27 +110,109 @@ const FilterDropdown: React.FC<{
   );
 };
 
+const SortDropdown: React.FC<{
+  value: 'time' | 'priority' | 'name';
+  onChange: (v: 'time' | 'priority' | 'name') => void;
+  options?: { value: 'time' | 'priority' | 'name'; label: string }[];
+  buttonClassName?: string;
+  containerClassName?: string;
+}> = ({ value, onChange, options, buttonClassName, containerClassName }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const opts = options ?? [
+    { value: 'time', label: 'Time' },
+    { value: 'priority', label: 'Priority' },
+    { value: 'name', label: 'Name' },
+  ];
+  const selected = opts.find(o => o.value === value) || opts[0];
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const wrapperClass = containerClassName || "relative flex-1 sm:flex-initial sm:w-40 min-w-0";
+  return (
+    <div ref={dropdownRef} className={wrapperClass}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"}
+      >
+        <div className="flex items-center gap-2 truncate">
+          <Icon name="swap_vert" className="text-base flex-shrink-0" />
+          <span className="truncate">Sort: {selected.label}</span>
+        </div>
+        <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+          <ul className="max-h-72 overflow-y-auto">
+            {opts.map(opt => (
+              <li key={opt.value}>
+                <button
+                  onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                >
+                  {opt.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
   const {
     projects, userCategories,
     selectedProjectId, selectedCategoryId,
     onChangeProject, onChangeCategory,
+    hideCategory = false,
+    hideProject = false,
+    compactHeight = 'default',
     period, onChangePeriod, showPeriod = true,
     chips, activeChipKey, onChangeChip,
-    rightExtras
+    rightExtras, inlineExtras,
+    sortBy, onChangeSortBy, sortOptions,
+    fluidControls = false
   } = props;
 
+  const controlButtonClass = compactHeight === 'h10'
+    ? "w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+    : "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700";
+
+  const containerClass = fluidControls
+    ? "flex items-center gap-2 sm:gap-3 flex-wrap"
+    : "flex items-center gap-2 sm:gap-3 flex-nowrap overflow-x-auto scrollbar-hide";
+  const filterWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
+  const sortWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
+
   return (
-    <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-      <FilterDropdown items={projects} selectedId={selectedProjectId} onSelect={onChangeProject} type="project" />
-      <FilterDropdown items={userCategories} selectedId={selectedCategoryId} onSelect={onChangeCategory} type="category" />
+    <div className={containerClass}>
+      {!hideProject && (
+        <FilterDropdown items={projects} selectedId={selectedProjectId} onSelect={onChangeProject} type="project" buttonClassName={controlButtonClass} containerClassName={filterWrap} />
+      )}
+      {!hideCategory && (
+        <FilterDropdown items={userCategories} selectedId={selectedCategoryId} onSelect={onChangeCategory} type="category" buttonClassName={controlButtonClass} containerClassName={filterWrap} />
+      )}
+
+      {(sortBy && onChangeSortBy) && (
+        <SortDropdown value={sortBy} onChange={onChangeSortBy} options={sortOptions} buttonClassName={controlButtonClass} containerClassName={sortWrap} />
+      )}
 
       {(period && onChangePeriod && showPeriod) && (
         <div className="flex items-center gap-2 ml-0 sm:ml-auto w-full sm:w-auto">
-          <div className="flex w-full sm:inline-flex sm:w-auto rounded-full bg-gray-200 dark:bg-gray-700/50 p-1 text-sm font-semibold">
-            <button onClick={() => onChangePeriod('today')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='today' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>Today</button>
-            <button onClick={() => onChangePeriod('week')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='week' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Week</button>
-            <button onClick={() => onChangePeriod('month')} className={`px-3 py-1.5 rounded-full text-center flex-1 sm:flex-none ${period==='month' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Month</button>
+          <div className={`flex w-full sm:inline-flex sm:w-auto ${compactHeight==='h10' ? 'h-10 px-1 rounded-[12px]' : 'rounded-full p-1'} bg-gray-200 dark:bg-gray-700/50 text-sm font-semibold items-center`}>
+            <button onClick={() => onChangePeriod('today')} className={`${compactHeight==='h10' ? 'h-8' : ''} px-3 ${compactHeight==='h10' ? 'rounded-[12px]' : 'rounded-full'} text-center flex-1 sm:flex-none ${period==='today' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>Today</button>
+            <button onClick={() => onChangePeriod('week')} className={`${compactHeight==='h10' ? 'h-8' : ''} px-3 ${compactHeight==='h10' ? 'rounded-[12px]' : 'rounded-full'} text-center flex-1 sm:flex-none ${period==='week' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Week</button>
+            <button onClick={() => onChangePeriod('month')} className={`${compactHeight==='h10' ? 'h-8' : ''} px-3 ${compactHeight==='h10' ? 'rounded-[12px]' : 'rounded-full'} text-center flex-1 sm:flex-none ${period==='month' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300'}`}>This Month</button>
           </div>
         </div>
       )}
@@ -122,6 +224,12 @@ const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
               <button key={ch.key} onClick={() => onChangeChip && onChangeChip(ch.key)} className={`px-3 py-1.5 rounded-full text-sm font-semibold capitalize ${activeChipKey === ch.key ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>{ch.label}</button>
             ))}
           </div>
+        </div>
+      )}
+
+      {inlineExtras && (
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {inlineExtras}
         </div>
       )}
 

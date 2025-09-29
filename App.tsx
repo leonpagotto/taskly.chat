@@ -916,6 +916,7 @@ const defaultPreferences: UserPreferences = {
   language: 'en',
   size: 'md',
   pulseWidgets: [],
+    aiSnapshotVerbosity: 'concise',
 };
 
 // FIX: Changed payload for 'newTask' to Partial<Checklist> to allow properties like categoryId.
@@ -988,6 +989,7 @@ const App: React.FC = () => {
           const parsedPrefs = JSON.parse(savedPrefs);
           if (!parsedPrefs.pulseWidgets) parsedPrefs.pulseWidgets = [];
           if (!parsedPrefs.size) parsedPrefs.size = 'md';
+          if (!parsedPrefs.aiSnapshotVerbosity) parsedPrefs.aiSnapshotVerbosity = 'concise';
           setPreferences(parsedPrefs);
       } else {
           setPreferences(defaultPreferences);
@@ -1857,7 +1859,53 @@ const App: React.FC = () => {
             }
         }
         
-        const aiResponse: AIResponse = await parseAIResponse(history, messageText, currentView, preferences, projectContext, filesForContext);
+        // Build a snapshot of project-related context so AI can reason about all user objects
+        let projectSnapshot: string | undefined;
+        if (projectContext) {
+            try {
+                const verbose = (preferences.aiSnapshotVerbosity || 'concise') === 'detailed';
+                const taskLimit = verbose ? 60 : 30;
+                const openPerList = verbose ? 10 : 5;
+                const noteLimit = verbose ? 20 : 10;
+                const storyLimit = verbose ? 30 : 15;
+                const eventLimit = verbose ? 20 : 10;
+
+                const projectTasks = checklists
+                    .filter(cl => cl.projectId === projectContext.id)
+                    .slice(0, taskLimit)
+                    .map(cl => {
+                        const open = cl.tasks.filter(t => !t.completedAt).slice(0, openPerList).map(t => `- ${t.text}`).join('\n');
+                        const due = cl.dueDate ? ` due:${cl.dueDate}${cl.dueTime ? ' ' + cl.dueTime : ''}` : '';
+                        return `• List: ${cl.name}${due}${open ? `\n${open}` : ''}`;
+                    }).join('\n');
+
+                const projectNotes = notes
+                    .filter(n => n.projectId === projectContext.id)
+                    .slice(0, noteLimit)
+                    .map(n => `• Note: ${n.name}`).join('\n');
+
+                const projectStories = stories
+                    .filter(s => s.projectId === projectContext.id)
+                    .slice(0, storyLimit)
+                    .map(s => `• Story: ${s.title} [${s.status}]`).join('\n');
+
+                const projectEvents = events
+                    .filter(e => e.projectId === projectContext.id)
+                    .slice(0, eventLimit)
+                    .map(e => `• Event: ${e.title} on ${e.startDate}${e.startTime ? ' ' + e.startTime : ''}`).join('\n');
+
+                const sections = [
+                  projectTasks && `TASKS\n${projectTasks}`,
+                  projectNotes && `NOTES\n${projectNotes}`,
+                  projectStories && `STORIES\n${projectStories}`,
+                  projectEvents && `CALENDAR\n${projectEvents}`,
+                ].filter(Boolean) as string[];
+
+                projectSnapshot = sections.join('\n\n');
+            } catch {}
+        }
+
+        const aiResponse: AIResponse = await parseAIResponse(history, messageText, currentView, preferences, projectContext, filesForContext, projectSnapshot);
         const modelMessage: Message = { id: `msg-${Date.now()}-ai`, sender: Sender.Model, text: aiResponse.text };
 
         if (aiResponse.action) {
@@ -2170,6 +2218,7 @@ const App: React.FC = () => {
                     ) : currentView === 'calendar' ? (
                         <CalendarView
                             events={events}
+                            habits={habits}
                             userCategories={userCategories}
                             onNewEventRequest={handleNewEvent}
                             onEditEventRequest={(e) => setViewAction({type: 'editEvent', payload: e})}
@@ -2180,6 +2229,7 @@ const App: React.FC = () => {
                 </div>
 
                 {activeConversation && !isMobileChatOpen && (
+                    <div className="hidden md:block">
                     <ChatInputBar
                         onSendMessage={handleSendMessage}
                         isLoading={isLoading}
@@ -2188,6 +2238,7 @@ const App: React.FC = () => {
                         t={t}
                         language={preferences.language}
                     />
+                    </div>
                 )}
             </div>
 

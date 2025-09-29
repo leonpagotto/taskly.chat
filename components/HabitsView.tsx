@@ -124,7 +124,8 @@ const HabitCard: React.FC<{
   category?: UserCategory;
   onEdit: () => void;
   onToggleCompletion: (date: string) => void;
-}> = ({ habit, category, onEdit, onToggleCompletion }) => {
+    project?: Project;
+}> = ({ habit, category, onEdit, onToggleCompletion, project }) => {
     
     const getRecurrenceText = (rule: RecurrenceRule): string => {
         switch(rule.type) {
@@ -195,7 +196,7 @@ const HabitCard: React.FC<{
 
 
     return (
-    <div className="bg-white dark:bg-gray-700 p-3 rounded-xl flex flex-col gap-0.5 group transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-gray-700/50 p-3 rounded-xl flex flex-col gap-0.5 group transition-all hover:shadow-md">
              <div className="flex items-start justify-between gap-3">
                 {category ? (
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1" style={{ backgroundColor: `${category.color}20` }}>
@@ -209,8 +210,16 @@ const HabitCard: React.FC<{
                 
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={onEdit}>
                     <h3 className="text-base font-medium text-gray-900 dark:text-white truncate">{habit.name}</h3>
-                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                        {/* Short recurrence */}
                         <span>{getRecurrenceText(habit.recurrence)}</span>
+                        {/* Project pill if available */}
+                        {project && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 max-w-[50%]">
+                            <Icon name={project.icon || 'folder'} className="text-xs" style={{ color: project.color }} />
+                            <span className="truncate">{project.name}</span>
+                          </span>
+                        )}
                         <div className="flex items-center gap-1.5" title="Current Streak">
                             <LocalFireDepartmentIcon className="text-base text-orange-400" />
                             <span className="font-semibold">{streak}</span>
@@ -323,7 +332,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                 {/* Full-width toolbar bar with divider */}
                 <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div className="px-4 sm:px-6">
-                        <div className="mx-auto w-full max-w-5xl">
+                        <div className="mx-auto w-full max-w-[52rem]">
                             <div className="py-4">
                                 <UnifiedToolbar 
                                     projects={projects} 
@@ -333,23 +342,26 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                                     onChangeProject={setSelectedProjectId} 
                                     onChangeCategory={setSelectedCategoryId}
                                     showPeriod={false}
+                                    compactHeight="h10"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="px-4 sm:px-6">
-                    <div className="mx-auto w-full max-w-5xl">
+                    <div className="mx-auto w-full max-w-[52rem]">
                         <main className="py-4 sm:py-6">
                 {filteredHabits.length > 0 ? (
                     <div className="space-y-4">
-            {filteredHabits.map((habit) => {
-              const category = userCategories.find(c => c.id === habit.categoryId);
+                        {filteredHabits.map((habit) => {
+                            const category = userCategories.find(c => c.id === habit.categoryId);
+                            const project = projects.find(p => p.id === habit.projectId);
               return (
                 <HabitCard
                   key={habit.id}
                   habit={habit}
                   category={category}
+                                    project={project}
                   onEdit={() => onEditHabitRequest(habit)}
                   onToggleCompletion={(date) => onToggleHabitCompletion(habit.id, date)}
                 />

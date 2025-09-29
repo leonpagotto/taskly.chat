@@ -23,6 +23,24 @@ const getRecurrenceText = (rule: RecurrenceRule): string => {
     }
 };
 
+// Short recurrence label for compact header
+const getRecurrenceShort = (rule: RecurrenceRule): string => {
+  switch (rule.type) {
+    case 'daily':
+      return 'Daily';
+    case 'weekly': {
+      if (!rule.daysOfWeek || rule.daysOfWeek.length === 0) return 'Weekly';
+      if (rule.daysOfWeek.length === 7) return 'Daily';
+      // Shorten to 3-letter day names joined by commas
+      return rule.daysOfWeek.map(d => d.slice(0, 3)).join(',');
+    }
+    case 'interval':
+      return `${rule.interval || 1}d`;
+    default:
+      return '';
+  }
+};
+
 // Replaced local FilterDropdown with shared UnifiedToolbar
 
 // Inline title editing is disabled per design; keeping non-editable display helper
@@ -100,6 +118,7 @@ const AddTaskForm: React.FC<{ onAddTask: (text: string) => void }> = ({ onAddTas
 const ChecklistCard: React.FC<{
   checklist: Checklist;
   category?: UserCategory;
+  project?: Project;
   onUpdateChecklist: (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => void;
   onToggleTask: (checklistId: string, taskId: string) => void;
   onToggleSingleTaskCompletion: (checklistId: string) => void;
@@ -114,6 +133,7 @@ const ChecklistCard: React.FC<{
 }> = ({
   checklist,
   category,
+  project,
   onUpdateChecklist,
   onToggleTask,
   onToggleSingleTaskCompletion,
@@ -151,8 +171,10 @@ const ChecklistCard: React.FC<{
   if (isSingleTask) {
     const isCompleted = checklist.completionHistory.length > 0;
     return (
-      <div className={`relative ${isAnimatingOut ? 'animate-slide-out-down' : ''}`}>
-        <div className={`flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
+      <div className={`relative`}>
+        <button className={`w-full flex items-center justify-between p-3 bg-white dark:bg-gray-700/50 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+                onClick={() => onToggleSingleTaskCompletion(checklist.id)}
+                aria-label={`Toggle task: ${checklist.name}`}>
           <div className="flex items-center min-w-0 flex-1 gap-3">
             {category && (
               <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
@@ -162,11 +184,11 @@ const ChecklistCard: React.FC<{
             <StaticName
               text={checklist.name}
               Tag="span"
-              className={`flex-1 truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
+              className={`flex-1 truncate text-left ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
             />
           </div>
           <div className="flex items-center flex-shrink-0 ml-2">
-            <div ref={menuRef} className="relative">
+            <div ref={menuRef} className="relative" onClick={(e)=>e.stopPropagation()}>
               <button onClick={() => setMenuOpen(p => !p)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"><MoreVertIcon /></button>
               {isMenuOpen && (
                 <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
@@ -175,11 +197,11 @@ const ChecklistCard: React.FC<{
                 </div>
               )}
             </div>
-            <button onClick={() => onToggleSingleTaskCompletion(checklist.id)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" aria-label={`Toggle task: ${checklist.name}`}>
+            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
               {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
-            </button>
+            </div>
           </div>
-        </div>
+        </button>
       </div>
     );
   }
@@ -191,57 +213,85 @@ const ChecklistCard: React.FC<{
   const isCompleted = totalTasks > 0 && completedTasks === totalTasks;
   
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''} ${isAnimatingOut ? 'animate-slide-out-down' : ''}`}>
-    <div className="flex items-center justify-between p-3 gap-3 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-    <div className="flex items-center min-w-0 flex-1 gap-3">
-            {category && (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
-                    <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
-                </div>
-            )}
-            <div className="flex-1 min-w-0">
-                <StaticName
-                    text={checklist.name}
-                    Tag="span"
-                    className={`truncate ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
-                />
-                {period !== 'today' && (
-                  <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-2 -mt-1">
-                      <span>{completedTasks}/{totalTasks}</span>
-                      <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-[var(--color-primary-600)] transition-all" style={{ width: `${progress}%` }}></div>
-                      </div>
-                      {/* FIX: Pass title prop to AutorenewIcon for tooltip display. */}
-                      {checklist.recurrence && <AutorenewIcon className="text-base" title={getRecurrenceText(checklist.recurrence)} />}
-                  </div>
-                )}
+  <div className={`bg-white dark:bg-gray-700/50 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}>
+    <div
+      className="grid md:grid-cols-[minmax(0,1fr)_12rem_auto_auto_auto_auto] grid-cols-[minmax(0,1fr)_auto] items-center p-3 gap-3 cursor-pointer"
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {/* Col 1: icon + title */}
+      <div className="flex items-center min-w-0 gap-3">
+        {category && (
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
+            <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
+          </div>
+        )}
+        <StaticName
+          text={checklist.name}
+          Tag="span"
+          className={`truncate text-left ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
+        />
+      </div>
+
+      {/* Col 2: Project pill (placeholder when missing to preserve column alignment) */}
+      <div className="hidden md:block">
+        {project ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200 text-xs max-w-[16rem]">
+            <Icon name={project.icon || 'folder'} className="text-xs" style={{ color: project.color }} />
+            <span className="truncate">{project.name}</span>
+          </span>
+        ) : (
+          <span className="block h-5" aria-hidden="true"></span>
+        )}
+      </div>
+
+      {/* Col 3: Recurrence */}
+      <div className="hidden md:flex items-center justify-end">
+        {checklist.recurrence ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200 text-xs">
+            <AutorenewIcon className="text-xs" />
+            <span>{getRecurrenceShort(checklist.recurrence)}</span>
+          </span>
+        ) : (
+          <span className="block h-5" aria-hidden="true"></span>
+        )}
+      </div>
+
+      {/* Col 4: Progress badge */}
+      <div className="hidden md:flex items-center justify-end">
+        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">
+          {completedTasks}/{totalTasks}
+        </span>
+      </div>
+
+      {/* Col 5: Time pill */}
+      <div className="hidden md:flex items-center justify-end">
+        {checklist.dueTime && (
+          <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded">{checklist.dueTime}</span>
+        )}
+      </div>
+
+      {/* Col 6: Controls */}
+      <div className="flex items-center gap-1 justify-end">
+        <div ref={menuRef} className="relative" onClick={(e)=>e.stopPropagation()}>
+          <button
+            onClick={() => setMenuOpen(p => !p)}
+            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"
+            aria-label="Open menu"
+          >
+            <MoreVertIcon />
+          </button>
+          {isMenuOpen && (
+            <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
+              <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
+              <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
             </div>
+          )}
         </div>
-        <div className="flex items-center">
-            <div ref={menuRef} className="relative flex-shrink-0">
-              <button onClick={(e) => { e.stopPropagation(); setMenuOpen(p => !p); }} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"><MoreVertIcon /></button>
-              {isMenuOpen && (
-                <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
-                  <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
-                  <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
-                </div>
-              )}
-            </div>
-            {period === 'today' && (
-              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 gap-2 mr-1">
-                <span>{completedTasks}/{totalTasks}</span>
-                <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--color-primary-600)] transition-all" style={{ width: `${progress}%` }}></div>
-                </div>
-                {checklist.recurrence && <AutorenewIcon className="text-base" title={getRecurrenceText(checklist.recurrence)} />}
-              </div>
-            )}
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 ml-1">
-                {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
-            </div>
-            {/* Chevron removed; collapse behavior retained via onClick */}
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 ml-1">
+          {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
         </div>
       </div>
+    </div>
       {isExpanded && (
         <div className="pl-[56px] pr-3 pb-3">
             <main className="space-y-1">
@@ -277,38 +327,41 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
   const STORAGE_KEY = 'tasks.filters.v1';
   type Period = 'today' | 'week' | 'month';
   type Status = 'all' | 'completed' | 'overdue' | 'todo';
-  type Persisted = { projectId: string | 'all'; categoryId: string | 'all'; period: Period; status: Status };
+  type SortBy = 'time' | 'priority' | 'name';
+  type Persisted = { projectId: string | 'all'; categoryId: string | 'all'; period: Period; status: Status; sortBy: SortBy };
 
   const loadPersisted = (): Persisted => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all' } as Persisted;
+      if (!raw) return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time' } as Persisted;
       const data = JSON.parse(raw) as Partial<Persisted>;
       return {
         projectId: data.projectId ?? 'all',
         categoryId: data.categoryId ?? 'all',
         period: (data.period as Period) ?? 'today',
         status: (data.status as Status) ?? 'all',
+        sortBy: (data.sortBy as SortBy) ?? 'time',
       };
     } catch {
-      return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all' } as Persisted;
+      return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time' } as Persisted;
     }
   };
 
-  const persisted = typeof window !== 'undefined' ? loadPersisted() : { projectId: 'all', categoryId: 'all', period: 'today', status: 'all' } as Persisted;
+  const persisted = typeof window !== 'undefined' ? loadPersisted() : { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time' } as Persisted;
 
   const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(persisted.projectId);
   const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(persisted.categoryId);
   const [period, setPeriod] = useState<Period>(persisted.period);
+  const [sortBy, setSortBy] = useState<SortBy>(persisted.sortBy);
   const [statusFilter, setStatusFilter] = useState<Status>(persisted.status);
   // Always include undated as per spec; no state needed
 
   useEffect(() => {
     try {
-      const data: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, period, status: statusFilter };
+      const data: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, period, status: statusFilter, sortBy };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch {}
-  }, [selectedProjectId, selectedCategoryId, period, statusFilter]);
+  }, [selectedProjectId, selectedCategoryId, period, statusFilter, sortBy]);
 
   const today = new Date();
   const toISO = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -337,7 +390,19 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
     return dueISO < todayISO && !isCompletedOverall(cl);
   };
   
-  const sortedChecklists = [...checklists].sort((a, b) => (a.priority || 99) - (b.priority || 99));
+  const byTime = (a: Checklist, b: Checklist) => {
+    // sort by dueTime then name; missing times last
+    const ta = a.dueTime || '';
+    const tb = b.dueTime || '';
+    if (ta && tb) return ta.localeCompare(tb) || a.name.localeCompare(b.name);
+    if (ta) return -1;
+    if (tb) return 1;
+    return a.name.localeCompare(b.name);
+  };
+  const byPriority = (a: Checklist, b: Checklist) => (a.priority || 99) - (b.priority || 99) || a.name.localeCompare(b.name);
+  const byName = (a: Checklist, b: Checklist) => a.name.localeCompare(b.name);
+  const sorter = sortBy === 'time' ? byTime : sortBy === 'priority' ? byPriority : byName;
+  const sortedChecklists = [...checklists].sort(sorter);
 
   const filteredChecklists = sortedChecklists.filter(cl => {
     const projectMatch = selectedProjectId === 'all' || cl.projectId === selectedProjectId;
@@ -360,7 +425,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
       <button
         onClick={onClick}
         className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border transition-all w-full min-h-[84px]
-          ${active ? 'border-[var(--color-primary-600)] bg-white dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700/50 bg-white/90 dark:bg-gray-800/80 hover:shadow-sm'}`}
+          ${active ? 'border-[var(--color-primary-600)] bg-white dark:bg-gray-700/50' : 'border-gray-200 dark:border-gray-700/50 bg-white/90 dark:bg-gray-800/80 hover:shadow-sm'}`}
       >
         <div className="text-[var(--color-primary-600)] flex items-center justify-center">
           {icon}
@@ -381,11 +446,12 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         </button>
       </Header>
       <div className="flex-1 overflow-y-auto">
-        {/* Full-width toolbar bar with optional divider */}
-        <div className={`${period !== 'today' ? 'border-b border-gray-200 dark:border-gray-700' : ''} bg-gray-100 dark:bg-gray-800`}>
+        {/* Toolbar bar (period toggle removed) */}
+        <div className={`bg-gray-100 dark:bg-gray-800`}>
           <div className="px-4 sm:px-6">
-            <div className="mx-auto w-full max-w-5xl">
-              <div className="py-4">
+            <div className="mx-auto w-full max-w-[52rem]">
+              <div className="pt-4">
+                {/* Row: Filters + Sort (styled like other controls) */}
                 <UnifiedToolbar
                   projects={projects}
                   userCategories={userCategories}
@@ -393,15 +459,23 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                   selectedCategoryId={selectedCategoryId}
                   onChangeProject={(id) => setSelectedProjectId(id)}
                   onChangeCategory={(id) => setSelectedCategoryId(id)}
-                  period={period}
-                  onChangePeriod={(p) => setPeriod(p)}
+                  sortBy={sortBy}
+                  onChangeSortBy={(v) => setSortBy(v as SortBy)}
+                  sortOptions={[
+                    { value: 'time', label: 'Time' },
+                    { value: 'priority', label: 'Priority' },
+                    { value: 'name', label: 'Name' },
+                  ]}
+                  compactHeight="h10"
+                  fluidControls
                 />
+                <div className="pb-2" />
               </div>
             </div>
           </div>
         </div>
         <div className="px-4 sm:px-6">
-          <div className="mx-auto w-full max-w-5xl">
+          <div className="mx-auto w-full max-w-[52rem]">
             <main className="py-4 sm:py-6">
               {/* KPI row */}
         {checklists.length > 0 && (
@@ -422,7 +496,9 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
             </button>
           </div>
         ) : filteredChecklists.length === 0 ? (
-          <div className="text-center text-gray-500 p-6">No tasks match the current filters.</div>
+          <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
+            <p>No tasks match the current filters.</p>
+          </div>
         ) : (
           <div className="space-y-4">
             {filteredChecklists.map(list => (
@@ -430,6 +506,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                 key={list.id}
                 checklist={list}
                 category={userCategories.find(c => c.id === list.categoryId)}
+                project={projects.find(p => p.id === list.projectId)}
                 onUpdateChecklist={onUpdateChecklist}
                 onToggleTask={onToggleTask}
                 onCreateTask={onCreateTask}

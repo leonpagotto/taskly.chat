@@ -209,11 +209,27 @@ const NotesListPage: React.FC<{
       );
     }
     return (
-      <NotesListColumn
-        {...props}
-        onSelectNote={(id) => props.onSelectNote(id)}
-        onCreateNote={() => props.onCreateNote()}
-      />
+      props.notes.length === 0 ? (
+        <div className="flex-1 min-h-0 flex items-center justify-center p-6 bg-gray-100 dark:bg-gray-800">
+          <div className="text-center text-gray-500 dark:text-gray-400 max-w-md">
+            <EmptyStateIcon icon={<DescriptionIcon />} size="lg" />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">No notes yet</h2>
+            <p className="text-sm mb-5">Create your first note to get started.</p>
+            <button
+              onClick={() => props.onCreateNote()}
+              className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
+            >
+              {props.t('create_note')}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <NotesListColumn
+          {...props}
+          onSelectNote={(id) => props.onSelectNote(id)}
+          onCreateNote={() => props.onCreateNote()}
+        />
+      )
     );
   }
 
@@ -277,7 +293,7 @@ const NotesListPage: React.FC<{
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 p-4">
-                <DescriptionIcon className="text-6xl mb-4" />
+                <EmptyStateIcon icon={<DescriptionIcon />} size="lg" />
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Select a note</h2>
                 <p className="max-w-xs mt-2">Select a note from the list to view its content.</p>
                 <button

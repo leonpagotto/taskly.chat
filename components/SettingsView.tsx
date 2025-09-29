@@ -163,6 +163,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
     const [hideAIBanner, setHideAIBanner] = useState<boolean>(() => {
         try { return localStorage.getItem('settings.hideAIBanner') === 'true'; } catch { return false; }
     });
+    const [showUpgrade, setShowUpgrade] = useState(false);
     const dismissBanner = () => {
         setHideAIBanner(true);
         try { localStorage.setItem('settings.hideAIBanner', 'true'); } catch {}
@@ -234,22 +235,50 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
         switch (activeTab) {
             case 'profile':
                 return (
-                    <SettingsCard title={t('settings_user_profile')}>
-                        <FormRow label={t('settings_nickname')} htmlFor="nickname">
-                            <TextInput id="nickname" type="text" value={localPrefs.nickname} onChange={e => handleUpdateLocal({ nickname: e.target.value })} placeholder="e.g., Alex"/>
-                        </FormRow>
-                        <FormRow label={t('settings_occupation')} htmlFor="occupation">
-                            <TextInput id="occupation" type="text" value={localPrefs.occupation} onChange={e => handleUpdateLocal({ occupation: e.target.value })} placeholder="e.g., Software Engineer"/>
-                        </FormRow>
-                        <FormRow label={t('settings_personal_notes')} htmlFor="personal-notes" description={t('settings_personal_notes_desc')}>
-                            <TextArea id="personal-notes" value={localPrefs.personalNotes} onChange={e => handleUpdateLocal({ personalNotes: e.target.value })} rows={3} placeholder="e.g., I prefer concise answers and I work in the tech industry."/>
-                        </FormRow>
-                         <FormRow label={t('settings_language')} htmlFor="language">
-                            <Select id="language" value={localPrefs.language} onChange={e => handleUpdateLocal({ language: e.target.value as AppLanguage })}>
-                                {languageOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                            </Select>
-                        </FormRow>
-                    </SettingsCard>
+                    <div className="space-y-6">
+                        <SettingsCard title={t('settings_user_profile')}>
+                            <FormRow label={t('settings_nickname')} htmlFor="nickname">
+                                <TextInput id="nickname" type="text" value={localPrefs.nickname} onChange={e => handleUpdateLocal({ nickname: e.target.value })} placeholder="e.g., Alex"/>
+                            </FormRow>
+                            <FormRow label={t('settings_occupation')} htmlFor="occupation">
+                                <TextInput id="occupation" type="text" value={localPrefs.occupation} onChange={e => handleUpdateLocal({ occupation: e.target.value })} placeholder="e.g., Software Engineer"/>
+                            </FormRow>
+                            <FormRow label={t('settings_personal_notes')} htmlFor="personal-notes" description={t('settings_personal_notes_desc')}>
+                                <TextArea id="personal-notes" value={localPrefs.personalNotes} onChange={e => handleUpdateLocal({ personalNotes: e.target.value })} rows={3} placeholder="e.g., I prefer concise answers and I work in the tech industry."/>
+                            </FormRow>
+                             <FormRow label={t('settings_language')} htmlFor="language">
+                                <Select id="language" value={localPrefs.language} onChange={e => handleUpdateLocal({ language: e.target.value as AppLanguage })}>
+                                    {languageOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </Select>
+                            </FormRow>
+                        </SettingsCard>
+
+                        <SettingsCard title="Account">
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setShowUpgrade(true)}
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                >
+                                    Upgrade (mock)
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        try {
+                                            // Clear mock auth and preferences for logout
+                                            localStorage.removeItem('auth.token');
+                                            localStorage.removeItem('auth.user');
+                                            localStorage.setItem('onboarding.seen', 'true');
+                                        } catch {}
+                                        location.reload();
+                                    }}
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 font-semibold text-sm"
+                                >
+                                    Log out
+                                </button>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Upgrade is a demo flow for now; payments are not yet wired.</p>
+                        </SettingsCard>
+                    </div>
                 );
             case 'ai':
                 return (
@@ -258,6 +287,16 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             <FormRow label={t('settings_personality')} htmlFor="personality">
                                 <Select id="personality" value={localPrefs.personality} onChange={e => handleUpdateLocal({ personality: e.target.value as AIPersonality })}>
                                     {personalityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </Select>
+                            </FormRow>
+                            <FormRow label="AI project context verbosity" htmlFor="ai-verbosity" description="Control how much project data is summarized and sent to the AI. Concise is faster and lighter; Detailed includes more lists, notes, stories, and events.">
+                                <Select
+                                  id="ai-verbosity"
+                                  value={localPrefs.aiSnapshotVerbosity || 'concise'}
+                                  onChange={e => handleUpdateLocal({ aiSnapshotVerbosity: (e.target.value as 'concise' | 'detailed') })}
+                                >
+                                  <option value="concise">Concise (recommended)</option>
+                                  <option value="detailed">Detailed</option>
                                 </Select>
                             </FormRow>
                         </SettingsCard>
@@ -379,7 +418,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
     <>
         <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
             <Header title={t('settings_title')} onToggleSidebar={onToggleSidebar} />
-                        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 text-gray-800 dark:text-white">
+                        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-28 text-gray-800 dark:text-white">
                                 {API_MISSING && !hideAIBanner && (
                                     <div className="max-w-4xl mx-auto mb-4">
                                         <div className="flex items-start gap-3 p-3 sm:p-4 rounded-xl border border-amber-300/60 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200">
@@ -442,6 +481,28 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                 t={t}
             />
         )}
+                {showUpgrade && (
+                        <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={() => setShowUpgrade(false)}>
+                            <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+                                <header className="p-4 flex items-center justify-between border-b border-gray-700">
+                                    <h2 className="text-lg font-semibold">Upgrade to Taskly Premium</h2>
+                                    <button onClick={() => setShowUpgrade(false)} className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-700 flex items-center justify-center"><CloseIcon /></button>
+                                </header>
+                                <main className="p-6 space-y-4 text-sm text-gray-300">
+                                    <p>Unlock advanced AI features, unlimited usage, and priority support.</p>
+                                    <ul className="list-disc pl-5 space-y-1">
+                                        <li>Unlimited tasks, habits, projects</li>
+                                        <li>Smart AI: natural language task creation and summaries</li>
+                                        <li>Calendar sync and automations (coming soon)</li>
+                                    </ul>
+                                </main>
+                                <footer className="p-4 border-t border-gray-700 flex items-center justify-end gap-2">
+                                    <button onClick={() => setShowUpgrade(false)} className="px-4 py-2 rounded-[var(--radius-button)] bg-gray-700 hover:bg-gray-600 text-sm font-semibold">Not now</button>
+                                    <button onClick={() => setShowUpgrade(false)} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold">Choose plan</button>
+                                </footer>
+                            </div>
+                        </div>
+                )}
     </>
     );
 };

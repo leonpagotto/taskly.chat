@@ -114,7 +114,8 @@ export const parseAIResponse = async (
   currentView: AppView,
   preferences: UserPreferences,
   project?: Project,
-  filesForContext?: ProjectFile[]
+  filesForContext?: ProjectFile[],
+  projectSnapshot?: string
 ): Promise<AIResponse> => {
   if (!ai) initAI();
   let promptText = newMessage;
@@ -131,6 +132,9 @@ export const parseAIResponse = async (
       systemInstruction += `Description: ${project.description}\n`;
       if (project.instructions) systemInstruction += `AI INSTRUCTIONS FOR THIS PROJECT: ${project.instructions}\n`;
       systemInstruction += `--- END PROJECT CONTEXT ---`;
+  }
+  if (projectSnapshot) {
+    systemInstruction += `\n\n--- PROJECT SNAPSHOT ---\n${projectSnapshot}\n--- END PROJECT SNAPSHOT ---`;
   }
   systemInstruction += actionPrompt;
 
@@ -196,19 +200,26 @@ export const parseAIResponse = async (
 };
 
 export const generateTitleForChat = async (firstMessage: string): Promise<string> => {
-    const prompt = `Generate a very short, concise title (4-5 words max) for a chat that starts with this message: "${firstMessage}"`;
+    const prompt = `Return ONLY a concise chat title for this first message, max 5 words, no punctuation, no quotes, no emojis, no bullets. Message: "${firstMessage}"`;
   if (!ai) initAI();
   if (!ai) {
     // Fallback to a simple heuristic title
     const trimmed = firstMessage.replace(/\s+/g, ' ').trim();
-    return (trimmed.length > 24 ? trimmed.slice(0, 24) + '…' : trimmed) || 'New Chat';
+    const simple = (trimmed.length > 32 ? trimmed.slice(0, 32) : trimmed) || 'New Chat';
+    // Use first 5 words heuristic
+    const words = simple.split(' ').filter(Boolean).slice(0, 5).join(' ');
+    return words || 'New Chat';
   }
   const result = await ai.models.generateContent({
         model: model,
         contents: prompt,
     });
-    
-    return result.text.replace(/["']/g, "").trim() || "New Chat";
+    let title = result.text.replace(/["'•\-–—\n]/g, ' ').replace(/\s+/g, ' ').trim();
+    // Keep at most 5 words and 36 chars
+    const words = title.split(' ').filter(Boolean).slice(0, 5).join(' ');
+    title = words.slice(0, 36).trim();
+    if (!title) title = 'New Chat';
+    return title;
 };
 
 export const generateTasksFromNote = async (

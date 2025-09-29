@@ -153,7 +153,9 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
         <div className="fixed inset-x-0 bottom-0 md:relative bg-gray-800 rounded-t-xl md:rounded-xl border-t md:border border-gray-700 w-full max-w-2xl max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
                     <header className="p-4 flex items-center justify-between border-b border-gray-700">
                         <h2 className="text-lg font-semibold">{isEditing ? 'Edit Event' : 'New Event'}</h2>
-                        <button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
+                        <button onClick={onClose} className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white" aria-label="Close">
+                          <CloseIcon />
+                        </button>
                     </header>
           <main className="p-6 overflow-y-auto space-y-4">
                         <input type="text" value={localData.title || ''} onChange={e => handleUpdateField('title', e.target.value)} placeholder="Event Title" className="w-full bg-transparent border-none p-0 text-lg text-white placeholder-gray-500 focus:outline-none focus:ring-0"/>
@@ -190,7 +192,11 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                         </div>
                     </main>
           <footer className="p-4 border-t border-gray-700 flex items-center justify-between gap-4 sticky bottom-0 bg-gray-800/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(theme(spacing.4),env(safe-area-inset-bottom))]">
-                        {isEditing && onDelete ? (<button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-red-600/20 text-red-400 rounded-[var(--radius-button)] text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">Delete</button>) : <div></div>}
+                        {isEditing && onDelete ? (
+                          <button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-red-400 rounded-[var(--radius-button)] text-sm font-semibold transition-colors">
+                            Delete
+                          </button>
+                        ) : <div></div>}
               <button onClick={handleSave} disabled={!localData.title?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
                     </footer>
         </div>

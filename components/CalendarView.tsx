@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Event, UserCategory } from '../types';
+import { Event, UserCategory, Habit, RecurrenceRule } from '../types';
 import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon } from './icons';
 import Header from './Header';
 
 interface CalendarViewProps {
   events: Event[];
+  habits: Habit[];
   userCategories: UserCategory[];
   onNewEventRequest: (date: string) => void;
   onEditEventRequest: (event: Event) => void;
@@ -12,7 +13,7 @@ interface CalendarViewProps {
   t: (key: string) => string;
 }
 
-const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onNewEventRequest, onEditEventRequest, onToggleSidebar, t }) => {
+const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategories, onNewEventRequest, onEditEventRequest, onToggleSidebar, t }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
 
@@ -44,6 +45,32 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
 
   const today = new Date();
   const isSameDay = (d1: Date, d2: Date) => d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+
+  const getISODate = (date = new Date()) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  const isRecurrentItemDue = (recurrence: RecurrenceRule, date: Date): boolean => {
+    const checkDate = new Date(date);
+    checkDate.setHours(0,0,0,0);
+    const startDate = new Date(recurrence.startDate + 'T00:00:00');
+    startDate.setHours(0,0,0,0);
+    if (checkDate < startDate) return false;
+    const dayMap: { [key: number]: NonNullable<RecurrenceRule['daysOfWeek']>[number] } = { 0:'Sun',1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat' };
+    switch(recurrence.type){
+      case 'daily': return true;
+      case 'weekly': return recurrence.daysOfWeek?.includes(dayMap[checkDate.getDay()]) ?? false;
+      case 'interval': {
+        const diffTime = Math.abs(checkDate.getTime() - startDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays % (recurrence.interval || 1) === 0;
+      }
+      default: return false;
+    }
+  };
 
   // Compute week range (Mon-Sun) for currentDate
   const weekDays = useMemo(() => {
@@ -125,6 +152,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
               const isoDate = date.toISOString().split('T')[0];
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
               return (
                 <div
                   key={dayNumber}
@@ -151,6 +179,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
                         </button>
                       );
                     })}
+                    {dayHabits.length > 0 && (
+                      <div className="pt-1 space-y-1">
+                        {dayHabits.map(h => {
+                          const cat = userCategories.find(c => c.id === h.categoryId);
+                          const color = cat?.color || '#64748B';
+                          return (
+                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1" style={{ backgroundColor: `${color}14`, color }}>
+                              <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
+                              <span className="truncate">{h.name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -162,6 +204,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
               const isoDate = date.toISOString().split('T')[0];
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
               return (
                 <div
                   key={idx}
@@ -188,6 +231,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
                         </button>
                       );
                     })}
+                    {dayHabits.length > 0 && (
+                      <div className="pt-1 space-y-1">
+                        {dayHabits.map(h => {
+                          const cat = userCategories.find(c => c.id === h.categoryId);
+                          const color = cat?.color || '#64748B';
+                          return (
+                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1" style={{ backgroundColor: `${color}14`, color }}>
+                              <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
+                              <span className="truncate">{h.name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
