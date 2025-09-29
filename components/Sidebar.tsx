@@ -46,9 +46,10 @@ const NavItem: React.FC<{
 }> = ({ icon, label, isActive, isCollapsed, onClick, onDoubleClick, variant = 'default' }) => {
   // Compact, consistent padding for all items
   const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors`;
+  // Desktop standard height: 36px (h-9). Apply to both collapsed and expanded.
   const shapeClasses = isCollapsed 
-    ? 'w-11 h-11 justify-center mx-auto' // Perfect circle hit area when collapsed, centered
-    : 'w-full p-2 lg:p-1 space-x-3';
+    ? 'w-9 h-9 justify-center mx-auto' 
+    : 'w-full h-9 px-2 space-x-3';
   
   const variantClasses = {
     default: `text-gray-300 hover:bg-gray-700/50`,
@@ -76,8 +77,8 @@ const NavItem: React.FC<{
         baseClasses,
         'w-full text-left',
         appliedVariant,
-        variant === 'outline' ? 'p-[2px]' : '',
-        variant !== 'outline' ? shapeClasses : '',
+  variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-9 h-9 mx-auto' : 'w-full h-9'}` : '',
+  variant !== 'outline' ? shapeClasses : '',
         // Slightly darker than hover for selected items
   isActive && variant !== 'outline' ? 'bg-gray-700/70' : '',
         // Add subtle inner-shadow circle only for collapsed + active
@@ -85,7 +86,7 @@ const NavItem: React.FC<{
       ].join(' ')}
     >
       {variant === 'outline' ? (
-  <div className={`${shapeClasses} ${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3'} bg-gray-900 rounded-[10px]`}>
+  <div className={`${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3'} bg-gray-900 rounded-[10px] w-full h-full`}>
           <div className={isCollapsed ? '' : ''}>
             {normalizeIcon(icon, true)}
           </div>
@@ -147,7 +148,7 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-  className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
       <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2'}`}>
         {isCollapsed ? (
@@ -243,7 +244,7 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
         >
             <div className={isCollapsed ? 'mx-auto' : ''}>
               <Icon 
@@ -315,8 +316,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   return (
     <>
     <div className={`fixed inset-0 bg-gray-900/60 z-[55] md:hidden ${isMobileOpen ? 'block' : 'hidden'}`} onClick={onMobileClose}></div>
-  <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen p-2 md:p-3 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
-  <div className={`flex items-center mb-4 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+  <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen p-2 md:p-2 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
+  <div className={`flex items-center mb-2 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
             <div className="flex items-center ml-2">
               <span className="text-xl font-bold text-white">Taskly.Chat</span>
@@ -324,16 +325,16 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
           ) : (
             <div className="hidden" aria-hidden="true"></div>
           )}
-          <button onClick={onMobileClose} className="md:hidden text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 inline-flex items-center justify-center w-11 h-11">
+          <button onClick={onMobileClose} className="md:hidden text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 inline-flex items-center justify-center w-9 h-9">
             <LeftPanelCloseIcon />
           </button>
-          <button onClick={onToggleCollapse} className="hidden md:inline-flex text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 items-center justify-center w-11 h-11">
+          <button onClick={onToggleCollapse} className="hidden md:inline-flex text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 items-center justify-center w-9 h-9">
             {isCollapsed ? <WidthNormalIcon /> : <LeftPanelCloseIcon />}
           </button>
         </div>
 
     <div className="flex-grow flex flex-col min-h-0">
-      <div className="flex-grow overflow-y-auto pr-1">
+      <div className="flex-grow overflow-y-auto pr-0">
               {/* Primary Actions */}
     <nav className="space-y-0">
           <NavItem variant="outline" icon={<ChatAddOnIcon className="text-xl"/>} label={t('new_chat')} isCollapsed={isCollapsed} onClick={() => onNewChat()} />
@@ -360,7 +361,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               
               {/* Projects Section */}
               <div>
-                <div className="border-t border-gray-700/50 my-1"></div>
+                <div className="border-t border-gray-700/30"></div>
                 {/* Projects header: single-click opens Projects, double-click toggles collapse/expand of the list */}
                 <NavItem 
                   icon={<FolderOpenIcon className="text-xl"/>} 
@@ -392,7 +393,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               {/* All Chats */}
               {conversations.length > 0 && (
                 <div className="space-y-0">
-                    {!isCollapsed && <h2 className="px-2 pt-0.5 pb-0.5 text-sm font-medium text-gray-400">{t('chats')}</h2>}
+                    {!isCollapsed && <h2 className="px-2 py-0 text-sm font-medium text-gray-400 hidden md:hidden">{t('chats')}</h2>}
                     {sortedConversations.map(convo => {
                       const project = convo.projectId ? projects.find(p => p.id === convo.projectId) : undefined;
                       const category = project ? userCategories.find(c => c.id === project.categoryId) : undefined;
