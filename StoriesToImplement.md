@@ -5,6 +5,7 @@ Foundation and Consistency
 - [x] Align page titles and header spacing across pages (Notes, Stories, others)
 - [x] Standardize empty states (circular gradient icon, correct size) across Today, Projects, Habits, Stories
 - [x] FAB icon uses Material “chat”
+- [x] Standardize action/button corners to a 12px radius; keep circular/pill UI where semantic (avatars, chips, day cells, toggles); use proportional radii for cards/surfaces
 
 Stories (Enterprise)
 - [x] Filters row below header (All Projects, All Categories)
@@ -670,3 +671,26 @@ Sidebar > remove the "New project" from the sidebar, move the "Projects" to belo
   - Sidebar (collapsed) alignment fixed; circular hit areas for header controls
   - Settings: lightweight "Connect AI" banner surfaces when VITE_API_KEY is missing; dismiss persists
   - AI chat: continues to fall back gracefully when no key is provided
+
+- DONE: App-wide radius standardization and CTA polish (29 Sep 2025)
+  - Established a 12px button radius across the app; preserved true circular/pill elements where meaningful (avatars, chips/segmented toggles, day cells, switches)
+  - Updated high-visibility CTAs and action buttons to match the 12px radius:
+    - Calendar: New Event, Prev/Next arrows, Today button
+    - Stories: New Story CTA and Filters button
+    - Projects: New Project CTAs (header and empty state)
+    - Notes: Create Note CTAs (header, empty states)
+    - Lists: AddTaskForm refined (container to surface radius, submit button to 12px)
+    - UnifiedToolbar: Project/Category filter selects use 12px button radius
+    - ProjectDetailsView: small icon actions (edit, add chat/task/note, upload) use 12px radius
+    - ChatInputBar: overlay Close, Attach, Mic, and Send buttons use 12px radius (main input remains a pill)
+    - Category/Event modals: footer CTAs and delete confirmations use 12px radius
+  - Kept segmented period toggles and chips as rounded-full for visual affordance and consistency
+  - Build/typecheck passed after changes; no regressions observed
+
+- DONE: Sidebar New Chat ghost/outline alignment (29 Sep 2025)
+  - New Chat adopts ghost style with a 2px gradient outline; gradient icon/text; shares the same left-aligned layout and full-width hit area as other nav rows
+  - Ensured the icon is not an isolated click target; the entire row remains clickable
+
+- DONE: Calendar header styling consistency (29 Sep 2025)
+  - Ensured header controls adhere to the standardized radius policy
+  - Month/Week segmented toggle retains pill style; Today button aligns with the 12px radius standard
