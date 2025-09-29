@@ -51,19 +51,21 @@ const NavItem: React.FC<{
     : 'w-full p-2 lg:p-1 space-x-3';
   
   const variantClasses = {
-    // Active: no full-row background, only keep hover bg; base text near-white
     default: `text-gray-300 hover:bg-gray-700/50`,
-    // Ghost: gradient border using outer gradient bg + inner container matching sidebar bg
     outline: `bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:from-[var(--color-primary-700)] hover:to-purple-700`
-  };
+  } as const;
 
   const appliedVariant = variantClasses[variant];
 
-  const gradientIcon = (
-    <span className="bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent">
-      {icon}
-    </span>
-  );
+  const baseIconNormClass = 'leading-none block';
+  const gradientIconClass = 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent';
+  const normalizeIcon = (node: React.ReactNode, active?: boolean) => {
+    if (!React.isValidElement(node)) return node;
+    const existingClass = (node.props as any)?.className || '';
+    const mergedClass = `${existingClass} ${baseIconNormClass} ${active ? gradientIconClass : ''}`.trim();
+    const nextStyle = active ? { ...(node.props as any)?.style, color: undefined } : (node.props as any)?.style;
+    return React.cloneElement(node as React.ReactElement<any>, { className: mergedClass, style: nextStyle });
+  };
 
   return (
     <button
@@ -76,6 +78,8 @@ const NavItem: React.FC<{
         appliedVariant,
         variant === 'outline' ? 'p-[2px]' : '',
         variant !== 'outline' ? shapeClasses : '',
+        // Slightly darker than hover for selected items
+  isActive && variant !== 'outline' ? 'bg-gray-700/70' : '',
         // Add subtle inner-shadow circle only for collapsed + active
         isCollapsed && isActive && variant !== 'outline' ? 'relative nav-active-collapsed' : '',
       ].join(' ')}
@@ -83,14 +87,14 @@ const NavItem: React.FC<{
       {variant === 'outline' ? (
   <div className={`${shapeClasses} ${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3'} bg-gray-900 rounded-[10px]`}>
           <div className={isCollapsed ? '' : ''}>
-            {gradientIcon}
+            {normalizeIcon(icon, true)}
           </div>
           {!isCollapsed && <span className="text-white">{label}</span>}
         </div>
       ) : (
         <>
           <div className={isCollapsed ? 'flex items-center justify-center' : ''}>
-            {isActive ? gradientIcon : icon}
+            {normalizeIcon(icon, !!isActive)}
           </div>
           {!isCollapsed && (
             <span className={isActive ? 'text-white' : 'text-gray-300'}>{label}</span>
@@ -116,11 +120,14 @@ const HistoryItem: React.FC<{
   onRemoveFromProject?: () => void;
   allProjects?: Project[];
 }> = ({ label, isActive, isCollapsed, onClick, project, category, onShare, onRename, onDelete, onMoveToProject, onRemoveFromProject, allProjects = [] }) => {
-  const itemIcon = project ? (
-    <Icon name={project.icon || category?.icon || 'folder'} className="text-base flex-shrink-0" style={{ color: project.color || category?.color }} />
-  ) : (
-    <ChatBubbleIcon className="text-xl flex-shrink-0" />
-  );
+  const iconName = project ? (project.icon || category?.icon || 'folder') : undefined;
+  const projectColor = project ? (project.color || category?.color) : undefined;
+  const renderHistoryIcon = (active: boolean) => {
+    if (iconName) {
+      return <Icon name={iconName} className={`text-xl flex-shrink-0 block leading-none ${active ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} style={active ? undefined : { color: projectColor }} />
+    }
+    return <ChatBubbleIcon className={`text-xl flex-shrink-0 block leading-none ${active ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} />
+  };
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMoveOpen, setIsMoveOpen] = useState(false);
@@ -140,20 +147,17 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+  className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
       <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2'}`}>
         {isCollapsed ? (
           <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">
-            {/* Gradient icon when active */}
-            <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>
-              {itemIcon}
-            </span>
+            {renderHistoryIcon(!!isActive)}
           </div>
         ) : (
           <>
             <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>{itemIcon}</span>
+              {renderHistoryIcon(!!isActive)}
             </div>
             <span className={`truncate flex-1 font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{label}</span>
             {/* Kebab */}
@@ -239,12 +243,14 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
         >
             <div className={isCollapsed ? 'mx-auto' : ''}>
-              <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>
-                <Icon name={iconName} className="text-xl flex-shrink-0" style={{ color }}/>
-              </span>
+              <Icon 
+                name={iconName} 
+                className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} 
+                style={isActive ? undefined : { color }}
+               />
             </div>
             {!isCollapsed && <span className={`truncate font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{project.name}</span>}
             {/* Kebab */}
