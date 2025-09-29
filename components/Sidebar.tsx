@@ -51,7 +51,8 @@ const NavItem: React.FC<{
     : 'w-full p-2 lg:p-1 space-x-3';
   
   const variantClasses = {
-    default: `text-gray-300 ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'}`,
+    // Active: no full-row background, only keep hover bg; base text near-white
+    default: `text-gray-300 hover:bg-gray-700/50`,
     // Ghost: gradient border using outer gradient bg + inner container matching sidebar bg
     outline: `bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:from-[var(--color-primary-700)] hover:to-purple-700`
   };
@@ -75,6 +76,8 @@ const NavItem: React.FC<{
         appliedVariant,
         variant === 'outline' ? 'p-[2px]' : '',
         variant !== 'outline' ? shapeClasses : '',
+        // Add subtle inner-shadow circle only for collapsed + active
+        isCollapsed && isActive && variant !== 'outline' ? 'relative nav-active-collapsed' : '',
       ].join(' ')}
     >
       {variant === 'outline' ? (
@@ -86,8 +89,12 @@ const NavItem: React.FC<{
         </div>
       ) : (
         <>
-          <div className={isCollapsed ? 'flex items-center justify-center' : ''}>{icon}</div>
-          {!isCollapsed && <span>{label}</span>}
+          <div className={isCollapsed ? 'flex items-center justify-center' : ''}>
+            {isActive ? gradientIcon : icon}
+          </div>
+          {!isCollapsed && (
+            <span className={isActive ? 'text-white' : 'text-gray-300'}>{label}</span>
+          )}
         </>
       )}
     </button>
@@ -133,17 +140,22 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left ${
-        isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
-      }`}
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
       <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2'}`}>
         {isCollapsed ? (
-          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">{itemIcon}</div>
+          <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">
+            {/* Gradient icon when active */}
+            <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>
+              {itemIcon}
+            </span>
+          </div>
         ) : (
           <>
-            <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">{itemIcon}</div>
-            <span className="truncate flex-1 font-normal">{label}</span>
+            <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>{itemIcon}</span>
+            </div>
+            <span className={`truncate flex-1 font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{label}</span>
             {/* Kebab */}
             <button
               type="button"
@@ -227,14 +239,14 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors ${
-              isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
-          }`}
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
         >
             <div className={isCollapsed ? 'mx-auto' : ''}>
-              <Icon name={iconName} className="text-xl flex-shrink-0" style={{ color }}/>
+              <span className={isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}>
+                <Icon name={iconName} className="text-xl flex-shrink-0" style={{ color }}/>
+              </span>
             </div>
-            {!isCollapsed && <span className="truncate font-normal">{project.name}</span>}
+            {!isCollapsed && <span className={`truncate font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{project.name}</span>}
             {/* Kebab */}
             {!isCollapsed && (
               <button
