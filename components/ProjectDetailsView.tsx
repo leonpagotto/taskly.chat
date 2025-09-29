@@ -73,7 +73,7 @@ const CreateTaskModal: React.FC<{
                     />
                 </main>
                 <footer className="p-4">
-                    <button onClick={handleCreate} disabled={!name.trim()} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+                    <button onClick={handleCreate} disabled={!name.trim()} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
                         Create Task
                     </button>
                 </footer>
@@ -148,7 +148,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
     return (
         <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
             <Header title={headerTitle as any} onToggleSidebar={onToggleSidebar}>
-                <button onClick={() => onEdit(project)} className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full">
+                <button onClick={() => onEdit(project)} className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]">
                     <EditIcon />
                 </button>
             </Header>
@@ -159,7 +159,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                     <div className="lg:col-span-1 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">
                         <div className="flex justify-between items-center mb-3">
                             <h2 className="text-xl font-semibold flex items-center gap-2"><ChatBubbleIcon className="text-gray-500"/> {t('conversations')}</h2>
-                            <button onClick={onNewChat} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"><AddIcon /></button>
+                            <button onClick={onNewChat} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
                         <ul className="space-y-1">
                           {conversations.length > 0 ? conversations.map(c => 
@@ -173,7 +173,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                     <div className="lg:col-span-1 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">
                         <div className="flex justify-between items-center mb-3">
                             <h2 className="text-xl font-semibold flex items-center gap-2"><ListAltIcon className="text-gray-500"/> {t('pending_tasks')}</h2>
-                             <button onClick={() => setIsCreatingTask(true)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"><AddIcon /></button>
+                             <button onClick={() => setIsCreatingTask(true)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
                         <div className="space-y-2 max-h-96 overflow-y-auto">
                             {allTasks.length > 0 ? allTasks.map(task => (
@@ -185,7 +185,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                      <div className="lg:col-span-1 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">
                         <div className="flex justify-between items-center mb-3">
                             <h2 className="text-xl font-semibold flex items-center gap-2"><DescriptionIcon className="text-gray-500"/> {t('notes')}</h2>
-                             <button onClick={() => onCreateNoteInProject(project.id)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"><AddIcon /></button>
+                             <button onClick={() => onCreateNoteInProject(project.id)} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><AddIcon /></button>
                         </div>
                         <ul className="space-y-1">
                           {notes.length > 0 ? notes.map(n => 
@@ -199,7 +199,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
                     <div className="md:col-span-2 lg:col-span-3 bg-white dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">
                         <div className="flex justify-between items-center mb-3">
                             <h2 className="text-xl font-semibold flex items-center gap-2"><FolderOpenIcon className="text-gray-500"/> Files</h2>
-                             <button onClick={handleUploadClick} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full"><FileUploadIcon /></button>
+                             <button onClick={handleUploadClick} className="p-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]"><FileUploadIcon /></button>
                              <input type="file" ref={fileInputRef} onChange={handleFileSelected} multiple className="hidden" />
                         </div>
                         {projectFiles.length > 0 ? (

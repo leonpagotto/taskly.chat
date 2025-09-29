@@ -90,9 +90,9 @@ const AddTaskForm: React.FC<{ onAddTask: (text: string) => void }> = ({ onAddTas
     if (taskText.trim()) { onAddTask(taskText.trim()); setTaskText(''); }
   };
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 p-1 bg-gray-700/50 rounded-full">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 p-1 bg-gray-700/50 rounded-xl">
         <input type="text" value={taskText} onChange={(e) => setTaskText(e.target.value)} placeholder="Add a new item..." className="flex-1 bg-transparent px-3 py-1 text-sm text-gray-200 placeholder-gray-400 focus:outline-none"/>
-        <button type="submit" className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center transition-colors" disabled={!taskText.trim()}><AddIcon className="text-xl text-white" /></button>
+        <button type="submit" className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-[var(--radius-button)] hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center transition-colors" disabled={!taskText.trim()}><AddIcon className="text-xl text-white" /></button>
     </form>
   );
 };
@@ -375,7 +375,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
       <Header title={t('tasks')} onToggleSidebar={onToggleSidebar}>
-        <button onClick={onNewChecklistRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={onNewChecklistRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
           <NewTaskIcon />
           <span className="hidden sm:inline">{t('new_task')}</span>
         </button>
@@ -417,7 +417,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
             <EmptyStateIcon icon={<ListAltIcon />} size="lg" />
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_tasks_yet')}</h2>
             <p className="max-w-md mt-1 mb-6">{t('no_tasks_yet_subtitle')}</p>
-            <button onClick={onNewChecklistRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">
+            <button onClick={onNewChecklistRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
               {t('create_task')}
             </button>
           </div>

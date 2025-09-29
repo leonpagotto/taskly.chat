@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { setApiKey as setGeminiApiKey } from '../services/geminiService';
 import { UserPreferences, AIPersonality, AppTheme, AppColorTheme, AppLanguage, UserCategory, PulseWidgetConfig, PulseWidgetType, AppSize } from '../types';
 import { SettingsIcon, WarningIcon, CheckCircleIcon, CloseIcon, DeleteIcon, EditIcon, LeftPanelOpenIcon } from './icons';
 import CategoriesView from './CategoriesView';
@@ -138,7 +139,7 @@ const PulseConfigModal: React.FC<{
                     {renderMetaFields()}
                 </main>
                  <footer className="p-4">
-                    <button onClick={() => onSave(config)} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">
+                    <button onClick={() => onSave(config)} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
                         {isNew ? 'Add Widget' : 'Save Changes'}
                     </button>
                 </footer>
@@ -156,6 +157,9 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
     const [pulseModalConfig, setPulseModalConfig] = useState<PulseWidgetConfig | null>(null);
     const [isPulseModalNew, setIsPulseModalNew] = useState(false);
     const API_MISSING = !(import.meta as any).env?.VITE_API_KEY;
+    const existingLocalApiKey = (() => { try { return localStorage.getItem('ai.apiKey') || ''; } catch { return ''; } })();
+    const [apiKeyInput, setApiKeyInput] = useState<string>(existingLocalApiKey);
+    const [apiStatus, setApiStatus] = useState<'unset' | 'saved'>(() => (existingLocalApiKey ? 'saved' : 'unset'));
     const [hideAIBanner, setHideAIBanner] = useState<boolean>(() => {
         try { return localStorage.getItem('settings.hideAIBanner') === 'true'; } catch { return false; }
     });
@@ -256,6 +260,32 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                     {personalityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                                 </Select>
                             </FormRow>
+                        </SettingsCard>
+                        <SettingsCard title="Gemini API">
+                            <p className="text-sm text-gray-400 -mt-1">Add your Gemini API key to enable AI chat and smart features. The key is stored locally on this device.</p>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="password"
+                                    value={apiKeyInput}
+                                    onChange={e => setApiKeyInput(e.target.value)}
+                                    placeholder="Paste your Gemini API key"
+                                    className="flex-1 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]"
+                                />
+                                <button
+                                    onClick={() => {
+                                        setGeminiApiKey(apiKeyInput || null);
+                                        setApiStatus(apiKeyInput ? 'saved' : 'unset');
+                                        setShowSaved(true);
+                                        setTimeout(() => setShowSaved(false), 2000);
+                                    }}
+                                    className="px-3 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                >
+                                    {apiKeyInput ? 'Save' : 'Clear'}
+                                </button>
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                                Status: {apiStatus === 'saved' ? <span className="text-green-400">Configured</span> : <span className="text-amber-400">Not set</span>}
+                            </div>
                         </SettingsCard>
                         <SettingsCard title={t('settings_ai_memory')}>
                             <ToggleSwitch label={t('settings_use_memory')} checked={localPrefs.useMemory} onChange={useMemory => handleUpdateLocal({ useMemory })} description={t('settings_use_memory_desc')} />
@@ -393,10 +423,10 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 <span>{t('settings_changes_saved')}</span>
                               </div>
                             }
-                            <button onClick={handleDiscard} className="px-4 py-2 rounded-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 font-semibold transition-colors text-sm">
+                            <button onClick={handleDiscard} className="px-4 py-2 rounded-[var(--radius-button)] bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 font-semibold transition-colors text-sm">
                                 {t('settings_discard_changes')}
                             </button>
-                            <button onClick={handleSave} className="px-6 py-2 rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold hover:shadow-lg transition-all text-sm">
+                            <button onClick={handleSave} className="px-6 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold hover:shadow-lg transition-all text-sm">
                                 {t('settings_save_changes')}
                             </button>
                         </div>

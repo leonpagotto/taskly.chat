@@ -195,7 +195,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
       }>
         <div style={{ minHeight: '52px' }} className="bg-gray-200 dark:bg-gray-700 rounded-[26px] flex items-center py-1 px-2">
           {isMobileOverlay && (
-            <button onClick={onClose} className="w-10 h-10 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center mr-1">
+            <button onClick={onClose} className="w-10 h-10 rounded-[var(--radius-button)] text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center mr-1">
               <CloseIcon className="text-2xl" />
             </button>
           )}
@@ -209,13 +209,13 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
             rows={1}
             disabled={isLoading}
           />
-          <button className="w-10 h-10 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
+          <button className="w-10 h-10 rounded-[var(--radius-button)] text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
               <AttachFileIcon className="text-2xl" />
           </button>
           {isSpeechSupported && (
             <button 
               onClick={handleMicClick} 
-              className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center ${isListening ? 'text-red-500 bg-red-500/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+              className={`w-10 h-10 rounded-[var(--radius-button)] transition-colors flex items-center justify-center ${isListening ? 'text-red-500 bg-red-500/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600'}`}
             >
               <MicIcon className="text-2xl" />
             </button>
@@ -223,7 +223,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
           <button 
             onClick={handleSend} 
             disabled={!input.trim() || isLoading} 
-            className="w-10 h-10 flex-shrink-0 text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 rounded-full disabled:bg-gray-400 dark:disabled:bg-gray-500 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:shadow-lg ml-1"
+            className="w-10 h-10 flex-shrink-0 text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 rounded-[var(--radius-button)] disabled:bg-gray-400 dark:disabled:bg-gray-500 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:shadow-lg ml-1"
           >
             <SendIcon className="text-2xl" />
           </button>

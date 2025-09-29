@@ -314,7 +314,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
             <Header title={t('habits')} onToggleSidebar={onToggleSidebar}>
-        <button onClick={onNewHabitRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={onNewHabitRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
             <NewHabitIcon />
             <span className="hidden sm:inline">{t('new_habit')}</span>
         </button>
@@ -361,7 +361,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                 <EmptyStateIcon icon={<NewHabitIcon />} size="lg" />
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_habits_yet')}</h2>
                 <p className="max-w-md mt-1 mb-6">{habits.length > 0 ? 'No habits match the current filters.' : t('no_habits_yet_subtitle')}</p>
-                 <button onClick={onNewHabitRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">
+                 <button onClick={onNewHabitRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
                     {t('create_habit')}
                 </button>
             </div>

@@ -77,7 +77,7 @@ const NotesListColumn: React.FC<{
           </div>
           <button
             onClick={onCreateNote}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
             title={t('create_note')}
           >
             <NoteAddIcon />
@@ -223,7 +223,7 @@ const NotesListPage: React.FC<{
       <Header title={props.t('notes')} onToggleSidebar={props.onToggleSidebar}>
         <button
           onClick={() => props.onCreateNote()}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
           title={props.t('create_note')}
         >
           <NoteAddIcon />
@@ -240,7 +240,7 @@ const NotesListPage: React.FC<{
             <p className="text-sm mb-5">Create your first note to get started.</p>
             <button
               onClick={() => props.onCreateNote()}
-              className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
+              className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
             >
               {props.t('create_note')}
             </button>
@@ -282,7 +282,7 @@ const NotesListPage: React.FC<{
                 <p className="max-w-xs mt-2">Select a note from the list to view its content.</p>
                 <button
                   onClick={() => props.onCreateNote()}
-                  className="mt-6 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all"
+                  className="mt-6 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
                 >
                   {props.t('create_note')}
                 </button>

@@ -11,6 +11,10 @@
       :root {
         --color-primary-600: #3B82F6; /* blue-600 */
         --color-primary-700: #2563EB; /* blue-700 */
+        /* Radius scale: buttons/nav 12px, cards softer 14px, large surfaces 16px */
+        --radius-button: 12px;
+        --radius-card: 14px;
+        --radius-surface: 16px;
       }
       html.size-sm {
         font-size: 14px;
@@ -147,6 +151,14 @@
         display: grid;
         place-items: center;
       }
+      /* Global: unify button/nav radius */
+      button { border-radius: var(--radius-button) !important; }
+      .rounded-lg { border-radius: var(--radius-card) !important; }
+      .rounded-xl { border-radius: var(--radius-surface) !important; }
+      .rounded-2xl { border-radius: calc(var(--radius-surface) + 4px) !important; }
+      /* Preserve explicit tiny radii and full circles when intended */
+      .rounded, .rounded-sm, .rounded-md { border-radius: inherit; }
+      .rounded-full { border-radius: 9999px !important; }
     </style>
   
 <link rel="stylesheet" href="/index.css">

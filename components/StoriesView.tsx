@@ -112,7 +112,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 	return (
 		<div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
 			<Header title="Stories" onToggleSidebar={onToggleSidebar || (() => {})}>
-				<button onClick={onCreateStory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">
+				<button onClick={onCreateStory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
 					<Icon name="auto_stories" />
 					<span className="hidden sm:inline">New Story</span>
 				</button>
@@ -148,7 +148,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 											<span className="inline-flex items-center gap-1"><Icon name="view_kanban" className="text-base" /> <span className="hidden sm:inline">Board</span></span>
 										</button>
 									</div>
-									<button onClick={() => setFilterOpen(v => !v)} className="px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+									<button onClick={() => setFilterOpen(v => !v)} className="px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
 										<span className="inline-flex items-center gap-1"><Icon name="search" className="text-base" /> Filters</span>
 									</button>
 								</>
@@ -181,9 +181,9 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No stories yet</h2>
 							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">Create your first story to track narrative progress.</p>
 							<div className="flex items-center gap-2">
-								<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">New Story</button>
+								<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">New Story</button>
 								{onLoadSampleData && (
-									<button onClick={onLoadSampleData} className="px-6 py-3 rounded-full font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Load sample data</button>
+									<button onClick={onLoadSampleData} className="px-6 py-3 rounded-[var(--radius-button)] font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Load sample data</button>
 								)}
 							</div>
 						</div>

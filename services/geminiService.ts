@@ -1,14 +1,33 @@
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold, Part, Type } from "@google/genai";
 import { Message, Sender, UserPreferences, AIResponse, AppView, Project, ProjectFile } from '../types';
 
-// Vite-style env var; do not crash app when missing.
-const API_KEY = (import.meta as any).env?.VITE_API_KEY as string | undefined;
+// API key management: env wins, then localStorage fallback; do not crash when missing.
 let ai: GoogleGenAI | null = null;
-if (API_KEY && typeof API_KEY === 'string' && API_KEY.trim()) {
-  ai = new GoogleGenAI({ apiKey: API_KEY });
-} else {
-  console.warn('Gemini API key is not set. Set VITE_API_KEY in your environment to enable AI features.');
-}
+const getEnvKey = (): string | undefined => {
+  try { return ((import.meta as any).env?.VITE_API_KEY as string | undefined)?.trim() || undefined; } catch { return undefined; }
+};
+const getStoredKey = (): string | undefined => {
+  try { const v = localStorage.getItem('ai.apiKey'); return v && v.trim() ? v.trim() : undefined; } catch { return undefined; }
+};
+const getApiKey = (): string | undefined => getEnvKey() || getStoredKey();
+const initAI = () => {
+  const key = getApiKey();
+  if (key) {
+    ai = new GoogleGenAI({ apiKey: key });
+  } else {
+    ai = null;
+    console.warn('Gemini API key is not set. Add it in Settings or set VITE_API_KEY to enable AI features.');
+  }
+};
+initAI();
+
+export const setApiKey = (key: string | null) => {
+  try {
+    if (key && key.trim()) localStorage.setItem('ai.apiKey', key.trim());
+    else localStorage.removeItem('ai.apiKey');
+  } catch {}
+  initAI();
+};
 // NOTE: We use text-only interactions. Do not attach images or other binary parts.
 const model = "gemini-2.5-flash";
 
@@ -97,6 +116,7 @@ export const parseAIResponse = async (
   project?: Project,
   filesForContext?: ProjectFile[]
 ): Promise<AIResponse> => {
+  if (!ai) initAI();
   let promptText = newMessage;
   const parts: Part[] = [];
 
@@ -177,6 +197,7 @@ export const parseAIResponse = async (
 
 export const generateTitleForChat = async (firstMessage: string): Promise<string> => {
     const prompt = `Generate a very short, concise title (4-5 words max) for a chat that starts with this message: "${firstMessage}"`;
+  if (!ai) initAI();
   if (!ai) {
     // Fallback to a simple heuristic title
     const trimmed = firstMessage.replace(/\s+/g, ' ').trim();
@@ -194,6 +215,7 @@ export const generateTasksFromNote = async (
   noteTitle: string,
   noteContent: string
 ): Promise<{ listName: string, tasks: { text: string, dueDate?: string }[] }> => {
+  if (!ai) initAI();
 
   const plainTextContent = new DOMParser().parseFromString(noteContent, 'text/html').body.textContent || '';
 

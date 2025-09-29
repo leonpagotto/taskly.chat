@@ -70,8 +70,8 @@ const DeleteConfirmationModal: React.FC<{ onConfirm: () => void; onCancel: () =>
         <h2 className="text-xl font-semibold mb-2">Are you sure?</h2>
         <p className="text-gray-400 mb-6">{message}</p>
         <div className="flex justify-center gap-4">
-          <button onClick={onCancel} className="px-6 py-2 rounded-full bg-gray-600 hover:bg-gray-500 font-semibold transition-colors">Cancel</button>
-          <button onClick={onConfirm} className="px-6 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors">Delete</button>
+         <button onClick={onCancel} className="px-6 py-2 rounded-[var(--radius-button)] bg-gray-600 hover:bg-gray-500 font-semibold transition-colors">Cancel</button>
+         <button onClick={onConfirm} className="px-6 py-2 rounded-[var(--radius-button)] bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors">Delete</button>
         </div>
       </div>
     </div>
@@ -190,8 +190,8 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                         </div>
                     </main>
           <footer className="p-4 border-t border-gray-700 flex items-center justify-between gap-4 sticky bottom-0 bg-gray-800/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(theme(spacing.4),env(safe-area-inset-bottom))]">
-                        {isEditing && onDelete ? (<button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">Delete</button>) : <div></div>}
-                        <button onClick={handleSave} disabled={!localData.title?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
+                        {isEditing && onDelete ? (<button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-red-600/20 text-red-400 rounded-[var(--radius-button)] text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">Delete</button>) : <div></div>}
+              <button onClick={handleSave} disabled={!localData.title?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
                     </footer>
         </div>
       </ModalOverlay>

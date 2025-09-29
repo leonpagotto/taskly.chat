@@ -57,7 +57,7 @@ const FilterDropdown: React.FC<{
     <div ref={dropdownRef} className="relative flex-1 sm:flex-initial sm:w-52 min-w-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
       >
         <div className="flex items-center gap-2 truncate">
           <Icon name={type === 'project' ? 'folder' : 'category'} className="text-base flex-shrink-0" />

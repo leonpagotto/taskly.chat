@@ -45,28 +45,51 @@ const NavItem: React.FC<{
   variant?: 'default' | 'outline';
 }> = ({ icon, label, isActive, isCollapsed, onClick, onDoubleClick, variant = 'default' }) => {
   // Compact, consistent padding for all items
-  const baseClasses = `flex items-center rounded-full text-sm transition-colors`;
+  const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors`;
   const shapeClasses = isCollapsed 
     ? 'w-11 h-11 justify-center mx-auto' // Perfect circle hit area when collapsed, centered
-    : 'w-full p-1.5 md:p-2 space-x-3';
+    : 'w-full p-2 lg:p-1 space-x-3';
   
   const variantClasses = {
     default: `text-gray-300 ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'}`,
-    outline: `text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:from-[var(--color-primary-700)] hover:to-purple-700 shadow-md hover:shadow-lg transition-all`
+    // Ghost: gradient border using outer gradient bg + inner container matching sidebar bg
+    outline: `bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:from-[var(--color-primary-700)] hover:to-purple-700`
   };
 
   const appliedVariant = variantClasses[variant];
-  
+
+  const gradientIcon = (
+    <span className="bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent">
+      {icon}
+    </span>
+  );
 
   return (
     <button
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       title={isCollapsed ? label : ''}
-      className={`${baseClasses} ${shapeClasses} ${appliedVariant}`}
+      className={[
+        baseClasses,
+        'w-full text-left',
+        appliedVariant,
+        variant === 'outline' ? 'p-[2px]' : '',
+        variant !== 'outline' ? shapeClasses : '',
+      ].join(' ')}
     >
-  <div className={isCollapsed ? 'flex items-center justify-center' : ''}>{icon}</div>
-      {!isCollapsed && <span>{label}</span>}
+      {variant === 'outline' ? (
+  <div className={`${shapeClasses} ${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3'} bg-gray-900 rounded-[10px]`}>
+          <div className={isCollapsed ? '' : ''}>
+            {gradientIcon}
+          </div>
+          {!isCollapsed && <span className="text-white">{label}</span>}
+        </div>
+      ) : (
+        <>
+          <div className={isCollapsed ? 'flex items-center justify-center' : ''}>{icon}</div>
+          {!isCollapsed && <span>{label}</span>}
+        </>
+      )}
     </button>
   );
 };
@@ -110,7 +133,7 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-1 md:p-1.5'} flex items-center rounded-full text-sm transition-colors text-left ${
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1'} flex items-center rounded-[12px] text-sm transition-colors text-left ${
         isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
       }`}
     >
@@ -124,7 +147,7 @@ const HistoryItem: React.FC<{
             {/* Kebab */}
             <button
               type="button"
-              className="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
+              className="ml-auto w-8 h-8 flex items-center justify-center rounded-[12px] text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
               onClick={(e) => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
               aria-label="More actions"
             >
@@ -204,7 +227,7 @@ const ProjectItem: React.FC<{
         <div 
           onClick={() => onSelectProject(project.id)}
           title={isCollapsed ? project.name : ''}
-          className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-1 md:p-1.5 space-x-3'} flex items-center rounded-full text-sm cursor-pointer transition-colors ${
+      className={`group relative ${isCollapsed ? 'w-11 h-11 justify-center mx-auto' : 'w-full p-2 lg:p-1 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors ${
               isActive ? 'bg-gray-700' : 'hover:bg-gray-700/50'
           }`}
         >
@@ -216,7 +239,7 @@ const ProjectItem: React.FC<{
             {!isCollapsed && (
               <button
                 type="button"
-                className="ml-auto w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
+                className="ml-auto w-8 h-8 flex items-center justify-center rounded-[12px] text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
                 onClick={(e) => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
                 aria-label="More actions"
               >
@@ -283,10 +306,10 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
           ) : (
             <div className="hidden" aria-hidden="true"></div>
           )}
-          <button onClick={onMobileClose} className="md:hidden text-gray-400 hover:text-white rounded-full hover:bg-gray-700/50 inline-flex items-center justify-center w-11 h-11">
+          <button onClick={onMobileClose} className="md:hidden text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 inline-flex items-center justify-center w-11 h-11">
             <LeftPanelCloseIcon />
           </button>
-          <button onClick={onToggleCollapse} className="hidden md:inline-flex text-gray-400 hover:text-white rounded-full hover:bg-gray-700/50 items-center justify-center w-11 h-11">
+          <button onClick={onToggleCollapse} className="hidden md:inline-flex text-gray-400 hover:text-white rounded-[12px] hover:bg-gray-700/50 items-center justify-center w-11 h-11">
             {isCollapsed ? <WidthNormalIcon /> : <LeftPanelCloseIcon />}
           </button>
         </div>

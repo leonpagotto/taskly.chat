@@ -12,14 +12,39 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon, label, isActive, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center justify-center gap-1 w-16 h-full transition-colors ${isActive ? 'text-[var(--color-primary-600)]' : 'text-gray-400 hover:text-gray-200'}`}
+    aria-current={isActive ? 'page' : undefined}
+    className={
+      [
+        'group flex flex-col items-center justify-center gap-0.5 w-16 h-full transition-colors',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] focus-visible:ring-offset-2',
+        'ring-offset-gray-100 dark:ring-offset-gray-900'
+      ].join(' ')
+    }
   >
     <span
-      className={`w-11 h-11 rounded-full flex items-center justify-center ${isActive ? 'bg-gray-700 text-white' : 'hover:bg-gray-700/50'}`}
+      className={
+        [
+          'w-12 h-12 rounded-[var(--radius-button)] flex items-center justify-center transition-all transform group-hover:-translate-y-0.5',
+          isActive
+            ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white shadow-md'
+            : 'text-gray-400 group-hover:text-gray-200 group-hover:bg-gray-700/50'
+        ].join(' ')
+      }
     >
       {icon}
     </span>
-    <span className="text-[10px] font-medium leading-tight">{label}</span>
+    <span
+      className={
+        [
+          'text-[11px] font-medium leading-tight transition-all transform',
+          isActive
+            ? 'text-[var(--color-primary-700)] dark:text-[var(--color-primary-400)]'
+            : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-300'
+        ].join(' ')
+      }
+    >
+      {label}
+    </span>
   </button>
 );
 
@@ -31,12 +56,12 @@ interface BottomNavBarProps {
 
 const BottomNavBar: React.FC<BottomNavBarProps> = ({ currentView, onSelectView, t }) => {
   const navItems = [
-    { view: 'dashboard', icon: <TodayIcon className="text-xl" />, label: t('dashboard') },
-    { view: 'habits', icon: <NewHabitIcon className="text-xl" />, label: t('habits') },
-    { view: 'calendar', icon: <CalendarMonthIcon className="text-xl" />, label: t('calendar') },
-    { view: 'lists', icon: <ListAltIcon className="text-xl" />, label: t('tasks') },
-    { view: 'notes', icon: <DescriptionIcon className="text-xl" />, label: t('notes') },
-    { view: 'projects', icon: <FolderIcon className="text-xl" />, label: t('projects') },
+    { view: 'dashboard', icon: <TodayIcon className="text-2xl" />, label: t('dashboard') },
+    { view: 'habits', icon: <NewHabitIcon className="text-2xl" />, label: t('habits') },
+    { view: 'calendar', icon: <CalendarMonthIcon className="text-2xl" />, label: t('calendar') },
+    { view: 'lists', icon: <ListAltIcon className="text-2xl" />, label: t('tasks') },
+    { view: 'notes', icon: <DescriptionIcon className="text-2xl" />, label: t('notes') },
+    { view: 'projects', icon: <FolderIcon className="text-2xl" />, label: t('projects') },
   ];
 
   return (

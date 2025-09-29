@@ -71,7 +71,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
       <Header title={t('calendar')} onToggleSidebar={onToggleSidebar}>
-        <button onClick={() => onNewEventRequest(new Date().toISOString().split('T')[0])} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={() => onNewEventRequest(new Date().toISOString().split('T')[0])} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
           <CalendarAddOnIcon />
           <span className="hidden sm:inline">New Event</span>
         </button>
@@ -79,13 +79,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
 
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-4">
-          <button onClick={handlePrev} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronLeftIcon /></button>
+          <button onClick={handlePrev} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronLeftIcon /></button>
           {viewMode === 'month' ? (
             <h2 className="text-lg font-semibold whitespace-nowrap">{currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2>
           ) : (
             <h2 className="text-lg font-semibold whitespace-nowrap">{weekLabel}</h2>
           )}
-          <button onClick={handleNext} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronRightIcon /></button>
+          <button onClick={handleNext} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronRightIcon /></button>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 p-1 bg-gray-700/50 rounded-full">
@@ -100,7 +100,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, userCategories, onN
               onClick={() => setViewMode('week')}
             >Week</button>
           </div>
-          <button onClick={handleToday} className="px-4 py-1.5 rounded-full text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 hover:bg-gray-300 dark:hover:bg-gray-700">Today</button>
+          <button onClick={handleToday} className="px-4 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 hover:bg-gray-300 dark:hover:bg-gray-700">Today</button>
         </div>
       </div>
 

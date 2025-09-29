@@ -79,15 +79,15 @@ const OnboardingModal: React.FC<{onClose: () => void}> = ({onClose}) => {
         },
         {
             icon: <MicIcon className="text-5xl text-red-400" />,
-            title: "Use Your Voice",
-            description: "Tap the chat button and use the microphone to create tasks, habits, or notes with AI-powered voice commands."
+      title: "Use AI Commands",
+      description: "Tap the chat button. Try: ‘Create an event tomorrow 9am Standup’, ‘Add a habit Drink water’, or ‘Make a shopping list with milk, eggs, bread’."
         }
     ];
 
     const currentStep = steps[step];
 
     return (
-        <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-gray-900/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
             <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm p-6 text-center" onClick={e => e.stopPropagation()}>
                 <div className="w-20 h-20 mx-auto bg-gray-700 rounded-full flex items-center justify-center mb-4">
                     {currentStep.icon}
@@ -100,15 +100,15 @@ const OnboardingModal: React.FC<{onClose: () => void}> = ({onClose}) => {
                     ))}
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className="px-6 py-2 rounded-full bg-gray-600 hover:bg-gray-500 font-semibold transition-colors disabled:opacity-50 flex-1">
+          <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0} className="px-6 py-2 rounded-[var(--radius-button)] bg-gray-600 hover:bg-gray-500 font-semibold transition-colors disabled:opacity-50 flex-1">
                         Back
                     </button>
                     {step < steps.length - 1 ? (
-                        <button onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))} className="px-6 py-2 rounded-full bg-blue-600 hover:bg-blue-500 font-semibold transition-colors flex-1">
+            <button onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))} className="px-6 py-2 rounded-[var(--radius-button)] bg-blue-600 hover:bg-blue-500 font-semibold transition-colors flex-1">
                             Next
                         </button>
                     ) : (
-                        <button onClick={onClose} className="px-6 py-2 rounded-full bg-green-600 hover:bg-green-500 font-semibold transition-colors flex-1">
+      <button onClick={onClose} className="px-6 py-2 rounded-[var(--radius-button)] bg-green-600 hover:bg-green-500 font-semibold transition-colors flex-1">
                             Got it!
                         </button>
                     )}
@@ -252,7 +252,7 @@ const SearchModal: React.FC<{
                         placeholder="Search for tasks, events, notes, projects..."
                         className="w-full bg-transparent text-lg placeholder:text-gray-500 focus:outline-none"
                     />
-                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-700"><CloseIcon /></button>
+          <button onClick={onClose} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-700"><CloseIcon /></button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-2">
                     {results.length > 0 ? (
@@ -515,15 +515,15 @@ const PriorityModal: React.FC<{
             <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-xs p-6" onClick={e => e.stopPropagation()}>
                 <h2 className="text-lg font-semibold text-center mb-4">Set a priority</h2>
                 <div className="flex items-center justify-center gap-4 mb-4">
-                    <button onClick={() => updatePriority(-1)} className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 text-2xl">-</button>
+                    <button onClick={() => updatePriority(-1)} className="w-10 h-10 rounded-[var(--radius-button)] bg-gray-700 hover:bg-gray-600 text-2xl">-</button>
                     <span className="text-4xl font-bold w-16 text-center">{priority}</span>
-                    <button onClick={() => updatePriority(1)} className="w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600 text-2xl">+</button>
+                    <button onClick={() => updatePriority(1)} className="w-10 h-10 rounded-[var(--radius-button)] bg-gray-700 hover:bg-gray-600 text-2xl">+</button>
                 </div>
-                <button onClick={() => setPriority(10)} className="w-full text-center py-2 rounded-full bg-gray-700 hover:bg-gray-600 text-sm mb-4">Default - 10</button>
+                <button onClick={() => setPriority(10)} className="w-full text-center py-2 rounded-[var(--radius-button)] bg-gray-700 hover:bg-gray-600 text-sm mb-4">Default - 10</button>
                 <p className="text-xs text-gray-400 text-center mb-6">Higher priority activities will be displayed higher in the list.</p>
                 <div className="flex items-center gap-4">
-                    <button onClick={onClose} className="flex-1 py-2 rounded-full bg-gray-600 hover:bg-gray-500 font-semibold">Close</button>
-                    <button onClick={handleSave} className="flex-1 py-2 rounded-full bg-blue-600 hover:bg-blue-500 font-semibold">OK</button>
+          <button onClick={onClose} className="flex-1 py-2 rounded-[var(--radius-button)] bg-gray-600 hover:bg-gray-500 font-semibold">Close</button>
+          <button onClick={handleSave} className="flex-1 py-2 rounded-[var(--radius-button)] bg-blue-600 hover:bg-blue-500 font-semibold">OK</button>
                 </div>
             </div>
         </div>
@@ -537,9 +537,9 @@ const AddTaskForm: React.FC<{ onAddTask: (text: string) => void }> = ({ onAddTas
         if (taskText.trim()) { onAddTask(taskText.trim()); setTaskText(''); }
     };
     return (
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 p-1 bg-gray-700/50 rounded-full">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 p-1 bg-gray-700/50 rounded-xl">
             <input type="text" value={taskText} onChange={(e) => setTaskText(e.target.value)} placeholder="Add a new item..." className="flex-1 bg-transparent px-3 py-1 text-sm text-gray-200 placeholder-gray-400 focus:outline-none"/>
-            <button type="submit" className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-full hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center transition-colors" disabled={!taskText.trim()}><AddIcon className="text-xl text-white" /></button>
+      <button type="submit" className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-[var(--radius-button)] hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center transition-colors" disabled={!taskText.trim()}><AddIcon className="text-xl text-white" /></button>
         </form>
     );
 };
@@ -641,7 +641,7 @@ const DashboardItemsModal: React.FC<{
               {!hasSubtasks ? (
                 <div className="text-center text-gray-400 py-8">
                     <p className="mb-4">This is a single item. Add more items to turn it into a checklist.</p>
-                    <button onClick={() => { onEditRequest(item); onClose(); }} className="px-4 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-500 transition-colors">
+          <button onClick={() => { onEditRequest(item); onClose(); }} className="px-4 py-2 bg-blue-600 text-white rounded-[var(--radius-button)] font-semibold hover:bg-blue-500 transition-colors">
                         Add Items
                     </button>
                 </div>
@@ -1598,6 +1598,16 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const [priorityModalItem, setPriorityModalItem] = useState<Checklist | Habit | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isOnboardingOpen, setOnboardingOpen] = useState(false);
+  // First-run onboarding
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem('onboarding.seen');
+      if (!seen) {
+        setOnboardingOpen(true);
+        localStorage.setItem('onboarding.seen', 'true');
+      }
+    } catch {}
+  }, []);
   const [mobileTab, setMobileTab] = useState<'events' | 'tasks'>('events');
 
   const formatNoteDate = (isoDate: string) => {
@@ -1834,14 +1844,14 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
         onToggleSidebar={onToggleSidebar}
       >
         <div className="flex items-center gap-1 sm:gap-2">
-          <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Search" title="Search"><SearchIcon /></button>
-          <button onClick={() => setIsCalendarOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Open calendar" title="Open calendar"><CalendarTodayIcon /></button>
-          <button onClick={() => setOnboardingOpen(true)} className="w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Help" title="Help & Tips"><HelpOutlineIcon /></button>
+          <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Search" title="Search"><SearchIcon /></button>
+          <button onClick={() => setIsCalendarOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Open calendar" title="Open calendar"><CalendarTodayIcon /></button>
+          <button onClick={() => setOnboardingOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Help" title="Help & Tips"><HelpOutlineIcon /></button>
         </div>
       </Header>
       <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
     </div>
-      <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto lg:overflow-hidden min-h-0">
+  <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto md:overflow-hidden min-h-0">
         
         {isTrulyEmpty ? (
           <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center h-full">
@@ -1849,17 +1859,17 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('dashboard_empty_title')}</h2>
             <p className="max-w-md mt-1 mb-6">{t('dashboard_empty_subtitle')}</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <button onClick={() => props.onLoadSampleData()} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all">See example data</button>
-              <button onClick={() => onSelectView('lists')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_tasks')}</button>
-              <button onClick={() => onSelectView('habits')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_habits')}</button>
+              <button onClick={() => props.onLoadSampleData()} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">See example data</button>
+              <button onClick={() => onSelectView('lists')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_tasks')}</button>
+              <button onClick={() => onSelectView('habits')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_habits')}</button>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col lg:grid lg:grid-cols-4 lg:gap-6 h-full min-h-0">
-            {/* Left area (3/4): controls + two columns (Tasks/Habits | Events) */}
-            <div className="lg:col-span-3 flex flex-col min-h-0">
+          <div className="flex flex-col md:grid md:grid-cols-4 md:gap-6 h-full min-h-0">
+            {/* Main area (3/4 on >=md): controls + two columns (Tasks/Habits | Events) */}
+            <div className="md:col-span-3 flex flex-col min-h-0">
               {/* Sticky within left/middle columns only */}
-              <div className="bg-gray-100 dark:bg-gray-800 lg:sticky lg:top-0 z-20">
+              <div className="bg-gray-100 dark:bg-gray-800 md:sticky md:top-0 z-20">
                 <div className="pt-1.5">
                   <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
                 </div>
@@ -1871,20 +1881,20 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     {!isTrulyEmpty && (
                       <div className="flex-shrink-0 flex items-center gap-2">
                         {/* Mobile/Tablet: Toggle + icon-only actions in the same row */}
-                        <div className="lg:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-full">
+                        <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-full">
                           <button onClick={() => setMobileTab('events')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Events</button>
                           <button onClick={() => setMobileTab('tasks')} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Tasks</button>
                         </div>
 
                         {/* Icon-only actions for <lg */}
-                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
-                        <button onClick={onNewHabit} className="w-10 h-10 flex lg:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
 
                         {/* Desktop: Icon-only actions (>=lg) */}
-                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
-                        <button onClick={onNewHabit} className="w-10 h-10 hidden lg:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
                       </div>
                     )}
                   </div>
@@ -1898,10 +1908,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-1">Organize your day</h3>
                     <p className="max-w-md text-sm mb-5">You have no tasks, habits, or events for this date. Add what matters and get going.</p>
                     <div className="flex gap-3">
-                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5">
                         <NewTaskIcon /> <span>New Task</span>
                       </button>
-                      <button onClick={onNewHabit} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all flex items-center gap-1.5">
+                      <button onClick={onNewHabit} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all flex items-center gap-1.5">
                         <NewHabitIcon /> <span>New Habit</span>
                       </button>
                     </div>
@@ -1909,7 +1919,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 ) : (
                   <>
                     {/* Mobile: content below (toggle is in the control row) */}
-                    <div className="lg:hidden mt-2 space-y-2">
+                    <div className="md:hidden mt-2 space-y-2">
                       {mobileTab === 'events'
                         ? (
                           <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col h-[65vh]">
@@ -1945,8 +1955,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                           })}
                     </div>
 
-                    {/* Desktop: split the 3/4 area into two equal columns (Tasks/Habits | Events) */}
-                    <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 mt-2 flex-1 min-h-0">
+                    {/* >=md: split the 3/4 area into two equal columns (Tasks/Habits | Events) */}
+                    <div className="hidden md:grid md:grid-cols-2 md:gap-6 mt-2 flex-1 min-h-0">
                       {/* Left of 3/4: Tasks & Habits */}
                       <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
                         <div className="p-2 space-y-2 overflow-y-auto min-h-0 flex-1">
@@ -2015,15 +2025,15 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                   </>
                 )}
               </div>
-              <div className="my-2 h-px bg-gray-200 dark:bg-gray-700/50 lg:hidden" />
+              <div className="my-2 h-px bg-gray-200 dark:bg-gray-700/50 md:hidden" />
             </div>
 
-            {/* Right column (lg): Notes */}
-            <div className="hidden lg:flex lg:flex-col lg:col-span-1 min-h-0">
+            {/* Right column (>=md): Notes */}
+            <div className="hidden md:flex md:flex-col md:col-span-1 min-h-0">
               <div className="flex flex-col min-h-0 flex-1">
                 <div className="flex items-center justify-between mb-3 px-2 pt-2.5">
                     <h2 className="text-base font-semibold">{t('recent_notes')}</h2>
-          <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note" title="New Note">
+          <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Note" title="New Note">
             <NoteAddIcon />
           </button>
                 </div>
@@ -2046,33 +2056,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 </div>
               </div>
             </div>
-            <div className="block lg:hidden mt-4">
-                <div className="flex items-center justify-between mb-3 px-2">
-                    <h2 className="text-base font-semibold">{t('recent_notes')}</h2>
-                    <div>
-            <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-full transition-colors" aria-label="New Note" title="New Note">
-              <NoteAddIcon />
-            </button>
-                    </div>
-                </div>
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
-                     {recentNotes.map((note, index) => {
-                      const color = noteColors[index % noteColors.length];
-                      const formattedDate = formatNoteDate(note.lastModified);
-                      const contentPreview = getContentPreview(note.content);
-                      return (
-                          <button key={note.id} onClick={() => onSelectNote(note.id)} className={`flex-shrink-0 w-56 text-left p-3 rounded-xl shadow-sm flex flex-col transition-all hover:shadow-md border border-gray-200 dark:border-gray-700/50 border-l-4 ${color.bg} ${color.darkBg} ${color.border}`}>
-                              <h4 className="font-semibold text-gray-800 dark:text-white truncate mb-1.5">{note.name}</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 flex-grow overflow-hidden">
-                                <span className="font-medium text-gray-500 dark:text-gray-300 mr-1.5">{formattedDate}</span>
-                                {contentPreview}
-                              </p>
-                          </button>
-                      )
-                  })}
-                  {recentNotes.length === 0 && <p className="w-full text-center text-sm text-gray-500 dark:text-gray-400 px-2 italic">No notes yet.</p>}
-                </div>
-            </div>
+            {/* Mobile: Notes hidden per requirements */}
           </div>
         )}
       </main>
