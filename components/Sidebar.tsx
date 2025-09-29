@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Project, Conversation, AppView, UserCategory, Note } from '../types';
-import { Icon, AddIcon, ChatBubbleIcon, TodayIcon, ListAltIcon, AutorenewIcon, StyleIcon, SettingsIcon, DescriptionIcon, ChevronLeftIcon, CreateNewFolderIcon, NoteAddIcon, FolderOpenIcon, LeftPanelCloseIcon, NewHabitIcon, FilePresentIcon, ChatAddOnIcon, WidthNormalIcon, CalendarMonthIcon, FolderIcon, MoreVertIcon, EditIcon, DeleteIcon, ChevronRightIcon } from './icons';
+import { Icon, AddIcon, ChatBubbleIcon, TodayIcon, ListAltIcon, AutorenewIcon, StyleIcon, SettingsIcon, DescriptionIcon, ChevronLeftIcon, CreateNewFolderIcon, NoteAddIcon, FolderOpenIcon, LeftPanelCloseIcon, NewHabitIcon, FilePresentIcon, ChatAddOnIcon, WidthNormalIcon, CalendarMonthIcon, FolderIcon, MoreVertIcon, EditIcon, DeleteIcon, ChevronRightIcon, ExpandMoreIcon } from './icons';
 import { subscriptionService } from '../services/subscriptionService';
 
 interface SidebarProps {
@@ -43,7 +43,8 @@ const NavItem: React.FC<{
   onClick: () => void;
   onDoubleClick?: () => void;
   variant?: 'default' | 'outline';
-}> = ({ icon, label, isActive, isCollapsed, onClick, onDoubleClick, variant = 'default' }) => {
+  rightSlot?: React.ReactNode;
+}> = ({ icon, label, isActive, isCollapsed, onClick, onDoubleClick, variant = 'default', rightSlot }) => {
   // Compact, consistent padding for all items
   const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors`;
   // Desktop standard height: 36px (h-9). Apply to both collapsed and expanded.
@@ -86,20 +87,22 @@ const NavItem: React.FC<{
       ].join(' ')}
     >
       {variant === 'outline' ? (
-  <div className={`${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3'} bg-gray-900 rounded-[10px] w-full h-full`}>
-          <div className={isCollapsed ? '' : ''}>
+  <div className={`${isCollapsed ? 'flex items-center justify-center' : 'flex items-center gap-3 px-2 w-full'} bg-gray-900 rounded-[10px] w-full h-full`}>
+          <div className={isCollapsed ? '' : 'w-6 h-6 flex items-center justify-center'}>
             {normalizeIcon(icon, true)}
           </div>
-          {!isCollapsed && <span className="text-white">{label}</span>}
+          {!isCollapsed && <span className="text-white flex-1">{label}</span>}
+          {!isCollapsed && rightSlot}
         </div>
       ) : (
         <>
-          <div className={isCollapsed ? 'flex items-center justify-center' : ''}>
+          <div className={isCollapsed ? 'flex items-center justify-center' : 'w-6 h-6 flex items-center justify-center'}>
             {normalizeIcon(icon, !!isActive)}
           </div>
           {!isCollapsed && (
-            <span className={isActive ? 'text-white' : 'text-gray-300'}>{label}</span>
+            <span className={`${isActive ? 'text-white' : 'text-gray-300'} flex-1`}>{label}</span>
           )}
+          {!isCollapsed && rightSlot}
         </>
       )}
     </button>
@@ -150,7 +153,7 @@ const HistoryItem: React.FC<{
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
       className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
-      <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2'}`}>
+  <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2 px-2'}`}>
         {isCollapsed ? (
           <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">
             {renderHistoryIcon(!!isActive)}
@@ -246,7 +249,7 @@ const ProjectItem: React.FC<{
           title={isCollapsed ? project.name : ''}
       className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9 space-x-3'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/50 ${isActive ? 'bg-gray-700/70' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
         >
-            <div className={isCollapsed ? 'mx-auto' : ''}>
+            <div className={isCollapsed ? 'mx-auto' : 'pl-2'}>
               <Icon 
                 name={iconName} 
                 className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} 
@@ -337,7 +340,14 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
       <div className="flex-grow overflow-y-auto pr-0">
               {/* Primary Actions */}
     <nav className="space-y-0">
-          <NavItem variant="outline" icon={<ChatAddOnIcon className="text-xl"/>} label={t('new_chat')} isCollapsed={isCollapsed} onClick={() => onNewChat()} />
+          <NavItem 
+            variant="outline" 
+            icon={<ChatAddOnIcon className="text-xl"/>} 
+            label={t('new_chat')} 
+            isCollapsed={isCollapsed} 
+            onClick={() => onNewChat()} 
+            rightSlot={<span className="invisible">.</span>} 
+          />
         </nav>
 
               {/* Main Views */}
@@ -363,14 +373,25 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               <div>
                 <div className="border-t border-gray-700/30"></div>
                 {/* Projects header: single-click opens Projects, double-click toggles collapse/expand of the list */}
-                <NavItem 
-                  icon={<FolderOpenIcon className="text-xl"/>} 
-                  label={t('projects')} 
-                  isActive={currentView === 'projects'} 
-                  isCollapsed={isCollapsed} 
-                  onClick={() => onSelectView('projects')}
-                  onDoubleClick={() => setProjectsCollapsed(p => !p)}
-                />
+                <div className="relative">
+                  <NavItem 
+                    icon={<FolderOpenIcon className="text-xl"/>} 
+                    label={t('projects')} 
+                    isActive={currentView === 'projects'} 
+                    isCollapsed={isCollapsed} 
+                    onClick={() => onSelectView('projects')}
+                    rightSlot={!isCollapsed ? (
+                      <button
+                        type="button"
+                        className="w-6 h-6 flex items-center justify-center rounded-[12px] text-gray-400 hover:text-white hover:bg-gray-600/40"
+                        onClick={(e) => { e.stopPropagation(); setProjectsCollapsed(p => !p); }}
+                        aria-label={projectsCollapsed ? 'Expand projects' : 'Collapse projects'}
+                      >
+                        {projectsCollapsed ? <ChevronRightIcon className="text-base"/> : <ExpandMoreIcon className="text-base"/>}
+                      </button>
+                    ) : undefined}
+                  />
+                </div>
                 {!projectsCollapsed && (
                   <div className="space-y-0">
                       {projects.map(project => (
@@ -393,7 +414,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               {/* All Chats */}
               {conversations.length > 0 && (
                 <div className="space-y-0">
-                    {!isCollapsed && <h2 className="px-2 py-0 text-sm font-medium text-gray-400 hidden md:hidden">{t('chats')}</h2>}
+                    {!isCollapsed && <h2 className="px-2 py-1 text-xs font-medium text-gray-400">{t('chats')}</h2>}
                     {sortedConversations.map(convo => {
                       const project = convo.projectId ? projects.find(p => p.id === convo.projectId) : undefined;
                       const category = project ? userCategories.find(c => c.id === project.categoryId) : undefined;
@@ -415,7 +436,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                         />
                       );
                     })}
-                </div>
+              </div>
               )}
             </div>
         </div>
