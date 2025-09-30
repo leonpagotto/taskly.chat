@@ -1,18 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
+import type {
   Task,
   Habit,
   UserCategory,
   Checklist,
-  AppView,
-  UserPreferences,
-  Project,
-  Note,
-  RecurrenceRule,
-  SearchableItem,
-  Event,
-  ProjectFile,
 } from '../types'
+import { AppView, UserPreferences, Project, Note, RecurrenceRule, SearchableItem, ProjectFile, Event as CalendarEvent } from '../types'
 import {
   CheckCircleIcon,
   RadioButtonUncheckedIcon,
@@ -62,153 +55,7 @@ const Icon: React.FC<{
 
 // Replaced inline onboarding with shared OnboardingModal component
 
-const SearchModal: React.FC<{
-    onClose: () => void;
-    checklists: Checklist[];
-    habits: Habit[];
-    notes: Note[];
-    projects: Project[];
-    events: Event[];
-    projectFiles: ProjectFile[];
-    userCategories: UserCategory[];
-    onSelectNote: (noteId: string) => void;
-    onSelectProject: (projectId: string) => void;
-    onSelectView: (view: AppView) => void;
-}> = ({ onClose, checklists, habits, notes, projects, events, projectFiles, userCategories, onSelectNote, onSelectProject, onSelectView }) => {
-    const [query, setQuery] = useState('');
-    const [results, setResults] = useState<SearchableItem[]>([]);
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        const timer = setTimeout(() => inputRef.current?.focus(), 100);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (query.trim().length < 2) {
-            setResults([]);
-            return;
-        }
-
-        const lowerQuery = query.toLowerCase();
-        
-        const searchChecklists = checklists
-            .filter(c => c.name.toLowerCase().includes(lowerQuery))
-            .map(c => ({ ...c, itemType: 'task' as const }));
-            
-        const searchHabits = habits
-            .filter(h => h.name.toLowerCase().includes(lowerQuery))
-            .map(h => ({ ...h, itemType: 'habit' as const }));
-
-        const searchNotes = notes
-            .filter(n => n.name.toLowerCase().includes(lowerQuery) || n.content.toLowerCase().includes(lowerQuery))
-            .map(n => ({ ...n, itemType: 'note' as const }));
-
-        const searchProjects = projects
-            .filter(p => p.name.toLowerCase().includes(lowerQuery) || p.description.toLowerCase().includes(lowerQuery))
-            .map(p => ({ ...p, itemType: 'project' as const }));
-        
-        const searchEvents = events
-            .filter(e => e.title.toLowerCase().includes(lowerQuery) || (e.description && e.description.toLowerCase().includes(lowerQuery)))
-            .map(e => ({ ...e, itemType: 'event' as const }));
-
-        const searchFiles = projectFiles
-            .filter(f => f.name.toLowerCase().includes(lowerQuery))
-            .map(f => ({ ...f, itemType: 'file' as const }));
-
-        setResults([...searchProjects, ...searchChecklists, ...searchHabits, ...searchNotes, ...searchEvents, ...searchFiles]);
-    }, [query, checklists, habits, notes, projects, events, projectFiles]);
-
-    const handleSelect = (item: SearchableItem) => {
-        onClose();
-        switch (item.itemType) {
-            case 'note': onSelectNote(item.id); break;
-            case 'project': onSelectProject(item.id); break;
-            case 'task': onSelectView('lists'); break;
-            case 'habit': onSelectView('habits'); break;
-            case 'event': onSelectView('calendar'); break;
-            case 'file': onSelectView('files'); break;
-        }
-    };
-    
-    const ResultItem: React.FC<{item: SearchableItem}> = ({item}) => {
-        let icon: React.ReactNode;
-        let title: string;
-        let subtitle: string | undefined;
-
-        switch(item.itemType){
-            case 'project':
-                const project = item as Project;
-                const category = userCategories.find(c => c.id === project.categoryId);
-                const iconName = project.icon || category?.icon || 'folder';
-                const color = project.color || category?.color;
-                icon = <Icon name={iconName} className="text-xl" style={{color: color}}/>;
-                subtitle = "Project";
-                title = item.name;
-                break;
-            case 'task':
-                icon = <ListAltIcon className="text-xl text-blue-400" />;
-                subtitle = "Task/List";
-                title = item.name;
-                break;
-            case 'habit':
-                icon = <AutorenewIcon className="text-xl text-green-400" />;
-                subtitle = "Habit";
-                title = item.name;
-                break;
-            case 'note':
-                icon = <DescriptionIcon className="text-xl text-yellow-400" />;
-                subtitle = "Note";
-                title = item.name;
-                break;
-            case 'event':
-                icon = <EventNoteIcon className="text-xl text-indigo-400" />;
-                subtitle = "Event";
-                title = item.title;
-                break;
-            case 'file':
-                icon = <FilePresentIcon className="text-xl text-purple-400" />;
-                subtitle = "File";
-                title = item.name;
-                break;
-        }
-        return (
-            <button onClick={() => handleSelect(item)} className="w-full text-left p-3 flex items-center gap-4 rounded-lg hover:bg-gray-700/50 transition-colors">
-                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">{icon}</div>
-                <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{title}</p>
-                    <p className="text-sm text-gray-400">{subtitle}</p>
-                </div>
-            </button>
-        )
-    };
-
-  return (
-    <div className="fixed inset-0 bg-gray-900/80 z-[70] p-4" onClick={onClose}>
-            <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-2xl mx-auto max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                <div className="p-4 flex items-center gap-3 border-b border-gray-700">
-                    <SearchIcon className="text-2xl text-gray-400" />
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={e => setQuery(e.target.value)}
-                        placeholder="Search for tasks, events, notes, projects..."
-                        className="w-full bg-transparent text-lg placeholder:text-gray-500 focus:outline-none"
-                    />
-          <button onClick={onClose} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-700"><CloseIcon /></button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-2">
-                    {results.length > 0 ? (
-                        <ul>{results.map(item => <li key={`${item.itemType}-${item.id}`}><ResultItem item={item} /></li>)}</ul>
-                    ) : (
-                        <p className="text-center text-gray-500 p-8">{query.length > 1 ? "No results found." : "Start typing to search."}</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
+// Search moved to GlobalSearch at App level
 
 
 const HabitCheckCircle: React.FC<{className?: string}> = ({ className }) => (
@@ -324,7 +171,7 @@ interface DashboardProps {
   preferences: UserPreferences
   checklists: Checklist[]
   habits: Habit[]
-  events: Event[]
+  events: CalendarEvent[]
   userCategories: UserCategory[]
   projects: Project[]
   notes: Note[]
@@ -343,7 +190,7 @@ interface DashboardProps {
   onNewEventAt?: (date: string, startTime: string, endTime: string) => void; // optional precise time creation
   onNewNote: (details: {}) => void;
   onNewProject: () => void;
-  onEditItem: (item: Checklist | Habit | Event) => void;
+  onEditItem: (item: Checklist | Habit | CalendarEvent) => void;
   onUpdateItemPriority: (itemId: string, newPriority: number, itemType: 'task' | 'habit') => void;
   recentlyCompletedItemId: string | null;
   t: (key: string) => string;
@@ -358,7 +205,7 @@ interface DashboardProps {
 }
 
 interface DailyItemWrapper {
-  item: Checklist | Habit | Event;
+  item: Checklist | Habit | CalendarEvent;
   type: 'task' | 'habit' | 'event';
   id: string;
 }
@@ -379,7 +226,7 @@ const parseEventDateTime = (date: string | null, time: string | null) => {
 const formatHM = (date: Date) =>
   date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-const getEventStatusForNow = (event: Event, now: Date): EventLiveStatus => {
+const getEventStatusForNow = (event: CalendarEvent, now: Date): EventLiveStatus => {
   // All-day events are considered live for the selected date
   if (event.isAllDay) return 'live';
   const start = parseEventDateTime(event.startDate, event.startTime);
@@ -730,10 +577,20 @@ const DashboardSingleTask: React.FC<{
   isCompleting: boolean;
 }> = ({ task, category, onToggleCompletion, onEdit, onOpenModal, isCompleted, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
   const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
+  const [justChecked, setJustChecked] = useState(false);
+  const visualCompleted = isCompleted || justChecked;
   const handleRowClick = () => { if (!isSwiping) onOpenModal(); };
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRowClick(); }
   };
+  useEffect(() => {
+    // Reset optimistic state when parent state reflects
+    if (isCompleted && justChecked) setJustChecked(false);
+    if (!isCompleted && justChecked) {
+      // If unchecking after having justChecked, also clear local state
+      setJustChecked(false);
+    }
+  }, [isCompleted, justChecked]);
   return (
     <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''}`} {...touchHandlers}>
       <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}>
@@ -748,7 +605,7 @@ const DashboardSingleTask: React.FC<{
           role="button"
           tabIndex={0}
           onKeyDown={handleKeyDown}
-          className={`flex items-center justify-between p-2.5 rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+          className={`flex items-center justify-between p-2 rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[48px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
         >
           <div className="flex items-center min-w-0 flex-1 gap-3">
             {category ? (
@@ -763,7 +620,7 @@ const DashboardSingleTask: React.FC<{
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className={`truncate ${isCompleted ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{task.name}</span>
+                  <span className={`truncate ${visualCompleted ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{task.name}</span>
                 </div>
                 {task.dueTime && (
                   <span className="ml-2 text-xs font-mono bg-gray-200 dark:bg-gray-700/80 px-1.5 py-0.5 rounded flex-shrink-0">{task.dueTime}</span>
@@ -773,11 +630,19 @@ const DashboardSingleTask: React.FC<{
           </div>
           <div className="flex items-center ml-3 flex-shrink-0">
             <button
-              onClick={(e) => { e.stopPropagation(); setTimeout(() => onToggleCompletion(), 300); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isCompleted) {
+                  setJustChecked(true);
+                  window.setTimeout(() => onToggleCompletion(), 700);
+                } else {
+                  onToggleCompletion();
+                }
+              }}
               className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-300/50 dark:hover:bg-gray-700/50"
               aria-label={`Toggle ${task.name}`}
             >
-              {isCompleted ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
+              {visualCompleted ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
             </button>
           </div>
         </div>
@@ -797,7 +662,8 @@ const DashboardMultiTaskList: React.FC<{
   isRecentlyCompleted: boolean;
   onOpenPriorityModal: () => void;
   isCompleting: boolean;
-}> = ({ list, category, project, onOpenModal, onEdit, selectedDate, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
+  isFlashing?: boolean;
+}> = ({ list, category, project, onOpenModal, onEdit, selectedDate, isRecentlyCompleted, onOpenPriorityModal, isCompleting, isFlashing }) => {
   const selectedISODate = getISODate(selectedDate);
   const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
 
@@ -821,7 +687,7 @@ const DashboardMultiTaskList: React.FC<{
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''}`} {...touchHandlers}>
+  <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''} ${isFlashing ? 'ring-2 ring-[var(--color-primary-600)] ring-offset-2 ring-offset-gray-200 dark:ring-offset-gray-900 animate-pulse' : ''}`} {...touchHandlers}>
         <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}><EditIcon className="text-white text-2xl" /></div>
         <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}><Icon name="flag" className="text-white text-2xl" /></div>
         <div ref={itemRef} style={{ transform: `translateX(${translation}px)` }} className="relative z-10">
@@ -830,7 +696,7 @@ const DashboardMultiTaskList: React.FC<{
               role="button"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
-              className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+              className={`p-2 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[48px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center min-w-0 flex-1 gap-3">
@@ -878,16 +744,19 @@ const DashboardHabitCard: React.FC<{
   isRecentlyCompleted: boolean;
   onOpenPriorityModal: () => void;
   isCompleting: boolean;
-}> = ({ habit, category, project, selectedDate, onToggleHabitCompletion, onOpenSubtaskModal, onEdit, isRecentlyCompleted, onOpenPriorityModal, isCompleting }) => {
+  isFlashing?: boolean;
+}> = ({ habit, category, project, selectedDate, onToggleHabitCompletion, onOpenSubtaskModal, onEdit, isRecentlyCompleted, onOpenPriorityModal, isCompleting, isFlashing }) => {
   const selectedISODate = getISODate(selectedDate)
   const isCompletedOnSelectedDate = habit.completionHistory.includes(selectedISODate)
   const isSingleCheckOff = habit.type === 'daily_check_off';
   const { itemRef, touchHandlers, translation, isSwiping } = useSwipeAndHold(onEdit, onOpenPriorityModal);
-
+  const [justChecked, setJustChecked] = useState(false);
   const totalTasks = habit.tasks?.length || 0
   const completedTasks = habit.tasks?.filter(t => t.completedAt === selectedISODate).length || 0;
-  
-  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : isCompletedOnSelectedDate ? 100 : 0
+  const isCompletedForSelectedDate = totalTasks > 0 ? (completedTasks === totalTasks) : isCompletedOnSelectedDate;
+  const visualCompleted = isCompletedForSelectedDate || justChecked;
+
+  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : isCompletedForSelectedDate ? 100 : 0
 
   const handleClick = () => {
     if (!isSwiping) {
@@ -896,7 +765,7 @@ const DashboardHabitCard: React.FC<{
   };
 
   return (
-    <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''}`} {...touchHandlers}>
+  <div className={`relative overflow-hidden rounded-lg ${isCompleting ? 'animate-slide-out-down' : ''} ${isFlashing ? 'ring-2 ring-[var(--color-primary-600)] ring-offset-2 ring-offset-gray-200 dark:ring-offset-gray-900 animate-pulse' : ''}`} {...touchHandlers}>
         <div className="absolute inset-0 bg-green-500 flex items-center justify-start px-6" style={{ opacity: Math.max(0, -translation / 60), zIndex: 1 }}><EditIcon className="text-white text-2xl" /></div>
         <div className="absolute inset-0 bg-purple-500 flex items-center justify-end px-6" style={{ opacity: Math.max(0, translation / 60), zIndex: 1 }}><Icon name="flag" className="text-white text-2xl" /></div>
         <div ref={itemRef} style={{ transform: `translateX(${translation}px)` }} className="relative z-10">
@@ -905,7 +774,7 @@ const DashboardHabitCard: React.FC<{
               role="button"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
-              className={`p-2.5 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[56px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
+              className={`p-2 rounded-lg transition-colors group hover:bg-gray-200 dark:hover:bg-gray-700/50 relative overflow-hidden cursor-pointer min-h-[48px] ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
             >
               <div className={`flex items-center justify-between`}>
                 <div className="flex items-center flex-1 min-w-0 gap-3">
@@ -920,7 +789,7 @@ const DashboardHabitCard: React.FC<{
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
-                          <p className={`font-medium truncate ${isCompletedOnSelectedDate ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{habit.name}</p>
+                          <p className={`font-medium truncate ${visualCompleted ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{habit.name}</p>
                         </div>
                         {/* Removed project and recurrence badges from the item card */}
                       </div>
@@ -931,12 +800,24 @@ const DashboardHabitCard: React.FC<{
             <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-xs font-mono bg-gray-200 dark:bg-gray-700/80 text-gray-800 dark:text-gray-200">{completedTasks}/{totalTasks}</span>
           )}
                     <button
-                      onClick={(e) => { if (!isSingleCheckOff) return; e.stopPropagation(); setTimeout(() => onToggleHabitCompletion(habit.id, selectedISODate), 300); }}
-                      className={`w-8 h-8 flex items-center justify-center rounded-full ${isSingleCheckOff ? 'hover:bg-gray-300/50 dark:hover:bg-gray-700/50' : 'cursor-default'}`}
-                      aria-label={`Toggle ${habit.name}`}
-                      disabled={!isSingleCheckOff}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isSingleCheckOff) {
+                          if (!isCompletedOnSelectedDate) {
+                            setJustChecked(true);
+                            window.setTimeout(() => onToggleHabitCompletion(habit.id, selectedISODate), 700);
+                          } else {
+                            onToggleHabitCompletion(habit.id, selectedISODate);
+                          }
+                        } else {
+                          // For multi-item habits, clicking the circle opens the subtask modal
+                          onOpenSubtaskModal(habit);
+                        }
+                      }}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full ${isSingleCheckOff ? 'hover:bg-gray-300/50 dark:hover:bg-gray-700/50' : 'hover:bg-gray-300/30 dark:hover:bg-gray-700/30'}`}
+                      aria-label={`Open ${habit.name}`}
                     >
-                        {isCompletedOnSelectedDate ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
+                      {visualCompleted ? <HabitCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-400 dark:text-gray-400" />}
                     </button>
                 </div>
               </div>
@@ -947,7 +828,7 @@ const DashboardHabitCard: React.FC<{
 }
 
 const DashboardEventCard: React.FC<{
-  event: Event;
+  event: CalendarEvent;
   color?: string;
   onEdit: () => void;
 }> = ({ event, color, onEdit }) => {
@@ -969,7 +850,10 @@ const DashboardEventCard: React.FC<{
     const isDone = status === 'done';
     
   return (
-    <div onClick={onEdit} className={`relative overflow-hidden rounded-lg transition-all group hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer min-h-[56px] ${isDone ? 'opacity-60' : ''}`}>
+    <div
+      onClick={onEdit}
+      className={`relative overflow-hidden rounded-lg transition-colors group cursor-pointer min-h-[56px] ${isDone ? 'opacity-60' : ''} bg-gray-200 dark:bg-gray-900 hover:bg-gray-300 dark:hover:bg-gray-800`}
+    >
       <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ backgroundColor: color || 'var(--color-primary-600)' }} />
       <div className="flex items-center justify-between p-2.5 h-full">
         <div className="flex items-center min-w-0 flex-1 gap-3">
@@ -993,10 +877,10 @@ const DashboardEventCard: React.FC<{
 
 // Desktop-only day grid timeline for events
 const DayEventsTimeline: React.FC<{
-  events: Event[];
+  events: CalendarEvent[];
   projects: Project[];
   selectedDate: Date;
-  onEditItem: (ev: Event) => void;
+  onEditItem: (ev: CalendarEvent) => void;
   onNewEventAt?: (date: string, startTime: string, endTime: string) => void;
 }> = ({ events, projects, selectedDate, onEditItem, onNewEventAt }) => {
   // Zoom density state (persisted)
@@ -1068,7 +952,7 @@ const DayEventsTimeline: React.FC<{
   });
 
   // Build clusters of overlapping events
-  type TimedItem = { ev: Event; start: number; end: number; col?: number; cols?: number };
+  type TimedItem = { ev: CalendarEvent; start: number; end: number; col?: number; cols?: number };
   const timedSorted: TimedItem[] = timedRaw.sort((a, b) => a.start - b.start || a.end - b.end);
 
   let i = 0;
@@ -1148,9 +1032,9 @@ const DayEventsTimeline: React.FC<{
   }, [hourPx, selectedDate]);
 
   return (
-    <div ref={containerRef} className="p-2 overflow-y-auto min-h-0 h-full" style={{ maxHeight: '100%' }}>
+  <div ref={containerRef} className="p-2 pb-20 overflow-y-auto min-h-0 h-full" style={{ maxHeight: '100%' }}>
       {/* Sticky tiny controls */}
-      <div className="sticky top-0 z-10 flex justify-end items-center p-1 bg-gradient-to-b from-gray-100/95 dark:from-gray-800/95 to-transparent rounded-t-xl">
+  <div className="sticky top-0 z-10 flex justify-end items-center p-1 rounded-t-xl">
         {/* Zoom controls only */}
         <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300">
           <button
@@ -1191,11 +1075,11 @@ const DayEventsTimeline: React.FC<{
       )}
 
       {/* Timeline */}
-      <div className="grid grid-cols-[48px_1fr] gap-2">
+  <div className="grid grid-cols-[36px_1fr] gap-2.5">
         {/* Hour labels */}
         <div className="relative" style={{ height: hourPx * 24 }}>
           {Array.from({ length: 24 }, (_, h) => (
-            <div key={h} className="absolute left-0 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400 pr-1" style={{ top: h * hourPx }}>
+            <div key={h} className="absolute left-0 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400 pr-0.5 text-right w-full" style={{ top: h * hourPx }}>
               {String(h).padStart(2, '0')}
             </div>
           ))}
@@ -1238,15 +1122,15 @@ const DayEventsTimeline: React.FC<{
             <div key={`half-${h}`} className="absolute left-0 right-0 border-t border-dashed border-gray-300/60 dark:border-gray-700/60" style={{ top: h * hourPx + hourPx / 2 }} />
           ))}
 
-          {/* Now marker */}
+          {/* Now marker - highlighted with primary gradient */}
           {isToday && (() => {
             const now = new Date();
             const minutes = now.getHours() * 60 + now.getMinutes();
             const top = minutes * MIN_PX;
             return (
-              <div className="absolute left-0 right-0" style={{ top }}>
-                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--color-primary-600)]" />
-                <div className="h-0.5 bg-[var(--color-primary-600)] opacity-70" />
+              <div className="absolute left-0 right-0 pointer-events-none z-20" style={{ top }}>
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-br from-[var(--color-primary-600)] to-purple-600" />
+                <div className="h-0.5 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 opacity-80" />
               </div>
             )
           })()}
@@ -1298,7 +1182,7 @@ const DayEventsTimeline: React.FC<{
                   if (isDragging) { e.preventDefault(); return; }
                   onEditItem(ev);
                 }}
-                className={`event-card absolute rounded-lg overflow-hidden cursor-pointer group hover:bg-gray-200/70 dark:hover:bg-gray-700/50 ${isDone ? 'opacity-60' : ''}`}
+                className={`event-card absolute rounded-lg overflow-hidden cursor-pointer ${isDone ? 'opacity-60' : ''} hover:shadow-sm transition-shadow`}
                 style={{
                   top: dragTop,
                   height: dragHeight,
@@ -1307,10 +1191,10 @@ const DayEventsTimeline: React.FC<{
                   background: 'transparent',
                 }}
               >
-                {/* Card background */}
-                <div className="w-full h-full bg-white/90 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/60 backdrop-blur-sm">
+                {/* Card background - increase opacity for better legibility */}
+                <div className="w-full h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                   <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ backgroundColor: project?.color || 'var(--color-primary-600)' }} />
-                  <div className="h-full flex items-start justify-between gap-2 px-2.5 py-1">
+                  <div className="h-full flex items-start justify-between gap-2 pr-2.5 pl-2 py-1">
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm leading-tight">{ev.title}</p>
                       {(ev.location || attendees) && (
@@ -1342,7 +1226,7 @@ const DayEventsTimeline: React.FC<{
             if (!ev) { setIsDragging(null); return; }
             const newStart = clamp(start, 0, 24 * 60);
             const newEnd = clamp(Math.max(end, newStart + 5), 0, 24 * 60);
-            const updated: Event = {
+            const updated: CalendarEvent = {
               ...ev,
               startTime: minutesToHM(newStart),
               endTime: minutesToHM(newEnd),
@@ -1503,7 +1387,7 @@ const ProjectFilterDropdown: React.FC<{
     <div ref={dropdownRef} className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full h-9 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
       >
         <Icon name="folder" className="text-base flex-shrink-0" />
         <span className="truncate flex-1 text-left">{selectedProject ? selectedProject.name : 'All Projects'}</span>
@@ -1563,7 +1447,7 @@ const CategoryFilterDropdown: React.FC<{
     <div ref={dropdownRef} className={`relative ${className || ''}`}>
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full h-9 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
       >
         <Icon name="category" className="text-base flex-shrink-0" />
         <span className="truncate flex-1 text-left">{selectedCategory ? selectedCategory.name : 'All Categories'}</span>
@@ -1637,14 +1521,16 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [orderedDailyItems, setOrderedDailyItems] = useState<DailyItemWrapper[]>([]);
-  const [eventsForDay, setEventsForDay] = useState<Event[]>([]);
-  const [eventsSorted, setEventsSorted] = useState<Event[]>([]);
+  const [eventsForDay, setEventsForDay] = useState<CalendarEvent[]>([]);
+  const [eventsSorted, setEventsSorted] = useState<CalendarEvent[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>('all');
   const [priorityModalItem, setPriorityModalItem] = useState<Checklist | Habit | null>(null);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  // Use App-level global search
   const [isOnboardingOpen, setOnboardingOpen] = useState(false);
   // Category filter
   const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>('all');
+  // Flash map for completion transitions keyed by item id
+  const [flashCompleted, setFlashCompleted] = useState<Record<string, number>>({});
   // First-run onboarding
   useEffect(() => {
     try {
@@ -1655,7 +1541,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
       }
     } catch {}
   }, []);
-  const [mobileTab, setMobileTab] = useState<'events' | 'tasks'>('events');
+  const [mobileTab, setMobileTab] = useState<'events' | 'tasks'>('tasks');
 
   const formatNoteDate = (isoDate: string) => {
     const noteDate = new Date(isoDate);
@@ -1758,8 +1644,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             if (!aIsEvent && bIsEvent) return 1;
 
             if(aIsEvent && bIsEvent) {
-                const eventA = a.item as Event;
-                const eventB = b.item as Event;
+                const eventA = a.item as CalendarEvent;
+                const eventB = b.item as CalendarEvent;
                 if(eventA.isAllDay && !eventB.isAllDay) return -1;
                 if(!eventA.isAllDay && eventB.isAllDay) return 1;
                 const timeA = eventA.startTime || '00:00';
@@ -1784,7 +1670,49 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
 
             return (a.item as any).name.localeCompare((b.item as any).name);
       });
+      // Detect completion transitions (for flashing)
+      const prevCompletion = new Map<string, boolean>();
+      orderedDailyItems.forEach(w => {
+        const wasCompleted = (w.item as any).completionHistory?.includes(selectedISODate) || false;
+        prevCompletion.set(w.id, wasCompleted);
+      });
+
       setOrderedDailyItems(sortedItems);
+
+      // After updating order, check which items just turned fully complete for selected date
+      const nextFlash: Record<string, number> = {};
+      sortedItems.forEach(w => {
+        if (w.type === 'habit') {
+          const h = w.item as Habit;
+          const total = h.tasks?.length || 0;
+          const done = h.tasks?.filter(t => t.completedAt === selectedISODate).length || 0;
+          const isNowComplete = total > 0 ? (done === total) : h.completionHistory.includes(selectedISODate);
+          const wasComplete = prevCompletion.get(w.id) || false;
+          if (isNowComplete && !wasComplete) {
+            nextFlash[w.id] = Date.now();
+          }
+        } else if (w.type === 'task') {
+          const c = w.item as Checklist;
+          const total = c.tasks?.length || 0;
+          const done = c.tasks?.filter(t => t.completedAt && (!c.recurrence || t.completedAt === selectedISODate)).length || 0;
+          const isNowComplete = total > 0 ? (done === total) : c.completionHistory.includes(selectedISODate);
+          const wasComplete = prevCompletion.get(w.id) || false;
+          if (isNowComplete && !wasComplete) {
+            nextFlash[w.id] = Date.now();
+          }
+        }
+      });
+      if (Object.keys(nextFlash).length) {
+        setFlashCompleted(fc => ({ ...fc, ...nextFlash }));
+        // auto clear after 900ms
+        window.setTimeout(() => {
+          setFlashCompleted(fc => {
+            const copy = { ...fc };
+            Object.keys(nextFlash).forEach(id => delete copy[id]);
+            return copy;
+          });
+        }, 900);
+      }
       setEventsForDay(eventsForRender);
 
   }, [checklists, habits, events, selectedDate, selectedISODate, selectedProjectId, selectedCategoryId]);
@@ -1842,293 +1770,352 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-       <DashboardItemsModal 
-            item={modalItem}
-            onClose={() => setModalItemId(null)}
-            onToggleTask={onToggleTask}
-            onToggleHabitTask={onToggleHabitTask}
-            onEditRequest={(item) => onEditItem(item)}
-            category={modalCategory}
-            project={modalProject}
-            selectedISODate={selectedISODate}
-            onCreateTask={onCreateTask}
-            onAddTaskToHabit={onAddTaskToHabit}
+      {/* Modals / overlays */}
+      <DashboardItemsModal
+        item={modalItem}
+        onClose={() => setModalItemId(null)}
+        onToggleTask={onToggleTask}
+        onToggleHabitTask={onToggleHabitTask}
+        onEditRequest={(item) => onEditItem(item)}
+        category={modalCategory}
+        project={modalProject}
+        selectedISODate={selectedISODate}
+        onCreateTask={onCreateTask}
+        onAddTaskToHabit={onAddTaskToHabit}
+      />
+      {isCalendarOpen && (
+        <MonthlyCalendar
+          selectedDate={selectedDate}
+          onDateSelect={onDateSelect}
+          onClose={() => setIsCalendarOpen(false)}
         />
-        {isCalendarOpen && (
-            <MonthlyCalendar 
-                selectedDate={selectedDate}
-                onDateSelect={onDateSelect}
-                onClose={() => setIsCalendarOpen(false)}
-            />
-        )}
-        {priorityModalItem && (
-            <PriorityModal
-                item={priorityModalItem}
-                onClose={() => setPriorityModalItem(null)}
-                onSave={(newPriority) => {
-                    const type = 'recurrence' in priorityModalItem ? 'habit' : 'task';
-                    onUpdateItemPriority(priorityModalItem.id, newPriority, type);
-                }}
-            />
-        )}
-  {isOnboardingOpen && <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setOnboardingOpen(false)} />}
-        {isSearchOpen && <SearchModal 
-            onClose={() => setIsSearchOpen(false)} 
-            checklists={checklists}
-            habits={habits}
-            notes={notes}
-            projects={projects}
-            events={events}
-            projectFiles={projectFiles}
-            userCategories={userCategories}
-            onSelectNote={onSelectNote}
-            onSelectProject={props.onSelectProject}
-            onSelectView={onSelectView}
-        />}
+      )}
+      {priorityModalItem && (
+        <PriorityModal
+          item={priorityModalItem}
+            onClose={() => setPriorityModalItem(null)}
+            onSave={(newPriority) => {
+              const type = 'recurrence' in priorityModalItem ? 'habit' : 'task';
+              onUpdateItemPriority(priorityModalItem.id, newPriority, type);
+            }}
+        />
+      )}
+      {isOnboardingOpen && <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setOnboardingOpen(false)} />}
+      {/* Global search rendered at App root */}
 
-    <div className="sticky top-0 z-30 bg-gray-100 dark:bg-gray-800">
-      <Header
-        title={formatDateForHeader(selectedDate)}
-        onToggleSidebar={onToggleSidebar}
-      >
-        <div className="flex items-center gap-1 sm:gap-2">
-          <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Search" title="Search"><SearchIcon /></button>
-          <button onClick={() => setIsCalendarOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Open calendar" title="Open calendar"><CalendarTodayIcon /></button>
-          <button onClick={() => setOnboardingOpen(true)} className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Help" title="Help & Tips"><HelpOutlineIcon /></button>
-        </div>
-      </Header>
-      <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
-    </div>
-  <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto md:overflow-hidden min-h-0">
-        
-        {isTrulyEmpty ? (
-          <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center h-full">
-            <EmptyStateIcon icon={<TodayIcon />} size="lg" />
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('dashboard_empty_title')}</h2>
-            <p className="max-w-md mt-1 mb-6">{t('dashboard_empty_subtitle')}</p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <button onClick={() => props.onLoadSampleData()} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">See example data</button>
-              <button onClick={() => onSelectView('lists')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_tasks')}</button>
-              <button onClick={() => onSelectView('habits')} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">{t('dashboard_empty_cta_habits')}</button>
+      {/* Sticky header */}
+      <div className="sticky top-0 z-30 bg-gray-100 dark:bg-gray-800">
+        <Header
+          title={formatDateForHeader(selectedDate)}
+          onToggleSidebar={onToggleSidebar}
+          onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}
+        >
+          <div className="hidden md:flex items-center gap-2">
+            <ProjectFilterDropdown
+              projects={projects}
+              selectedProjectId={selectedProjectId}
+              onSelectProject={setSelectedProjectId}
+            />
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              onClick={() => setIsCalendarOpen(true)}
+              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              aria-label="Open calendar"
+              title="Open calendar"
+            ><CalendarTodayIcon /></button>
+            <button
+              onClick={() => setOnboardingOpen(true)}
+              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              aria-label="Help"
+              title="Help & Tips"
+            ><HelpOutlineIcon /></button>
+          </div>
+        </Header>
+        <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
+      </div>
+
+      <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto md:overflow-hidden min-h-0">
+        <div className="flex flex-col h-full min-h-0">
+          {/* Full-width date scroller row */}
+          <div className="bg-gray-100 dark:bg-gray-800 md:sticky md:top-0 z-20 pt-1.5 pb-2 md:pb-0">
+            <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
+            <div className="flex items-center gap-2 mt-2">
+              <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] shadow-md">
+                <button
+                  onClick={() => setMobileTab('tasks')}
+                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}
+                >Tasks & Habits</button>
+                <button
+                  onClick={() => setMobileTab('events')}
+                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}
+                >Agenda</button>
+              </div>
+              <div className="flex md:hidden items-center gap-2 ml-auto">
+                <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                <button onClick={onNewHabit} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+              </div>
             </div>
           </div>
-        ) : (
-          <div className="flex flex-col md:grid md:grid-cols-4 md:gap-6 h-full min-h-0">
-            {/* Main area (3/4 on >=md): controls + content */}
-            <div className="md:col-span-3 flex flex-col min-h-0">
-              {/* Sticky within left/middle columns only */}
-              <div className="bg-gray-100 dark:bg-gray-800 md:sticky md:top-0 z-20">
-                <div className="pt-1.5">
-                  <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
-                </div>
-                <div className="px-0 sm:px-0 pt-2 pb-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="flex-1 min-w-0">
-                        <ProjectFilterDropdown projects={projects} selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <CategoryFilterDropdown categories={userCategories} selectedCategoryId={selectedCategoryId} onSelectCategory={setSelectedCategoryId} />
-                      </div>
+
+          {/* Content area */}
+          <div className="flex-1 min-h-0 mt-1 md:mt-0 flex flex-col">
+            {(isTrulyEmpty || isEmpty) ? (
+              <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
+                {isTrulyEmpty ? (
+                  <>
+                    <EmptyStateIcon icon={<TodayIcon />} size="lg" />
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('dashboard_empty_title')}</h2>
+                    <p className="max-w-md mt-1 mb-6">{t('dashboard_empty_subtitle')}</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => props.onLoadSampleData()}
+                        className="w-10 h-10 flex items-center justify-center text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:shadow-lg transition-all"
+                        aria-label="Load sample data"
+                        title="Load sample data"
+                      >
+                        <Icon name="wand_stars" />
+                      </button>
                     </div>
-                    {!isTrulyEmpty && (
-                      <div className="flex-shrink-0 flex items-center gap-2">
-                        {/* Mobile/Tablet: Toggle + icon-only actions in the same row */}
-                        <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)]">
-                          <button onClick={() => setMobileTab('events')} className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Events</button>
-                          <button onClick={() => setMobileTab('tasks')} className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}>Tasks</button>
-                        </div>
-
-                        {/* Icon-only actions for <lg */}
-                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
-                        <button onClick={onNewHabit} className="w-10 h-10 flex md:hidden items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
-
-                        {/* Desktop: Icon-only actions (>=lg) */}
-                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
-                        <button onClick={onNewHabit} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 min-h-0">
-                {isEmpty ? (
-                  <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
+                    <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewTaskIcon /> <span>New Task</span></button>
+                      <button onClick={() => onNewEvent(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><CalendarAddOnIcon /> <span>New Event</span></button>
+                      <button onClick={onNewHabit} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewHabitIcon /> <span>New Habit</span></button>
+                    </div>
+                  </>
+                ) : (
+                  <>
                     <EmptyStateIcon icon={<CheckCircleIcon />} size="lg" />
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-1">Organize your day</h3>
                     <p className="max-w-md text-sm mb-5">You have no tasks, habits, or events for this date. Add what matters and get going.</p>
-                    <div className="flex gap-3">
-                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5">
-                        <NewTaskIcon /> <span>New Task</span>
-                      </button>
-                      <button onClick={onNewHabit} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all flex items-center gap-1.5">
-                        <NewHabitIcon /> <span>New Habit</span>
-                      </button>
+                    <div className="flex gap-3 flex-wrap items-center justify-center">
+                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewTaskIcon /> <span>New Task</span></button>
+                      <button onClick={() => onNewEvent(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><CalendarAddOnIcon /> <span>New Event</span></button>
+                      <button onClick={onNewHabit} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewHabitIcon /> <span>New Habit</span></button>
                     </div>
-                  </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                {/* Mobile stacked view */}
+                <div className="md:hidden mt-2 space-y-2">
+                  {mobileTab === 'events' ? (
+                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col h-[65vh] mb-12 scroll-fade">
+                      <DayEventsTimeline
+                        events={eventsForDay}
+                        projects={projects}
+                        selectedDate={selectedDate}
+                        onEditItem={onEditItem}
+                        onNewEventAt={onNewEventAt}
+                      />
+                    </div>
                   ) : (
-                  <>
-                    {/* Mobile: content below (toggle is in the control row) */}
-                    <div className="md:hidden mt-2 space-y-2">
-                      {mobileTab === 'events'
-                        ? (
-                          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col h-[65vh]">
-                            <DayEventsTimeline
-                              events={eventsForDay}
-                              projects={projects}
-                              selectedDate={selectedDate}
-                              onEditItem={onEditItem}
-                              onNewEventAt={onNewEventAt}
-                            />
-                          </div>
-                        )
-                        : (orderedDailyItems.length > 0 ? (
-                          orderedDailyItems.map(itemWrapper => {
-                            const { item, type } = itemWrapper;
-                            const category = userCategories.find(c => c.id === item.categoryId);
-                            const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                            const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
-                            const isCompleting = completingItemIds.has(item.id);
-                            if (isCompleting && isCompleted) return null;
-                            return (
-                              <div key={item.id}>
-                                {type === 'task' ? (
-                                  (item as Checklist).tasks.length === 0 ? (
-                                    <DashboardSingleTask task={item as Checklist} category={category} onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)} onEdit={() => onEditItem(item)} onOpenModal={() => setModalItemId(item.id)} isCompleted={isCompleted} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
-                                  ) : (
-                                    <DashboardMultiTaskList list={item as Checklist} category={category} project={projects.find(p => p.id === (item as Checklist).projectId)} onOpenModal={(list) => setModalItemId(list.id)} onEdit={() => onEditItem(item)} selectedDate={selectedDate} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)} isCompleting={isCompleting} />
-                                  )
-                                ) : (
-                                  <DashboardHabitCard habit={item as Habit} category={category} project={projects.find(p => p.id === (item as Habit).projectId)} selectedDate={selectedDate} onToggleHabitCompletion={onToggleHabitCompletion} onOpenSubtaskModal={(habit) => setModalItemId(habit.id)} onEdit={() => onEditItem(item)} isRecentlyCompleted={isRecentlyCompleted} onOpenPriorityModal={() => setPriorityModalItem(item as Habit)} isCompleting={isCompleting} />
-                                )}
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm">
-                            <div className="p-6 flex items-center justify-center text-center">
-                              <p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-
-                    {/* >=md: split the 3/4 area into two equal columns (Tasks/Habits | Events) */}
-                    <div className="hidden md:grid md:grid-cols-2 md:gap-6 mt-2 flex-1 min-h-0">
-                      {/* Left of 3/4: Tasks & Habits */}
-                      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
-                        {(() => {
-                          const centerFewItems = orderedDailyItems.length > 0 && orderedDailyItems.length <= 3;
+                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col h-[65vh] mb-12 scroll-fade">
+                      <div className="p-2 space-y-2 overflow-y-auto min-h-0 flex-1 pt-1">
+                        {orderedDailyItems.length === 0 && (
+                          <div className="flex items-center justify-center py-8"><p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p></div>
+                        )}
+                        {orderedDailyItems.map(itemWrapper => {
+                          const { item, type } = itemWrapper;
+                          const category = userCategories.find(c => c.id === item.categoryId);
+                          const isRecentlyCompleted = recentlyCompletedItemId === item.id;
+                          const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                          const isCompleting = completingItemIds.has(item.id);
+                          if (isCompleting && isCompleted) return null;
                           return (
-                            <div className={`p-2 space-y-2 overflow-y-auto min-h-0 flex-1 ${centerFewItems ? 'flex flex-col justify-center' : ''}`}>
-                              {orderedDailyItems.map(itemWrapper => {
-                                const { item, type } = itemWrapper;
-                                const category = userCategories.find(c => c.id === item.categoryId);
-                                const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                                const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
-                                const isCompleting = completingItemIds.has(item.id);
-                                if (isCompleting && isCompleted) return null;
-                                return (
-                                  <div key={item.id}>
-                                    {type === 'task' ? (
-                                      (item as Checklist).tasks.length === 0 ? (
-                                        <DashboardSingleTask
-                                          task={item as Checklist}
-                                          category={category}
-                                          onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
-                                          onEdit={() => onEditItem(item)}
-                                          onOpenModal={() => setModalItemId(item.id)}
-                                          isCompleted={isCompleted}
-                                          isRecentlyCompleted={isRecentlyCompleted}
-                                          onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
-                                          isCompleting={isCompleting}
-                                        />
-                                      ) : (
-                                        <DashboardMultiTaskList
-                                          list={item as Checklist}
-                                          category={category}
-                                          project={projects.find(p => p.id === (item as Checklist).projectId)}
-                                          onOpenModal={(list) => setModalItemId(list.id)}
-                                          onEdit={() => onEditItem(item)}
-                                          selectedDate={selectedDate}
-                                          isRecentlyCompleted={isRecentlyCompleted}
-                                          onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
-                                          isCompleting={isCompleting}
-                                        />
-                                      )
-                                    ) : (
-                                      <DashboardHabitCard
-                                        habit={item as Habit}
-                                        category={category}
-                                        project={projects.find(p => p.id === (item as Habit).projectId)}
-                                        selectedDate={selectedDate}
-                                        onToggleHabitCompletion={onToggleHabitCompletion}
-                                        onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
-                                        onEdit={() => onEditItem(item)}
-                                        isRecentlyCompleted={isRecentlyCompleted}
-                                        onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
-                                        isCompleting={isCompleting}
-                                      />
-                                    )}
-                                  </div>
-                                );
-                              })}
-                              {orderedDailyItems.length === 0 && (
-                                <div className="flex items-center justify-center py-10">
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p>
-                                </div>
+                            <div key={item.id}>
+                              {type === 'task' ? (
+                                (item as Checklist).tasks.length === 0 ? (
+                                  <DashboardSingleTask
+                                    task={item as Checklist}
+                                    category={category}
+                                    onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
+                                    onEdit={() => onEditItem(item)}
+                                    onOpenModal={() => setModalItemId(item.id)}
+                                    isCompleted={isCompleted}
+                                    isRecentlyCompleted={isRecentlyCompleted}
+                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                    isCompleting={isCompleting}
+                                  />
+                                ) : (
+                                  <DashboardMultiTaskList
+                                    list={item as Checklist}
+                                    category={category}
+                                    project={projects.find(p => p.id === (item as Checklist).projectId)}
+                                    onOpenModal={(list) => setModalItemId(list.id)}
+                                    onEdit={() => onEditItem(item)}
+                                    selectedDate={selectedDate}
+                                    isRecentlyCompleted={isRecentlyCompleted}
+                                    onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                    isCompleting={isCompleting}
+                                    isFlashing={!!flashCompleted[item.id]}
+                                  />
+                                )
+                              ) : (
+                                <DashboardHabitCard
+                                  habit={item as Habit}
+                                  category={category}
+                                  project={projects.find(p => p.id === (item as Habit).projectId)}
+                                  selectedDate={selectedDate}
+                                  onToggleHabitCompletion={onToggleHabitCompletion}
+                                  onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
+                                  onEdit={() => onEditItem(item)}
+                                  isRecentlyCompleted={isRecentlyCompleted}
+                                  onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
+                                  isCompleting={isCompleting}
+                                  isFlashing={!!flashCompleted[item.id]}
+                                />
                               )}
                             </div>
                           );
-                        })()}
-                        </div>
-
-                      {/* Right of 3/4: Events */}
-                      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm flex flex-col min-h-0">
-                        <div className="flex-1 min-h-0">
-                          <DayEventsTimeline events={eventsForDay} projects={projects} selectedDate={selectedDate} onEditItem={onEditItem} onNewEventAt={onNewEventAt} />
-                        </div>
+                        })}
                       </div>
                     </div>
-                  </>
                   )}
-              </div>
-              <div className="my-2 h-px bg-gray-200 dark:bg-gray-700/50 md:hidden" />
-            </div>
+                </div>
 
-            {/* Right column (>=md): Notes */}
-            <div className="hidden md:flex md:flex-col md:col-span-1 min-h-0">
-              <div className="flex flex-col min-h-0 flex-1">
-                <div className="flex items-center justify-between mb-3 px-2 pt-2.5">
-                    <h2 className="text-base font-semibold">{t('recent_notes')}</h2>
-          <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Note" title="New Note">
-            <NoteAddIcon />
-          </button>
-                </div>
-                <div className="space-y-3 overflow-y-auto min-h-0">
-                    {recentNotes.map((note, index) => {
-                      const color = noteColors[index % noteColors.length];
-                      const formattedDate = formatNoteDate(note.lastModified);
-                      const contentPreview = getContentPreview(note.content);
-                      return (
-                          <button key={note.id} onClick={() => onSelectNote(note.id)} className={`w-full text-left p-3 rounded-xl shadow-sm flex flex-col transition-all hover:shadow-md border border-gray-200 dark:border-gray-700/50 border-l-4 ${color.bg} ${color.darkBg} ${color.border}`}>
-                              <h4 className="font-semibold text-gray-800 dark:text-white truncate">{note.name}</h4>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">{formattedDate}</p>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2 flex-grow overflow-hidden">
-                                  {contentPreview}
+                {/* Desktop layout: md = two columns (Tasks/Agenda) + bottom Notes; lg+ = two flexible columns + fixed 120px Notes */}
+                <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-[1fr_1fr_160px] md:gap-4 lg:gap-6 flex-1 min-h-0 mt-0 pb-6">
+                  {/* Column 1: Tasks & Habits */}
+                  <div className="flex flex-col min-h-0">
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <h3 className="text-base font-semibold text-gray-800 dark:text-white">Tasks & Habits</h3>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                      </div>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col min-h-0 flex-1 scroll-fade">
+                      {(() => {
+                        const centerFewItems = orderedDailyItems.length > 0 && orderedDailyItems.length <= 3;
+                        return (
+                          <div className={`px-2 pb-2 pt-1 space-y-2 overflow-y-auto min-h-0 flex-1 ${centerFewItems ? 'flex flex-col justify-center' : ''}`}>
+                            {orderedDailyItems.length === 0 && (
+                              <div className="flex items-center justify-center py-10"><p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p></div>
+                            )}
+                            {orderedDailyItems.map(itemWrapper => {
+                              const { item, type } = itemWrapper;
+                              const category = userCategories.find(c => c.id === item.categoryId);
+                              const isRecentlyCompleted = recentlyCompletedItemId === item.id;
+                              const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                              const isCompleting = completingItemIds.has(item.id);
+                              if (isCompleting && isCompleted) return null;
+                              return (
+                                <div key={item.id}>
+                                  {type === 'task' ? (
+                                    (item as Checklist).tasks.length === 0 ? (
+                                      <DashboardSingleTask
+                                        task={item as Checklist}
+                                        category={category}
+                                        onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
+                                        onEdit={() => onEditItem(item)}
+                                        onOpenModal={() => setModalItemId(item.id)}
+                                        isCompleted={isCompleted}
+                                        isRecentlyCompleted={isRecentlyCompleted}
+                                        onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                        isCompleting={isCompleting}
+                                      />
+                                    ) : (
+                                      <DashboardMultiTaskList
+                                        list={item as Checklist}
+                                        category={category}
+                                        project={projects.find(p => p.id === (item as Checklist).projectId)}
+                                        onOpenModal={(list) => setModalItemId(list.id)}
+                                        onEdit={() => onEditItem(item)}
+                                        selectedDate={selectedDate}
+                                        isRecentlyCompleted={isRecentlyCompleted}
+                                        onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
+                                        isCompleting={isCompleting}
+                                        isFlashing={!!flashCompleted[item.id]}
+                                      />
+                                    )
+                                  ) : (
+                                    <DashboardHabitCard
+                                      habit={item as Habit}
+                                      category={category}
+                                      project={projects.find(p => p.id === (item as Habit).projectId)}
+                                      selectedDate={selectedDate}
+                                      onToggleHabitCompletion={onToggleHabitCompletion}
+                                      onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
+                                      onEdit={() => onEditItem(item)}
+                                      isRecentlyCompleted={isRecentlyCompleted}
+                                      onOpenPriorityModal={() => setPriorityModalItem(item as Habit)}
+                                      isCompleting={isCompleting}
+                                      isFlashing={!!flashCompleted[item.id]}
+                                    />
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Column 2: Agenda / Events */}
+                  <div className="flex flex-col min-h-0">
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <h3 className="text-base font-semibold text-gray-800 dark:text-white">Agenda</h3>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                      </div>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col min-h-0 flex-1 scroll-fade">
+                      <div className="flex-1 min-h-0 h-full">
+                        <DayEventsTimeline
+                          events={eventsForDay}
+                          projects={projects}
+                          selectedDate={selectedDate}
+                          onEditItem={onEditItem}
+                          onNewEventAt={onNewEventAt}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Column 3: Recent Notes (lg+: right fixed column; md: bottom row, horizontal scroll) */}
+                  <div className="flex flex-col min-h-0 md:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-start-1">
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <h3 className="text-base font-semibold text-gray-800 dark:text-white">{t('recent_notes')}</h3>
+                      <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Note" title="New Note"><NoteAddIcon /></button>
+                    </div>
+                    {/* md: horizontal scroll; lg+: vertical list in fixed 120px column */}
+                    <div className="min-h-0 flex-1 md:flex md:flex-row md:space-x-3 md:overflow-x-auto md:space-y-0 md:pb-1 lg:flex-col lg:space-x-0 lg:space-y-3 lg:overflow-y-auto">
+                      {recentNotes.map((note, index) => {
+                        const color = noteColors[index % noteColors.length];
+                        const formattedDate = formatNoteDate(note.lastModified);
+                        const contentPreview = getContentPreview(note.content);
+                        return (
+                          <button
+                            key={note.id}
+                            onClick={() => onSelectNote(note.id)}
+                            className={`md:min-w-[220px] lg:min-w-0 w-full text-left p-3 rounded-[12px] shadow-sm flex flex-col transition-all hover:shadow-md border border-gray-200 dark:border-gray-700/50 border-l-4 ${color.bg} ${color.darkBg} ${color.border}`}
+                          >
+                            <h4 className="font-semibold text-gray-800 dark:text-white truncate">{note.name}</h4>
+                            <div className="mt-1">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug truncate">
+                                <span className="font-semibold text-gray-700 dark:text-gray-300">{formattedDate}</span>
+                                <span className="mx-1">—</span>
+                                <span className="align-baseline">{contentPreview}</span>
                               </p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug line-clamp-1">{contentPreview}</p>
+                            </div>
                           </button>
-                      )
-                  })}
-                  {notes.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">No notes yet.</p>}
+                        );
+                      })}
+                      {notes.length === 0 && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 px-2 italic">No notes yet.</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            {/* Mobile: Notes hidden per requirements */}
+              </>
+            )}
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

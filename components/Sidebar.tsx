@@ -49,8 +49,8 @@ const NavItem: React.FC<{
   const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors transition-transform`;
   // Desktop standard height: 36px (h-9). Apply to both collapsed and expanded.
   const shapeClasses = isCollapsed 
-    ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' 
-    : 'w-full h-11 md:h-10 lg:h-9 px-1.5 space-x-2';
+    ? 'w-9 h-9 justify-center mx-auto' 
+    : 'w-full h-9 px-1.5 space-x-2';
   
   const variantClasses = {
   default: `text-gray-300 hover:bg-gray-700/50`,
@@ -78,7 +78,7 @@ const NavItem: React.FC<{
         baseClasses,
         // Use square shape on collapsed, full-width on expanded
         appliedVariant,
-        variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 mx-auto' : 'w-full h-11 md:h-10 lg:h-9'}` : '',
+  variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-9 h-9 mx-auto' : 'w-full h-9'}` : '',
         variant !== 'outline' ? shapeClasses : '',
         !isCollapsed ? 'w-full text-left' : '',
     // Selected items: slightly darker, tighter padding feel
@@ -153,9 +153,9 @@ const HistoryItem: React.FC<{
     <button
       onClick={onClick}
       title={isCollapsed ? (project ? `${project.name} / ${label}` : label) : ''}
-      className={`group relative ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' : 'w-full h-11 md:h-10 lg:h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9'} flex items-center rounded-[12px] text-sm transition-colors text-left hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
     >
-  <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2 px-1.5'}`}>
+      <div className={`flex items-center ${isCollapsed ? '' : 'w-full gap-2 px-1.5'}`}>
         {isCollapsed ? (
           <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mx-auto">
             {renderHistoryIcon(!!isActive)}
@@ -246,48 +246,58 @@ const ProjectItem: React.FC<{
     }, []);
 
     return (
-        <div 
-          onClick={() => onSelectProject(project.id)}
-          title={isCollapsed ? project.name : ''}
-  className={`group relative ${isCollapsed ? 'w-11 h-11 md:w-10 md:h-10 lg:w-9 lg:h-9 justify-center mx-auto' : 'w-full h-11 md:h-10 lg:h-9 space-x-2'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
-        >
-    <div className={isCollapsed ? 'mx-auto' : 'pl-1.5'}>
-              <Icon 
-                name={iconName} 
-                className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`} 
+      <div
+        onClick={() => onSelectProject(project.id)}
+        title={isCollapsed ? project.name : ''}
+        className={`group relative ${isCollapsed ? 'w-9 h-9 justify-center mx-auto' : 'w-full h-9'} flex items-center rounded-[12px] text-sm cursor-pointer transition-colors hover:bg-gray-700/40 ${isActive ? 'bg-gray-700/60' : ''} ${isCollapsed && isActive ? 'nav-active-collapsed' : ''}`}
+      >
+        {isCollapsed ? (
+          <div className="w-6 h-6 flex items-center justify-center mx-auto">
+            <Icon
+              name={iconName}
+              className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`}
+              style={isActive ? undefined : { color }}
+            />
+          </div>
+        ) : (
+          <div className="w-full flex items-center gap-2 px-1.5">
+            <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+              <Icon
+                name={iconName}
+                className={`text-xl flex-shrink-0 block leading-none ${isActive ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent' : ''}`}
                 style={isActive ? undefined : { color }}
-               />
+              />
             </div>
-            {!isCollapsed && <span className={`truncate font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{project.name}</span>}
+            <span className={`truncate font-normal ${isActive ? 'text-white' : 'text-gray-300'}`}>{project.name}</span>
             {/* Kebab */}
-            {!isCollapsed && (
-              <button
-                type="button"
-                className="ml-auto w-8 h-8 flex items-center justify-center rounded-[12px] text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
-                aria-label="More actions"
-              >
-                <MoreVertIcon />
-              </button>
-            )}
-            {isMenuOpen && (
-              <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-700 rounded-xl shadow-xl z-20 p-1">
-                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onShare?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
-                  <Icon name="ios_share" className="text-base" />
-                  <span>Share</span>
-                </button>
-                <button onClick={(e) => { e.stopPropagation(); const newName = window.prompt('Rename project', project.name); if (newName && newName.trim()) { onRename?.(newName.trim()); } setIsMenuOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
-                  <EditIcon className="text-base" />
-                  <span>Rename</span>
-                </button>
-                <div className="my-1 h-px bg-gray-300 dark:bg-gray-600" />
-                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onDelete?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-red-500/10 text-red-600 dark:text-red-400">
-                  <DeleteIcon className="text-base" />
-                  <span>Delete</span>
-                </button>
-              </div>
-            )}
-        </div>
+            <button
+              type="button"
+              className="ml-auto w-8 h-8 flex items-center justify-center rounded-[12px] text-gray-400 hover:text-white hover:bg-gray-600/40 opacity-0 group-hover:opacity-100 transition"
+              onClick={(e) => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
+              aria-label="More actions"
+            >
+              <MoreVertIcon />
+            </button>
+          </div>
+        )}
+        {isMenuOpen && (
+          <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-700 rounded-xl shadow-xl z-20 p-1">
+            <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onShare?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
+              <Icon name="ios_share" className="text-base" />
+              <span>Share</span>
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); const newName = window.prompt('Rename project', project.name); if (newName && newName.trim()) { onRename?.(newName.trim()); } setIsMenuOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
+              <EditIcon className="text-base" />
+              <span>Rename</span>
+            </button>
+            <div className="my-1 h-px bg-gray-300 dark:bg-gray-600" />
+            <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onDelete?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-red-500/10 text-red-600 dark:text-red-400">
+              <DeleteIcon className="text-base" />
+              <span>Delete</span>
+            </button>
+          </div>
+        )}
+      </div>
     );
 };
 
@@ -324,8 +334,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   <div className={`fixed top-0 left-0 bg-gray-900 text-gray-300 flex flex-col h-screen pt-4 pb-2 px-2 md:pt-4 md:pb-2 md:px-2 border-r border-gray-700/50 z-[60] transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-20' : 'w-[13.5rem]'}`}>
   <div className={`flex items-center mb-4 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
-            <div className="flex items-center ml-2">
-              <span className="text-xl font-bold text-white">Taskly.Chat</span>
+            <div className="flex items-center ml-2 gap-2">
+              <span className="material-symbols-outlined text-2xl text-white">things_to_do</span>
+              <span className="text-lg font-medium text-white">Taskly.Chat</span>
             </div>
           ) : (
             <div className="hidden" aria-hidden="true"></div>
@@ -339,9 +350,9 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         </div>
 
     <div className="flex-grow flex flex-col min-h-0">
-      <div className="flex-grow overflow-y-auto pr-0">
+  <div className="flex-grow overflow-y-auto pr-0 sidebar-scroll">
               {/* Primary Actions */}
-    <nav className="space-y-0">
+    <nav className="space-y-0 mb-2">
           <NavItem 
             variant="outline" 
             icon={<ChatAddOnIcon className="text-xl"/>} 
@@ -351,12 +362,21 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             rightSlot={<span className="invisible">.</span>} 
           />
         </nav>
-
+        
               {/* Main Views */}
               <nav className="space-y-0">
                   <NavItem icon={<TodayIcon className="text-xl"/>} label={t('dashboard')} isActive={currentView === 'dashboard'} isCollapsed={isCollapsed} onClick={() => onSelectView('dashboard')} />
                   <NavItem icon={<ListAltIcon className="text-xl"/>} label={t('tasks')} isActive={currentView === 'lists'} isCollapsed={isCollapsed} onClick={() => onSelectView('lists')} />
                   <NavItem icon={<NewHabitIcon className="text-xl"/>} label={t('habits')} isActive={currentView === 'habits'} isCollapsed={isCollapsed} onClick={() => onSelectView('habits')} />
+          <NavItem icon={<Icon name="support" className="text-xl" />} label="Requests" isActive={currentView === 'requests'} isCollapsed={isCollapsed} onClick={() => onSelectView('requests')} />
+      {/* Sidebar-specific tweak: reduce scrollbar right gap to feel tighter */}
+      <style>{`
+        .sidebar-scroll::-webkit-scrollbar {
+          width: 6px; /* match global but ensure no extra space from container */
+        }
+        /* Neutralize any default padding that could create a perceived gap */
+        .sidebar-scroll { padding-right: 0 !important; margin-right: 0 !important; }
+      `}</style>
                   <NavItem icon={<CalendarMonthIcon className="text-xl"/>} label={t('calendar')} isActive={currentView === 'calendar'} isCollapsed={isCollapsed} onClick={() => onSelectView('calendar')} />
                   {hasStoriesFeature && (
                     <NavItem 
@@ -416,7 +436,18 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               {/* All Chats */}
               {conversations.length > 0 && (
                 <div className="space-y-0">
-                    {!isCollapsed && <h2 className="px-2 py-1 text-xs font-medium text-gray-400">{t('chats')}</h2>}
+                    {/* Chats section header: show full label when expanded; when collapsed, show a divider with a tiny chat icon */}
+                    {!isCollapsed ? (
+                      <h2 className="px-2 py-1 text-xs font-medium text-gray-400">{t('chats')}</h2>
+                    ) : (
+                      <div className="flex items-center my-1" aria-hidden="false">
+                        <div className="flex-1 h-px bg-gray-700/40" />
+                        <div className="w-9 h-9 mx-auto flex items-center justify-center" title={t('chats')}>
+                          <ChatBubbleIcon className="text-base text-gray-400" />
+                        </div>
+                        <div className="flex-1 h-px bg-gray-700/40" />
+                      </div>
+                    )}
                     {sortedConversations.map(convo => {
                       const project = convo.projectId ? projects.find(p => p.id === convo.projectId) : undefined;
                       const category = project ? userCategories.find(c => c.id === project.categoryId) : undefined;
