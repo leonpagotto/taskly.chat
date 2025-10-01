@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Event, UserCategory, Habit, RecurrenceRule } from '../types';
+import type { Event } from '../types';
+import { UserCategory, Habit, RecurrenceRule } from '../types';
 import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon } from './icons';
 import Header from './Header';
 
@@ -97,7 +98,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
 
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-      <Header title={t('calendar')} onToggleSidebar={onToggleSidebar}>
+  <Header title={t('calendar')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
         <button onClick={() => onNewEventRequest(new Date().toISOString().split('T')[0])} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
           <CalendarAddOnIcon />
           <span className="hidden sm:inline">New Event</span>

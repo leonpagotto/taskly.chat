@@ -41,6 +41,7 @@ import PulseWidget from './PulseWidget';
 import Header from './Header';
 import EmptyStateIcon from './EmptyStateIcon';
 import OnboardingModal from './OnboardingModal';
+import ModalOverlay from './ModalOverlay';
 
 
 const Icon: React.FC<{
@@ -272,8 +273,8 @@ const MonthlyCalendar: React.FC<{
   const handleNextMonth = () => setDisplayDate(new Date(year, month + 1, 1));
 
   return (
-  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm p-4" onClick={e => e.stopPropagation()}>
+  <ModalOverlay onClick={onClose} className="flex items-center justify-center p-4">
+    <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm p-4" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
           <button onClick={handlePrevMonth} className="p-2 rounded-full hover:bg-gray-700"><ChevronLeftIcon /></button>
           <h3 className="font-semibold text-lg">{displayDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
@@ -304,7 +305,7 @@ const MonthlyCalendar: React.FC<{
           })}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 };
 
@@ -319,7 +320,7 @@ const PriorityModal: React.FC<{
         setPriority(p => Math.max(1, Math.min(99, p + amount)));
     }
     return (
-  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
+  <ModalOverlay onClick={onClose} className="flex items-center justify-center p-4">
             <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-xs p-6" onClick={e => e.stopPropagation()}>
                 <h2 className="text-lg font-semibold text-center mb-4">Set a priority</h2>
                 <div className="flex items-center justify-center gap-4 mb-4">
@@ -333,8 +334,8 @@ const PriorityModal: React.FC<{
           <button onClick={onClose} className="flex-1 py-2 rounded-[var(--radius-button)] bg-gray-600 hover:bg-gray-500 font-semibold">Close</button>
           <button onClick={handleSave} className="flex-1 py-2 rounded-[var(--radius-button)] bg-blue-600 hover:bg-blue-500 font-semibold">OK</button>
                 </div>
-            </div>
         </div>
+      </ModalOverlay>
     );
 };
 
@@ -426,7 +427,7 @@ const DashboardItemsModal: React.FC<{
   ) : null;
 
   return (
-  <div className="fixed inset-0 bg-gray-900/80 z-[70] flex items-center justify-center p-4" onClick={onClose}>
+  <ModalOverlay onClick={onClose} className="flex items-center justify-center p-4">
       <div className="bg-gray-800 rounded-2xl border border-gray-700 w-full max-w-sm md:max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
         <header className="p-4 flex items-center justify-between border-b border-gray-700/50 flex-shrink-0">
           <div className="min-w-0">
@@ -489,7 +490,7 @@ const DashboardItemsModal: React.FC<{
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
 
@@ -1808,7 +1809,6 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
         <Header
           title={formatDateForHeader(selectedDate)}
           onToggleSidebar={onToggleSidebar}
-          onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}
         >
           <div className="hidden md:flex items-center gap-2">
             <ProjectFilterDropdown
@@ -1817,7 +1817,14 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
               onSelectProject={setSelectedProjectId}
             />
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-2">
+            {/* Search first, then calendar, then help; equal gaps */}
+            <button
+              onClick={() => window.dispatchEvent(new Event('taskly.openSearch'))}
+              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              aria-label="Search"
+              title="Search (⌘/Ctrl+K)"
+            ><SearchIcon /></button>
             <button
               onClick={() => setIsCalendarOpen(true)}
               className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
@@ -1832,7 +1839,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             ><HelpOutlineIcon /></button>
           </div>
         </Header>
-        <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
+        {/* Divider removed per design: keep header flush with content */}
       </div>
 
       <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto md:overflow-hidden min-h-0">
@@ -1989,9 +1996,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     </div>
                     <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col min-h-0 flex-1 scroll-fade">
                       {(() => {
-                        const centerFewItems = orderedDailyItems.length > 0 && orderedDailyItems.length <= 3;
                         return (
-                          <div className={`px-2 pb-2 pt-1 space-y-2 overflow-y-auto min-h-0 flex-1 ${centerFewItems ? 'flex flex-col justify-center' : ''}`}>
+                          <div className={`px-2 pb-2 pt-1 space-y-2 overflow-y-auto min-h-0 flex-1`}>
                             {orderedDailyItems.length === 0 && (
                               <div className="flex items-center justify-center py-10"><p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p></div>
                             )}

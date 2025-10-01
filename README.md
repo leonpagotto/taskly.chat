@@ -87,6 +87,21 @@ Notes:
 
 ## Folder structure
 
+## Optional: Supabase sync and relational DB
+
+Add a `.env.local` with:
+
+```env
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_ANON_KEY=your-anon-key
+# Optional: enable relational DB reads/writes (still writes JSON app_state for compatibility)
+VITE_USE_REL_DB=true
+```
+
+Then run the SQL in `supabase/schema.sql` in your Supabase project. It includes both the legacy `app_state` table and a normalized schema with row-level security.
+
+Migration: open DevTools Console and run `window.__taskly_migrate && window.__taskly_migrate()` while signed in to upsert your current in-memory state to the relational tables.
+
 ```text
 taskly.chat/
 ├─ components/           # UI pages and shared components

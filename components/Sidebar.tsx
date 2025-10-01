@@ -367,8 +367,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               <nav className="space-y-0">
                   <NavItem icon={<TodayIcon className="text-xl"/>} label={t('dashboard')} isActive={currentView === 'dashboard'} isCollapsed={isCollapsed} onClick={() => onSelectView('dashboard')} />
                   <NavItem icon={<ListAltIcon className="text-xl"/>} label={t('tasks')} isActive={currentView === 'lists'} isCollapsed={isCollapsed} onClick={() => onSelectView('lists')} />
-                  <NavItem icon={<NewHabitIcon className="text-xl"/>} label={t('habits')} isActive={currentView === 'habits'} isCollapsed={isCollapsed} onClick={() => onSelectView('habits')} />
-          <NavItem icon={<Icon name="support" className="text-xl" />} label="Requests" isActive={currentView === 'requests'} isCollapsed={isCollapsed} onClick={() => onSelectView('requests')} />
+      <NavItem icon={<NewHabitIcon className="text-xl"/>} label={t('habits')} isActive={currentView === 'habits'} isCollapsed={isCollapsed} onClick={() => onSelectView('habits')} />
+    <NavItem icon={<Icon name="concierge" className="text-xl" />} label="Requests" isActive={currentView === 'requests'} isCollapsed={isCollapsed} onClick={() => onSelectView('requests')} />
       {/* Sidebar-specific tweak: reduce scrollbar right gap to feel tighter */}
       <style>{`
         .sidebar-scroll::-webkit-scrollbar {

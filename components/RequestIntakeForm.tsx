@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Header from './Header';
-import { Checklist, Request, RequestPriority } from '../types';
+import { ArrowBackIcon } from './icons';
+import { Checklist, Request, RequestPriority, RequestUpdate } from '../types';
 import { generateRequestAssist } from '../services/geminiService';
 import { ChevronRightIcon, AddIcon } from './icons';
+import { relationalDb } from '../services/relationalDatabaseService';
 
 const required = (v?: string | null) => !!v && v.trim().length > 0;
 
@@ -34,6 +36,8 @@ const RequestIntakeForm: React.FC<{
   const [newTaskName, setNewTaskName] = useState('');
   const [selectedExistingId, setSelectedExistingId] = useState('');
   const [assistLoading, setAssistLoading] = useState(false);
+  const [updates, setUpdates] = useState<RequestUpdate[]>([]);
+  const [newRemark, setNewRemark] = useState('');
 
   // Expertise options grouped by category
   const expertiseGroups: { label: string; options: string[] }[] = [
@@ -71,7 +75,13 @@ const RequestIntakeForm: React.FC<{
     });
   };
 
-  const isValid = required(local.product) && required(local.requester) && required(local.problem) && required(local.outcome) && required(local.valueProposition) && required(local.affectedUsers);
+  // Validation: For NEW requests, require Product/Feature, Requester, Problem, and at least one requested expertise.
+  // When editing an existing request, keep validation permissive to allow partial updates.
+  const isEditing = Boolean((initial as any)?.id);
+  const hasExpertise = Array.isArray(local.requestedExpertise) && local.requestedExpertise.length > 0;
+  const isValid = isEditing
+    ? required(local.product) && required(local.requester) && required(local.problem)
+    : required(local.product) && required(local.requester) && required(local.problem) && hasExpertise;
 
   const handle = <K extends keyof typeof local>(k: K, v: (typeof local)[K]) => setLocal(prev => ({ ...prev, [k]: v }));
 
@@ -93,9 +103,49 @@ const RequestIntakeForm: React.FC<{
     }
   };
 
+  // Load request updates when editing an existing request and relational DB is enabled
+  useEffect(() => {
+    const load = async () => {
+      const id = (initial as any)?.id as string | undefined;
+      if (!id || !relationalDb.isEnabled()) return;
+      try {
+        const list = await relationalDb.listRequestUpdates(id);
+        setUpdates(list);
+      } catch (e) {
+        // ignore
+      }
+    };
+    load();
+  }, [(initial as any)?.id]);
+
+  const addRemark = async () => {
+    const id = (initial as any)?.id as string | undefined;
+    const text = newRemark.trim();
+    if (!id || !text || !relationalDb.isEnabled()) return;
+    try {
+      const saved = await relationalDb.addRequestUpdate({ requestId: id, author: 'Me', comment: text } as any);
+      if (saved) setUpdates(prev => [...prev, saved]);
+      setNewRemark('');
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  // moved up for validation
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-  <Header title="New Request" onToggleSidebar={() => {}} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
+  <Header
+        title={
+          <div className="flex items-center gap-2">
+            <button onClick={onBack} className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+              <ArrowBackIcon className="text-base" />
+            </button>
+            <span className="truncate">{isEditing ? 'Edit Request' : 'New Request'}</span>
+          </div>
+        }
+        onToggleSidebar={() => {}}
+        onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}
+      >
         <button onClick={handleAssist} disabled={assistLoading} className="mr-2 px-4 py-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold disabled:opacity-50">{assistLoading ? 'Thinking…' : 'AI Assist'}</button>
         <button onClick={handleSubmit} disabled={!isValid} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold disabled:opacity-50">Submit</button>
       </Header>
@@ -103,27 +153,27 @@ const RequestIntakeForm: React.FC<{
         <div className="mx-auto w-full max-w-3xl space-y-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 space-y-3">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Product / Feature</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Product / Feature <span className="text-red-500">*</span></label>
               <input value={local.product} onChange={e => handle('product', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" placeholder="e.g., Billing, Onboarding, Calendar" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Requester Name / Team</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Requester Name / Team <span className="text-red-500">*</span></label>
               <input value={local.requester} onChange={e => handle('requester', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" placeholder="e.g., Jane Doe / CS" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Request / Problem</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Request / Problem <span className="text-red-500">*</span></label>
               <textarea value={local.problem} onChange={e => handle('problem', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={3} placeholder="What happened? What's the issue?" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Desired Outcome / Goal</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Desired Outcome / Goal <span className="text-gray-400 font-normal">(optional)</span></label>
               <textarea value={local.outcome} onChange={e => handle('outcome', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={2} placeholder="What does success look like?" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Value Proposition (Business value)</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Value Proposition (Business value) <span className="text-gray-400 font-normal">(optional)</span></label>
               <textarea value={local.valueProposition} onChange={e => handle('valueProposition', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={2} placeholder="Why does this matter?" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Affected Users / Customers</label>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Affected Users / Customers <span className="text-gray-400 font-normal">(optional)</span></label>
               <textarea value={local.affectedUsers} onChange={e => handle('affectedUsers', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={2} placeholder="Who is affected? How many?" />
             </div>
           </div>
@@ -131,7 +181,8 @@ const RequestIntakeForm: React.FC<{
           {/* Requested Expertise & Approach */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">Requested Expertise & Approach <span className="text-xs text-gray-500 font-normal">(optional)</span></label>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">Requested Expertise & Approach {isEditing ? (<span className="text-xs text-gray-500 font-normal">(optional)</span>) : (<span className="text-red-500">*</span>)}
+              </label>
               {Boolean(local.requestedExpertise && local.requestedExpertise.length) && (
                 <span className="text-xs text-gray-500">{local.requestedExpertise!.length} selected</span>
               )}
@@ -154,7 +205,10 @@ const RequestIntakeForm: React.FC<{
                 </div>
               ))}
             </div>
-            <div className="mt-3 text-xs text-gray-500">Tip: Select one or more areas if you know the expertise needed. You can leave this blank.</div>
+            <div className="mt-3 text-xs text-gray-500">{isEditing ? 'Tip: Select one or more areas if you know the expertise needed. You can leave this blank.' : 'Please select at least one expertise area for new requests.'}</div>
+            {!isEditing && !hasExpertise && (
+              <div className="mt-2 text-xs text-red-500">Select at least one area to proceed.</div>
+            )}
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -184,6 +238,32 @@ const RequestIntakeForm: React.FC<{
             <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Additional Details / Attachments</label>
             <textarea value={local.details || ''} onChange={e => handle('details', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={4} placeholder="Any additional context (you can paste links to screenshots/docs here)." />
           </div>
+
+          {/* Updates / Remarks timeline (edit mode only) */}
+          {Boolean((initial as any)?.id) && relationalDb.isEnabled() && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Updates</h3>
+              </div>
+              <div className="space-y-2">
+                {updates.length === 0 && <div className="text-sm text-gray-500 dark:text-gray-400">No updates yet.</div>}
+                {updates.map(u => (
+                  <div key={u.id} className="text-sm flex items-start gap-2">
+                    <span className="material-symbols-outlined text-base text-gray-500">schedule</span>
+                    <div className="min-w-0">
+                      <div className="text-gray-500 dark:text-gray-400 text-xs">{new Date(u.createdAt).toLocaleString()}</div>
+                      {u.action && <div className="text-gray-700 dark:text-gray-200">{u.action}</div>}
+                      {u.comment && <div className="text-gray-700 dark:text-gray-200">{u.comment}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <input value={newRemark} onChange={e => setNewRemark(e.target.value)} placeholder="Add a remark" className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" />
+                <button onClick={addRemark} disabled={!newRemark.trim()} className="px-3 py-2 rounded-[var(--radius-button)] bg-gray-200 dark:bg-gray-600 text-sm disabled:opacity-50">Add</button>
+              </div>
+            </div>
+          )}
 
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
             <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Linked Action Items</div>

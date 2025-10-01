@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Project, UserCategory } from '../types';
-import { Icon, ExpandMoreIcon } from './icons';
+import { Icon, ExpandMoreIcon, CalendarTodayIcon } from './icons';
 
 type Period = 'today' | 'week' | 'month';
+type TimeFilterKey = 'all' | 'year' | 'month' | 'week' | 'next30' | 'next7' | 'today' | 'custom';
 
 export interface ToolbarChip {
   key: string;
@@ -29,6 +30,11 @@ interface UnifiedToolbarProps {
   onChangePeriod?: (p: Period) => void;
   showPeriod?: boolean; // default true if period provided
 
+  // Time filter (preferred over period)
+  timeFilter?: TimeFilterKey;
+  onChangeTimeFilter?: (k: TimeFilterKey) => void;
+  customDateRange?: { start: string | null; end: string | null };
+  onChangeCustomDateRange?: (range: { start: string | null; end: string | null }) => void;
   // Generic chips (optional), e.g., status filters
   chips?: ToolbarChip[];
   activeChipKey?: string;
@@ -169,6 +175,108 @@ const SortDropdown: React.FC<{
   );
 };
 
+const TimeDropdown: React.FC<{
+  value: TimeFilterKey;
+  onChange: (k: TimeFilterKey) => void;
+  customRange?: { start: string | null; end: string | null };
+  onChangeCustomRange?: (r: { start: string | null; end: string | null }) => void;
+  buttonClassName?: string;
+  containerClassName?: string;
+}> = ({ value, onChange, customRange, onChangeCustomRange, buttonClassName, containerClassName }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setShowPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const labelFor = (k: TimeFilterKey) => {
+    switch (k) {
+      case 'all': return 'All time';
+      case 'year': return 'This year';
+      case 'month': return 'This month';
+      case 'week': return 'This week';
+      case 'next30': return 'Next 30 days';
+      case 'next7': return 'Next 7 days';
+      case 'today': return 'Today';
+      case 'custom': return customRange?.start && customRange?.end ? `${customRange.start} → ${customRange.end}` : 'Custom range';
+    }
+  };
+
+  const wrapperClass = containerClassName || 'relative flex-1 sm:flex-initial sm:w-56 min-w-0';
+  const selectedLabel = labelFor(value);
+  return (
+    <div ref={dropdownRef} className={wrapperClass}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={buttonClassName || 'w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'}
+      >
+        <div className="flex items-center gap-2 truncate">
+          <CalendarTodayIcon className="text-base flex-shrink-0" />
+          <span className="truncate">{selectedLabel}</span>
+        </div>
+        <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+          {!showPicker ? (
+            <ul className="max-h-80 overflow-y-auto">
+              {(['all','year','month','week','next30','next7','today'] as TimeFilterKey[]).map(k => (
+                <li key={k}>
+                  <button
+                    onClick={() => { onChange(k); setIsOpen(false); }}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === k ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  >
+                    {labelFor(k)}
+                  </button>
+                </li>
+              ))}
+              <li>
+                <button
+                  onClick={() => { onChange('custom'); setShowPicker(true); }}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === 'custom' ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                >
+                  Custom range…
+                </button>
+              </li>
+            </ul>
+          ) : (
+            <div className="p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={customRange?.start || ''}
+                  onChange={(e) => onChangeCustomRange && onChangeCustomRange({ start: e.target.value || null, end: customRange?.end || null })}
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm"
+                />
+                <span className="text-gray-500">to</span>
+                <input
+                  type="date"
+                  value={customRange?.end || ''}
+                  onChange={(e) => onChangeCustomRange && onChangeCustomRange({ start: customRange?.start || null, end: e.target.value || null })}
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm"
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button onClick={() => { onChangeCustomRange && onChangeCustomRange({ start: null, end: null }); onChange('custom'); setIsOpen(false); setShowPicker(false); }} className="px-3 py-1.5 text-sm rounded-md bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500">Clear</button>
+                <button onClick={() => { onChange('custom'); setIsOpen(false); setShowPicker(false); }} className="px-3 py-1.5 text-sm rounded-md bg-[var(--color-primary-600)] text-white hover:opacity-90">Apply</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
   const {
     projects, userCategories,
@@ -193,6 +301,7 @@ const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
     : "flex items-center gap-2 sm:gap-3 flex-nowrap overflow-x-auto scrollbar-hide";
   const filterWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
   const sortWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
+  const timeWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
 
   return (
     <div className={containerClass}>
@@ -201,6 +310,10 @@ const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
       )}
       {!hideCategory && (
         <FilterDropdown items={userCategories} selectedId={selectedCategoryId} onSelect={onChangeCategory} type="category" buttonClassName={controlButtonClass} containerClassName={filterWrap} />
+      )}
+
+      {(props.timeFilter && props.onChangeTimeFilter) && (
+        <TimeDropdown value={props.timeFilter} onChange={props.onChangeTimeFilter} customRange={props.customDateRange} onChangeCustomRange={props.onChangeCustomDateRange} buttonClassName={controlButtonClass} containerClassName={timeWrap} />
       )}
 
       {(sortBy && onChangeSortBy) && (

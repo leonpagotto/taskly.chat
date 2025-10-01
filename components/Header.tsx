@@ -41,7 +41,6 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar, children, leftE
         </div>
       </div>
       <div className="flex-shrink-0 flex items-center gap-2 sm:gap-4">
-        {children}
         {onOpenSearch && (
           <button
             onClick={onOpenSearch}
@@ -52,6 +51,7 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar, children, leftE
             <SearchIcon />
           </button>
         )}
+        {children}
       </div>
     </header>
   );

@@ -75,6 +75,7 @@ interface ListsViewProps {
   onUpdateTask: (checklistId: string, taskId: string, newText: string) => void;
   onDeleteTask: (checklistId: string, taskId: string) => void;
   onDuplicateChecklist: (checklist: Checklist) => void;
+  onShareChecklist: (checklist: Checklist) => void;
   completingItemIds: Set<string>;
   modalToClose: string | null;
   onModalClosed: () => void;
@@ -83,17 +84,33 @@ interface ListsViewProps {
 const TaskItem: React.FC<{
   task: Task; onToggle: () => void; onUpdate: (newText: string) => void; onDelete: () => void;
 }> = ({ task, onToggle, onUpdate, onDelete }) => {
+  const [justChecked, setJustChecked] = useState(false);
+  const visualCompleted = !!task.completedAt || justChecked;
+  const handleToggle = () => {
+    if (!task.completedAt) {
+      setJustChecked(true);
+      window.setTimeout(() => {
+        onToggle();
+        // let parent state take over; reset local once it reflects
+      }, 700);
+    } else {
+      onToggle();
+    }
+  };
+  useEffect(() => {
+    if (task.completedAt && justChecked) setJustChecked(false);
+  }, [task.completedAt, justChecked]);
   return (
     <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-700/60 group">
       <StaticName
           text={task.text}
           Tag="span"
-          className={`flex-1 truncate ${task.completedAt ? 'line-through text-gray-500' : 'text-gray-200'}`}
+          className={`flex-1 truncate ${visualCompleted ? 'line-through text-gray-500' : 'text-gray-200'}`}
       />
       <div className="flex items-center flex-shrink-0 ml-2">
         <button onClick={onDelete} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all" aria-label={`Delete task: ${task.text}`}><DeleteIcon className="w-5 h-5"/></button>
-        <button onClick={onToggle} className="w-8 h-8 flex items-center justify-center flex-shrink-0" aria-label={`Toggle task: ${task.text}`}>
-          {task.completedAt ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
+        <button onClick={handleToggle} className="w-8 h-8 flex items-center justify-center flex-shrink-0" aria-label={`Toggle task: ${task.text}`}>
+          {visualCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
         </button>
       </div>
     </div>
@@ -127,6 +144,7 @@ const ChecklistCard: React.FC<{
   onDeleteTask: (checklistId: string, taskId: string) => void;
   onEdit: () => void;
   onDuplicate: () => void;
+  onShare: () => void;
   isRecentlyCompleted: boolean;
   completingItemIds: Set<string>;
   period?: 'today' | 'week' | 'month';
@@ -142,6 +160,7 @@ const ChecklistCard: React.FC<{
   onDeleteTask,
   onEdit,
   onDuplicate,
+  onShare,
   isRecentlyCompleted,
   completingItemIds,
   period
@@ -150,6 +169,7 @@ const ChecklistCard: React.FC<{
   const [isExpanded, setIsExpanded] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const isAnimatingOut = completingItemIds.has(checklist.id);
+  const [justChecked, setJustChecked] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -170,10 +190,18 @@ const ChecklistCard: React.FC<{
   
   if (isSingleTask) {
     const isCompleted = checklist.completionHistory.length > 0;
+    const visualCompleted = isCompleted || justChecked;
     return (
       <div className={`relative`}>
         <button className={`w-full flex items-center justify-between p-3 bg-white dark:bg-gray-700/50 rounded-xl group transition-all hover:shadow-md ${isRecentlyCompleted ? 'animate-check-reveal' : ''}`}
-                onClick={() => onToggleSingleTaskCompletion(checklist.id)}
+                onClick={() => {
+                  if (!isCompleted) {
+                    setJustChecked(true);
+                    window.setTimeout(() => onToggleSingleTaskCompletion(checklist.id), 700);
+                  } else {
+                    onToggleSingleTaskCompletion(checklist.id);
+                  }
+                }}
                 aria-label={`Toggle task: ${checklist.name}`}>
           <div className="flex items-center min-w-0 flex-1 gap-3">
             {category && (
@@ -184,21 +212,22 @@ const ChecklistCard: React.FC<{
             <StaticName
               text={checklist.name}
               Tag="span"
-              className={`flex-1 truncate text-left ${isCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
+              className={`flex-1 truncate text-left ${visualCompleted ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}
             />
           </div>
           <div className="flex items-center flex-shrink-0 ml-2">
             <div ref={menuRef} className="relative" onClick={(e)=>e.stopPropagation()}>
               <button onClick={() => setMenuOpen(p => !p)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white rounded-full transition-colors opacity-0 group-hover:opacity-100"><MoreVertIcon /></button>
               {isMenuOpen && (
-                <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
+                <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
                   <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
                   <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
+                  <button onClick={() => handleMenuAction(onShare)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><WidthNormalIcon className="text-base"/> Share as link</button>
                 </div>
               )}
             </div>
             <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-              {isCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
+              {visualCompleted ? <GradientCheckCircle /> : <RadioButtonUncheckedIcon className="text-2xl text-gray-500" />}
             </div>
           </div>
         </button>
@@ -281,9 +310,10 @@ const ChecklistCard: React.FC<{
             <MoreVertIcon />
           </button>
           {isMenuOpen && (
-            <div className="absolute top-full right-0 mt-1 w-48 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
+            <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl z-10 p-1">
               <button onClick={() => handleMenuAction(onEdit)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><EditIcon className="text-base"/> Edit</button>
               <button onClick={() => handleMenuAction(onDuplicate)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><TabDuplicateIcon className="text-base"/> Duplicate</button>
+              <button onClick={() => handleMenuAction(onShare)} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"><WidthNormalIcon className="text-base"/> Share as link</button>
             </div>
           )}
         </div>
@@ -320,20 +350,22 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
     projects, checklists, userCategories, onNewChecklistRequest, onEditChecklistRequest, onUpdateChecklist,
     onDeleteChecklist, onToggleTask, onToggleSingleTaskCompletion, onToggleSidebar, onSelectNote,
     recentlyCompletedItemId, t, onCreateTask, onUpdateTask, onDeleteTask, onDuplicateChecklist,
+    onShareChecklist,
     completingItemIds, modalToClose, onModalClosed
   } = props;
   
   // Persisted filter state keys
   const STORAGE_KEY = 'tasks.filters.v1';
   type Period = 'today' | 'week' | 'month';
+  type TimeFilterKey = 'all' | 'year' | 'month' | 'week' | 'next30' | 'next7' | 'today' | 'custom';
   type Status = 'all' | 'completed' | 'overdue' | 'todo';
   type SortBy = 'time' | 'priority' | 'name';
-  type Persisted = { projectId: string | 'all'; categoryId: string | 'all'; period: Period; status: Status; sortBy: SortBy };
+  type Persisted = { projectId: string | 'all'; categoryId: string | 'all'; period?: Period; status: Status; sortBy: SortBy; timeFilter?: TimeFilterKey; customStart?: string | null; customEnd?: string | null };
 
   const loadPersisted = (): Persisted => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time' } as Persisted;
+      if (!raw) return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time', timeFilter: 'all', customStart: null, customEnd: null } as Persisted;
       const data = JSON.parse(raw) as Partial<Persisted>;
       return {
         projectId: data.projectId ?? 'all',
@@ -341,9 +373,12 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         period: (data.period as Period) ?? 'today',
         status: (data.status as Status) ?? 'all',
         sortBy: (data.sortBy as SortBy) ?? 'time',
+        timeFilter: (data.timeFilter as TimeFilterKey) ?? 'all',
+        customStart: data.customStart ?? null,
+        customEnd: data.customEnd ?? null,
       };
     } catch {
-      return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time' } as Persisted;
+      return { projectId: 'all', categoryId: 'all', period: 'today', status: 'all', sortBy: 'time', timeFilter: 'all', customStart: null, customEnd: null } as Persisted;
     }
   };
 
@@ -351,17 +386,19 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
 
   const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(persisted.projectId);
   const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(persisted.categoryId);
-  const [period, setPeriod] = useState<Period>(persisted.period);
+  const [period, setPeriod] = useState<Period>(persisted.period ?? 'today');
   const [sortBy, setSortBy] = useState<SortBy>(persisted.sortBy);
   const [statusFilter, setStatusFilter] = useState<Status>(persisted.status);
+  const [timeFilter, setTimeFilter] = useState<TimeFilterKey>(persisted.timeFilter ?? 'all');
+  const [customRange, setCustomRange] = useState<{ start: string | null; end: string | null }>({ start: persisted.customStart ?? null, end: persisted.customEnd ?? null });
   // Always include undated as per spec; no state needed
 
   useEffect(() => {
     try {
-      const data: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, period, status: statusFilter, sortBy };
+      const data: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, period, status: statusFilter, sortBy, timeFilter, customStart: customRange.start, customEnd: customRange.end };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch {}
-  }, [selectedProjectId, selectedCategoryId, period, statusFilter, sortBy]);
+  }, [selectedProjectId, selectedCategoryId, period, statusFilter, sortBy, timeFilter, customRange]);
 
   const today = new Date();
   const toISO = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -369,13 +406,41 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
   const endOfWeek = (() => { const d = new Date(startOfWeek); d.setDate(d.getDate()+6); return d; })();
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   const endOfMonth = new Date(today.getFullYear(), today.getMonth()+1, 0);
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
+  const endOfYear = new Date(today.getFullYear(), 11, 31);
 
-  const inPeriod = (cl: Checklist) => {
-  if (!cl.dueDate) return true; // always include undated
+  const inTimeFilter = (cl: Checklist) => {
+    // Always include undated
+    if (!cl.dueDate) return true;
     const due = new Date(cl.dueDate + 'T00:00:00');
-    if (period === 'today') return due.toDateString() === today.toDateString();
-    if (period === 'week') return due >= startOfWeek && due <= endOfWeek;
-    return due >= startOfMonth && due <= endOfMonth;
+    switch (timeFilter) {
+      case 'all':
+        return true;
+      case 'today':
+        return due.toDateString() === today.toDateString();
+      case 'week':
+        return due >= startOfWeek && due <= endOfWeek;
+      case 'month':
+        return due >= startOfMonth && due <= endOfMonth;
+      case 'year':
+        return due >= startOfYear && due <= endOfYear;
+      case 'next7': {
+        const end = new Date(today); end.setDate(end.getDate()+7);
+        return due >= today && due <= end;
+      }
+      case 'next30': {
+        const end = new Date(today); end.setDate(end.getDate()+30);
+        return due >= today && due <= end;
+      }
+      case 'custom': {
+        if (!customRange.start && !customRange.end) return true;
+        const start = customRange.start ? new Date(customRange.start + 'T00:00:00') : new Date('1970-01-01T00:00:00');
+        const end = customRange.end ? new Date(customRange.end + 'T23:59:59') : new Date('2999-12-31T23:59:59');
+        return due >= start && due <= end;
+      }
+      default:
+        return true;
+    }
   };
 
   const isCompletedOverall = (cl: Checklist) => {
@@ -407,7 +472,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
   const filteredChecklists = sortedChecklists.filter(cl => {
     const projectMatch = selectedProjectId === 'all' || cl.projectId === selectedProjectId;
     const categoryMatch = selectedCategoryId === 'all' || cl.categoryId === selectedCategoryId;
-    const periodMatch = inPeriod(cl);
+    const periodMatch = inTimeFilter(cl);
     let statusMatch = true;
     if (statusFilter === 'completed') statusMatch = isCompletedOverall(cl);
     else if (statusFilter === 'overdue') statusMatch = isOverdue(cl);
@@ -439,18 +504,17 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
 
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-      <Header title={t('tasks')} onToggleSidebar={onToggleSidebar}>
+  <Header title={t('tasks')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
         <button onClick={onNewChecklistRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
           <NewTaskIcon />
           <span className="hidden sm:inline">{t('new_task')}</span>
         </button>
       </Header>
       <div className="flex-1 overflow-y-auto">
-        {/* Toolbar bar (period toggle removed) */}
-        <div className={`bg-gray-100 dark:bg-gray-800`}>
+        {/* Full-width toolbar with bottom divider */}
+        <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="px-4 sm:px-6">
-            <div className="mx-auto w-full max-w-[52rem]">
-              <div className="pt-4">
+              <div className="w-full py-4">
                 {/* Row: Filters + Sort (styled like other controls) */}
                 <UnifiedToolbar
                   projects={projects}
@@ -468,10 +532,12 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                   ]}
                   compactHeight="h10"
                   fluidControls
+                  timeFilter={timeFilter}
+                  onChangeTimeFilter={(k) => setTimeFilter(k as TimeFilterKey)}
+                  customDateRange={customRange}
+                  onChangeCustomDateRange={(r) => setCustomRange(r)}
                 />
-                <div className="pb-2" />
               </div>
-            </div>
           </div>
         </div>
         <div className="px-4 sm:px-6">
@@ -487,7 +553,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
           </div>
         )}
         {checklists.length === 0 ? (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center h-full p-6">
+          <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
             <EmptyStateIcon icon={<ListAltIcon />} size="lg" />
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_tasks_yet')}</h2>
             <p className="max-w-md mt-1 mb-6">{t('no_tasks_yet_subtitle')}</p>
@@ -496,8 +562,8 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
             </button>
           </div>
         ) : filteredChecklists.length === 0 ? (
-          <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
-            <p>No tasks match the current filters.</p>
+          <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
+            <p className="mb-2">No tasks match the current filters.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -514,6 +580,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                 onDeleteTask={onDeleteTask}
                 onEdit={() => onEditChecklistRequest(list)}
                 onDuplicate={() => onDuplicateChecklist(list)}
+                onShare={() => onShareChecklist(list)}
                 isRecentlyCompleted={recentlyCompletedItemId === list.id}
                 completingItemIds={completingItemIds}
                 onToggleSingleTaskCompletion={onToggleSingleTaskCompletion}

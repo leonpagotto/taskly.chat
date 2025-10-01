@@ -147,7 +147,7 @@ const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = (props) => {
 
     return (
         <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-            <Header title={headerTitle as any} onToggleSidebar={onToggleSidebar}>
+            <Header title={headerTitle as any} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
                 <button onClick={() => onEdit(project)} className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-[var(--radius-button)]">
                     <EditIcon />
                 </button>

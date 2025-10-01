@@ -39,7 +39,7 @@ const ProjectCard: React.FC<{
 const ProjectsListPage: React.FC<ProjectsListPageProps> = ({ projects, userCategories, onSelectProject, onNewProject, onToggleSidebar, t }) => {
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-      <Header title={t('projects')} onToggleSidebar={onToggleSidebar}>
+  <Header title={t('projects')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
         <button onClick={onNewProject} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
           <CreateNewFolderIcon />
           <span className="hidden sm:inline">{t('new_project')}</span>
@@ -60,7 +60,7 @@ const ProjectsListPage: React.FC<ProjectsListPageProps> = ({ projects, userCateg
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center h-full p-6">
+          <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
             <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 flex items-center justify-center shadow-md mb-6">
               <FolderIcon className="text-4xl text-white" />
             </div>

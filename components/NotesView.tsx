@@ -450,6 +450,36 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                         <PlaylistAddCheckIcon className="text-base" />
                         <span className="hidden sm:inline">{isGeneratingTasks ? 'Generating...' : 'Generate Tasks'}</span>
                     </button>
+                    <button
+                        onClick={() => {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = note.content;
+                            // heuristics to derive problem/outcome from note
+                            const firstP = tempDiv.querySelector('p')?.textContent?.trim() || '';
+                            const allText = tempDiv.textContent?.trim() || '';
+                            const problem = firstP || note.name;
+                            const outcome = '';
+                            const draft = {
+                                product: project?.name || 'General',
+                                requester: 'Unknown',
+                                problem,
+                                outcome,
+                                valueProposition: '',
+                                affectedUsers: '',
+                                priority: 'medium',
+                                details: allText,
+                                status: 'new',
+                                linkedTaskIds: [],
+                                requestedExpertise: [],
+                            } as Partial<Request>;
+                            window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
+                        }}
+                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700"
+                        title="Convert to Request"
+                    >
+                        <AddIcon className="text-base" />
+                        <span className="hidden sm:inline">Request</span>
+                    </button>
                     <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700">
                         <CreateNewFolderIcon className="text-base" />
                     </button>

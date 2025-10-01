@@ -1,49 +1,112 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import Header from './Header';
 import { Request, RequestPriority, RequestStatus } from '../types';
-import { ChevronRightIcon, AddIcon, PlaylistAddIcon, MoreVertIcon, Icon, ExpandMoreIcon } from './icons';
-import UnifiedToolbar from './UnifiedToolbar';
 import { parseRequestFromPrompt, isAIAvailable } from '../services/geminiService';
+import UnifiedToolbar from './UnifiedToolbar';
+import { Icon, ExpandMoreIcon } from './icons';
 import { useRequestsFilters } from '../utils/useRequestsFilters';
-
-// Normalize legacy request statuses to the new expanded set
-const normalizeStatus = (s: RequestStatus): RequestStatus => {
-  const map: Partial<Record<RequestStatus, RequestStatus>> = {
-    new: 'open',
-    triage: 'in_review',
-  blocked: 'in_review',
-    done: 'closed',
-    cancelled: 'closed',
-  };
-  return map[s] || s;
-};
-
-const PriorityBadge: React.FC<{ p: RequestPriority }> = ({ p }) => {
-  const color = p === 'critical' ? 'bg-red-600/20 text-red-400' : p === 'high' ? 'bg-orange-500/20 text-orange-400' : p === 'medium' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-600/20 text-green-400';
-  return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${color}`}>{p}</span>;
-};
-const StatusBadge: React.FC<{ s: RequestStatus }> = ({ s }) => {
-  const n = normalizeStatus(s) as 'open' | 'in_review' | 'in_progress' | 'closed';
-  const colorMap: Record<typeof n, string> = {
-    open: 'bg-blue-600/20 text-blue-400',
-    in_review: 'bg-purple-600/20 text-purple-400',
-    in_progress: 'bg-amber-600/20 text-amber-400',
-    closed: 'bg-gray-600/30 text-gray-400',
-  } as const;
-  const label = String(n).replace('_', ' ');
-  return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${colorMap[n]}`}>{label}</span>;
-};
 
 type Mode = 'list' | 'board';
 
-const RequestsListPage: React.FC<{
+const normalizeStatus = (s: RequestStatus): Exclude<RequestStatus, 'new'|'triage'|'blocked'|'done'|'cancelled'> => {
+  const map: Partial<Record<RequestStatus, RequestStatus>> = {
+    new: 'open',
+    triage: 'in_review',
+    blocked: 'in_review',
+    done: 'closed',
+    cancelled: 'closed',
+  };
+  return (map[s] || s) as any;
+};
+
+const columns: { key: Exclude<RequestStatus, 'new'|'triage'|'blocked'|'done'|'cancelled'>; title: string }[] = [
+  { key: 'open', title: 'Open' },
+  { key: 'in_review', title: 'In Review' },
+  { key: 'in_progress', title: 'In Progress' },
+  { key: 'closed', title: 'Closed' },
+];
+
+const PriorityDot: React.FC<{ p: RequestPriority }> = ({ p }) => {
+  const color = p === 'critical' ? 'bg-red-500' : p === 'high' ? 'bg-orange-500' : p === 'medium' ? 'bg-yellow-400' : 'bg-green-500';
+  return <span className={`inline-block w-2 h-2 rounded-full ${color}`} />;
+};
+
+const RequestCard: React.FC<{
+  r: Request;
+  onSelect: (id: string) => void;
+  onGenerateStories: (id: string) => void;
+}> = ({ r, onSelect, onGenerateStories }) => {
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', r.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  return (
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none"
+      onClick={() => onSelect(r.id)}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="font-semibold text-sm text-gray-900 dark:text-white truncate">{r.product || 'Untitled'}</div>
+        <PriorityDot p={r.priority} />
+      </div>
+      <div className="mt-1 text-xs text-gray-600 dark:text-gray-300 line-clamp-2" title={r.problem}>{r.problem}</div>
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onGenerateStories(r.id); }}
+          className="px-2 py-1 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-xs font-semibold"
+          title="Generate Stories with AI"
+        >
+          <span className="material-symbols-outlined text-sm align-middle mr-1">auto_stories</span>
+          Stories
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Column: React.FC<{
+  title: string;
+  status: Exclude<RequestStatus, 'new'|'triage'|'blocked'|'done'|'cancelled'>;
+  items: Request[];
+  onDrop: (id: string, to: RequestStatus) => void;
+  onSelect: (id: string) => void;
+  onGenerateStories: (id: string) => void;
+}> = ({ title, status, items, onDrop, onSelect, onGenerateStories }) => {
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/plain');
+    if (id) onDrop(id, status);
+  };
+  return (
+    <div className="flex-1 min-w-[220px]">
+      <div className="px-3 py-2 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">{title}</h3>
+        <span className="text-xs text-gray-500">{items.length}</span>
+      </div>
+      <div onDragOver={handleDragOver} onDrop={handleDrop} className="p-2 space-y-2 rounded-lg min-h-[200px] bg-gray-100/70 dark:bg-gray-700/40 border border-dashed border-gray-300 dark:border-gray-600">
+        {items.map(r => (
+          <RequestCard key={r.id} r={r} onSelect={onSelect} onGenerateStories={onGenerateStories} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const RequestsBoardPage: React.FC<{
   requests: Request[];
   onBack: () => void;
   onSelect: (id: string) => void;
+  onMove: (id: string, to: RequestStatus) => void;
   onNew: () => void;
+  onGenerateStories: (id: string) => void;
   mode: Mode;
   onToggleMode: (mode: Mode) => void;
-}> = ({ requests, onBack, onSelect, onNew, mode, onToggleMode }) => {
+}> = ({ requests, onBack, onSelect, onMove, onNew, onGenerateStories, mode, onToggleMode }) => {
+  // Filters and search
   const [q, setQ] = useState('');
   const { status, setStatus, priority, setPriority, expertise, setExpertise, sortBy, setSortBy } = useRequestsFilters();
 
@@ -64,23 +127,28 @@ const RequestsListPage: React.FC<{
     });
   }, [requests, q, status, priority, expertise]);
 
-  const sorted = useMemo(() => {
-    const arr = [...filtered];
-  switch (sortBy) {
+  const sortRequests = (arr: Request[]) => {
+    const copy = [...arr];
+    switch (sortBy) {
       case 'updated':
-        return arr.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+        return copy.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
       case 'created':
-        return arr.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        return copy.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
       case 'priority': {
         const order: Record<RequestPriority, number> = { critical: 4, high: 3, medium: 2, low: 1 } as any;
-        return arr.sort((a, b) => (order[b.priority] || 0) - (order[a.priority] || 0));
+        return copy.sort((a, b) => (order[b.priority] || 0) - (order[a.priority] || 0));
       }
       case 'name':
-        return arr.sort((a, b) => (a.product || '').localeCompare(b.product || ''));
+        return copy.sort((a, b) => (a.product || '').localeCompare(b.product || ''));
       default:
-        return arr;
+        return copy;
     }
-  }, [filtered, sortBy]);
+  };
+
+  const grouped = columns.map(c => ({
+    ...c,
+    items: sortRequests(filtered.filter(r => normalizeStatus(r.status) === c.key))
+  }));
 
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
@@ -139,116 +207,32 @@ const RequestsListPage: React.FC<{
           </div>
         </div>
       </div>
-
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
-        <div className="mx-auto w-full max-w-6xl space-y-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden">
-            <div className="divide-y divide-gray-200 dark:divide-gray-700/60">
-              {sorted.map(r => (
-                <RequestCard key={r.id} r={r} onSelect={onSelect} />
-              ))}
-              {sorted.length === 0 && (
-                <div className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
-                  <div className="mx-auto max-w-md">
-                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700/70 flex items-center justify-center mx-auto mb-3">
-                      <span className="material-symbols-outlined text-3xl">concierge</span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">No requests yet</h3>
-                    <p className="text-sm mt-1">Create your first request using the button in the top right.</p>
-                  </div>
-                </div>
-              )}
-            </div>
+      <main className="flex-1 overflow-y-auto p-3 sm:p-4">
+        <div className="mx-auto w-full max-w-[1400px]">
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto">
+            {grouped.map(col => (
+              <Column
+                key={col.key}
+                title={col.title}
+                status={col.key}
+                items={col.items}
+                onDrop={onMove}
+                onSelect={onSelect}
+                onGenerateStories={onGenerateStories}
+              />
+            ))}
           </div>
         </div>
       </main>
+      {/* Bottom prompt bar to create request from a single message */}
       <BottomPromptBar />
     </div>
   );
 };
 
-export default RequestsListPage;
+export default RequestsBoardPage;
 
-// Inline component for cleaner card rendering
-const RequestCard: React.FC<{ r: Request; onSelect: (id: string) => void; }> = ({ r, onSelect }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => {
-    const onDoc = () => setMenuOpen(false);
-    document.addEventListener('click', onDoc);
-    return () => document.removeEventListener('click', onDoc);
-  }, []);
-  const onCardClick = () => onSelect(r.id);
-  const stop = (e: React.MouseEvent) => e.stopPropagation();
-  return (
-    <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/40 cursor-pointer relative" onClick={onCardClick}>
-      <div className="flex items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="font-semibold text-gray-900 dark:text-white truncate">{r.product || 'Untitled request'}</div>
-            <div className="text-xs text-gray-500 truncate">{r.requester}</div>
-          </div>
-          <div className="mt-1 text-sm text-gray-700 dark:text-gray-200 line-clamp-2" title={r.problem}>{r.problem}</div>
-          {Boolean(r.requestedExpertise && r.requestedExpertise.length) && (
-            <div className="mt-2 flex flex-wrap gap-1">
-              {(r.requestedExpertise || []).slice(0, 6).map(tag => (
-                <span key={tag} className="px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-[11px] text-gray-800 dark:text-gray-200">{tag}</span>
-              ))}
-              {(r.requestedExpertise!.length > 6) && <span className="text-[11px] text-gray-500">+{r.requestedExpertise!.length - 6} more</span>}
-            </div>
-          )}
-          <div className="mt-2 flex items-center gap-2">
-            <PriorityBadge p={r.priority} />
-            <StatusBadge s={r.status} />
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createStoryFromRequest', { detail: { id: r.id } })), 0); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:shadow transition-all inline-flex items-center justify-center"
-              title="Create Story from Request"
-              aria-label="Create Story"
-            >
-              <AddIcon className="text-sm" />
-            </button>
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createTasksForRequest', { detail: { id: r.id } })), 0); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 inline-flex items-center justify-center"
-              title="Create Tasks for Request"
-              aria-label="Create Tasks"
-            >
-              <PlaylistAddIcon className="text-sm" />
-            </button>
-            <button
-              onClick={(e) => { stop(e); setMenuOpen(v => !v); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 inline-flex items-center justify-center"
-              title="More actions"
-              aria-label="More actions"
-            >
-              <MoreVertIcon />
-            </button>
-          </div>
-        </div>
-      </div>
-      {menuOpen && (
-        <div className="absolute right-2 top-12 z-10 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-1" onClick={stop}>
-          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createStoryFromRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <AddIcon className="text-base" /> Create Story
-          </button>
-          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createTasksForRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <PlaylistAddIcon className="text-base" /> Create Tasks
-          </button>
-          <div className="my-1 h-px bg-gray-200 dark:bg-gray-700" />
-          <button onClick={() => { setMenuOpen(false); onSelect(r.id); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <span className="material-symbols-outlined text-base">edit</span> View / Edit
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Bottom input for creating a request from a single message
+// Lightweight bottom prompt bar component
 const BottomPromptBar: React.FC = () => {
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -271,7 +255,7 @@ const BottomPromptBar: React.FC = () => {
   };
   return (
     <div className="p-2 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-[1400px]">
         <div className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 rounded-xl px-2 py-2">
           <input
             value={text}
@@ -288,7 +272,7 @@ const BottomPromptBar: React.FC = () => {
   );
 };
 
-// Compact dropdowns used in toolbar
+// Compact dropdown helpers reused from list page
 const useOutsideClose = (ref: React.RefObject<HTMLElement>, onClose: () => void) => {
   useEffect(() => {
     const onDoc = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) onClose(); };

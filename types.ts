@@ -153,11 +153,61 @@ export type Story = {
   estimatePoints?: number; // story points
   estimateTime?: string; // optional time estimate (e.g., "3h", "1d")
   linkedTaskIds: string[]; // Checklist IDs linked to this story
+  // Assignee/Requester fields (free-form name and/or user id)
+  assigneeUserId?: string;
+  assigneeName?: string;
+  requesterUserId?: string;
+  requesterName?: string;
   createdAt: string; // ISO
   updatedAt: string; // ISO
 };
 
-export type AppView = 'dashboard' | 'lists' | 'habits' | 'settings' | 'notes' | 'files' | 'projects' | 'calendar' | 'stories' | 'storyEditor';
+export type AppView = 'dashboard' | 'lists' | 'habits' | 'settings' | 'notes' | 'files' | 'projects' | 'calendar' | 'stories' | 'storyEditor' | 'requests' | 'requestIntake';
+
+// --- Requests Intake ---
+export type RequestPriority = 'low' | 'medium' | 'high' | 'critical';
+// Expanded RequestStatus to support triage workflow; legacy values remain mapped in UI
+export type RequestStatus =
+  | 'new'            // legacy "Open"
+  | 'triage'         // legacy "In Review"
+  | 'in_progress'    // In Progress
+  | 'blocked'        // On Hold
+  | 'done'           // legacy "Closed"
+  | 'cancelled'      // Closed
+  | 'open'
+  | 'in_review'
+  | 'closed';
+export type RequestAttachment = { name: string; url: string; type?: string; size?: number };
+export type Request = {
+  id: string;
+  product: string; // Product/Feature involved
+  requester: string; // Requester Name/Team
+  problem: string; // Request/Problem description
+  outcome: string; // Desired Outcome/Goal
+  valueProposition: string; // Business value
+  affectedUsers: string; // Affected Users/Customers
+  priority: RequestPriority;
+  // New: Requested Expertise & Approach (optional multi-select)
+  requestedExpertise?: string[];
+  desiredStartDate?: string | null; // YYYY-MM-DD
+  desiredEndDate?: string | null;   // YYYY-MM-DD
+  details?: string; // Additional details
+  attachments?: RequestAttachment[];
+  status: RequestStatus;
+  linkedTaskIds: string[]; // Checklist IDs created/linked for this request
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+};
+
+// Activity log entries for requests (remarks, actions, status changes)
+export type RequestUpdate = {
+  id: string;
+  requestId: string;
+  author: string; // free text for now (name or email)
+  comment?: string; // remark text
+  action?: string; // structured action, e.g., "Status changed from Open -> In Review"
+  createdAt: string; // ISO
+};
 
 // --- User Preferences ---
 export type AIPersonality = 'smart' | 'direct' | 'concise' | 'encouraging' | 'gen_z' | 'conservative';
@@ -196,6 +246,11 @@ export type UserPreferences = {
   pulseWidgets: PulseWidgetConfig[];
   // Controls how much project context is sent to the AI
   aiSnapshotVerbosity?: 'concise' | 'detailed';
+  // Onboarding & profile
+  onboardingCompleted?: boolean;
+  avatarUrl?: string;
+  contactEmail?: string;
+  defaultView?: AppView;
 };
 
 

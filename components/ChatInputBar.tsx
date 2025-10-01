@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SendIcon, PaperclipIcon, MicIcon, CloseIcon, AttachFileIcon } from './icons';
+import { parseRequestFromPrompt, isAIAvailable } from '../services/geminiService';
 import { AppView, AppLanguage } from '../types';
 
 interface SpeechRecognitionEvent extends Event {
@@ -176,9 +177,43 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
     }
-    if (input.trim()) {
-      onSendMessage(input.trim());
+    const text = input.trim();
+    if (!text) return;
+    // Slash command to create a Request from the message: /request ... or /new-request ...
+    if (text.toLowerCase().startsWith('/request ') || text.toLowerCase().startsWith('/new-request ')) {
+      const payload = text.replace(/^\/(new-)?request\s+/i, '');
+      if (payload) {
+        // Fire and forget; not awaiting here for responsiveness
+        if (!isAIAvailable()) {
+          window.dispatchEvent(new CustomEvent('taskly.toast', { detail: 'AI not configured. Using a simple fallback to seed your request.' }));
+        }
+        parseRequestFromPrompt(payload)
+          .then(draft => {
+            window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
+          })
+          .catch(err => console.warn('Failed to parse request draft', err));
+        setInput('');
+        return;
+      }
+    }
+    onSendMessage(text);
+    setInput('');
+  };
+
+  const handleCreateRequestFromInput = async () => {
+    const text = input.trim();
+    if (!text) return;
+    try {
+      if (!isAIAvailable()) {
+        window.dispatchEvent(new CustomEvent('taskly.toast', { detail: 'AI not configured. Using a simple fallback to seed your request.' }));
+      }
+      const draft = await parseRequestFromPrompt(text);
+      // Open dedicated Request Intake page with AI-filled draft
+      window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
       setInput('');
+    } catch (e) {
+      // Silent fail; optionally we could toast
+      console.warn('Failed to parse request draft', e);
     }
   };
 
@@ -255,6 +290,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
           >
             <SendIcon className="text-2xl" />
           </button>
+          {/* Quick command button removed per request */}
         </div>
         </div>
       </div>

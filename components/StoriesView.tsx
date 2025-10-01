@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Project, UserCategory, Story, StoryStatus } from '../types';
 import { Icon, ExpandMoreIcon } from './icons';
+import { MoreVertIcon } from './icons';
 import UnifiedToolbar from './UnifiedToolbar';
 import Header from './Header';
 import EmptyStateIcon from './EmptyStateIcon';
@@ -68,6 +69,41 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 
 	// Placeholder sorting (no timestamps in Story type yet). Keeps array as-is; hook ready for future fields.
 	const sortedStories = filteredStories; 
+
+	// Simple menu state for per-story actions (Edit/Delete). One menu open at a time.
+	const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
+	useEffect(() => {
+		const onDocClick = () => setMenuOpenFor(null);
+		document.addEventListener('click', onDocClick);
+		return () => document.removeEventListener('click', onDocClick);
+	}, []);
+
+	const renderRightBadges = (s: Story) => {
+		const estimate = (s.estimatePoints ?? undefined) || (s.estimateTime ? undefined : undefined);
+		const estimateLabel = (() => {
+			const pts = s.estimatePoints != null ? `${s.estimatePoints} pts` : '';
+			const time = s.estimateTime || '';
+			if (pts && time) return `${pts} • ${time}`;
+			return pts || time;
+		})();
+		return (
+			<div className="flex items-center gap-2 ml-auto">
+				{estimateLabel && (
+					<span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 whitespace-nowrap">{estimateLabel}</span>
+				)}
+				{s.status && (
+					<span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 capitalize whitespace-nowrap">{s.status.replace('_',' ')}</span>
+				)}
+			</div>
+		);
+	};
+
+	const renderMenu = (sid: string) => (
+		<div className="absolute right-0 top-full mt-1 w-40 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 z-20 p-1" onClick={(e) => e.stopPropagation()}>
+			<button className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-600" onClick={() => { setMenuOpenFor(null); onEditStory?.(sid); }}>Edit</button>
+			<button className="w-full text-left px-3 py-2 text-sm rounded-md text-red-600 hover:bg-red-600/10" onClick={() => { setMenuOpenFor(null); onDeleteStory?.(sid); }}>Delete</button>
+		</div>
+	);
 
 	// Use shared UnifiedToolbar instead of local FilterDropdowns
 
@@ -143,7 +179,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 
 	return (
 		<div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-			<Header title="Stories" onToggleSidebar={onToggleSidebar || (() => {})}>
+			<Header title="Stories" onToggleSidebar={onToggleSidebar || (() => {})} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
 				<button onClick={onCreateStory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
 					<Icon name="auto_stories" />
 					<span className="hidden sm:inline">New Story</span>
@@ -186,7 +222,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 			<div className="px-4 sm:px-6">
 				<div className="w-full py-4 sm:py-6">
 					{sortedStories.length === 0 ? (
-						<div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center">
+						<div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
 							<EmptyStateIcon icon={<Icon name="auto_stories" />} size="lg" />
 							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No stories yet</h2>
 							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">Create your first story to track narrative progress.</p>
@@ -213,27 +249,17 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 													<div className="flex-1 min-w-0">
 														<div className="text-base font-medium text-gray-900 dark:text-white truncate">{story.title}</div>
 													</div>
-													<div className="hidden sm:block">
-														{story.status && (
-															<span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 capitalize">{story.status.replace('_',' ')}</span>
-														)}
-													</div>
-													<div className="hidden md:block text-sm text-gray-500 dark:text-gray-300 truncate min-w-[140px]">{project?.name || '—'}</div>
-													<div className="hidden lg:flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300 truncate min-w-[160px]">
-														{category ? (<><Icon name={category.icon} className="text-sm" style={{ color: category.color }} />{category.name}</>) : '—'}
-													</div>
-													<div className="hidden xl:block text-xs text-gray-500 dark:text-gray-300 min-w-[100px] text-right pr-2">
-														{(story.estimatePoints ?? story.estimateTime) ? (
-															<span>{story.estimatePoints ? `${story.estimatePoints} pts` : ''}{story.estimatePoints && story.estimateTime ? ' • ' : ''}{story.estimateTime || ''}</span>
-														) : ' '}
-													</div>
-													<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-														<button className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-gray-600/50" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEditStory?.(story.id); }} title="Edit">
-															<Icon name="edit" />
+													{/* Right-aligned badges (estimate, status) and 3-dots menu */}
+													<div className="ml-2 flex items-center gap-2 relative">
+														{renderRightBadges(story)}
+														<button
+															onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpenFor(p => p === story.id ? null : story.id); }}
+															className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300/60 dark:hover:bg-gray-600/60"
+															title="More"
+														>
+															<MoreVertIcon />
 														</button>
-														<button className="w-8 h-8 flex items-center justify-center rounded-full text-red-500 hover:text-red-400 hover:bg-red-500/10" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDeleteStory?.(story.id); }} title="Delete">
-															<Icon name="delete" />
-														</button>
+														{menuOpenFor === story.id && renderMenu(story.id)}
 													</div>
 												</div>
 											</button>
@@ -262,9 +288,9 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 									>
 										<div className="flex items-center justify-between mb-2">
 											<h3 className="text-sm font-semibold text-gray-700 dark:text-gray-100">{col}</h3>
-											<span className="text-xs text-gray-400">—</span>
+											<span className="text-xs text-gray-400">{sortedStories.filter(s => s.status === columnStatus).length}</span>
 										</div>
-										<div className="space-y-2 min-h-[60px]">
+										<div className="space-y-2 min-h-[120px]">
 											{sortedStories
 												.filter(s => s.status === columnStatus)
 												.map(s => {
@@ -278,7 +304,8 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 															onClick={() => onSelectStory?.(s.id)}
 															className="w-full text-left p-2 rounded-lg bg-gray-100 dark:bg-gray-600 hover:shadow-md transition-all"
 														>
-															<div className="flex items-start gap-2">
+														<div className="flex items-start justify-between gap-2">
+															<div className="flex items-start gap-2 min-w-0">
 																<div className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
 																	<Icon name={category?.icon || project?.icon || 'auto_stories'} style={{ color: category?.color || project?.color || '#64748B' }} className="text-lg" />
 																</div>
@@ -295,9 +322,27 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 																	)}
 																</div>
 															</div>
+															<div className="flex items-center gap-2 relative">
+																{renderRightBadges(s)}
+																<button
+																	onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpenFor(p => p === s.id ? null : s.id); }}
+																	className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300/60 dark:hover:bg-gray-600/60"
+																	title="More"
+																>
+																	<MoreVertIcon />
+																</button>
+																{menuOpenFor === s.id && renderMenu(s.id)}
+															</div>
+														</div>
 														</button>
 													);
-												})}
+												})
+											}
+											{sortedStories.filter(s => s.status === columnStatus).length === 0 && (
+													<div className="text-center text-gray-500 dark:text-gray-400 py-6">
+														<p className="text-sm">No stories in this column yet.</p>
+													</div>
+												)}
 										</div>
 									</div>
 								);

@@ -38,7 +38,7 @@ const FilesView: React.FC<FilesViewProps> = ({ projectFiles, projects, userCateg
 
     return (
         <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-            <Header title={t('files')} onToggleSidebar={onToggleSidebar} />
+            <Header title={t('files')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))} />
             <div className="flex-1 overflow-y-auto">
               <div className="px-4 sm:px-6">
                 <div className="mx-auto w-full max-w-5xl py-4 sm:py-6">
@@ -78,7 +78,7 @@ const FilesView: React.FC<FilesViewProps> = ({ projectFiles, projects, userCateg
                         })}
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 flex flex-col items-center justify-center h-full p-6">
+                    <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
                         <EmptyStateIcon icon={<FolderOpenIcon />} size="lg" />
                         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_files_yet')}</h2>
                         <p className="max-w-md mt-1 mb-6">{t('no_files_yet_subtitle')}</p>

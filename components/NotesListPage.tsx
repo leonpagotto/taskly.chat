@@ -236,7 +236,7 @@ const NotesListPage: React.FC<{
   // Desktop layout
   return (
     <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-      <Header title={props.t('notes')} onToggleSidebar={props.onToggleSidebar}>
+  <Header title={props.t('notes')} onToggleSidebar={props.onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
         <button
           onClick={() => props.onCreateNote()}
           className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"

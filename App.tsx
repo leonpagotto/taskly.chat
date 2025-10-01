@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import ListsView from './components/ListsView';
 import HabitsView from './components/HabitsView';
 import SettingsView from './components/SettingsView';
+import AuthModal from './components/AuthModal';
 import NotesView from './components/NotesView';
 import NotesListPage from './components/NotesListPage';
 import ProjectModal from './components/ProjectsView';
@@ -18,11 +19,22 @@ import ProjectsListPage from './components/ProjectsListPage';
 import EventModal from './components/EventModal';
 import CalendarView from './components/CalendarView';
 import StoriesView from './components/StoriesView';
+import RequestsListPage from './components/RequestsListPage';
+import RequestIntakeForm from './components/RequestIntakeForm';
+import RequestsBoardPage from './components/RequestsBoardPage';
 import StoryEditorPage from './components/StoryEditorPage';
-import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus } from './types';
+import LandingPage from './components/LandingPage';
+import OnboardingWizard from './components/OnboardingWizard';
+import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request } from './types';
 import { getCombinedSampleData } from './services/sampleDataService';
-import { parseAIResponse, generateTitleForChat } from './services/geminiService';
-import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon } from './components/icons';
+import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
+import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon, SearchIcon } from './components/icons';
+import GlobalSearch from './components/GlobalSearch';
+import { authService, AuthSession } from './services/authService';
+import { databaseService } from './services/databaseService';
+import { migrateToRelational } from './services/migrateToRelational';
+import { relationalDb } from './services/relationalDatabaseService';
+import { offlineSync } from './services/offlineQueue';
 
 
 // === SHARED MODAL COMPONENTS ===
@@ -457,7 +469,18 @@ const TaskEditorModal: React.FC<{
                                <IconSelect items={projects} userCategories={userCategories} selectedId={localData.projectId || ''} onSelect={id => handleUpdateField('projectId', id)} type="project" placeholder="No project" />
                            </FormRow>
                             <FormRow label="Due Date">
-                                <input type="date" value={localData.dueDate || ''} onChange={e => handleUpdateField('dueDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                <div className="flex items-center gap-2">
+                                    <CalendarTodayIcon className="text-base text-gray-400" />
+                                    <input type="date" value={localData.dueDate || ''} onChange={e => handleUpdateField('dueDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    <span className="hidden md:inline text-gray-500">·</span>
+                                    <span className="sr-only">Due time</span>
+                                    <span className="inline-flex items-center gap-2">
+                                        <span className="inline-flex items-center">
+                                            <span className="material-symbols-outlined text-base text-gray-400">schedule</span>
+                                        </span>
+                                        <input type="time" value={localData.dueTime || ''} onChange={e => handleUpdateField('dueTime', e.target.value)} className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </span>
+                                </div>
                             </FormRow>
                             <FormRow label="Priority">
                                 <input type="number" min="1" max="99" value={localData.priority || 10} onChange={e => handleUpdateField('priority', parseInt(e.target.value, 10))} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -927,6 +950,7 @@ export type ViewAction =
     | { type: 'editTask', payload: Checklist } 
     | { type: 'editHabit', payload: Habit } 
     | { type: 'editEvent', payload: Event }
+    | { type: 'newRequest', payload?: Partial<Request> }
     | null;
 
 const App: React.FC = () => {
@@ -937,7 +961,8 @@ const App: React.FC = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
     const [events, setEvents] = useState<Event[]>([]);
     const [stories, setStories] = useState<Story[]>([]);
-  const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+    const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+    const [requests, setRequests] = useState<Request[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [projectFiles, setProjectFiles] = useState<ProjectFile[]>([]);
   const [preferences, setPreferences] = useState<UserPreferences>(defaultPreferences);
@@ -963,10 +988,30 @@ const App: React.FC = () => {
   const [viewAction, setViewAction] = useState<ViewAction>(null);
   const [recentlyCompletedItemId, setRecentlyCompletedItemId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+        const [requestsViewMode, setRequestsViewMode] = useState<'list' | 'board'>(() => {
+            try {
+                const saved = localStorage.getItem('requests.viewMode.v1');
+                if (saved === 'list' || saved === 'board') return saved;
+            } catch {}
+            return 'board';
+        });
+    const [isGlobalSearchOpen, setGlobalSearchOpen] = useState(false);
   const [isMobileChatOpen, setMobileChatOpen] = useState(false);
   const [chatOpenMode, setChatOpenMode] = useState<'text' | 'voice' | null>(null);
   const [completingItemIds, setCompletingItemIds] = useState<Set<string>>(new Set());
   const [modalToClose, setModalToClose] = useState<string | null>(null);
+    const [authSession, setAuthSession] = useState<AuthSession | null>(null);
+    const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showLanding, setShowLanding] = useState(false);
+    const lastSyncToastRef = useRef<number>(0);
+
+    const maybeShowSyncFailureToast = (message?: string) => {
+        const now = Date.now();
+        if (now - lastSyncToastRef.current < 20000) return; // 20s cooldown
+        lastSyncToastRef.current = now;
+        setToastMessage(message || 'You are offline. Changes will sync when reconnected.');
+    };
   const [dashboardDate, setDashboardDate] = useState(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -977,6 +1022,44 @@ const App: React.FC = () => {
 
 
   const t = getT(preferences.language);
+
+    // === Share/Import helpers ===
+    type ShareEnvelope = { v: 1; type: 'checklist' | 'habit'; data: any };
+    const encodeShare = (env: ShareEnvelope) => {
+        try {
+            const json = JSON.stringify(env);
+            return btoa(unescape(encodeURIComponent(json)));
+        } catch {
+            return '';
+        }
+    };
+    const decodeShare = (token: string): ShareEnvelope | null => {
+        try {
+            const json = decodeURIComponent(escape(atob(token)));
+            const obj = JSON.parse(json);
+            if (obj && obj.v === 1 && (obj.type === 'checklist' || obj.type === 'habit')) return obj as ShareEnvelope;
+            return null;
+        } catch {
+            return null;
+        }
+    };
+
+    const buildShareUrl = (token: string) => {
+        if (typeof window === 'undefined') return '';
+        const url = new URL(window.location.href);
+        url.searchParams.set('import', token);
+        return url.toString();
+    };
+
+    const copyToClipboard = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setToastMessage('Share link copied to clipboard');
+        } catch {
+            // Fallback prompt
+            window.prompt('Copy this link', text);
+        }
+    };
 
 
     // Load state from local storage or set initial example data
@@ -995,7 +1078,7 @@ const App: React.FC = () => {
           setPreferences(defaultPreferences);
       }
       
-            if (savedProjects) {
+                    if (savedProjects) {
         setProjects(JSON.parse(savedProjects));
         
         const savedConvos = localStorage.getItem('conversations_v3');
@@ -1017,11 +1100,14 @@ const App: React.FC = () => {
         const savedNotes = localStorage.getItem('notes_v2');
         if(savedNotes) setNotes(JSON.parse(savedNotes));
         
-        const savedFiles = localStorage.getItem('projectFiles_v1');
+    const savedFiles = localStorage.getItem('projectFiles_v1');
         if(savedFiles) setProjectFiles(JSON.parse(savedFiles));
 
         const savedEvents = localStorage.getItem('events_v1');
         if (savedEvents) setEvents(JSON.parse(savedEvents));
+
+    const savedRequests = localStorage.getItem('requests_v1');
+    if (savedRequests) setRequests(JSON.parse(savedRequests));
 
             } else {
                 // Start empty for new users; offer CTA to load sample templates from the dashboard
@@ -1034,6 +1120,8 @@ const App: React.FC = () => {
                 setUserCategories([]);
                 setStories([]);
                 setCurrentView('dashboard');
+                // Show landing page for visitors who haven't started
+                setShowLanding(true);
             }
       
             const savedSidebarCollapsed = localStorage.getItem('sidebarCollapsed');
@@ -1121,13 +1209,15 @@ const App: React.FC = () => {
             localStorage.setItem('habits_v3', JSON.stringify(habits));
             localStorage.setItem('events_v1', JSON.stringify(events));
             localStorage.setItem('stories_v1', JSON.stringify(stories));
+            localStorage.setItem('requests_v1', JSON.stringify(requests));
             localStorage.setItem('userCategories_v2', JSON.stringify(userCategories));
             localStorage.setItem('userPreferences_v3', JSON.stringify(preferences));
             localStorage.setItem('notes_v2', JSON.stringify(notes));
             localStorage.setItem('projectFiles_v1', JSON.stringify(projectFiles));
             localStorage.setItem('sidebarCollapsed', JSON.stringify(isSidebarCollapsed));
+            try { localStorage.setItem('requests.viewMode.v1', requestsViewMode); } catch {}
         } catch (error) { console.error("Failed to save data to localStorage", error); }
-    }, [projects, conversations, checklists, habits, events, stories, userCategories, preferences, notes, projectFiles, isSidebarCollapsed]);
+  }, [projects, conversations, checklists, habits, events, stories, requests, userCategories, preferences, notes, projectFiles, isSidebarCollapsed, requestsViewMode]);
   
   // Apply theme and color preferences to the UI
   useEffect(() => {
@@ -1210,10 +1300,240 @@ const App: React.FC = () => {
       };
   }, [events]);
 
+    // --- Supabase Auth wiring ---
+    useEffect(() => {
+        if (!authService.isEnabled()) return;
+        // Get initial session
+        authService.getSession().then(setAuthSession).catch(() => {});
+        // Subscribe to changes
+        const unsub = authService.onAuthStateChange(setAuthSession);
+        return () => unsub();
+    }, []);
 
-  const handleUpdatePreferences = (newPreferences: Partial<UserPreferences>) => {
-    setPreferences(prev => ({ ...prev, ...newPreferences }));
-  };
+        // Show onboarding after auth if not completed yet
+        useEffect(() => {
+            if (authSession) {
+                setShowLanding(false);
+                // If preferences indicate onboarding not completed, open wizard
+                const completed = (preferences.onboardingCompleted === true);
+                if (!completed) setShowOnboarding(true);
+            }
+        }, [authSession]);
+
+    // --- Cloud persistence (load on login, save on changes) ---
+    const justLoadedFromCloudRef = useRef(false);
+    useEffect(() => {
+            const load = async () => {
+                if (!authSession || !databaseService.isEnabled()) return;
+
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                if (useRelDb && relationalDb.isEnabled()) {
+                    try {
+                        const [cats, projs, lists, habs, evs, nts, files, strs, prefs, convos, reqs] = await Promise.all([
+                            relationalDb.listCategories(),
+                            relationalDb.listProjects(),
+                            relationalDb.listChecklists(),
+                            relationalDb.listHabits(),
+                            relationalDb.listEvents(),
+                            relationalDb.listNotes(),
+                            relationalDb.listFiles(),
+                            relationalDb.listStories(),
+                            relationalDb.getPreferences(),
+                            relationalDb.listConversations(),
+                            relationalDb.listRequests(),
+                        ]);
+                        const anyData = (cats.length + projs.length + lists.length + habs.length + evs.length + nts.length + files.length + strs.length + (convos.length) + reqs.length + (prefs ? 1 : 0)) > 0;
+                        if (anyData) {
+                            justLoadedFromCloudRef.current = true;
+                            setUserCategories(cats);
+                            setProjects(projs);
+                            setChecklists(lists);
+                            setHabits(habs);
+                            setEvents(evs);
+                            setNotes(nts);
+                            setProjectFiles(files);
+                            setStories(strs);
+                            if (prefs) setPreferences({ ...defaultPreferences, ...prefs });
+                            setConversations(convos);
+                            setRequests(reqs);
+                            setToastMessage('Loaded your data from database');
+                            setTimeout(() => { justLoadedFromCloudRef.current = false; }, 800);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('Relational load failed, falling back to app_state', e);
+                    }
+                }
+
+                const remote = await databaseService.loadAppState(authSession.userId);
+                if (remote) {
+                        justLoadedFromCloudRef.current = true;
+                        setProjects(remote.projects || []);
+                        setConversations(remote.conversations || []);
+                        setChecklists(remote.checklists || []);
+                        setHabits(remote.habits || []);
+                        setEvents(remote.events || []);
+                        setStories(remote.stories || []);
+                        setUserCategories(remote.userCategories || []);
+                        setPreferences({ ...defaultPreferences, ...(remote.preferences || {}) });
+                        setNotes(remote.notes || []);
+                        setProjectFiles(remote.projectFiles || []);
+                        setRequests(remote.requests || []);
+                        setToastMessage('Loaded your data from cloud');
+                        // Clear flag after a short delay so subsequent local changes trigger save
+                        setTimeout(() => { justLoadedFromCloudRef.current = false; }, 800);
+                } else {
+                        // No remote yet: seed with current local
+                        const payload = collectAppState();
+                        try { await databaseService.saveAppState(authSession.userId, payload); } catch {}
+                }
+            };
+        load();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authSession?.userId]);
+
+    const collectAppState = (): any => ({
+        projects, conversations, checklists, habits, events, stories, requests, userCategories, preferences, notes, projectFiles,
+    });
+
+        // Dev-only: expose a migration helper to console for manual triggering
+        useEffect(() => {
+            if (typeof window !== 'undefined') {
+                (window as any).__taskly_migrate = async () => {
+                    const state = collectAppState();
+                    const res = await migrateToRelational(state);
+                    if (res.ok) setToastMessage('Migrated data to relational tables');
+                    else setToastMessage('Migration failed: ' + (res.message || ''));
+                    return res;
+                };
+            }
+        }, []);
+
+        // Setup offline reconciliation: on reconnect, push relational state
+        useEffect(() => {
+            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+            if (!useRelDb || !relationalDb.isEnabled()) return;
+            const unsubscribe = offlineSync.setup(collectAppState, migrateToRelational);
+            return () => { unsubscribe && unsubscribe(); };
+        }, []);
+
+    // Debounced save when local state changes and user is logged in
+        useEffect(() => {
+            if (!authSession || !databaseService.isEnabled()) return;
+            if (justLoadedFromCloudRef.current) return;
+            const id = window.setTimeout(() => {
+                const payload = collectAppState();
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                // Always keep JSON app_state up-to-date for backward compatibility
+                databaseService.saveAppState(authSession.userId, payload).catch(() => {});
+                // Optionally mirror to relational tables (idempotent upserts)
+                if (useRelDb && relationalDb.isEnabled()) {
+                    migrateToRelational(payload).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} });
+                }
+            }, 900);
+            return () => clearTimeout(id);
+        }, [authSession, projects, conversations, checklists, habits, events, stories, userCategories, preferences, notes, projectFiles]);
+
+    // On load: handle "import" URL param to import a shared checklist or habit
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('import');
+        if (!token) return;
+        const env = decodeShare(token);
+        if (!env) {
+            // Clean bad param
+            const url = new URL(window.location.href);
+            url.searchParams.delete('import');
+            window.history.replaceState({}, '', url.toString());
+            return;
+        }
+        if (env.type === 'checklist') {
+            const d = env.data as Partial<Checklist> & { tasks?: { text: string }[] };
+            const created = handleCreateChecklist({
+                name: d.name || 'Imported List',
+                tasks: (d.tasks || []).map((t, i) => ({ id: `task-${Date.now()}-${i}`, text: t.text, completedAt: null })),
+                completionHistory: [],
+                priority: d.priority ?? 10,
+                dueDate: d.dueDate || undefined,
+                dueTime: d.dueTime || undefined,
+                recurrence: d.recurrence || undefined,
+            });
+            setCurrentView('lists');
+            setToastMessage(`Imported list: ${created.name}`);
+        } else if (env.type === 'habit') {
+            const d = env.data as Partial<Habit> & { tasks?: { text: string }[] };
+            handleCreateHabit({
+                name: d.name || 'Imported Habit',
+                type: d.type === 'checklist' ? 'checklist' : 'daily_check_off',
+                recurrence: d.recurrence || { type: 'daily', startDate: getISODate() },
+                tasks: (d.tasks || []).map((t, i) => ({ id: `ht-${Date.now()}-${i}`, text: t.text, completedAt: null })),
+            });
+            setCurrentView('habits');
+            setToastMessage('Imported habit');
+        }
+        // Remove the import param from the URL without reloading
+        const url = new URL(window.location.href);
+        url.searchParams.delete('import');
+        window.history.replaceState({}, '', url.toString());
+    }, []);
+
+    // Share actions exposed to child views
+    const handleShareChecklist = (checklist: Checklist) => {
+        const env: ShareEnvelope = {
+            v: 1,
+            type: 'checklist',
+            data: {
+                name: checklist.name,
+                tasks: checklist.tasks.map(t => ({ text: t.text })),
+                priority: checklist.priority ?? 10,
+                dueDate: checklist.dueDate || undefined,
+                dueTime: checklist.dueTime || undefined,
+                recurrence: checklist.recurrence || undefined,
+            },
+        };
+        const token = encodeShare(env);
+        if (!token) return;
+        const url = buildShareUrl(token);
+        copyToClipboard(url);
+    };
+
+    const handleShareHabit = (habit: Habit) => {
+        const env: ShareEnvelope = {
+            v: 1,
+            type: 'habit',
+            data: {
+                name: habit.name,
+                type: habit.type,
+                recurrence: habit.recurrence,
+                tasks: (habit.tasks || []).map(t => ({ text: t.text })),
+            },
+        };
+        const token = encodeShare(env);
+        if (!token) return;
+        const url = buildShareUrl(token);
+        copyToClipboard(url);
+    };
+
+
+    const handleUpdatePreferences = (newPreferences: Partial<UserPreferences>) => {
+        // Merge locally for immediate UI response, and persist to relational DB if enabled
+        setPreferences(prev => {
+            const merged = { ...prev, ...newPreferences };
+            try {
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                if (authSession && useRelDb && relationalDb.isEnabled()) {
+                    relationalDb
+                        .savePreferences(merged)
+                            .catch(() => {
+                            try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+                                maybeShowSyncFailureToast();
+                        });
+                }
+            } catch {}
+            return merged;
+        });
+    };
   const handleResetPreferences = () => setPreferences(defaultPreferences);
   
   const cleanupEmptyNote = (noteId: string | null) => {
@@ -1230,6 +1550,13 @@ const App: React.FC = () => {
         }
     }
   };
+
+    const completeOnboarding = (updates: Partial<UserPreferences>) => {
+        handleUpdatePreferences(updates);
+        setShowOnboarding(false);
+        if (updates.defaultView) setCurrentView(updates.defaultView as AppView);
+        setToastMessage('Welcome to Taskly!');
+    };
   
   const handleNewChat = (projectId?: string) => {
     setPanelChatId(null);
@@ -1281,6 +1608,77 @@ const App: React.FC = () => {
     setSelectedNoteId(null); // Always reset note selection
     if (isMobileSidebarOpen) setMobileSidebarOpen(false);
   };
+
+    // Global search keyboard shortcut when not inside a Header (fallback)
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            if ((isMac && e.metaKey && e.key.toLowerCase() === 'k') || (!isMac && e.ctrlKey && e.key.toLowerCase() === 'k')) {
+                e.preventDefault();
+                setGlobalSearchOpen(true);
+            }
+        };
+        window.addEventListener('keydown', handler);
+            const openEvent = () => setGlobalSearchOpen(true);
+            window.addEventListener('taskly.openSearch', openEvent as any);
+            const onToast = (e: Event) => {
+                const detail = (e as unknown as CustomEvent<string | { message: string }>).detail;
+                const msg = typeof detail === 'string' ? detail : detail?.message;
+                if (msg) setToastMessage(msg);
+            };
+            window.addEventListener('taskly.toast', onToast as any);
+            // Conversion events wiring
+            const onNewRequest = (e: Event) => {
+                const detail = (e as unknown as CustomEvent<any>).detail || {};
+                // Pre-populate requester from auth profile email if missing
+                const payload = { ...detail } as any;
+                if ((!payload.requester || String(payload.requester).trim().length === 0) && authSession?.email) {
+                    payload.requester = authSession.email;
+                }
+                setViewAction({ type: 'newRequest', payload });
+                setCurrentView('requestIntake');
+            };
+            const onCreateStoryFromRequest = (e: Event) => {
+                const detail = (e as unknown as CustomEvent<any>).detail as { id: string };
+                const req = detail?.id ? requests.find(r => r.id === detail.id) : undefined;
+                if (!req) return;
+                // Create a Story seeded from request
+                handleCreateStory({
+                    title: req.product || (req.problem?.slice(0, 60) || 'New Story'),
+                    description: [
+                        req.problem ? `Problem: ${req.problem}` : '',
+                        req.outcome ? `Desired outcome: ${req.outcome}` : '',
+                        req.valueProposition ? `Value: ${req.valueProposition}` : '',
+                        req.affectedUsers ? `Users: ${req.affectedUsers}` : '',
+                        req.details ? `Details: ${req.details}` : '',
+                    ].filter(Boolean).join('\n\n'),
+                    // If the request already has linked tasks, carry them into the story
+                    linkedTaskIds: req.linkedTaskIds || [],
+                });
+            };
+            const onCreateTasksForRequest = (e: Event) => {
+                const detail = (e as unknown as CustomEvent<any>).detail as { id: string };
+                const req = detail?.id ? requests.find(r => r.id === detail.id) : undefined;
+                if (!req) return;
+                // Create a checklist from the request problem and link back
+                const name = (req.problem || req.product || 'Request Tasks').slice(0, 80);
+                const created = handleCreateChecklist({ name, completionHistory: [], tasks: [] });
+                const merged = Array.from(new Set([...(req.linkedTaskIds || []), created.id]));
+                handleUpdateRequest(req.id, { linkedTaskIds: merged });
+                setToastMessage('Tasks created and linked');
+            };
+            window.addEventListener('taskly.newRequest', onNewRequest as any);
+            window.addEventListener('taskly.createStoryFromRequest', onCreateStoryFromRequest as any);
+            window.addEventListener('taskly.createTasksForRequest', onCreateTasksForRequest as any);
+            return () => {
+                window.removeEventListener('keydown', handler);
+                window.removeEventListener('taskly.openSearch', openEvent as any);
+                window.removeEventListener('taskly.toast', onToast as any);
+                window.removeEventListener('taskly.newRequest', onNewRequest as any);
+                window.removeEventListener('taskly.createStoryFromRequest', onCreateStoryFromRequest as any);
+                window.removeEventListener('taskly.createTasksForRequest', onCreateTasksForRequest as any);
+            };
+    }, []);
   
   const handleSelectNote = (noteId: string | null) => {
     setPanelChatId(null);
@@ -1436,11 +1834,23 @@ const App: React.FC = () => {
   };
 
   // Conversation Handlers
-  const handleMoveConversationToProject = (conversationId: string, projectId?: string) => {
-    setConversations(prev => prev.map(c => 
-      c.id === conversationId ? { ...c, projectId: projectId } : c
-    ));
-  };
+    const handleMoveConversationToProject = (conversationId: string, projectId?: string) => {
+        setConversations(prev => prev.map(c => 
+            c.id === conversationId ? { ...c, projectId: projectId } : c
+        ));
+        // Persist change in relational DB if enabled
+        try {
+            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                        const convo = conversations.find(c => c.id === conversationId);
+                        const name = convo?.name || 'Chat';
+                        relationalDb.upsertConversation({ id: conversationId, name, projectId }).catch(() => {
+                            try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+                            maybeShowSyncFailureToast();
+                        });
+                    }
+        } catch {}
+    };
 
   const handleApproveSuggestedTask = (conversationId: string, messageId: string, taskText: string, dueDate?: string) => {
       handleCreateChecklist({ name: taskText, completionHistory: [], tasks: [], dueDate: dueDate || undefined });
@@ -1537,6 +1947,136 @@ const App: React.FC = () => {
     setToastMessage(t('task_created_success'));
     return newChecklist;
   };
+
+    // === Requests Handlers ===
+    const handleCreateRequest = (payload: Omit<Request, 'id' | 'createdAt' | 'updatedAt'>) => {
+        // Simple team routing heuristic based on product
+        // e.g., if product includes 'billing', auto-prefix requester/team
+        const routedRequester = (() => {
+            const p = (payload.product || '').toLowerCase();
+            if (p.includes('billing') || p.includes('payment')) return `${payload.requester} · Team: Billing`;
+            if (p.includes('onboarding') || p.includes('signup')) return `${payload.requester} · Team: Growth`;
+            if (p.includes('calendar') || p.includes('event')) return `${payload.requester} · Team: Calendar`;
+            return payload.requester;
+        })();
+    const req: Request = { id: `req-${Date.now()}`, ...payload, requester: routedRequester, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        setRequests(prev => [req, ...prev]);
+        setToastMessage('Request submitted');
+        // Mirror to relational DB if enabled
+        try {
+            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+            if (authSession && useRelDb && relationalDb.isEnabled()) {
+                relationalDb.upsertRequest(req).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+            }
+        } catch {}
+    };
+    const handleUpdateRequest = (id: string, updates: Partial<Request>) => {
+            const updated = { ...updates, updatedAt: new Date().toISOString() } as Partial<Request>;
+            const prevReq = requests.find(r => r.id === id);
+            setRequests(prev => prev.map(r => r.id === id ? { ...r, ...updated } : r));
+            // Mirror to relational DB if enabled
+            try {
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                if (authSession && useRelDb && relationalDb.isEnabled()) {
+                    const current = prevReq;
+                    const merged = current ? { ...current, ...updated } : null;
+                    if (merged) {
+                      relationalDb.upsertRequest(merged as any).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+                      // If status changed, log a request update entry
+                      if (current && updates.status && updates.status !== current.status) {
+                        const action = `Status changed from ${current.status} -> ${updates.status}`;
+                        relationalDb.addRequestUpdate({ requestId: id, author: preferences.nickname || 'User', action }).catch(() => {});
+                      }
+                    }
+                }
+            } catch {}
+    };
+    const handleDeleteRequest = (id: string) => {
+        setRequests(prev => prev.filter(r => r.id !== id));
+        try {
+            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+            if (authSession && useRelDb && relationalDb.isEnabled()) {
+                relationalDb.deleteRequest(id).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+            }
+        } catch {}
+    };
+
+        // Move request across board columns (update status)
+        const handleMoveRequestStatus = (id: string, to: Request['status']) => {
+            const r = requests.find(x => x.id === id);
+            if (!r) return;
+            handleUpdateRequest(id, { status: to });
+        };
+
+        // AI: Generate stories from a request and move request to in_progress
+        const handleGenerateStoriesFromRequest = async (id: string) => {
+            const r = requests.find(x => x.id === id);
+            if (!r) return;
+            try {
+                const ideas = await generateStoriesFromRequest(r);
+                if (!ideas.length) {
+                    setToastMessage('AI could not generate stories');
+                    return;
+                }
+                // Create stories and link tasks later (optional)
+                const created: Story[] = ideas.map((it) => ({
+                    id: `story-${Date.now()}-${Math.random()}`,
+                    title: it.title,
+                    description: it.description,
+                    projectId: undefined,
+                    categoryId: undefined,
+                    status: 'in_progress',
+                    acceptanceCriteria: [],
+                    linkedTaskIds: [],
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                }));
+                setStories(prev => [...created, ...prev]);
+                // Optionally persist to relational DB
+                try {
+                    const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                        for (const s of created) {
+                            await relationalDb.upsertStory({ id: s.id, title: s.title, description: s.description, projectId: s.projectId, categoryId: s.categoryId, status: s.status, acceptanceCriteria: s.acceptanceCriteria, estimatePoints: s.estimatePoints, estimateTime: s.estimateTime, linkedTaskIds: s.linkedTaskIds, assigneeUserId: s.assigneeUserId, assigneeName: s.assigneeName, requesterUserId: s.requesterUserId, requesterName: s.requesterName });
+                        }
+                    }
+                } catch {}
+                // Move request to in_progress (work started)
+                handleUpdateRequest(id, { status: 'in_progress' });
+                setToastMessage(`Created ${created.length} stor${created.length === 1 ? 'y' : 'ies'} from request`);
+            } catch (e) {
+                setToastMessage('Failed to generate stories');
+            }
+        };
+
+    // Naive status sync: if all linked tasks completed, mark request done; if any linked tasks exist and some are open, mark in_progress
+    useEffect(() => {
+        if (!requests.length) return;
+        setRequests(prev => prev.map(r => {
+            if (!r.linkedTaskIds || r.linkedTaskIds.length === 0) return r;
+            const linked = checklists.filter(cl => r.linkedTaskIds.includes(cl.id));
+            if (linked.length === 0) return r;
+            const allSubtasks = linked.flatMap(cl => cl.tasks);
+            const total = allSubtasks.length;
+            const done = allSubtasks.filter(t => !!t.completedAt).length;
+            let nextStatus: Request['status'] | null = null;
+            if (total > 0 && done === total) nextStatus = 'done';
+            else if (total > 0 && done < total) nextStatus = 'in_progress';
+            if (nextStatus && nextStatus !== r.status) {
+                const merged = { ...r, status: nextStatus, updatedAt: new Date().toISOString() };
+                // Mirror to relational
+                try {
+                    const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                        relationalDb.upsertRequest(merged).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} });
+                    }
+                } catch {}
+                return merged;
+            }
+            return r;
+        }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [checklists]);
   const handleUpdateChecklist = (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => {
     setChecklists(prev => prev.map(cl => cl.id === checklistId ? { ...cl, ...updatedData } : cl));
   };
@@ -1836,6 +2376,17 @@ const App: React.FC = () => {
         setPendingConversation(null);
         setActiveChatId(currentChatId);
         newConversationCreated = true;
+
+                // Persist new conversation in relational DB if enabled
+                try {
+                    const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                                await relationalDb.upsertConversation({ id: newConversation.id, name: newConversation.name, projectId: newConversation.projectId });
+                    }
+                } catch {
+                    try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+                            maybeShowSyncFailureToast();
+                }
     }
     
     if (!currentChatId) return;
@@ -1843,6 +2394,16 @@ const App: React.FC = () => {
     const userMessage: Message = { id: `msg-${Date.now()}`, sender: Sender.User, text: messageText };
     
     setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, userMessage] } : c));
+        // Persist user message to relational DB if enabled
+        try {
+            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+            if (authSession && useRelDb && relationalDb.isEnabled()) {
+                await relationalDb.addMessage(currentChatId, userMessage);
+            }
+        } catch {
+            try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+            maybeShowSyncFailureToast();
+        }
     setIsLoading(true);
 
     try {
@@ -1970,7 +2531,17 @@ const App: React.FC = () => {
             }
         }
         
-        setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, modelMessage] } : c));
+                setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, modelMessage] } : c));
+                // Persist model message to relational DB if enabled
+                        try {
+                    const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                        await relationalDb.addMessage(currentChatId, modelMessage);
+                    }
+                } catch {
+                    try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+                            maybeShowSyncFailureToast();
+                }
     } catch (error) {
         console.error("Error getting AI response:", error);
         const errorMessage: Message = { id: `msg-${Date.now()}-err`, sender: Sender.Model, text: "Sorry, I encountered an error. Please try again." };
@@ -2011,6 +2582,9 @@ const App: React.FC = () => {
             />
             <div className="flex-1 flex flex-col min-w-0 relative">
                 <div className="flex-1 flex flex-col min-h-0">
+                    {showLanding && !authSession && (
+                        <LandingPage onOpenApp={() => setShowLanding(false)} onSignIn={() => setAuthModalOpen(true)} />
+                    )}
                     {activeConversation ? (
                         <ChatView
                             conversation={activeConversation}
@@ -2107,6 +2681,7 @@ const App: React.FC = () => {
                             onUpdateTask={handleUpdateTask}
                             onDeleteTask={handleDeleteTask}
                             onDuplicateChecklist={handleDuplicateChecklist}
+                            onShareChecklist={handleShareChecklist}
                             completingItemIds={completingItemIds}
                             modalToClose={modalToClose}
                             onModalClosed={() => setModalToClose(null)}
@@ -2125,6 +2700,7 @@ const App: React.FC = () => {
                             onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                             recentlyCompletedItemId={recentlyCompletedItemId}
                             t={t}
+                            onShareHabit={handleShareHabit}
                         />
                     ) : currentView === 'settings' ? (
                         <SettingsView
@@ -2137,6 +2713,18 @@ const App: React.FC = () => {
                             onNewCategory={() => handleRequestNewCategory()}
                             onEditCategory={(cat) => setCategoryModalData(cat)}
                             targetTab={targetSettingsTab}
+                            authEmail={authSession?.email || null}
+                            onSignIn={() => setAuthModalOpen(true)}
+                            onSignOut={async () => {
+                                try { await authService.signOut(); } catch {}
+                                // Show in-app landing page after logout
+                                setShowLanding(true);
+                                setCurrentView('dashboard');
+                                setActiveChatId(null);
+                                setActiveProjectId(null);
+                                setSelectedNoteId(null);
+                            }}
+                            supabaseEnabled={authService.isEnabled()}
                         />
                     ) : currentView === 'notes' ? (
                         <NotesListPage
@@ -2215,7 +2803,7 @@ const App: React.FC = () => {
                             onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                             t={t}
                         />
-                    ) : currentView === 'calendar' ? (
+                                        ) : currentView === 'calendar' ? (
                         <CalendarView
                             events={events}
                             habits={habits}
@@ -2225,8 +2813,71 @@ const App: React.FC = () => {
                             onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                             t={t}
                         />
-                    ) : null}
-                </div>
+                                                                                ) : currentView === 'requests' ? (
+                                                                                        requestsViewMode === 'list' ? (
+                                                                                            <RequestsListPage
+                                                                                                requests={requests}
+                                                                                                onBack={() => setCurrentView('dashboard')}
+                                                                                                onSelect={(id) => {
+                                                                                                    const r = requests.find(x => x.id === id);
+                                                                                                    if (!r) return;
+                                                                                                    setViewAction({ type: 'newRequest', payload: r });
+                                                                                                    setCurrentView('requestIntake');
+                                                                                                }}
+                                                                                                onNew={() => { setViewAction({ type: 'newRequest', payload: {} }); setCurrentView('requestIntake'); }}
+                                                                                                mode={requestsViewMode}
+                                                                                                onToggleMode={setRequestsViewMode}
+                                                                                            />
+                                                                                        ) : (
+                                                                                            <RequestsBoardPage
+                                                                                                requests={requests}
+                                                                                                onBack={() => setCurrentView('dashboard')}
+                                                                                                onSelect={(id) => {
+                                                                                                    const r = requests.find(x => x.id === id);
+                                                                                                    if (!r) return;
+                                                                                                    setViewAction({ type: 'newRequest', payload: r });
+                                                                                                    setCurrentView('requestIntake');
+                                                                                                }}
+                                                                                                onMove={handleMoveRequestStatus}
+                                                                                                onNew={() => { setViewAction({ type: 'newRequest', payload: {} }); setCurrentView('requestIntake'); }}
+                                                                                                onGenerateStories={handleGenerateStoriesFromRequest}
+                                                                                                mode={requestsViewMode}
+                                                                                                onToggleMode={setRequestsViewMode}
+                                                                                            />
+                                                                                        )
+                                                                                ) : currentView === 'requestIntake' ? (
+                                            <RequestIntakeForm
+                                                initial={(viewAction?.type === 'newRequest' ? viewAction.payload : undefined) as any}
+                                                onBack={() => {
+                                                    setViewAction(null);
+                                                    setCurrentView('requests');
+                                                }}
+                                                onSubmit={(req) => {
+                                                    const editingId = (viewAction as any)?.payload?.id as string | undefined;
+                                                    if (!editingId) {
+                                                        let linkedIds = req.linkedTaskIds || [];
+                                                        if (!linkedIds.length && req.problem) {
+                                                            const created = handleCreateChecklist({ name: req.problem.slice(0, 80), completionHistory: [], tasks: [] });
+                                                            linkedIds = [created.id];
+                                                        }
+                                                        handleCreateRequest({ ...req, linkedTaskIds: linkedIds });
+                                                    } else {
+                                                        handleUpdateRequest(editingId, { ...req });
+                                                    }
+                                                    setViewAction(null);
+                                                    setCurrentView('requests');
+                                                }}
+                                                onCreateLinkedTask={(name) => {
+                                                    const created = handleCreateChecklist({ name, completionHistory: [], tasks: [] });
+                                                    setToastMessage('Task created');
+                                                }}
+                                                existingChecklists={checklists}
+                                            />
+                                        ) : null}
+                                </div>
+
+                                {/* Request intake is now a dedicated page (currentView === 'requestIntake') */}
+                
 
                 {activeConversation && !isMobileChatOpen && (
                     <div className="hidden md:block">
@@ -2347,6 +2998,44 @@ const App: React.FC = () => {
             )}
             {toastMessage && (
                 <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+            )}
+            {/* Global Search Overlay */}
+            <GlobalSearch
+                isOpen={isGlobalSearchOpen}
+                onClose={() => setGlobalSearchOpen(false)}
+                checklists={checklists}
+                habits={habits}
+                notes={notes}
+                projects={projects}
+                events={events}
+                projectFiles={projectFiles}
+                userCategories={userCategories}
+                onSelectNote={handleSelectNote}
+                onSelectProject={handleSelectProject}
+                onSelectView={handleSelectView}
+            />
+                        {isAuthModalOpen && (
+                            <AuthModal
+                                onClose={() => setAuthModalOpen(false)}
+                                onSubmit={async (email) => {
+                                    const res = await authService.signInWithMagicLink(email);
+                                    if (!res.error) setToastMessage('Check your email to finish sign in');
+                                    return res;
+                                }}
+                                onGoogle={async () => {
+                                    const res = await authService.signInWithGoogle();
+                                    if (!res.error) setToastMessage('Continue in the browser to complete Google sign-in');
+                                    return res;
+                                }}
+                            />
+                        )}
+            {showOnboarding && (
+                <OnboardingWizard
+                  isOpen={showOnboarding}
+                  initial={preferences}
+                  onClose={() => setShowOnboarding(false)}
+                  onComplete={completeOnboarding}
+                />
             )}
             
             <div className="md:hidden">

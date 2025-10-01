@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Event, UserCategory, Project, ReminderSetting } from '../types';
-import { CloseIcon, WarningIcon, AddIcon, FolderIcon, ExpandMoreIcon, NotificationsIcon, DeleteIcon } from './icons';
+import { CloseIcon, WarningIcon, AddIcon, FolderIcon, ExpandMoreIcon, NotificationsIcon, DeleteIcon, CalendarTodayIcon } from './icons';
 import ModalOverlay from './ModalOverlay';
 
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
@@ -108,7 +108,7 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
     }
   }, [localData.projectId, projects]);
 
-    const handleUpdateField = (field: keyof Event, value: any) => {
+  const handleUpdateField = (field: keyof Event, value: any) => {
         setLocalData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -118,10 +118,38 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
             ? currentReminders.filter(r => r !== reminder)
             : [...currentReminders, reminder];
         handleUpdateField('reminders', newReminders);
+        // Politely request permission if user is enabling reminders and permission not yet decided
+        try {
+          if (newReminders.length > 0 && 'Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+          }
+        } catch {}
     };
 
-    const handleSave = () => {
-        if (!localData.title?.trim()) return;
+    // Compute dirty state and time validity
+    const normalizeReminders = (arr?: ReminderSetting[]) => (arr ? [...arr].sort().join(',') : '');
+    const isDirty = (() => {
+      const init = initialData || {};
+      const fields: (keyof Event)[] = ['title','description','categoryId','projectId','startDate','startTime','endDate','endTime','isAllDay'];
+      for (const f of fields) {
+        if ((localData as any)[f] !== (init as any)[f]) return true;
+      }
+      if (normalizeReminders(localData.reminders as ReminderSetting[]) !== normalizeReminders(init.reminders as ReminderSetting[])) return true;
+      return false;
+    })();
+
+    const makeDateTime = (date?: string | null, time?: string | null) => {
+      if (!date) return null;
+      if (!time) return new Date(`${date}T00:00:00`);
+      return new Date(`${date}T${time}`);
+    };
+    const startDT = makeDateTime(localData.startDate || undefined, localData.isAllDay ? null : (localData.startTime || undefined));
+    const endDT = localData.isAllDay ? makeDateTime(localData.startDate || undefined, null) : makeDateTime(localData.endDate || undefined, localData.endTime || undefined);
+    const timeError = (!localData.isAllDay && startDT && endDT && endDT < startDT) ? 'End must be after start.' : null;
+
+  const handleSave = () => {
+    if (!isEditing && !localData.title?.trim()) return;
+    if (timeError) return;
         const dataToSave = { ...localData };
         if (dataToSave.isAllDay) {
             dataToSave.startTime = null;
@@ -171,17 +199,30 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                                <label className="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked={localData.isAllDay} onChange={e => handleUpdateField('isAllDay', e.target.checked)} className="sr-only peer" /><div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label>
                            </FormRow>
                            <FormRow label="Starts">
-                               <div className="flex gap-2">
-                                <input type="date" value={localData.startDate || ''} onChange={e => handleUpdateField('startDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                                {!localData.isAllDay && <input type="time" value={localData.startTime || ''} onChange={e => handleUpdateField('startTime', e.target.value)} className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>}
+                               <div className="flex items-center gap-2">
+                                 <CalendarTodayIcon className="text-base text-gray-400" />
+                                 <input type="date" value={localData.startDate || ''} onChange={e => handleUpdateField('startDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                                 {!localData.isAllDay && (
+                                   <>
+                                     <Icon name="schedule" className="text-base text-gray-400" />
+                                     <input type="time" value={localData.startTime || ''} onChange={e => handleUpdateField('startTime', e.target.value)} className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                                   </>
+                                 )}
                                </div>
                            </FormRow>
-                           {!localData.isAllDay && <FormRow label="Ends">
-                               <div className="flex gap-2">
-                                <input type="date" value={localData.endDate || ''} onChange={e => handleUpdateField('endDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                                <input type="time" value={localData.endTime || ''} onChange={e => handleUpdateField('endTime', e.target.value)} className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                           {!localData.isAllDay && (
+                             <FormRow label="Ends">
+                               <div className="flex items-center gap-2">
+                                 <CalendarTodayIcon className="text-base text-gray-400" />
+                                 <input type="date" value={localData.endDate || ''} onChange={e => handleUpdateField('endDate', e.target.value)} className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                                 <Icon name="schedule" className="text-base text-gray-400" />
+                                 <input type="time" value={localData.endTime || ''} onChange={e => handleUpdateField('endTime', e.target.value)} className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                                </div>
-                           </FormRow>}
+                             </FormRow>
+                           )}
+                           {timeError && (
+                             <div className="text-red-400 text-xs -mt-2">{timeError}</div>
+                           )}
                            <FormRow label="Reminders">
                                 <div className="flex flex-wrap gap-2">
                                     {reminderOptions.map(opt => (
@@ -197,7 +238,7 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                             Delete
                           </button>
                         ) : <div></div>}
-              <button onClick={handleSave} disabled={!localData.title?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
+              <button onClick={handleSave} disabled={(isEditing ? !isDirty : !localData.title?.trim()) || !!timeError} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
                     </footer>
         </div>
       </ModalOverlay>

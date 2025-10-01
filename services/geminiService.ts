@@ -1,5 +1,5 @@
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold, Part, Type } from "@google/genai";
-import { Message, Sender, UserPreferences, AIResponse, AppView, Project, ProjectFile } from '../types';
+import { Message, Sender, UserPreferences, AIResponse, AppView, Project, ProjectFile, Request, RequestPriority, Story } from '../types';
 
 // API key management: env wins, then localStorage fallback; do not crash when missing.
 let ai: GoogleGenAI | null = null;
@@ -20,6 +20,8 @@ const initAI = () => {
   }
 };
 initAI();
+
+export const isAIAvailable = (): boolean => !!ai;
 
 export const setApiKey = (key: string | null) => {
   try {
@@ -293,5 +295,230 @@ export const generateTasksFromNote = async (
   } catch (e) {
     console.error("Failed to parse JSON response from AI for task generation:", e);
     throw new Error("AI response was not valid JSON.");
+  }
+};
+
+// Parse a free-form prompt into a structured Request draft
+export const parseRequestFromPrompt = async (prompt: string): Promise<Partial<Request>> => {
+  if (!ai) initAI();
+
+  // Fallback when AI isn't configured: seed minimal draft
+  if (!ai) {
+    const today = new Date().toISOString().split('T')[0];
+    return {
+      problem: prompt,
+      outcome: '',
+      valueProposition: '',
+      affectedUsers: '',
+      priority: 'medium',
+      details: '',
+      requestedExpertise: [],
+      // Lightweight natural language date normalization in fallback
+      desiredStartDate: inferDateFromText(prompt) || undefined,
+      desiredEndDate: undefined,
+    } as Partial<Request>;
+  }
+
+  const sys = `Extract a product request from the user's one-message prompt.
+Return ONLY JSON that matches the given schema. Do not include commentary.
+Infer fields conservatively. Do not invent facts not implied by the text.
+If a field is unknown, omit it. Prefer concise phrasing for text fields.
+Infer priority (low/medium/high/critical) when urgency or impact is clear; otherwise leave it out.`;
+
+  const today = new Date().toISOString().split('T')[0];
+
+  const result = await ai.models.generateContent({
+    model,
+    contents: [
+      { role: 'user', parts: [{ text: sys }] },
+      { role: 'user', parts: [{ text: `Today is ${today}. Parse this prompt:\n---\n${prompt}\n---` }] },
+    ],
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          product: { type: Type.STRING },
+          requester: { type: Type.STRING },
+          problem: { type: Type.STRING },
+          outcome: { type: Type.STRING },
+          valueProposition: { type: Type.STRING },
+          affectedUsers: { type: Type.STRING },
+          priority: { type: Type.STRING, enum: ['low','medium','high','critical'] },
+          requestedExpertise: { type: Type.ARRAY, items: { type: Type.STRING } },
+          desiredStartDate: { type: Type.STRING, description: 'YYYY-MM-DD' },
+          desiredEndDate: { type: Type.STRING, description: 'YYYY-MM-DD' },
+          details: { type: Type.STRING },
+        },
+      },
+    },
+  });
+
+  try {
+    const text = (result.text || '').trim();
+    const obj = JSON.parse(text);
+    const out: Partial<Request> = {};
+    const copyIf = (k: keyof Request) => { if (obj[k] && typeof obj[k] === 'string') (out as any)[k] = obj[k]; };
+    copyIf('product');
+    copyIf('requester');
+    copyIf('problem');
+    copyIf('outcome');
+    copyIf('valueProposition');
+    copyIf('affectedUsers');
+    copyIf('details');
+    if (obj.priority && ['low','medium','high','critical'].includes(obj.priority)) out.priority = obj.priority as RequestPriority;
+    if (Array.isArray(obj.requestedExpertise)) out.requestedExpertise = (obj.requestedExpertise as string[]).filter(x => typeof x === 'string');
+    if (typeof obj.desiredStartDate === 'string') out.desiredStartDate = normalizeToISO(obj.desiredStartDate) || obj.desiredStartDate;
+    if (typeof obj.desiredEndDate === 'string') out.desiredEndDate = normalizeToISO(obj.desiredEndDate) || obj.desiredEndDate;
+    return out;
+  } catch (e) {
+    console.error('Failed to parse AI request draft JSON', e);
+    return {
+      problem: prompt,
+      priority: 'medium',
+    } as Partial<Request>;
+  }
+};
+
+// --- Small helpers for natural language date parsing ---
+const normalizeToISO = (text: string): string | null => inferDateFromText(text);
+
+function inferDateFromText(text: string): string | null {
+  const t = text.toLowerCase();
+  const now = new Date();
+  const todayISO = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString().split('T')[0];
+  // tomorrow
+  if (/(tomorrow|tmrw|tomm?)/.test(t)) {
+    const d = new Date(now); d.setDate(d.getDate() + 1);
+    return d.toISOString().split('T')[0];
+  }
+  // today
+  if (/(today|by end of day|eod)/.test(t)) {
+    return todayISO;
+  }
+  // Next weekday, e.g., by Friday / on Friday / Friday
+  const weekdays = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  for (let i = 0; i < 7; i++) {
+    const name = weekdays[i];
+    const regex = new RegExp(`\\b(${name}|${name.slice(0,3)})\\b`);
+    if (regex.test(t)) {
+      const diff = (i - now.getDay() + 7) % 7 || 7; // if same day mentioned, pick next week
+      const d = new Date(now); d.setDate(d.getDate() + diff);
+      return d.toISOString().split('T')[0];
+    }
+  }
+  // Explicit dates like 2025-10-02
+  const ymd = t.match(/(20\d{2})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (ymd) {
+    const y = Number(ymd[1]), m = Number(ymd[2]) - 1, d = Number(ymd[3]);
+    const dt = new Date(y, m, d);
+    if (!isNaN(dt.getTime())) return dt.toISOString().split('T')[0];
+  }
+  return null;
+}
+
+// Suggest Request intake improvements: normalize text and infer priority.
+export const generateRequestAssist = async (
+  draft: Partial<Request>
+): Promise<Partial<Request>> => {
+  if (!ai) initAI();
+  if (!ai) {
+    throw new Error('AI not configured');
+  }
+
+  const prompt = `You are helping triage a product support/request intake.
+Given a partially filled request, return improved fields:
+- Rewrite problem, outcome, valueProposition, affectedUsers for clarity and concision (keep factual content, avoid exaggeration).
+- Infer an appropriate priority: low, medium, high, or critical based on urgency, customer impact, and business risk.
+- Do not invent new facts. If a field is missing, leave it out.
+Return ONLY JSON as specified.`;
+
+  const payload = {
+    product: draft.product || '',
+    problem: draft.problem || '',
+    outcome: draft.outcome || '',
+    valueProposition: draft.valueProposition || '',
+    affectedUsers: draft.affectedUsers || '',
+    requester: draft.requester || '',
+    details: draft.details || '',
+  };
+
+  const result = await ai.models.generateContent({
+    model,
+    contents: [
+      { role: 'user', parts: [{ text: prompt }] },
+      { role: 'user', parts: [{ text: JSON.stringify(payload) }] },
+    ],
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          problem: { type: Type.STRING },
+          outcome: { type: Type.STRING },
+          valueProposition: { type: Type.STRING },
+          affectedUsers: { type: Type.STRING },
+          priority: { type: Type.STRING, enum: ['low','medium','high','critical'] },
+        },
+      },
+    },
+  });
+
+  try {
+    const text = (result.text || '').trim();
+    const obj = JSON.parse(text);
+    const out: Partial<Request> = {};
+    if (obj.problem && typeof obj.problem === 'string') out.problem = obj.problem;
+    if (obj.outcome && typeof obj.outcome === 'string') out.outcome = obj.outcome;
+    if (obj.valueProposition && typeof obj.valueProposition === 'string') out.valueProposition = obj.valueProposition;
+    if (obj.affectedUsers && typeof obj.affectedUsers === 'string') out.affectedUsers = obj.affectedUsers;
+    if (obj.priority && ['low','medium','high','critical'].includes(obj.priority)) out.priority = obj.priority as RequestPriority;
+    return out;
+  } catch (e) {
+    console.error('Failed to parse AI request assist JSON', e);
+    throw new Error('AI response was not valid JSON.');
+  }
+};
+
+// Generate one or more stories from a Request
+export const generateStoriesFromRequest = async (
+  req: Request
+): Promise<Array<Pick<Story, 'title' | 'description' | 'projectId' | 'categoryId'>>> => {
+  if (!ai) initAI();
+  if (!ai) throw new Error('AI not configured');
+
+  const prompt = `You are a product/story writing assistant. Convert the following product request into 1-4 concise user stories.
+Return JSON: [{"title":"...","description":"..."}]. Keep titles short and descriptions clear and testable. If helpful, include bullet acceptance hints within description.
+
+REQUEST:
+Product: ${req.product}
+Requester: ${req.requester}
+Problem: ${req.problem}
+Outcome: ${req.outcome}
+Value: ${req.valueProposition}
+Users: ${req.affectedUsers}
+Priority: ${req.priority}
+Expertise: ${(req.requestedExpertise || []).join(', ')}`;
+
+  const result = await ai.models.generateContent({
+    model,
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    config: {
+      responseMimeType: 'application/json'
+    },
+  });
+
+  try {
+    const text = (result.text || '[]').trim();
+    const arr = JSON.parse(text);
+    if (Array.isArray(arr)) {
+      return arr
+        .filter((s: any) => s && typeof s.title === 'string')
+        .map((s: any) => ({ title: s.title, description: typeof s.description === 'string' ? s.description : '' })) as any;
+    }
+    return [];
+  } catch (e) {
+    console.error('Failed to parse AI stories JSON', e);
+    return [];
   }
 };
