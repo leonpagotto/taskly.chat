@@ -7,9 +7,9 @@
   </defs>
   <!-- Rounded rectangle background with primary gradient -->
   <rect width="48" height="48" rx="10" fill="url(#primaryGradient)"/>
-  <!-- Taskly logo in white, centered and larger -->
+  <!-- Taskly logo in white, centered and 50% larger -->
   <g transform="translate(24, 24)">
-    <g transform="scale(0.032, 0.032)">
+    <g transform="scale(0.048, 0.048)">
       <g transform="translate(-480, 480)">
         <path d="M188-172v-28h104v-186h-52v-28h52q0-71 51-120t123-54v-156h180v100H494v56q72 5 123 54t51 120h52v28h-52v186h104v28H188Zm132-28h146v-186H320v186Zm174 0h146v-186H494v186ZM320-414h320q0-63-47.5-104.5T480-560q-65 0-112.5 41.5T320-414Zm160 0Z" fill="white"/>
       </g>
