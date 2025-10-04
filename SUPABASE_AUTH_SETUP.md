@@ -154,13 +154,34 @@ After configuring SMTP:
 
 ---
 
+## Professional Email Templates
+
+Taskly includes 5 professionally designed email templates in the `email-templates/` folder:
+
+- ✉️ **Confirm Signup** - Welcome email with confirmation link
+- 🎉 **Invite User** - Team invitation email
+- 🔐 **Magic Link** - Passwordless sign-in link
+- 🔑 **Reset Password** - Password reset request
+- 📧 **Change Email** - Email address change confirmation
+
+### How to Configure:
+
+1. Go to **Authentication** → **Email Templates** in your Supabase Dashboard
+2. Select each template type and copy the corresponding HTML file
+3. Customize subject lines and save
+
+**📚 See `email-templates/README.md` for detailed setup instructions and customization options.**
+
+---
+
 ## Quick Checklist
 
 - [ ] Disable email confirmations for development
 - [ ] Sign up and test login works
 - [ ] Choose SMTP provider for production
 - [ ] Configure SMTP settings in Supabase
+- [ ] **Configure email templates from `email-templates/` folder**
 - [ ] Re-enable email confirmations
-- [ ] Test email delivery
+- [ ] Test email delivery with new templates
 - [ ] Monitor rate limits
 - [ ] Set up custom domain (optional)
