@@ -63,40 +63,54 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 			setStatus('error');
 			return;
 		}
-		const result = await action(trimmedEmail, trimmedPassword);
-		if (result.error) {
-			setError(result.error);
-			if (result.requiresVerification) {
-				setPendingVerificationEmail(trimmedEmail);
-				setMessage('Please confirm your email to continue. We can resend the verification email below.');
-			}
-			setStatus('error');
-			return;
-		}
-		if (result.requiresVerification) {
-			setStatus('success');
-			setPendingVerificationEmail(trimmedEmail);
-			setMessage(mode === 'sign-up'
-				? 'Check your inbox to verify your email. You can sign in after confirmation.'
-				: 'Your email is not yet verified. Please confirm it from your inbox.');
-			if (mode === 'sign-up') {
-				setMode('sign-in');
-				setPassword('');
-				setConfirmPassword('');
-			}
-		} else {
-			// Successful sign-in without verification required
-			setStatus('success');
-			setMessage('Signing you in...');
-			// Handle Remember Me
-			if (mode === 'sign-in') {
-				if (rememberMe) {
-					localStorage.setItem('rememberedEmail', trimmedEmail);
-				} else {
-					localStorage.removeItem('rememberedEmail');
+		
+		try {
+			const result = await action(trimmedEmail, trimmedPassword);
+			if (result.error) {
+				setError(result.error);
+				if (result.requiresVerification) {
+					setPendingVerificationEmail(trimmedEmail);
+					setMessage('Please confirm your email to continue. We can resend the verification email below.');
 				}
+				setStatus('error');
+				return;
 			}
-			// Modal will be closed by parent component when authSession is set
+			if (result.requiresVerification) {
+				setStatus('success');
+				setPendingVerificationEmail(trimmedEmail);
+				setMessage(mode === 'sign-up'
+					? 'Check your inbox to verify your email. You can sign in after confirmation.'
+					: 'Your email is not yet verified. Please confirm it from your inbox.');
+				if (mode === 'sign-up') {
+					setMode('sign-in');
+					setPassword('');
+					setConfirmPassword('');
+				}
+			} else {
+				// Successful sign-in without verification required
+				setStatus('success');
+				setMessage('Signing you in...');
+				// Handle Remember Me
+				if (mode === 'sign-in') {
+					if (rememberMe) {
+						localStorage.setItem('rememberedEmail', trimmedEmail);
+					} else {
+						localStorage.removeItem('rememberedEmail');
+					}
+				}
+				// Modal will be closed by parent component when authSession is set
+				// Add timeout as backup in case auth state change doesn't trigger
+				setTimeout(() => {
+					if (status === 'success') {
+						console.log('Auth state change took too long, closing modal manually');
+						onClose();
+					}
+				}, 3000);
+			}
+		} catch (err) {
+			console.error('Sign in error:', err);
+			setError(err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.');
+			setStatus('error');
 		}
 	};
 

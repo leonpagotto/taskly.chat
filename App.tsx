@@ -1351,7 +1351,7 @@ const App: React.FC = () => {
             const completed = (preferences.onboardingCompleted === true);
             if (!completed) setShowOnboarding(true);
         }
-    }, [authSession]);
+    }, [authSession, preferences.onboardingCompleted]);
 
     useEffect(() => {
         if (!authSession) return;
