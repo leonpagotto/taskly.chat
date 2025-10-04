@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Auth Diagnostics - Taskly</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        h1 { color: #667eea; margin-bottom: 30px; }
+        h2 { color: #8b9fea; margin-top: 30px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .test-section {
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .success {
+            background: #1a3d1a;
+            border-left: 4px solid #4caf50;
+            color: #a5d6a7;
+        }
+        .error {
+            background: #3d1a1a;
+            border-left: 4px solid #f44336;
+            color: #ef9a9a;
+        }
+        .warning {
+            background: #3d3d1a;
+            border-left: 4px solid #ff9800;
+            color: #ffcc80;
+        }
+        .info {
+            background: #1a2a3d;
+            border-left: 4px solid #2196f3;
+            color: #90caf9;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        .config-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #667eea;
+        }
+        .config-info code {
+            background: #1a1a1a;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #a5d6a7;
+        }
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Supabase Auth Diagnostics</h1>
+    
+    <div class="config-info">
+        <strong>Project:</strong> <code id="projectUrl">Loading...</code><br>
+        <strong>Status:</strong> <span id="projectStatus">Checking...</span>
+    </div>
+
+    <div class="test-section">
+        <h2>1. Network Tests</h2>
+        <button onclick="testNetwork()">Run Network Tests</button>
+        <div id="networkResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Database Connection</h2>
+        <button onclick="testDatabase()">Test Database API</button>
+        <div id="databaseResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Auth Service Connection</h2>
+        <button onclick="testAuthEndpoint()">Test Auth Endpoint</button>
+        <div id="authEndpointResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Sign In Test</h2>
+        <input type="email" id="testEmail" placeholder="Email (e.g., test@example.com)" value="">
+        <input type="password" id="testPassword" placeholder="Password" value="">
+        <br>
+        <button onclick="testSignIn()">Test Sign In</button>
+        <button onclick="testSignUp()">Test Sign Up</button>
+        <div id="signInResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Supabase Dashboard Checks</h2>
+        <div class="test-result info">
+            <strong>Things to verify in your Supabase Dashboard:</strong><br><br>
+            1. Go to Authentication → Providers → Email<br>
+               ✓ "Confirm email" should be DISABLED<br>
+               ✓ "Secure email change" can be enabled<br><br>
+            
+            2. Go to Authentication → URL Configuration<br>
+               ✓ Site URL should be: http://localhost:3002<br>
+               ✓ Redirect URLs should include: http://localhost:3002/**<br><br>
+            
+            3. Go to Project Settings → API<br>
+               ✓ Check if "Pause project" is OFF<br>
+               ✓ Verify your anon key matches .env.local<br><br>
+            
+            4. Go to Authentication → Policies (RLS)<br>
+               ✓ Check if RLS is blocking your access<br><br>
+            
+            5. Go to Authentication → Rate Limits<br>
+               ✓ Check if you've hit rate limits<br>
+               ✓ Built-in email: ~30-50 emails/hour max<br><br>
+            
+            6. Go to Logs → Auth Logs<br>
+               ✓ Look for failed login attempts<br>
+               ✓ Check for error messages
+        </div>
+        <button onclick="window.open('https://supabase.com/dashboard/project/qaemzribxkcvjhldpyto/auth/providers', '_blank')">
+            Open Auth Settings
+        </button>
+        <button onclick="window.open('https://supabase.com/dashboard/project/qaemzribxkcvjhldpyto/logs/auth-logs', '_blank')">
+            Open Auth Logs
+        </button>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://qaemzribxkcvjhldpyto.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhZW16cmlieGtjdmpobGRweXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxNTQxNTksImV4cCI6MjA3NDczMDE1OX0.1XRqbzJxV9wAv6LBX05G1hJrcZY45xtMT7B4L9BNV-s';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.getElementById('projectUrl').textContent = SUPABASE_URL;
+        document.getElementById('projectStatus').innerHTML = '<span style="color: #4caf50;">✓ Configured</span>';
+
+        function log(elementId, message, type = 'info') {
+            const div = document.getElementById(elementId);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.textContent = message;
+            div.appendChild(resultDiv);
+        }
+
+        async function testNetwork() {
+            const results = document.getElementById('networkResults');
+            results.innerHTML = '<div class="loading"></div> Running network tests...';
+            
+            try {
+                // Test basic connectivity
+                const start = performance.now();
+                const response = await fetch(SUPABASE_URL);
+                const duration = (performance.now() - start).toFixed(0);
+                
+                results.innerHTML = '';
+                log('networkResults', `✓ Supabase reachable: ${response.status} (${duration}ms)`, 'success');
+                
+                // Test auth endpoint specifically
+                const authStart = performance.now();
+                const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/health`);
+                const authDuration = (performance.now() - authStart).toFixed(0);
+                
+                log('networkResults', `✓ Auth service health: ${authResponse.status} (${authDuration}ms)`, 'success');
+            } catch (error) {
+                results.innerHTML = '';
+                log('networkResults', `✗ Network error: ${error.message}`, 'error');
+                log('networkResults', 'Possible causes:\n- Supabase project is paused\n- Network/firewall blocking\n- DNS issues', 'warning');
+            }
+        }
+
+        async function testDatabase() {
+            const results = document.getElementById('databaseResults');
+            results.innerHTML = '<div class="loading"></div> Testing database connection...';
+            
+            try {
+                const start = performance.now();
+                const { data, error } = await supabase.from('_test_connection').select('*').limit(1);
+                const duration = (performance.now() - start).toFixed(0);
+                
+                results.innerHTML = '';
+                if (error && error.code === '42P01') {
+                    log('databaseResults', `✓ Database connected (${duration}ms)\n(Table doesn't exist, but connection works)`, 'success');
+                } else if (error) {
+                    log('databaseResults', `⚠ Database error: ${error.message}`, 'warning');
+                } else {
+                    log('databaseResults', `✓ Database connected successfully (${duration}ms)`, 'success');
+                }
+            } catch (error) {
+                results.innerHTML = '';
+                log('databaseResults', `✗ Database test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAuthEndpoint() {
+            const results = document.getElementById('authEndpointResults');
+            results.innerHTML = '<div class="loading"></div> Testing auth service...';
+            
+            try {
+                // Test 1: Health check
+                const healthResponse = await fetch(`${SUPABASE_URL}/auth/v1/health`);
+                results.innerHTML = '';
+                log('authEndpointResults', `✓ Auth health endpoint: ${healthResponse.status}`, 'success');
+                
+                // Test 2: Get settings
+                const settingsStart = performance.now();
+                const settingsResponse = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY
+                    }
+                });
+                const settingsDuration = (performance.now() - settingsStart).toFixed(0);
+                
+                if (settingsResponse.ok) {
+                    const settings = await settingsResponse.json();
+                    log('authEndpointResults', `✓ Auth settings retrieved (${settingsDuration}ms)`, 'success');
+                    log('authEndpointResults', `Settings:\n${JSON.stringify(settings, null, 2)}`, 'info');
+                } else {
+                    log('authEndpointResults', `⚠ Auth settings: ${settingsResponse.status}`, 'warning');
+                }
+                
+            } catch (error) {
+                results.innerHTML = '';
+                log('authEndpointResults', `✗ Auth endpoint test failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSignIn() {
+            const results = document.getElementById('signInResults');
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                results.innerHTML = '';
+                log('signInResults', '⚠ Please enter email and password', 'warning');
+                return;
+            }
+            
+            results.innerHTML = '<div class="loading"></div> Attempting sign in (with 15 second timeout)...';
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
+                const start = performance.now();
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                clearTimeout(timeoutId);
+                const duration = (performance.now() - start).toFixed(0);
+                
+                results.innerHTML = '';
+                
+                if (error) {
+                    log('signInResults', `✗ Sign in failed (${duration}ms): ${error.message}`, 'error');
+                    
+                    if (error.message.includes('Invalid login')) {
+                        log('signInResults', 'Account may not exist or password is wrong. Try Sign Up first.', 'warning');
+                    } else if (error.message.includes('Email not confirmed')) {
+                        log('signInResults', 'Email confirmation required! Go disable this in Supabase Dashboard.', 'error');
+                    } else if (error.message.includes('rate limit')) {
+                        log('signInResults', 'Rate limit hit! Wait a few minutes or configure custom SMTP.', 'error');
+                    }
+                    
+                    log('signInResults', `Full error: ${JSON.stringify(error, null, 2)}`, 'info');
+                } else {
+                    log('signInResults', `✓ Sign in successful! (${duration}ms)`, 'success');
+                    log('signInResults', `User: ${data.user.email}`, 'success');
+                    log('signInResults', `Session: ${data.session ? 'Active' : 'None'}`, 'success');
+                }
+            } catch (error) {
+                results.innerHTML = '';
+                if (error.name === 'AbortError') {
+                    log('signInResults', '✗ Sign in TIMED OUT after 15 seconds', 'error');
+                    log('signInResults', 'This usually means:\n1. Supabase is waiting for email confirmation\n2. Email rate limits are blocking the request\n3. Network issues\n\nCheck Supabase Auth Logs for details!', 'warning');
+                } else {
+                    log('signInResults', `✗ Sign in error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testSignUp() {
+            const results = document.getElementById('signInResults');
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                results.innerHTML = '';
+                log('signInResults', '⚠ Please enter email and password', 'warning');
+                return;
+            }
+            
+            if (password.length < 6) {
+                results.innerHTML = '';
+                log('signInResults', '⚠ Password must be at least 6 characters', 'warning');
+                return;
+            }
+            
+            results.innerHTML = '<div class="loading"></div> Attempting sign up (with 15 second timeout)...';
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+                
+                const start = performance.now();
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                clearTimeout(timeoutId);
+                const duration = (performance.now() - start).toFixed(0);
+                
+                results.innerHTML = '';
+                
+                if (error) {
+                    log('signInResults', `✗ Sign up failed (${duration}ms): ${error.message}`, 'error');
+                    log('signInResults', `Full error: ${JSON.stringify(error, null, 2)}`, 'info');
+                } else {
+                    log('signInResults', `✓ Sign up successful! (${duration}ms)`, 'success');
+                    
+                    if (data.user && !data.session) {
+                        log('signInResults', '⚠ Account created but NO SESSION (email confirmation required!)', 'warning');
+                        log('signInResults', 'Go to Supabase → Auth → Email → DISABLE "Confirm email"', 'error');
+                    } else if (data.session) {
+                        log('signInResults', '✓ Session created - you can sign in!', 'success');
+                    }
+                    
+                    log('signInResults', `User ID: ${data.user?.id}`, 'info');
+                    log('signInResults', `User email: ${data.user?.email}`, 'info');
+                }
+            } catch (error) {
+                results.innerHTML = '';
+                if (error.name === 'AbortError') {
+                    log('signInResults', '✗ Sign up TIMED OUT after 15 seconds', 'error');
+                    log('signInResults', 'Supabase is likely trying to send a confirmation email.\nCheck email rate limits and Auth settings!', 'warning');
+                } else {
+                    log('signInResults', `✗ Sign up error: ${error.message}`, 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
