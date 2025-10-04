@@ -76,6 +76,14 @@ export const authService = {
 		if (error) return { error: error.message };
 		return {};
 	},
+	async resetPassword(email: string): Promise<{ error?: string }> {
+		const supabase = getSupabase();
+		if (!supabase) return { error: 'Supabase not configured' };
+		const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : undefined;
+		const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+		if (error) return { error: error.message };
+		return {};
+	},
 		async signInWithGoogle(): Promise<{ error?: string }> {
 			const supabase = getSupabase();
 			if (!supabase) return { error: 'Supabase not configured' };

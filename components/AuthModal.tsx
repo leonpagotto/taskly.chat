@@ -10,20 +10,30 @@ type AuthModalProps = {
 	onSignUp: (email: string, password: string) => Promise<{ error?: string; requiresVerification?: boolean }>;
 	onResendVerification: (email: string) => Promise<{ error?: string }>;
 	onMagicLink?: (email: string) => Promise<{ error?: string }>;
-	onGoogle?: () => Promise<{ error?: string }>;
+	onForgotPassword?: (email: string) => Promise<{ error?: string }>;
 };
 
 const passwordsMatch = (password: string, confirm: string): boolean => password.trim().length > 0 && password === confirm;
 
-export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignUp, onResendVerification, onMagicLink, onGoogle }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignUp, onResendVerification, onMagicLink, onForgotPassword }) => {
 	const [mode, setMode] = useState<AuthMode>('sign-in');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
+	const [rememberMe, setRememberMe] = useState(false);
 	const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 	const [message, setMessage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
+
+	// Load remembered email on mount
+	React.useEffect(() => {
+		const rememberedEmail = localStorage.getItem('rememberedEmail');
+		if (rememberedEmail) {
+			setEmail(rememberedEmail);
+			setRememberMe(true);
+		}
+	}, []);
 
 	const title = mode === 'sign-in' ? 'Welcome back' : 'Create your account';
 
@@ -78,6 +88,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 			// Successful sign-in without verification required
 			setStatus('success');
 			setMessage('Signing you in...');
+			// Handle Remember Me
+			if (mode === 'sign-in') {
+				if (rememberMe) {
+					localStorage.setItem('rememberedEmail', trimmedEmail);
+				} else {
+					localStorage.removeItem('rememberedEmail');
+				}
+			}
 			// Modal will be closed by parent component when authSession is set
 		}
 	};
@@ -108,6 +126,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 		}
 		setStatus('success');
 		setMessage('Verification email sent again. Please check your inbox.');
+	};
+
+	const handleForgotPassword = async () => {
+		if (!onForgotPassword) return;
+		const trimmedEmail = email.trim().toLowerCase();
+		if (!trimmedEmail) {
+			setError('Please enter your email address first.');
+			return;
+		}
+		resetFeedback();
+		setStatus('loading');
+		const res = await onForgotPassword(trimmedEmail);
+		if (res.error) {
+			setError(res.error);
+			setStatus('error');
+			return;
+		}
+		setStatus('success');
+		setMessage('Password reset email sent. Check your inbox for instructions.');
 	};
 
 	return (
@@ -159,6 +196,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 							className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]"
 						/>
 					</div>
+					{mode === 'sign-in' && (
+						<div className="flex items-center justify-between">
+							<label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+								<input
+									type="checkbox"
+									checked={rememberMe}
+									onChange={e => setRememberMe(e.target.checked)}
+									className="rounded bg-gray-700/50 border-gray-600 text-[var(--color-primary-600)] focus:ring-2 focus:ring-[var(--color-primary-600)]"
+								/>
+								<span>Remember me</span>
+							</label>
+							{onForgotPassword && (
+								<button
+									type="button"
+									onClick={handleForgotPassword}
+									className="text-sm text-[var(--color-primary-400)] hover:text-[var(--color-primary-200)] hover:underline"
+								>
+									Forgot password?
+								</button>
+							)}
+						</div>
+					)}
 					{mode === 'sign-up' && (
 						<div>
 							<label className="block text-sm text-gray-300">Confirm password</label>
@@ -202,29 +261,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 								onClick={handleResend}
 							>
 								Resend verification email
-							</button>
-						</div>
-					)}
-					{onGoogle && (
-						<div className="pt-2">
-							<button
-								type="button"
-								onClick={async () => {
-								resetFeedback();
-								setStatus('loading');
-								const res = await onGoogle();
-								if (res?.error) {
-									setError(res.error);
-									setStatus('error');
-								} else {
-									setStatus('success');
-									setMessage('Continue in the browser to finish Google authentication.');
-								}
-							}}
-								className="w-full px-4 py-2 bg-white text-gray-900 rounded-[var(--radius-button)] font-semibold hover:shadow-lg flex items-center justify-center gap-2"
-							>
-								<span className="material-symbols-outlined">google</span>
-								<span>Continue with Google</span>
 							</button>
 						</div>
 					)}

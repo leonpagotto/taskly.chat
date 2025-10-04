@@ -3247,9 +3247,9 @@ Keep descriptions concise (10-15 words max).`;
                                     if (!res.error) setToastMessage('Check your email to finish sign in');
                                     return res;
                                 }}
-                                onGoogle={async () => {
-                                    const res = await authService.signInWithGoogle();
-                                    if (!res.error) setToastMessage('Continue in the browser to complete Google sign-in');
+                                onForgotPassword={async (email) => {
+                                    const res = await authService.resetPassword(email);
+                                    if (!res.error) setToastMessage('Password reset email sent. Check your inbox.');
                                     return res;
                                 }}
                             />
