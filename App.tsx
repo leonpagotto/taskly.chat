@@ -1334,17 +1334,31 @@ const App: React.FC = () => {
 
     // --- Supabase Auth wiring ---
     useEffect(() => {
-        if (!authService.isEnabled()) return;
+        if (!authService.isEnabled()) {
+            console.log('🔐 [App] Auth service not enabled');
+            return;
+        }
+        console.log('🔐 [App] Setting up auth state listeners');
         // Get initial session
-        authService.getSession().then(setAuthSession).catch(() => {});
+        authService.getSession().then((session) => {
+            console.log('🔐 [App] Initial session:', session);
+            setAuthSession(session);
+        }).catch((err) => {
+            console.error('🔐 [App] Error getting initial session:', err);
+        });
         // Subscribe to changes
-        const unsub = authService.onAuthStateChange(setAuthSession);
+        const unsub = authService.onAuthStateChange((session) => {
+            console.log('🔐 [App] Auth state changed:', session);
+            setAuthSession(session);
+        });
         return () => unsub();
     }, []);
 
     // Show onboarding after auth if not completed yet
     useEffect(() => {
+        console.log('🔐 [App] Auth session effect triggered, authSession:', authSession);
         if (authSession) {
+            console.log('🔐 [App] User authenticated, closing landing and auth modal');
             setShowLanding(false);
             setAuthModalOpen(false); // Close auth modal when user is authenticated
             // If preferences indicate onboarding not completed, open wizard
@@ -3226,9 +3240,14 @@ Keep descriptions concise (10-15 words max).`;
             />
                         {isAuthModalOpen && (
                             <AuthModal
-                                onClose={() => setAuthModalOpen(false)}
+                                onClose={() => {
+                                    console.log('🔐 [App] Closing auth modal');
+                                    setAuthModalOpen(false);
+                                }}
                                 onSignIn={async (email, password) => {
+                                    console.log('🔐 [App] onSignIn called');
                                     const res = await authService.signInWithPassword(email, password);
+                                    console.log('🔐 [App] signInWithPassword result:', res);
                                     if (!res.error && !res.requiresVerification) setToastMessage('Signed in successfully.');
                                     return res;
                                 }}

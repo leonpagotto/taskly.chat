@@ -52,6 +52,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+		console.log('🔐 [AuthModal] Starting sign-in process...');
 		setStatus('loading');
 		setError(null);
 		setMessage(null);
@@ -65,8 +66,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 		}
 		
 		try {
+			console.log('🔐 [AuthModal] Calling sign-in action...');
 			const result = await action(trimmedEmail, trimmedPassword);
+			console.log('🔐 [AuthModal] Sign-in result:', result);
+			
 			if (result.error) {
+				console.error('🔐 [AuthModal] Sign-in error:', result.error);
 				setError(result.error);
 				if (result.requiresVerification) {
 					setPendingVerificationEmail(trimmedEmail);
@@ -76,6 +81,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 				return;
 			}
 			if (result.requiresVerification) {
+				console.log('🔐 [AuthModal] Verification required');
 				setStatus('success');
 				setPendingVerificationEmail(trimmedEmail);
 				setMessage(mode === 'sign-up'
@@ -88,6 +94,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 				}
 			} else {
 				// Successful sign-in without verification required
+				console.log('🔐 [AuthModal] Sign-in successful, waiting for auth state change...');
 				setStatus('success');
 				setMessage('Signing you in...');
 				// Handle Remember Me
@@ -100,15 +107,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 				}
 				// Modal will be closed by parent component when authSession is set
 				// Add timeout as backup in case auth state change doesn't trigger
-				setTimeout(() => {
-					if (status === 'success') {
-						console.log('Auth state change took too long, closing modal manually');
-						onClose();
-					}
+				const timeoutId = setTimeout(() => {
+					console.log('🔐 [AuthModal] 3-second timeout reached, force closing modal...');
+					onClose();
 				}, 3000);
+				
+				// Store timeout ID so we can clear it if modal closes naturally
+				(window as any).__authModalTimeout = timeoutId;
 			}
 		} catch (err) {
-			console.error('Sign in error:', err);
+			console.error('🔐 [AuthModal] Unexpected error:', err);
 			setError(err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.');
 			setStatus('error');
 		}

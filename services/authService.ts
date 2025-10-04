@@ -50,15 +50,24 @@ export const authService = {
 		return { requiresVerification };
 	},
 	async signInWithPassword(email: string, password: string): Promise<AuthResult> {
+		console.log('🔐 [authService] signInWithPassword called');
 		const supabase = getSupabase();
-		if (!supabase) return { error: 'Supabase not configured' };
+		if (!supabase) {
+			console.error('🔐 [authService] Supabase not configured!');
+			return { error: 'Supabase not configured' };
+		}
+		console.log('🔐 [authService] Calling supabase.auth.signInWithPassword...');
 		const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+		console.log('🔐 [authService] Supabase response - data:', data, 'error:', error);
 		if (error) {
 			const message = error.message || 'Unable to sign in';
 			const requiresVerification = /confirm your email/i.test(message) || error.status === 400;
+			console.error('🔐 [authService] Sign-in error:', message, 'requiresVerification:', requiresVerification);
 			return { error: message, requiresVerification };
 		}
-		return { requiresVerification: !data.session };
+		const result = { requiresVerification: !data.session };
+		console.log('🔐 [authService] Sign-in successful, result:', result);
+		return result;
 	},
 	async resendVerification(email: string): Promise<{ error?: string }> {
 		const supabase = getSupabase();
