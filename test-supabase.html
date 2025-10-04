@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="status">Testing...</div>
+    <div id="result"></div>
+
+    <script>
+        const supabaseUrl = 'https://qaemzribxkcvjhldpyto.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhZW16cmlieGtjdmpobGRweXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkxNTQxNTksImV4cCI6MjA3NDczMDE1OX0.1XRqbzJxV9wAv6LBX05G1hJrcZY45xtMT7B4L9BNV-s';
+
+        console.log('🔐 Creating Supabase client...');
+        console.log('URL:', supabaseUrl);
+        console.log('Key:', supabaseKey.substring(0, 20) + '...');
+
+        try {
+            const { createClient } = supabase;
+            const client = createClient(supabaseUrl, supabaseKey, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true,
+                }
+            });
+
+            console.log('🔐 Client created:', client);
+            document.getElementById('status').textContent = 'Client created! Testing sign in...';
+            document.getElementById('result').innerHTML += '<p>✅ Supabase client initialized</p>';
+
+            // Test sign in with a dummy account
+            const testEmail = 'test@example.com';
+            const testPassword = 'testpassword123';
+
+            console.log('🔐 Testing sign in...');
+            
+            // Add a timeout
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timed out after 10s')), 10000)
+            );
+
+            Promise.race([
+                client.auth.signInWithPassword({ 
+                    email: testEmail, 
+                    password: testPassword 
+                }),
+                timeoutPromise
+            ])
+            .then(({ data, error }) => {
+                console.log('🔐 Response received:', { data, error });
+                if (error) {
+                    document.getElementById('status').textContent = 'Sign in failed (expected for test account)';
+                    document.getElementById('result').innerHTML += `<p>✅ API responds: ${error.message}</p>`;
+                    document.getElementById('result').innerHTML += '<p style="color: green;"><strong>Connection is working! The timeout issue might be browser/CORS related.</strong></p>';
+                } else {
+                    document.getElementById('status').textContent = 'Sign in succeeded!';
+                    document.getElementById('result').innerHTML += '<p>✅ Sign in successful!</p>';
+                }
+            })
+            .catch(err => {
+                console.error('🔐 Error:', err);
+                document.getElementById('status').textContent = 'Error!';
+                document.getElementById('result').innerHTML += `<p style="color: red;">❌ Error: ${err.message}</p>`;
+            });
+
+        } catch (err) {
+            console.error('🔐 Setup error:', err);
+            document.getElementById('status').textContent = 'Setup failed!';
+            document.getElementById('result').innerHTML += `<p style="color: red;">❌ Setup error: ${err.message}</p>`;
+        }
+    </script>
+</body>
+</html>
