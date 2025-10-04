@@ -76,12 +76,11 @@ export const authService = {
 		}
 		try {
 			console.log('🔐 [authService] Calling supabase.auth.signInWithPassword...');
-			const { data, error } = await withTimeout(
-				supabase.auth.signInWithPassword({ email, password }),
-				10000,
-				'Sign in'
-			);
-			console.log('🔐 [authService] Supabase response - data:', data, 'error:', error);
+			// Temporarily remove timeout to see actual Supabase error
+			const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+			console.log('🔐 [authService] Supabase response received');
+			console.log('🔐 [authService] Data:', JSON.stringify(data, null, 2));
+			console.log('🔐 [authService] Error:', JSON.stringify(error, null, 2));
 			if (error) {
 				const message = error.message || 'Unable to sign in';
 				const requiresVerification = /confirm your email/i.test(message) || error.status === 400;
