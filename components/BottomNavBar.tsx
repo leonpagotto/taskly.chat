@@ -1,5 +1,7 @@
 import React from 'react';
-import { TodayIcon, NewHabitIcon, ListAltIcon, DescriptionIcon, FolderIcon, ChatAddOnIcon, CalendarMonthIcon } from './icons';
+import { TodayIcon, NewHabitIcon, ListAltIcon, DescriptionIcon, FolderIcon, CalendarMonthIcon, Icon } from './icons';
+const FeedbackIcon: React.FC<{ className?: string }> = ({ className }) => <Icon name="rate_review" className={className} />;
+
 import { AppView } from '../types';
 
 interface NavItemProps {
@@ -51,29 +53,31 @@ const NavItem: React.FC<NavItemProps> = ({ Icon, label, isActive, onClick }) => 
 interface BottomNavBarProps {
   currentView: AppView;
   onSelectView: (view: AppView) => void;
+  onOpenFeedback?: () => void;
   t: (key: string) => string;
 }
 
-const BottomNavBar: React.FC<BottomNavBarProps> = ({ currentView, onSelectView, t }) => {
-  const navItems = [
-    { view: 'dashboard' as const, Icon: TodayIcon, label: t('dashboard') },
-    { view: 'habits' as const, Icon: NewHabitIcon, label: t('habits') },
-    { view: 'calendar' as const, Icon: CalendarMonthIcon, label: t('calendar') },
-    { view: 'lists' as const, Icon: ListAltIcon, label: t('tasks') },
-    { view: 'notes' as const, Icon: DescriptionIcon, label: t('notes') },
-    { view: 'projects' as const, Icon: FolderIcon, label: t('projects') },
+const BottomNavBar: React.FC<BottomNavBarProps> = ({ currentView, onSelectView, onOpenFeedback, t }) => {
+  const navItems: Array<{ key: string; Icon: React.ComponentType<{ className?: string }>; label: string; isActive: boolean; onClick: () => void }> = [
+    { key: 'dashboard', Icon: TodayIcon, label: t('dashboard'), onClick: () => onSelectView('dashboard'), isActive: currentView === 'dashboard' },
+    { key: 'habits', Icon: NewHabitIcon, label: t('habits'), onClick: () => onSelectView('habits'), isActive: currentView === 'habits' },
+    { key: 'calendar', Icon: CalendarMonthIcon, label: t('calendar'), onClick: () => onSelectView('calendar'), isActive: currentView === 'calendar' },
+    { key: 'lists', Icon: ListAltIcon, label: t('tasks'), onClick: () => onSelectView('lists'), isActive: currentView === 'lists' },
+    { key: 'notes', Icon: DescriptionIcon, label: t('notes'), onClick: () => onSelectView('notes'), isActive: currentView === 'notes' },
   ];
+
+  // Feedback removed from bottom nav (still available in sidebar)
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-16 bg-gray-100/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-700/50 z-40">
       <div className="flex items-center justify-around h-full">
           {navItems.map(item => (
             <NavItem
-              key={item.view}
+              key={item.key}
               Icon={item.Icon}
               label={item.label}
-              isActive={currentView === item.view}
-              onClick={() => onSelectView(item.view)}
+              isActive={item.isActive}
+              onClick={item.onClick}
             />
           ))}
       </div>

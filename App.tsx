@@ -24,17 +24,20 @@ import RequestIntakeForm from './components/RequestIntakeForm';
 import RequestsBoardPage from './components/RequestsBoardPage';
 import StoryEditorPage from './components/StoryEditorPage';
 import LandingPage from './components/LandingPage';
-import OnboardingWizard from './components/OnboardingWizard';
-import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request } from './types';
+import OnboardingModal from './components/OnboardingModal';
+import FeedbackModal from './components/FeedbackModal';
+import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill } from './types';
 import { getCombinedSampleData } from './services/sampleDataService';
 import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
 import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon, SearchIcon } from './components/icons';
 import GlobalSearch from './components/GlobalSearch';
-import { authService, AuthSession } from './services/authService';
+import { authService, AuthSession, VERIFICATION_STORAGE_KEY } from './services/authService';
+import { authorizationNotificationService } from './services/authorizationNotificationService';
 import { databaseService } from './services/databaseService';
 import { migrateToRelational } from './services/migrateToRelational';
 import { relationalDb } from './services/relationalDatabaseService';
 import { offlineSync } from './services/offlineQueue';
+import { feedbackService } from './services/feedbackService';
 
 
 // === SHARED MODAL COMPONENTS ===
@@ -917,13 +920,19 @@ const isHabitDueOnDate = (habit: Habit, date: Date): boolean => {
 
 
 const initialUserCategories: UserCategory[] = [
-    { id: 'cat-1', name: 'Work', icon: 'work', color: '#3B82F6' },
-    { id: 'cat-2', name: 'Personal', icon: 'person', color: '#EC4899' },
-    { id: 'cat-3', name: 'Shopping', icon: 'shopping_cart', color: '#22C55E' },
-    { id: 'cat-4', name: 'Health', icon: 'fitness_center', color: '#F97316' },
-    { id: 'cat-5', name: 'Finance', icon: 'account_balance_wallet', color: '#EAB308' },
-    { id: 'cat-6', name: 'Home', icon: 'home', color: '#6366F1' },
-    { id: 'cat-7', name: 'Study', icon: 'school', color: '#8B5CF6' },
+    { id: 'cat-1', name: 'Task', icon: 'check_circle', color: '#3B82F6' },
+    { id: 'cat-2', name: 'Shopping', icon: 'shopping_cart', color: '#22C55E' },
+    { id: 'cat-3', name: 'Study', icon: 'school', color: '#8B5CF6' },
+    { id: 'cat-4', name: 'Sports', icon: 'sports_soccer', color: '#F97316' },
+    { id: 'cat-5', name: 'Entertainment', icon: 'theaters', color: '#EC4899' },
+    { id: 'cat-6', name: 'Social', icon: 'groups', color: '#06B6D4' },
+    { id: 'cat-7', name: 'Finance', icon: 'account_balance_wallet', color: '#EAB308' },
+    { id: 'cat-8', name: 'Health', icon: 'fitness_center', color: '#10B981' },
+    { id: 'cat-9', name: 'Work', icon: 'work', color: '#2563EB' },
+    { id: 'cat-10', name: 'Nutrition', icon: 'restaurant', color: '#F59E0B' },
+    { id: 'cat-11', name: 'Home', icon: 'home', color: '#6366F1' },
+    { id: 'cat-12', name: 'Outdoor', icon: 'park', color: '#14B8A6' },
+    { id: 'cat-13', name: 'Others', icon: 'more_horiz', color: '#64748B' },
 ];
 
 const defaultPreferences: UserPreferences = {
@@ -939,7 +948,8 @@ const defaultPreferences: UserPreferences = {
   language: 'en',
   size: 'md',
   pulseWidgets: [],
-    aiSnapshotVerbosity: 'concise',
+  aiSnapshotVerbosity: 'concise',
+  defaultView: 'dashboard', // Always default to Today view
 };
 
 // FIX: Changed payload for 'newTask' to Partial<Checklist> to allow properties like categoryId.
@@ -962,6 +972,7 @@ const App: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const [stories, setStories] = useState<Story[]>([]);
     const [userCategories, setUserCategories] = useState<UserCategory[]>([]);
+    const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
     const [requests, setRequests] = useState<Request[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [projectFiles, setProjectFiles] = useState<ProjectFile[]>([]);
@@ -1003,14 +1014,30 @@ const App: React.FC = () => {
     const [authSession, setAuthSession] = useState<AuthSession | null>(null);
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
-    const [showLanding, setShowLanding] = useState(false);
+    // Show landing page by default - will be hidden when auth session is detected
+    const [showLanding, setShowLanding] = useState(true);
     const lastSyncToastRef = useRef<number>(0);
+        const [isFeedbackOpen, setFeedbackOpen] = useState(false);
 
     const maybeShowSyncFailureToast = (message?: string) => {
         const now = Date.now();
         if (now - lastSyncToastRef.current < 20000) return; // 20s cooldown
         lastSyncToastRef.current = now;
         setToastMessage(message || 'You are offline. Changes will sync when reconnected.');
+    };
+    const handleOpenFeedback = () => {
+        setFeedbackOpen(true);
+    };
+    const handleCloseFeedback = () => setFeedbackOpen(false);
+    const handleSubmitFeedback = async (payload: { email?: string; type: FeedbackType; message: string }) => {
+        await feedbackService.submitFeedback({
+            ...payload,
+            metadata: {
+                submittedAt: new Date().toISOString(),
+                appView: currentView,
+            },
+        });
+        setToastMessage('Thanks for the feedback!');
     };
   const [dashboardDate, setDashboardDate] = useState(() => {
     const today = new Date();
@@ -1081,11 +1108,16 @@ const App: React.FC = () => {
                     if (savedProjects) {
         setProjects(JSON.parse(savedProjects));
         
+        // Don't automatically hide landing page - let auth session control this
+        
         const savedConvos = localStorage.getItem('conversations_v3');
         if (savedConvos) setConversations(JSON.parse(savedConvos));
 
         const savedCategories = localStorage.getItem('userCategories_v2');
         if (savedCategories) setUserCategories(JSON.parse(savedCategories));
+
+        const savedSkills = localStorage.getItem('skillCategories_v1');
+        if (savedSkills) setSkillCategories(JSON.parse(savedSkills));
 
         const savedChecklists = localStorage.getItem('checklists_v7');
         if (savedChecklists) {
@@ -1120,8 +1152,7 @@ const App: React.FC = () => {
                 setUserCategories([]);
                 setStories([]);
                 setCurrentView('dashboard');
-                // Show landing page for visitors who haven't started
-                setShowLanding(true);
+                // Landing page already shown by default for new users
             }
       
             const savedSidebarCollapsed = localStorage.getItem('sidebarCollapsed');
@@ -1211,13 +1242,14 @@ const App: React.FC = () => {
             localStorage.setItem('stories_v1', JSON.stringify(stories));
             localStorage.setItem('requests_v1', JSON.stringify(requests));
             localStorage.setItem('userCategories_v2', JSON.stringify(userCategories));
+            localStorage.setItem('skillCategories_v1', JSON.stringify(skillCategories));
             localStorage.setItem('userPreferences_v3', JSON.stringify(preferences));
             localStorage.setItem('notes_v2', JSON.stringify(notes));
             localStorage.setItem('projectFiles_v1', JSON.stringify(projectFiles));
             localStorage.setItem('sidebarCollapsed', JSON.stringify(isSidebarCollapsed));
             try { localStorage.setItem('requests.viewMode.v1', requestsViewMode); } catch {}
         } catch (error) { console.error("Failed to save data to localStorage", error); }
-  }, [projects, conversations, checklists, habits, events, stories, requests, userCategories, preferences, notes, projectFiles, isSidebarCollapsed, requestsViewMode]);
+  }, [projects, conversations, checklists, habits, events, stories, requests, userCategories, skillCategories, preferences, notes, projectFiles, isSidebarCollapsed, requestsViewMode]);
   
   // Apply theme and color preferences to the UI
   useEffect(() => {
@@ -1310,15 +1342,43 @@ const App: React.FC = () => {
         return () => unsub();
     }, []);
 
-        // Show onboarding after auth if not completed yet
-        useEffect(() => {
-            if (authSession) {
-                setShowLanding(false);
-                // If preferences indicate onboarding not completed, open wizard
-                const completed = (preferences.onboardingCompleted === true);
-                if (!completed) setShowOnboarding(true);
+    // Show onboarding after auth if not completed yet
+    useEffect(() => {
+        if (authSession) {
+            setShowLanding(false);
+            setAuthModalOpen(false); // Close auth modal when user is authenticated
+            // If preferences indicate onboarding not completed, open wizard
+            const completed = (preferences.onboardingCompleted === true);
+            if (!completed) setShowOnboarding(true);
+        }
+    }, [authSession]);
+
+    useEffect(() => {
+        if (!authSession) return;
+        if (!authorizationNotificationService.isEnabled()) return;
+        let verificationEmailSentAt: string | null = null;
+        if (typeof window !== 'undefined') {
+            try {
+                const raw = window.localStorage.getItem(VERIFICATION_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw) as { email?: string; sentAt?: string };
+                    if (parsed?.email && parsed.email.toLowerCase() === (authSession.email || '').toLowerCase() && parsed.sentAt) {
+                        verificationEmailSentAt = parsed.sentAt;
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to read cached verification timestamp', err);
             }
-        }, [authSession]);
+        }
+        authorizationNotificationService
+            .syncProfileWithAuth(authSession, { verificationEmailSentAt })
+            .catch(err => console.warn('Failed to sync auth profile', err))
+            .finally(() => {
+                if (verificationEmailSentAt && typeof window !== 'undefined') {
+                    window.localStorage.removeItem(VERIFICATION_STORAGE_KEY);
+                }
+            });
+    }, [authSession]);
 
     // --- Cloud persistence (load on login, save on changes) ---
     const justLoadedFromCloudRef = useRef(false);
@@ -1654,6 +1714,8 @@ const App: React.FC = () => {
                     ].filter(Boolean).join('\n\n'),
                     // If the request already has linked tasks, carry them into the story
                     linkedTaskIds: req.linkedTaskIds || [],
+                    // Carry over skills from the request
+                    skillIds: req.skillIds || [],
                 });
             };
             const onCreateTasksForRequest = (e: Event) => {
@@ -1933,6 +1995,79 @@ const App: React.FC = () => {
     setChecklists(prev => prev.map(cl => cl.categoryId === categoryId ? { ...cl, categoryId: undefined } : cl));
     setHabits(prev => prev.map(h => h.categoryId === categoryId ? { ...h, categoryId: undefined } : h));
     setCategoryModalData(null);
+  };
+
+  // Skills Handlers
+  const handleUpdateSkills = (categories: SkillCategory[]) => {
+    setSkillCategories(categories);
+    setToastMessage('Skills updated successfully');
+  };
+
+  const handleGenerateSkills = async () => {
+    if (!preferences.occupation) {
+      setToastMessage('Please set your occupation in Profile settings first');
+      return;
+    }
+
+    try {
+      // Use parseAIResponse with minimal history for skill generation
+      const prompt = `Generate a comprehensive list of professional skills for a ${preferences.occupation}.
+      
+Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
+{
+  "categories": [
+    {
+      "name": "Category Name",
+      "skills": [
+        { "name": "Skill Name", "description": "Brief description" }
+      ]
+    }
+  ]
+}
+
+Generate 4-6 skill categories relevant to this role, with 5-10 skills per category.
+Focus on practical, industry-standard skills.
+Keep descriptions concise (10-15 words max).`;
+
+      const aiResponse = await parseAIResponse(
+        [], // empty history
+        prompt,
+        'settings',
+        preferences
+      );
+      
+      // Parse the JSON from the response
+      const jsonMatch = aiResponse.text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('Could not parse AI response');
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      
+      // Convert to our SkillCategory format
+      const newCategories: SkillCategory[] = parsed.categories.map((cat: any, idx: number) => ({
+        id: `cat_ai_${Date.now()}_${idx}`,
+        name: cat.name,
+        skills: cat.skills.map((skill: any, skillIdx: number) => ({
+          id: `skill_ai_${Date.now()}_${idx}_${skillIdx}`,
+          name: skill.name,
+          description: skill.description,
+          categoryId: `cat_ai_${Date.now()}_${idx}`,
+        }))
+      }));
+
+      // Merge with existing skills (avoid duplicates)
+      setSkillCategories(prev => {
+        const existingNames = new Set(prev.map(c => c.name.toLowerCase()));
+        const filtered = newCategories.filter(c => !existingNames.has(c.name.toLowerCase()));
+        return [...prev, ...filtered];
+      });
+
+      setToastMessage(`Generated ${newCategories.length} skill categories for ${preferences.occupation}`);
+    } catch (error) {
+      console.error('Failed to generate skills:', error);
+      setToastMessage('Failed to generate skills. Please try again.');
+    }
   };
   
   const triggerCompletionAnimation = (id: string) => {
@@ -2335,6 +2470,7 @@ const App: React.FC = () => {
             estimatePoints: payload?.estimatePoints,
             estimateTime: payload?.estimateTime,
             linkedTaskIds: payload?.linkedTaskIds || [],
+            skillIds: payload?.skillIds || [],
             createdAt: now,
             updatedAt: now,
         };
@@ -2528,6 +2664,70 @@ const App: React.FC = () => {
                     });
                     break;
                 }
+                case 'CREATE_REQUEST': {
+                    const { product, requester, problem, outcome, priority } = aiResponse.action.payload;
+                    const project = projectContext;
+                    const newRequest: Request = {
+                        id: `req-${Date.now()}`,
+                        product: product || 'Untitled',
+                        requester: requester || preferences.nickname || 'User',
+                        problem: problem || '',
+                        outcome: outcome || '',
+                        valueProposition: '',
+                        affectedUsers: '',
+                        priority: priority || 'medium',
+                        requestedExpertise: [],
+                        status: 'new',
+                        linkedTaskIds: [],
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    };
+                    handleCreateRequest(newRequest);
+                    break;
+                }
+                case 'CREATE_STORY': {
+                    const { title, description, requestId, skillIds } = aiResponse.action.payload;
+                    const project = projectContext;
+                    // If requestId provided, get skills from that request
+                    let storySkillIds = skillIds || [];
+                    if (requestId) {
+                        const linkedRequest = requests.find(r => r.id === requestId);
+                        if (linkedRequest?.skillIds) {
+                            storySkillIds = linkedRequest.skillIds;
+                        }
+                    }
+                    const newStory: Story = {
+                        id: `story-${Date.now()}`,
+                        title: title || 'Untitled Story',
+                        description: description || '',
+                        projectId: project?.id,
+                        categoryId: project?.categoryId,
+                        status: 'backlog',
+                        acceptanceCriteria: [],
+                        linkedTaskIds: [],
+                        skillIds: storySkillIds,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    };
+                    handleCreateStory(newStory);
+                    // If requestId provided, we could link it (future enhancement)
+                    break;
+                }
+                case 'LINK_OBJECTS': {
+                    const { sourceType, sourceId, targetType, targetId } = aiResponse.action.payload;
+                    // Handle linking based on types
+                    if (sourceType === 'request' && targetType === 'story') {
+                        // Link story to request (could be implemented in handleUpdateRequest)
+                        modelMessage.text += '\n\n_Note: Linking between requests and stories is coming soon!_';
+                    } else if (sourceType === 'story' && targetType === 'task') {
+                        const story = stories.find(s => s.id === sourceId);
+                        const task = checklists.find(c => c.id === targetId);
+                        if (story && task && !story.linkedTaskIds.includes(targetId)) {
+                            handleUpdateStory(sourceId, { linkedTaskIds: [...story.linkedTaskIds, targetId] });
+                        }
+                    }
+                    break;
+                }
             }
         }
         
@@ -2553,39 +2753,43 @@ const App: React.FC = () => {
 
     const activeConversation = conversations.find(c => c.id === activeChatId) || pendingConversation;
     const activeStory = pendingStoryId ? stories.find(s => s.id === pendingStoryId) : null;
-  const activeProjectForChat = activeConversation?.projectId ? projects.find(p => p.id === activeConversation.projectId) : undefined;
-  const projectForDetails = projects.find(p => p.id === activeProjectId);
+    const activeProjectForChat = activeConversation?.projectId ? projects.find(p => p.id === activeConversation.projectId) : undefined;
+    const projectForDetails = projects.find(p => p.id === activeProjectId);
+    const isLanding = showLanding && !authSession;
   
-  return (
-    <div className={`font-sans`}>
-        <div className="flex h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            <Sidebar
-                projects={projects}
-                conversations={conversations}
-                userCategories={userCategories}
-                activeChatId={activeChatId}
-                activeProjectId={activeProjectId}
-                currentView={currentView}
-                isCollapsed={isSidebarCollapsed}
-                onNewChat={handleNewChat}
-                onNewProject={() => setProjectModalData('new')}
-                onSelectChat={handleSelectChat}
-                onSelectView={handleSelectView}
-                onSelectProject={handleSelectProject}
-                onToggleCollapse={handleToggleSidebarCollapse}
-                isMobileOpen={isMobileSidebarOpen}
-                onMobileClose={() => setMobileSidebarOpen(false)}
-                t={t}
-                notes={notes}
-                // FIX: Corrected function signature to match prop type.
-                onCreateNote={(projectId) => handleCreateNote({ projectId })}
-            />
+    return (
+
+        <div className={`font-sans`}>
+                <div className={`flex w-screen ${isLanding ? 'min-h-screen overflow-y-auto bg-transparent text-white' : 'h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100'}`}>
+            {!(showLanding && !authSession) && (
+                <Sidebar
+                    projects={projects}
+                    conversations={conversations}
+                    userCategories={userCategories}
+                    activeChatId={activeChatId}
+                    activeProjectId={activeProjectId}
+                    currentView={currentView}
+                    isCollapsed={isSidebarCollapsed}
+                    onNewChat={handleNewChat}
+                    onNewProject={() => setProjectModalData('new')}
+                    onSelectChat={handleSelectChat}
+                    onSelectView={handleSelectView}
+                    onSelectProject={handleSelectProject}
+                    onToggleCollapse={handleToggleSidebarCollapse}
+                    isMobileOpen={isMobileSidebarOpen}
+                    onMobileClose={() => setMobileSidebarOpen(false)}
+                    t={t}
+                    onOpenFeedback={handleOpenFeedback}
+                    notes={notes}
+                    // FIX: Corrected function signature to match prop type.
+                    onCreateNote={(projectId) => handleCreateNote({ projectId })}
+                />
+            )}
             <div className="flex-1 flex flex-col min-w-0 relative">
                 <div className="flex-1 flex flex-col min-h-0">
-                    {showLanding && !authSession && (
-                        <LandingPage onOpenApp={() => setShowLanding(false)} onSignIn={() => setAuthModalOpen(true)} />
-                    )}
-                    {activeConversation ? (
+                    {showLanding && !authSession ? (
+                        <LandingPage onSignIn={() => setAuthModalOpen(true)} />
+                    ) : activeConversation ? (
                         <ChatView
                             conversation={activeConversation}
                             project={activeProjectForChat}
@@ -2713,6 +2917,9 @@ const App: React.FC = () => {
                             onNewCategory={() => handleRequestNewCategory()}
                             onEditCategory={(cat) => setCategoryModalData(cat)}
                             targetTab={targetSettingsTab}
+                            skillCategories={skillCategories}
+                            onUpdateSkills={handleUpdateSkills}
+                            onGenerateSkills={handleGenerateSkills}
                             authEmail={authSession?.email || null}
                             onSignIn={() => setAuthModalOpen(true)}
                             onSignOut={async () => {
@@ -2725,6 +2932,7 @@ const App: React.FC = () => {
                                 setSelectedNoteId(null);
                             }}
                             supabaseEnabled={authService.isEnabled()}
+                            onOpenFeedback={handleOpenFeedback}
                         />
                     ) : currentView === 'notes' ? (
                         <NotesListPage
@@ -2775,6 +2983,7 @@ const App: React.FC = () => {
                             story={activeStory}
                             projects={projects}
                             userCategories={userCategories}
+                            skillCategories={skillCategories}
                             checklists={checklists}
                             onBack={() => { setCurrentView('stories'); setPendingStoryId(null); }}
                             onUpdate={(updates) => handleUpdateStory(activeStory.id, updates)}
@@ -2872,6 +3081,7 @@ const App: React.FC = () => {
                                                     setToastMessage('Task created');
                                                 }}
                                                 existingChecklists={checklists}
+                                                skillCategories={skillCategories}
                                             />
                                         ) : null}
                                 </div>
@@ -3017,7 +3227,22 @@ const App: React.FC = () => {
                         {isAuthModalOpen && (
                             <AuthModal
                                 onClose={() => setAuthModalOpen(false)}
-                                onSubmit={async (email) => {
+                                onSignIn={async (email, password) => {
+                                    const res = await authService.signInWithPassword(email, password);
+                                    if (!res.error && !res.requiresVerification) setToastMessage('Signed in successfully.');
+                                    return res;
+                                }}
+                                onSignUp={async (email, password) => {
+                                    const res = await authService.signUpWithEmail(email, password);
+                                    if (!res.error) setToastMessage('Check your inbox to verify your email.');
+                                    return res;
+                                }}
+                                onResendVerification={async (email) => {
+                                    const res = await authService.resendVerification(email);
+                                    if (!res.error) setToastMessage('Verification email sent.');
+                                    return res;
+                                }}
+                                onMagicLink={async (email) => {
                                     const res = await authService.signInWithMagicLink(email);
                                     if (!res.error) setToastMessage('Check your email to finish sign in');
                                     return res;
@@ -3030,36 +3255,49 @@ const App: React.FC = () => {
                             />
                         )}
             {showOnboarding && (
-                <OnboardingWizard
+                <OnboardingModal
                   isOpen={showOnboarding}
-                  initial={preferences}
-                  onClose={() => setShowOnboarding(false)}
-                  onComplete={completeOnboarding}
+                  onClose={() => {
+                    setShowOnboarding(false);
+                    completeOnboarding({ onboardingCompleted: true });
+                  }}
                 />
             )}
+
+            <FeedbackModal
+                isOpen={isFeedbackOpen}
+                defaultEmail={authSession?.email || undefined}
+                onClose={handleCloseFeedback}
+                onSubmit={handleSubmitFeedback}
+            />
             
-            <div className="md:hidden">
-                <BottomNavBar currentView={currentView} onSelectView={handleSelectView} t={t} />
-                 <FloatingActionButton
-                    onClick={() => { setMobileChatOpen(true); setChatOpenMode('text'); }}
-                    isChatOpen={isMobileChatOpen}
-                />
-            </div>
-            {isMobileChatOpen && (
-                <ChatInputBar
-                    onSendMessage={(msg) => {
-                        handleSendMessage(msg);
-                        setMobileChatOpen(false);
-                    }}
-                    isLoading={isLoading}
-                    currentView={currentView}
-                    activeProjectId={activeProjectId}
-                    t={t}
-                    language={preferences.language}
-                    isMobileOverlay={true}
-                    initialMode={chatOpenMode}
-                    onClose={() => setMobileChatOpen(false)}
-                />
+            {/* Only show mobile navigation and FAB when NOT on landing page */}
+            {!isLanding && (
+                <>
+                    <div className="md:hidden">
+                        <BottomNavBar currentView={currentView} onSelectView={handleSelectView} onOpenFeedback={handleOpenFeedback} t={t} />
+                        <FloatingActionButton
+                            onClick={() => { setMobileChatOpen(true); setChatOpenMode('text'); }}
+                            isChatOpen={isMobileChatOpen}
+                        />
+                    </div>
+                    {isMobileChatOpen && (
+                        <ChatInputBar
+                            onSendMessage={(msg) => {
+                                handleSendMessage(msg);
+                                setMobileChatOpen(false);
+                            }}
+                            isLoading={isLoading}
+                            currentView={currentView}
+                            activeProjectId={activeProjectId}
+                            t={t}
+                            language={preferences.language}
+                            isMobileOverlay={true}
+                            initialMode={chatOpenMode}
+                            onClose={() => setMobileChatOpen(false)}
+                        />
+                    )}
+                </>
             )}
 
         </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Project, UserCategory } from '../types';
 import { CreateNewFolderIcon, FolderIcon, WidthNormalIcon } from './icons';
 import Header from './Header';
+import EmptyStateIcon from './EmptyStateIcon';
 
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
   <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -60,11 +61,9 @@ const ProjectsListPage: React.FC<ProjectsListPageProps> = ({ projects, userCateg
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 flex items-center justify-center shadow-md mb-6">
-              <FolderIcon className="text-4xl text-white" />
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">No Projects Yet</h2>
+          <div className="text-center text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center min-h-[50vh] p-6">
+            <EmptyStateIcon icon={<FolderIcon />} size="lg" />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No Projects Yet</h2>
             <p className="max-w-md mt-1 mb-6">Projects help you group related tasks, notes, and chats. Create your first project to get started.</p>
             <button onClick={onNewProject} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
               Create Your First Project

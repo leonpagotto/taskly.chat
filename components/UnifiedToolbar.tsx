@@ -255,14 +255,14 @@ const TimeDropdown: React.FC<{
                   type="date"
                   value={customRange?.start || ''}
                   onChange={(e) => onChangeCustomRange && onChangeCustomRange({ start: e.target.value || null, end: customRange?.end || null })}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm"
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm text-gray-900 dark:text-white"
                 />
                 <span className="text-gray-500">to</span>
                 <input
                   type="date"
                   value={customRange?.end || ''}
                   onChange={(e) => onChangeCustomRange && onChangeCustomRange({ start: customRange?.start || null, end: e.target.value || null })}
-                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm"
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm text-gray-900 dark:text-white"
                 />
               </div>
               <div className="flex items-center justify-end gap-2 pt-1">

@@ -19,6 +19,23 @@ Notes:
 - If Supabase vars are missing, the app will continue using localStorage only.
 - The current implementation stores the whole app state as a single JSON document per user (`app_state.data`). You can later evolve this to normalized tables as needed.
 
+### Email + password authentication with verification
+
+1) In the Supabase Dashboard, enable **Email confirmations** under **Authentication → Providers → Email**. Keep the default `Confirm email` toggle on so users must verify their address before the first sign-in.
+2) Update the site URL + redirect settings so the verification link returns to your deployment (e.g. `https://taskly.chat/auth/callback`). The app also works in development by falling back to `http://localhost:3002/auth/callback`.
+3) Re-run the SQL in `supabase/schema.sql` to ensure the `profiles` table includes the new verification tracking columns (`email_verified`, `email_verified_at`, `last_sign_in_at`, `last_verification_email_sent`).
+4) Deploy the latest build. Users can now create accounts with email/password, receive verification emails, and the profile sync will persist verification metadata automatically after their first confirmed login.
+
+### Keep the schema in sync with Supabase
+
+After making changes in the Dashboard or via migrations, pull the remote schema so `supabase/schema.sql` stays authoritative:
+
+```bash
+supabase db pull --schema public
+```
+
+This command requires the Supabase CLI authenticated against your project (`supabase login`) and the project ref set in `supabase/config.toml`. Commit the updated `schema.sql` after reviewing the diff.
+
 ### Optional: Move to normalized relational schema
 
 1) In Supabase SQL editor, run the full schema in `supabase/schema.sql` (it now includes both the legacy `app_state` table and normalized tables with RLS). For a brand-new project with zero tables, this single script is all you need.

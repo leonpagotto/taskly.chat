@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taskly.Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -174,10 +174,9 @@
       .animate-slide-out-down {
         animation: slide-out-down 0.4s ease-in-out forwards;
       }
-      /* Center placeholder text in chat input textarea when empty and not focused */
-      .chat-input-textarea:placeholder-shown:not(:focus) {
-        display: grid;
-        place-items: center;
+      /* Align placeholder text at the start (top) of chat input textarea */
+      .chat-input-textarea {
+        vertical-align: top;
       }
       /* Global: unify button/nav radius */
       button { border-radius: var(--radius-button) !important; }
@@ -236,10 +235,29 @@
       *::-webkit-scrollbar-thumb:active {
         background: rgba(169, 169, 169, 0.85);
       }
+
+      /* Date input calendar icon styling */
+      input[type="date"]::-webkit-calendar-picker-indicator,
+      input[type="time"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: invert(0.5); /* Makes black icon gray */
+        opacity: 0.7;
+      }
+      
+      /* Dark mode: make date/time picker icons lighter */
+      .dark input[type="date"]::-webkit-calendar-picker-indicator,
+      .dark input[type="time"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.8); /* Makes icon light gray in dark mode */
+        opacity: 0.8;
+      }
+      
+      /* Hover state for picker icons */
+      input[type="date"]::-webkit-calendar-picker-indicator:hover,
+      input[type="time"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+      }
     </style>
-  
-<link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body class="bg-gray-100 dark:bg-gray-900">
     <div id="root"></div>
     <script>

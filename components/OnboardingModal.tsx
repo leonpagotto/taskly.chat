@@ -41,61 +41,74 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
   const steps = useMemo(() => ([
     {
       key: 'welcome',
-      title: 'Welcome to Taskly',
-      desc: 'A faster Today, smarter AI, and fresh multi-day views. Here’s what’s new.',
+      title: 'Welcome to Taskly.Chat',
+      desc: 'Your AI-powered workspace for tasks, projects, notes, and more. Let\'s explore what you can do.',
       bg: 'from-indigo-600 via-purple-600 to-pink-600',
       content: (
         <div className="space-y-3">
-          <div className="text-sm text-white/90">Switch between Day, 3-Day, and 5-Day (weekdays) to plan your work at a glance.</div>
-          <div className="inline-flex items-center bg-white/10 rounded-xl p-1 backdrop-blur gap-1">
-            <span className="px-3 py-1.5 rounded-lg bg-white/20 text-xs font-semibold">Day</span>
-            <span className="px-3 py-1.5 rounded-lg text-white/90 text-xs font-semibold">3-Day</span>
-            <span className="px-3 py-1.5 rounded-lg text-white/90 text-xs font-semibold">5-Day</span>
+          <div className="text-sm text-white/90">Taskly.Chat combines powerful task management with AI assistance to help you stay organized and productive.</div>
+          <div className="grid grid-cols-2 gap-2 mt-3">
+            <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
+              <div className="text-xs font-semibold mb-1">📋 Tasks & Habits</div>
+              <div className="text-xs text-white/80">Daily routines and to-dos</div>
+            </div>
+            <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
+              <div className="text-xs font-semibold mb-1">📅 Calendar & Events</div>
+              <div className="text-xs text-white/80">Schedule and track events</div>
+            </div>
+            <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
+              <div className="text-xs font-semibold mb-1">📝 Notes & Stories</div>
+              <div className="text-xs text-white/80">Capture ideas and documents</div>
+            </div>
+            <div className="p-3 rounded-lg bg-white/10 backdrop-blur">
+              <div className="text-xs font-semibold mb-1">🤖 AI Assistant</div>
+              <div className="text-xs text-white/80">Smart help and automation</div>
+            </div>
           </div>
         </div>
       )
     },
     {
-      key: 'chat-project',
-      title: 'Linked chats to projects',
-      desc: 'When a chat is attached to a project, the header shows a pill with the project name. Keep context tight.',
+      key: 'features',
+      title: 'Powerful features at your fingertips',
+      desc: 'Everything you need to manage your work and personal life in one place.',
       bg: 'from-emerald-600 via-teal-600 to-cyan-600',
       content: (
-        <div className="space-y-3">
-          <div className="text-sm text-white/90">Open a chat, link it to a project, and you’ll see its name right in the header.</div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 text-white/95 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full bg-white/90" /> Project: Website Redesign
-          </div>
+        <div className="space-y-2">
+          <TipRow icon={<CheckCircleIcon className="text-xl" />} title="Tasks & Checklists" desc="Create tasks with priorities, due dates, and recurring schedules." />
+          <TipRow icon={<CalendarAddOnIcon className="text-xl" />} title="Calendar View" desc="See all your events and habits in monthly or weekly views." />
+          <TipRow icon={<NewHabitIcon className="text-xl" />} title="Habits" desc="Build daily routines with streaks and completion tracking." />
+          <TipRow icon={<DragPanIcon className="text-xl" />} title="Projects" desc="Organize work into projects with linked tasks, notes, and files." />
         </div>
       )
     },
     {
-      key: 'ai-awareness',
-      title: 'AI knows your project',
-      desc: 'Ask Taskly about your tasks, notes, stories, and events for a linked project. It has the full picture.',
+      key: 'ai-features',
+      title: 'AI-powered assistance',
+      desc: 'Chat with AI to create tasks, plan projects, and get things done faster.',
       bg: 'from-fuchsia-600 via-rose-600 to-orange-500',
       content: (
         <div className="space-y-3">
           <div className="grid gap-2">
-            {commands.slice(0,4).map((c, i) => (
+            {commands.slice(0,5).map((c, i) => (
               <CommandRow key={i} label={c.label} example={c.example} />
             ))}
           </div>
-          <p className="text-xs text-white/90">Tip: I understand dates like “tomorrow”, “next Monday”, and time ranges.</p>
+          <p className="text-xs text-white/90">💡 Tip: I understand natural dates like "tomorrow", "next Monday", and time ranges like "2-3pm".</p>
         </div>
       )
     },
     {
       key: 'tips',
-      title: 'Quick tips',
-      desc: 'A few gestures and shortcuts to move faster.',
+      title: 'Quick tips to get started',
+      desc: 'A few gestures and shortcuts to help you work faster.',
       bg: 'from-sky-600 via-blue-600 to-violet-600',
       content: (
         <div className="grid sm:grid-cols-2 gap-2">
-          <TipRow icon={<DragPanIcon className="text-xl" />} title="Drag to reorder" desc="Hold and drag to change priority." />
-          <TipRow icon={<SwipeIcon className="text-xl" />} title="Swipe on mobile" desc="Swipe right to set priority, left to edit." />
-          <TipRow icon={<CheckCircleIcon className="text-xl" />} title="Click to complete" desc="Tap the round control on tasks and habits." />
-          <TipRow icon={<SearchIcon className="text-xl" />} title="Universal search" desc="Search notes, tasks, events, files, and projects." />
+          <TipRow icon={<DragPanIcon className="text-xl" />} title="Drag to reorder" desc="Hold and drag items to change priority and order." />
+          <TipRow icon={<SwipeIcon className="text-xl" />} title="Swipe on mobile" desc="Swipe right to set priority, left to edit or delete." />
+          <TipRow icon={<MicIcon className="text-xl" />} title="Voice input" desc="Use your microphone to chat with AI hands-free." />
+          <TipRow icon={<SearchIcon className="text-xl" />} title="Universal search" desc="Search across notes, tasks, events, files, and projects." />
         </div>
       )
     },
@@ -115,7 +128,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
           <header className="p-4 sm:p-5 border-b border-gray-700 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <HelpOutlineIcon className="text-2xl" />
-              <h2 id="onb-title" className="text-lg font-semibold">Welcome to Taskly</h2>
+              <h2 id="onb-title" className="text-lg font-semibold">Getting Started</h2>
             </div>
             <button onClick={onClose} className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-700 flex items-center justify-center" aria-label="Close">
               <CloseIcon />

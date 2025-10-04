@@ -20,6 +20,7 @@ interface SidebarProps {
   isMobileOpen: boolean;
   onMobileClose: () => void;
   t: (key: string) => string;
+  onOpenFeedback: () => void;
   // Notes Section Props
   notes: Note[];
   onCreateNote: (projectId?: string) => void;
@@ -49,7 +50,7 @@ const NavItem: React.FC<{
   const baseClasses = `flex items-center rounded-[12px] text-sm transition-colors transition-transform`;
   // Desktop standard height: 36px (h-9). Apply to both collapsed and expanded.
   const shapeClasses = isCollapsed 
-    ? 'w-9 h-9 justify-center mx-auto' 
+    ? 'w-9 h-9 justify-center mx-1' 
     : 'w-full h-9 px-1.5 space-x-2';
   
   const variantClasses = {
@@ -78,7 +79,7 @@ const NavItem: React.FC<{
         baseClasses,
         // Use square shape on collapsed, full-width on expanded
         appliedVariant,
-  variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-9 h-9 mx-auto' : 'w-full h-9'}` : '',
+  variant === 'outline' ? `p-[2px] ${isCollapsed ? 'w-9 h-9 mx-1' : 'w-full h-9'}` : '',
         variant !== 'outline' ? shapeClasses : '',
         !isCollapsed ? 'w-full text-left' : '',
     // Selected items: slightly darker, tighter padding feel
@@ -306,6 +307,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   const { 
     projects, conversations, userCategories, activeChatId, activeProjectId, currentView, isCollapsed, onNewChat,
     onNewProject, onSelectChat, onSelectView, onSelectProject, onToggleCollapse, isMobileOpen, onMobileClose, t,
+    onOpenFeedback,
     notes, onCreateNote
   } = props;
   const [projectsCollapsed, setProjectsCollapsed] = useState<boolean>(() => {
@@ -349,8 +351,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
           </button>
         </div>
 
-    <div className="flex-grow flex flex-col min-h-0">
-  <div className="flex-grow overflow-y-auto pr-0 sidebar-scroll">
+    <div className="flex flex-col min-h-0 flex-1">
+  <div className="flex-1 overflow-y-auto pr-0 sidebar-scroll">
               {/* Primary Actions */}
     <nav className="space-y-0 mb-2">
           <NavItem 
@@ -393,7 +395,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               
               {/* Projects Section */}
               <div>
-                <div className="border-t border-gray-700/30"></div>
+                {!isCollapsed && <div className="border-t border-gray-700/30"></div>}
                 {/* Projects header: single-click opens Projects, double-click toggles collapse/expand of the list */}
                 <div className="relative">
                   <NavItem 
@@ -475,6 +477,15 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         </div>
         
         <div className="flex-shrink-0 pt-1 border-t border-gray-700/50">
+             <NavItem
+               icon={<Icon name="rate_review" className="text-xl" />}
+               label="Feedback"
+               isCollapsed={isCollapsed}
+               onClick={() => {
+                 onOpenFeedback();
+                 if (isMobileOpen) onMobileClose();
+               }}
+             />
              <NavItem icon={<SettingsIcon className="text-xl"/>} label={t('settings')} isActive={currentView === 'settings'} isCollapsed={isCollapsed} onClick={() => onSelectView('settings')} />
         </div>
       </div>

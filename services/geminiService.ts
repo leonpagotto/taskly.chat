@@ -1,7 +1,11 @@
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold, Part, Type } from "@google/genai";
 import { Message, Sender, UserPreferences, AIResponse, AppView, Project, ProjectFile, Request, RequestPriority, Story } from '../types';
+import { getSupabase } from './supabaseClient';
 
-// API key management: env wins, then localStorage fallback; do not crash when missing.
+// Check if we should use AI proxy (server-side) or direct API (legacy)
+const USE_AI_PROXY = ((import.meta as any).env?.VITE_USE_AI_PROXY as string) === 'true';
+
+// Legacy direct API support (deprecated - will be removed)
 let ai: GoogleGenAI | null = null;
 const getEnvKey = (): string | undefined => {
   try { return ((import.meta as any).env?.VITE_API_KEY as string | undefined)?.trim() || undefined; } catch { return undefined; }
@@ -11,6 +15,12 @@ const getStoredKey = (): string | undefined => {
 };
 const getApiKey = (): string | undefined => getEnvKey() || getStoredKey();
 const initAI = () => {
+  if (USE_AI_PROXY) {
+    // AI proxy enabled - no need for client-side API key
+    ai = { isProxy: true } as any;
+    return;
+  }
+  // Legacy mode
   const key = getApiKey();
   if (key) {
     ai = new GoogleGenAI({ apiKey: key });
@@ -21,9 +31,61 @@ const initAI = () => {
 };
 initAI();
 
-export const isAIAvailable = (): boolean => !!ai;
+export const isAIAvailable = (): boolean => {
+  if (USE_AI_PROXY) {
+    // AI is always available when using proxy (server handles auth)
+    return true;
+  }
+  return !!ai;
+};
+
+// Helper function to call AI via Supabase Edge Function
+async function callAIProxy(messages: any[], systemInstruction?: string, generationConfig?: any): Promise<any> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    throw new Error('Supabase not configured');
+  }
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('User not authenticated');
+  }
+
+  const supabaseUrl = ((import.meta as any).env?.VITE_SUPABASE_URL as string);
+  const response = await fetch(`${supabaseUrl}/functions/v1/ai-chat`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      messages,
+      systemInstruction,
+      generationConfig: generationConfig || {
+        temperature: 0.7,
+        topK: 64,
+        topP: 0.95,
+        maxOutputTokens: 8192,
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    if (response.status === 429) {
+      throw new Error(errorData.message || 'Rate limit exceeded. Please upgrade your plan for more AI requests.');
+    }
+    throw new Error(errorData.error || `AI request failed: ${response.statusText}`);
+  }
+
+  return await response.json();
+}
 
 export const setApiKey = (key: string | null) => {
+  if (USE_AI_PROXY) {
+    // No-op when using proxy
+    return;
+  }
   try {
     if (key && key.trim()) localStorage.setItem('ai.apiKey', key.trim());
     else localStorage.removeItem('ai.apiKey');
@@ -31,7 +93,7 @@ export const setApiKey = (key: string | null) => {
   initAI();
 };
 // NOTE: We use text-only interactions. Do not attach images or other binary parts.
-const model = "gemini-2.5-flash";
+const model = "gemini-2.0-flash-exp"; // Default model (overridden by server based on tier)
 
 const safetySettings = [
   { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -102,6 +164,24 @@ Available Actions:
 - Use this when a user wants to schedule an appointment or event.
 - startTime, endDate, endTime are optional.
 
+8. Create a support request:
+[ACTION:CREATE_REQUEST]{"product": "Product/Feature name", "requester": "Requester name", "problem": "Problem description", "outcome": "Desired outcome", "priority": "low|medium|high|critical"}
+- Use this when the user wants to submit a support request, feature request, or report an issue.
+- This is for formal requests that need to be tracked and triaged.
+- priority defaults to "medium" if not specified.
+
+9. Create a story:
+[ACTION:CREATE_STORY]{"title": "Story title", "description": "Story description", "requestId": "optional-request-id", "skillIds": ["skill-id-1", "skill-id-2"]}
+- Use this when the user wants to create a user story or work item.
+- requestId is optional and can link the story to an existing request.
+- skillIds is optional array of skill IDs that are relevant to this story (copy from request if creating from one).
+- Stories represent work to be done and can have tasks attached to them.
+
+10. Link objects:
+[ACTION:LINK_OBJECTS]{"sourceType": "request|story", "sourceId": "id", "targetType": "story|task", "targetId": "id"}
+- Use this when the user wants to link a request to a story, or a story to a task.
+- This creates relationships between different objects in the system.
+
 Example:
 User: "I need to plan a birthday party. Can you help?"
 Model: "Of course! Here are a few things to get you started.
@@ -165,16 +245,39 @@ export const parseAIResponse = async (
   if (!ai) {
     return { text: "AI is not configured. Please add your API key in the app settings or environment (VITE_API_KEY).", action: undefined };
   }
-  const result = await ai.models.generateContent({
-      model: model,
-      contents: contents,
-      config: {
-          temperature: 0.7,
-          topK: 64,
-          topP: 0.95,
-          systemInstruction,
-       },
-  });
+
+  // Use AI proxy or direct API based on configuration
+  let result: any;
+  if (USE_AI_PROXY) {
+    try {
+      const proxyResponse = await callAIProxy(contents, systemInstruction, {
+        temperature: 0.7,
+        topK: 64,
+        topP: 0.95,
+      });
+      
+      // Convert proxy response to expected format
+      const textContent = proxyResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      result = { text: textContent };
+    } catch (error: any) {
+      return { 
+        text: error.message || "AI request failed. Please try again.", 
+        action: undefined 
+      };
+    }
+  } else {
+    // Legacy direct API call
+    result = await ai.models.generateContent({
+        model: model,
+        contents: contents,
+        config: {
+            temperature: 0.7,
+            topK: 64,
+            topP: 0.95,
+            systemInstruction,
+         },
+    });
+  }
 
   let text = result.text;
   const actionRegex = /\[ACTION:(\w+)\](.*)/s;
@@ -212,16 +315,32 @@ export const generateTitleForChat = async (firstMessage: string): Promise<string
     const words = simple.split(' ').filter(Boolean).slice(0, 5).join(' ');
     return words || 'New Chat';
   }
-  const result = await ai.models.generateContent({
-        model: model,
-        contents: prompt,
-    });
-    let title = result.text.replace(/["'•\-–—\n]/g, ' ').replace(/\s+/g, ' ').trim();
-    // Keep at most 5 words and 36 chars
-    const words = title.split(' ').filter(Boolean).slice(0, 5).join(' ');
-    title = words.slice(0, 36).trim();
-    if (!title) title = 'New Chat';
-    return title;
+
+  let result: any;
+  if (USE_AI_PROXY) {
+    try {
+      const proxyResponse = await callAIProxy([
+        { role: 'user', parts: [{ text: prompt }] }
+      ]);
+      result = { text: proxyResponse.candidates?.[0]?.content?.parts?.[0]?.text || 'New Chat' };
+    } catch (error) {
+      console.error('Failed to generate title:', error);
+      const words = firstMessage.split(' ').filter(Boolean).slice(0, 5).join(' ');
+      return words.slice(0, 36) || 'New Chat';
+    }
+  } else {
+    result = await ai.models.generateContent({
+          model: model,
+          contents: prompt,
+      });
+  }
+
+  let title = result.text.replace(/["'•\-–—\n]/g, ' ').replace(/\s+/g, ' ').trim();
+  // Keep at most 5 words and 36 chars
+  const words = title.split(' ').filter(Boolean).slice(0, 5).join(' ');
+  title = words.slice(0, 36).trim();
+  if (!title) title = 'New Chat';
+  return title;
 };
 
 export const generateTasksFromNote = async (

@@ -5,6 +5,7 @@ import { ChevronRightIcon, AddIcon, PlaylistAddIcon, MoreVertIcon, Icon, ExpandM
 import UnifiedToolbar from './UnifiedToolbar';
 import { parseRequestFromPrompt, isAIAvailable } from '../services/geminiService';
 import { useRequestsFilters } from '../utils/useRequestsFilters';
+import EmptyStateIcon from './EmptyStateIcon';
 
 // Normalize legacy request statuses to the new expanded set
 const normalizeStatus = (s: RequestStatus): RequestStatus => {
@@ -149,12 +150,16 @@ const RequestsListPage: React.FC<{
               ))}
               {sorted.length === 0 && (
                 <div className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
-                  <div className="mx-auto max-w-md">
-                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700/70 flex items-center justify-center mx-auto mb-3">
-                      <span className="material-symbols-outlined text-3xl">concierge</span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">No requests yet</h3>
-                    <p className="text-sm mt-1">Create your first request using the button in the top right.</p>
+                  <div className="mx-auto max-w-md flex flex-col items-center">
+                    <EmptyStateIcon icon={<Icon name="concierge" />} size="lg" />
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                      {requests.length === 0 ? 'No requests yet' : 'No requests match filters'}
+                    </h3>
+                    <p className="max-w-md mt-1 mb-6">
+                      {requests.length === 0 
+                        ? 'Create your first request using the button in the top right.' 
+                        : 'Try adjusting your filters or create a new request.'}
+                    </p>
                   </div>
                 </div>
               )}

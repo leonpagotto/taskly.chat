@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Header from './Header';
 import { ArrowBackIcon, AddIcon, DeleteIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChevronRightIcon } from './icons';
-import { Story, Project, UserCategory, Checklist, StoryStatus, AcceptanceCriterion } from '../types';
+import { Story, Project, UserCategory, Checklist, StoryStatus, AcceptanceCriterion, SkillCategory } from '../types';
 import { authService } from '../services/authService';
 
 type Props = {
   story: Story;
   projects: Project[];
   userCategories: UserCategory[];
+  skillCategories: SkillCategory[];
   checklists: Checklist[];
   onBack: () => void;
   onUpdate: (updates: Partial<Story>) => void;
@@ -24,7 +25,7 @@ const statusOptions: { value: StoryStatus; label: string }[] = [
   { value: 'done', label: 'Done' },
 ];
 
-const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, checklists, onBack, onUpdate, onDelete, onLinkTask, onUnlinkTask, onCreateLinkedTask }) => {
+const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, skillCategories, checklists, onBack, onUpdate, onDelete, onLinkTask, onUnlinkTask, onCreateLinkedTask }) => {
   const [local, setLocal] = useState<Story>(story);
   const [newCriterion, setNewCriterion] = useState('');
   const [newLinkedTaskName, setNewLinkedTaskName] = useState('');
@@ -156,6 +157,54 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, che
                 </div>
               </div>
             </div>
+
+            {skillCategories.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Required Skills</h3>
+                <div className="space-y-3">
+                  {skillCategories.map(cat => {
+                    const catSkills = cat.skills || [];
+                    if (catSkills.length === 0) return null;
+                    return (
+                      <div key={cat.id}>
+                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">{cat.name}</div>
+                        <div className="flex flex-wrap gap-2">
+                          {catSkills.map(skill => {
+                            const isSelected = (local.skillIds || []).includes(skill.id);
+                            return (
+                              <button
+                                key={skill.id}
+                                type="button"
+                                onClick={() => {
+                                  const currentSkills = local.skillIds || [];
+                                  const updated = isSelected
+                                    ? currentSkills.filter(id => id !== skill.id)
+                                    : [...currentSkills, skill.id];
+                                  handleField('skillIds', updated);
+                                }}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                                  isSelected
+                                    ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                                    : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
+                                }`}
+                                title={skill.description || skill.name}
+                              >
+                                {skill.name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(local.skillIds || []).length > 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-600">
+                      {(local.skillIds || []).length} skill{(local.skillIds || []).length !== 1 ? 's' : ''} selected
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="bg-white dark:bg-gray-700 rounded-xl p-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Linked Tasks</h3>

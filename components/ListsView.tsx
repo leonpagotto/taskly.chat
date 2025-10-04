@@ -391,6 +391,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
   const [statusFilter, setStatusFilter] = useState<Status>(persisted.status);
   const [timeFilter, setTimeFilter] = useState<TimeFilterKey>(persisted.timeFilter ?? 'all');
   const [customRange, setCustomRange] = useState<{ start: string | null; end: string | null }>({ start: persisted.customStart ?? null, end: persisted.customEnd ?? null });
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   // Always include undated as per spec; no state needed
 
   useEffect(() => {
@@ -511,8 +512,24 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         </button>
       </Header>
       <div className="flex-1 overflow-y-auto">
-        {/* Full-width toolbar with bottom divider */}
-        <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        {/* Mobile: Compact filter button */}
+        <div className="md:hidden bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="px-4 py-3">
+            <button
+              onClick={() => setFilterPanelOpen(true)}
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+            >
+              <div className="flex items-center gap-2">
+                <Icon name="tune" className="text-xl" />
+                <span className="font-semibold">Filters & Sort</span>
+              </div>
+              <Icon name="chevron_right" className="text-xl" />
+            </button>
+          </div>
+        </div>
+
+        {/* Desktop: Full toolbar */}
+        <div className="hidden md:block bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div className="px-4 sm:px-6">
               <div className="w-full py-4">
                 {/* Row: Filters + Sort (styled like other controls) */}
@@ -540,6 +557,93 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
               </div>
           </div>
         </div>
+
+        {/* Sliding Filter Panel (Mobile) */}
+        {filterPanelOpen && (
+          <>
+            <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setFilterPanelOpen(false)} />
+            <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl z-50 md:hidden transform transition-transform duration-300 overflow-y-auto">
+              <div className="flex flex-col min-h-full">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters & Sort</h3>
+                  <button onClick={() => setFilterPanelOpen(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <CloseIcon />
+                  </button>
+                </div>
+                <div className="flex-1 p-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Project</label>
+                    <select 
+                      value={selectedProjectId} 
+                      onChange={e => setSelectedProjectId(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                    >
+                      <option value="all">All Projects</option>
+                      {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                    <select 
+                      value={selectedCategoryId} 
+                      onChange={e => setSelectedCategoryId(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                    >
+                      <option value="all">All Categories</option>
+                      {userCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Time Period</label>
+                    <select 
+                      value={timeFilter} 
+                      onChange={e => setTimeFilter(e.target.value as any)}
+                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                    >
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                      <option value="next7">Next 7 Days</option>
+                      <option value="next30">Next 30 Days</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                      <option value="year">This Year</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Sort By</label>
+                    <div className="space-y-2">
+                      {[
+                        { value: 'time' as const, label: 'Time' },
+                        { value: 'priority' as const, label: 'Priority' },
+                        { value: 'name' as const, label: 'Name' }
+                      ].map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => setSortBy(opt.value)}
+                          className={`w-full px-4 py-2.5 rounded-lg text-left font-medium transition-colors ${
+                            sortBy === opt.value
+                              ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                              : 'bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 sticky bottom-0 bg-white dark:bg-gray-800">
+                  <button
+                    onClick={() => setFilterPanelOpen(false)}
+                    className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
         <div className="px-4 sm:px-6">
           <div className="mx-auto w-full max-w-[52rem]">
             <main className="py-4 sm:py-6">

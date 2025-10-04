@@ -5,6 +5,25 @@ export enum Sender {
   Model = 'model',
 }
 
+export type FeedbackType = 'bug' | 'feature' | 'general';
+
+export type FeedbackMetadata = {
+  submittedAt: string;
+  appVersion?: string;
+  locale?: string;
+  timezone?: string;
+  userAgent?: string;
+  platform?: string;
+  appView?: AppView | null;
+};
+
+export type FeedbackSubmission = {
+  email?: string;
+  type: FeedbackType;
+  message: string;
+  metadata?: FeedbackMetadata;
+};
+
 export type Task = {
   id: string;
   text: string;
@@ -77,6 +96,20 @@ export type UserCategory = {
   color: string;
 };
 
+// --- Skills Management ---
+export type Skill = {
+  id: string;
+  name: string;
+  description?: string;
+  categoryId: string;
+};
+
+export type SkillCategory = {
+  id: string;
+  name: string;
+  skills: Skill[];
+};
+
 export type Project = {
   id: string;
   name: string;
@@ -85,6 +118,38 @@ export type Project = {
   instructions?: string;
   icon?: string;
   color?: string;
+  members?: ProjectMember[];
+  invites?: ProjectInvite[];
+};
+
+export type ProjectRole = 'admin' | 'collaborator';
+
+export type ProjectAccessStatus = 'accepted' | 'pending' | 'revoked';
+
+export type ProjectMember = {
+  id: string; // user id or email hash when user account not yet created
+  email?: string;
+  name?: string;
+  role: ProjectRole;
+  status: ProjectAccessStatus;
+  invitedAt: string;
+  acceptedAt?: string;
+  invitedBy?: string;
+};
+
+export type ProjectInviteStatus = 'pending' | 'accepted' | 'declined' | 'expired';
+
+export type ProjectInvite = {
+  id: string;
+  projectId: string;
+  email: string;
+  role: ProjectRole;
+  invitedBy: string;
+  status: ProjectInviteStatus;
+  token: string;
+  createdAt: string;
+  respondedAt?: string;
+  message?: string;
 };
 
 export type Note = {
@@ -128,7 +193,7 @@ export type Event = {
 export type AIResponse = {
   text: string;
   action?: {
-    type: 'CREATE_TASK' | 'CREATE_HABIT' | 'ADD_ITEMS_TO_LIST' | 'SUGGEST_TASKS' | 'COMPLETE_ITEM' | 'CREATE_NOTE' | 'CREATE_EVENT';
+    type: 'CREATE_TASK' | 'CREATE_HABIT' | 'ADD_ITEMS_TO_LIST' | 'SUGGEST_TASKS' | 'COMPLETE_ITEM' | 'CREATE_NOTE' | 'CREATE_EVENT' | 'CREATE_REQUEST' | 'CREATE_STORY' | 'LINK_OBJECTS';
     payload: any;
   };
 };
@@ -153,6 +218,7 @@ export type Story = {
   estimatePoints?: number; // story points
   estimateTime?: string; // optional time estimate (e.g., "3h", "1d")
   linkedTaskIds: string[]; // Checklist IDs linked to this story
+  skillIds?: string[]; // Skills tagged to this story
   // Assignee/Requester fields (free-form name and/or user id)
   assigneeUserId?: string;
   assigneeName?: string;
@@ -195,6 +261,7 @@ export type Request = {
   attachments?: RequestAttachment[];
   status: RequestStatus;
   linkedTaskIds: string[]; // Checklist IDs created/linked for this request
+  skillIds?: string[]; // Skills tagged to this request
   createdAt: string; // ISO
   updatedAt: string; // ISO
 };

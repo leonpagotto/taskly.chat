@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { setApiKey as setGeminiApiKey } from '../services/geminiService';
-import { UserPreferences, AIPersonality, AppTheme, AppColorTheme, AppLanguage, UserCategory, PulseWidgetConfig, PulseWidgetType, AppSize } from '../types';
+import { UserPreferences, AIPersonality, AppTheme, AppColorTheme, AppLanguage, UserCategory, PulseWidgetConfig, PulseWidgetType, AppSize, SkillCategory } from '../types';
 import { SettingsIcon, WarningIcon, CheckCircleIcon, CloseIcon, DeleteIcon, EditIcon, LeftPanelOpenIcon } from './icons';
 import CategoriesView from './CategoriesView';
+import SkillsSettings from './SkillsSettings';
 import Header from './Header';
 
 interface SettingsViewProps {
@@ -16,11 +17,16 @@ interface SettingsViewProps {
   onNewCategory: () => void;
   onEditCategory: (category: UserCategory) => void;
   targetTab?: string;
-    // Auth (Supabase) controls
-    authEmail?: string | null;
-    onSignIn?: () => void;
-    onSignOut?: () => void;
-    supabaseEnabled?: boolean;
+  // Skills Management Props
+  skillCategories: SkillCategory[];
+  onUpdateSkills: (categories: SkillCategory[]) => void;
+  onGenerateSkills: () => void;
+  // Auth (Supabase) controls
+  authEmail?: string | null;
+  onSignIn?: () => void;
+  onSignOut?: () => void;
+  supabaseEnabled?: boolean;
+  onOpenFeedback?: () => void;
 }
 
 const personalityOptions: { value: AIPersonality; label: string; description: string }[] = [
@@ -46,7 +52,7 @@ const languageOptions: { value: AppLanguage; label: string }[] = [
     { value: 'auto', label: 'Auto-Detect' },
 ];
 
-type SettingsTab = 'profile' | 'ai' | 'appearance' | 'categories' | 'pulse';
+type SettingsTab = 'profile' | 'ai' | 'appearance' | 'categories' | 'skills' | 'pulse';
 
 const SettingsCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-white dark:bg-gray-900/50 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700/50">
@@ -155,13 +161,14 @@ const PulseConfigModal: React.FC<{
 
 
 const SettingsView: React.FC<SettingsViewProps> = (props) => {
-    const { preferences, onUpdate, onReset, onToggleSidebar, t, categories, onNewCategory, onEditCategory, targetTab, authEmail, onSignIn, onSignOut, supabaseEnabled } = props;
+    const { preferences, onUpdate, onReset, onToggleSidebar, t, categories, onNewCategory, onEditCategory, targetTab, skillCategories, onUpdateSkills, onGenerateSkills, authEmail, onSignIn, onSignOut, supabaseEnabled, onOpenFeedback } = props;
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
     const [localPrefs, setLocalPrefs] = useState(preferences);
     const [showSaved, setShowSaved] = useState(false);
     const [pulseModalConfig, setPulseModalConfig] = useState<PulseWidgetConfig | null>(null);
     const [isPulseModalNew, setIsPulseModalNew] = useState(false);
-    const API_MISSING = !(import.meta as any).env?.VITE_API_KEY;
+    const USE_AI_PROXY = ((import.meta as any).env?.VITE_USE_AI_PROXY as string) === 'true';
+    const API_MISSING = !USE_AI_PROXY && !(import.meta as any).env?.VITE_API_KEY;
     const existingLocalApiKey = (() => { try { return localStorage.getItem('ai.apiKey') || ''; } catch { return ''; } })();
     const [apiKeyInput, setApiKeyInput] = useState<string>(existingLocalApiKey);
     const [apiStatus, setApiStatus] = useState<'unset' | 'saved'>(() => (existingLocalApiKey ? 'saved' : 'unset'));
@@ -206,6 +213,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
         { id: 'ai', label: t('settings_ai_memory') },
         { id: 'appearance', label: t('settings_appearance') },
         { id: 'categories', label: t('categories') },
+        { id: 'skills', label: 'Skills' },
         { id: 'pulse', label: t('settings_pulse') },
     ];
     
@@ -303,6 +311,19 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             </div>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Upgrade is a demo flow for now; payments are not yet wired.</p>
                         </SettingsCard>
+                        {onOpenFeedback && (
+                            <SettingsCard title="Share feedback">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Tell us what’s working, what’s missing, or where you spotted a bug. Your note goes straight to the Taskly.chat team.
+                                </p>
+                                <button
+                                    onClick={onOpenFeedback}
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                >
+                                    Open feedback form
+                                </button>
+                            </SettingsCard>
+                        )}
                     </div>
                 );
             case 'ai':
@@ -325,32 +346,34 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 </Select>
                             </FormRow>
                         </SettingsCard>
-                        <SettingsCard title="Gemini API">
-                            <p className="text-sm text-gray-400 -mt-1">Add your Gemini API key to enable AI chat and smart features. The key is stored locally on this device.</p>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="password"
-                                    value={apiKeyInput}
-                                    onChange={e => setApiKeyInput(e.target.value)}
-                                    placeholder="Paste your Gemini API key"
-                                    className="flex-1 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]"
-                                />
-                                <button
-                                    onClick={() => {
-                                        setGeminiApiKey(apiKeyInput || null);
-                                        setApiStatus(apiKeyInput ? 'saved' : 'unset');
-                                        setShowSaved(true);
-                                        setTimeout(() => setShowSaved(false), 2000);
-                                    }}
-                                    className="px-3 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
-                                >
-                                    {apiKeyInput ? 'Save' : 'Clear'}
-                                </button>
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">
-                                Status: {apiStatus === 'saved' ? <span className="text-green-400">Configured</span> : <span className="text-amber-400">Not set</span>}
-                            </div>
-                        </SettingsCard>
+                        {!USE_AI_PROXY && (
+                            <SettingsCard title="Gemini API">
+                                <p className="text-sm text-gray-400 -mt-1">Add your Gemini API key to enable AI chat and smart features. The key is stored locally on this device.</p>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="password"
+                                        value={apiKeyInput}
+                                        onChange={e => setApiKeyInput(e.target.value)}
+                                        placeholder="Paste your Gemini API key"
+                                        className="flex-1 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)]"
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            setGeminiApiKey(apiKeyInput || null);
+                                            setApiStatus(apiKeyInput ? 'saved' : 'unset');
+                                            setShowSaved(true);
+                                            setTimeout(() => setShowSaved(false), 2000);
+                                        }}
+                                        className="px-3 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                    >
+                                        {apiKeyInput ? 'Save' : 'Clear'}
+                                    </button>
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                    Status: {apiStatus === 'saved' ? <span className="text-green-400">Configured</span> : <span className="text-amber-400">Not set</span>}
+                                </div>
+                            </SettingsCard>
+                        )}
                         <SettingsCard title={t('settings_ai_memory')}>
                             <ToggleSwitch label={t('settings_use_memory')} checked={localPrefs.useMemory} onChange={useMemory => handleUpdateLocal({ useMemory })} description={t('settings_use_memory_desc')} />
                             <ToggleSwitch label={t('settings_use_history')} checked={localPrefs.useHistory} onChange={useHistory => handleUpdateLocal({ useHistory })} description={t('settings_use_history_desc')} />
@@ -398,6 +421,17 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             onNewCategory={onNewCategory}
                             onEditCategory={onEditCategory}
                             t={t}
+                        />
+                    </SettingsCard>
+                );
+            case 'skills':
+                return (
+                    <SettingsCard title="Skills & Expertise">
+                        <SkillsSettings
+                            skillCategories={skillCategories}
+                            occupation={localPrefs.occupation}
+                            onUpdateSkills={onUpdateSkills}
+                            onGenerateSkills={onGenerateSkills}
                         />
                     </SettingsCard>
                 );

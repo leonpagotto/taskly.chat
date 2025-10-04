@@ -116,15 +116,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
           <button onClick={handleNext} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronRightIcon /></button>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 p-1 bg-gray-700/50 rounded-full">
+          <div className="bg-gray-200 dark:bg-gray-700/50 flex items-center h-10 px-1 rounded-[12px]">
             <button
               type="button"
-              className={`px-3 py-1 rounded-full text-sm font-semibold transition-colors ${viewMode === 'month' ? 'bg-gray-600 text-white' : 'text-gray-300 hover:bg-gray-600/50'}`}
+              className={`h-8 px-3 rounded-[12px] text-sm font-semibold transition-colors ${viewMode === 'month' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
               onClick={() => setViewMode('month')}
             >Month</button>
             <button
               type="button"
-              className={`px-3 py-1 rounded-full text-sm font-semibold transition-colors ${viewMode === 'week' ? 'bg-gray-600 text-white' : 'text-gray-300 hover:bg-gray-600/50'}`}
+              className={`h-8 px-3 rounded-[12px] text-sm font-semibold transition-colors ${viewMode === 'week' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
               onClick={() => setViewMode('week')}
             >Week</button>
           </div>
@@ -150,7 +150,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
             {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
               const dayNumber = dayIndex + 1;
               const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
-              const isoDate = date.toISOString().split('T')[0];
+              const isoDate = getISODate(date);
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
@@ -202,7 +202,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
         ) : (
           <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700/50 flex-1">
             {weekDays.map((date, idx) => {
-              const isoDate = date.toISOString().split('T')[0];
+              const isoDate = getISODate(date);
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));

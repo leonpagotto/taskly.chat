@@ -15,7 +15,8 @@ const RequestIntakeForm: React.FC<{
   onSuggest?: (draft: Partial<Request>) => Promise<Partial<Request>>;
   onCreateLinkedTask: (name: string) => void;
   existingChecklists: Checklist[];
-}> = ({ initial, onBack, onSubmit, onSuggest, onCreateLinkedTask, existingChecklists }) => {
+  skillCategories: import('../types').SkillCategory[];
+}> = ({ initial, onBack, onSubmit, onSuggest, onCreateLinkedTask, existingChecklists, skillCategories }) => {
   const [local, setLocal] = useState<Omit<Request, 'id' | 'createdAt' | 'updatedAt'>>({
     product: initial?.product || '',
     requester: initial?.requester || '',
@@ -31,6 +32,7 @@ const RequestIntakeForm: React.FC<{
     attachments: initial?.attachments || [],
     status: initial?.status || 'new',
     linkedTaskIds: initial?.linkedTaskIds || [],
+    skillIds: initial?.skillIds || [],
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [newTaskName, setNewTaskName] = useState('');
@@ -178,6 +180,29 @@ const RequestIntakeForm: React.FC<{
             </div>
           </div>
 
+          {/* Status dropdown (edit mode only) */}
+          {isEditing && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Request Status</label>
+              <select 
+                value={local.status} 
+                onChange={e => handle('status', e.target.value as any)} 
+                className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none"
+              >
+                <option value="new">New</option>
+                <option value="open">Open</option>
+                <option value="triage">Triage</option>
+                <option value="in_review">In Review</option>
+                <option value="in_progress">In Progress</option>
+                <option value="blocked">On Hold</option>
+                <option value="done">Done</option>
+                <option value="closed">Closed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500">Changing status will be logged in the activity timeline below.</p>
+            </div>
+          )}
+
           {/* Requested Expertise & Approach */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
@@ -211,6 +236,59 @@ const RequestIntakeForm: React.FC<{
             )}
           </div>
 
+          {/* Skills Selector */}
+          {skillCategories.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200">
+                  Relevant Skills
+                  <span className="text-xs text-gray-500 font-normal ml-2">(optional)</span>
+                </label>
+                {Boolean(local.skillIds && local.skillIds.length) && (
+                  <span className="text-xs text-gray-500">{local.skillIds!.length} selected</span>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {skillCategories.map(category => {
+                  if (category.skills.length === 0) return null;
+                  return (
+                    <div key={category.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900/40">
+                      <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 mb-2">{category.name}</div>
+                      <div className="space-y-1">
+                        {category.skills.map(skill => {
+                          const checked = (local.skillIds || []).includes(skill.id);
+                          return (
+                            <label key={skill.id} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                className="accent-[var(--color-primary-600)] mt-0.5" 
+                                checked={checked} 
+                                onChange={() => {
+                                  const current = local.skillIds || [];
+                                  const updated = checked 
+                                    ? current.filter(id => id !== skill.id)
+                                    : [...current, skill.id];
+                                  setLocal(prev => ({ ...prev, skillIds: updated }));
+                                }} 
+                              />
+                              <div className="min-w-0">
+                                <div className="truncate">{skill.name}</div>
+                                {skill.description && (
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{skill.description}</div>
+                                )}
+                              </div>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-3 text-xs text-gray-500">Tag relevant skills from your profile to help categorize this request.</div>
+            </div>
+          )}
+
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Priority</label>
@@ -226,11 +304,11 @@ const RequestIntakeForm: React.FC<{
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Desired Start</label>
-              <input type="date" value={local.desiredStartDate || ''} onChange={e => handle('desiredStartDate', e.target.value || null)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" />
+              <input type="date" value={local.desiredStartDate || ''} onChange={e => handle('desiredStartDate', e.target.value || null)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Desired End</label>
-              <input type="date" value={local.desiredEndDate || ''} onChange={e => handle('desiredEndDate', e.target.value || null)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" />
+              <input type="date" value={local.desiredEndDate || ''} onChange={e => handle('desiredEndDate', e.target.value || null)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none" />
             </div>
           </div>
 

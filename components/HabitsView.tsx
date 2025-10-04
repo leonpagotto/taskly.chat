@@ -277,7 +277,7 @@ const HabitCard: React.FC<{
                     }
 
                     let dayStyle = 'bg-gray-200 dark:bg-gray-600/60 text-gray-600 dark:text-gray-400';
-                    if (isCompleted) dayStyle = 'bg-yellow-400 text-gray-900';
+                    if (isCompleted) dayStyle = 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white';
                     else if (isDue) dayStyle = 'hover:bg-gray-300 dark:hover:bg-gray-500';
 
                     let borderStyle = 'border-2 border-transparent';
@@ -308,6 +308,46 @@ const HabitCard: React.FC<{
     );
 };
 
+// Sort dropdown for habits
+const HabitsSortDropdown: React.FC<{ value: 'priority' | 'name' | 'streak'; onChange: (v: 'priority' | 'name' | 'streak') => void; }> = ({ value, onChange }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [open, setOpen] = useState(false);
+    useEffect(() => {
+        const onDocClick = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+        document.addEventListener('mousedown', onDocClick);
+        return () => document.removeEventListener('mousedown', onDocClick);
+    }, []);
+    const label = value === 'priority' ? 'Priority' : value === 'name' ? 'Name' : 'Streak';
+    const opts: Array<{ value: 'priority' | 'name' | 'streak'; label: string }> = [
+        { value: 'priority', label: 'Priority' },
+        { value: 'name', label: 'Name' },
+        { value: 'streak', label: 'Streak' },
+    ];
+    return (
+        <div ref={ref} className="relative sm:w-52 w-full">
+            <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+                <div className="flex items-center gap-2 truncate">
+                    <Icon name="sort" className="text-base flex-shrink-0" />
+                    <span className="truncate">{label}</span>
+                </div>
+                <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
+            </button>
+            {open && (
+                <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+                    <ul className="max-h-72 overflow-y-auto">
+                        {opts.map(opt => (
+                            <li key={opt.value}>
+                                <button onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
+                                    {opt.label}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const HabitsView: React.FC<HabitsViewProps> = (props) => {
     const { 
@@ -316,16 +356,76 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
         onShareHabit
     } = props;
   
-  const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>('all');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>('all');
+  // Persisted filter state
+  const STORAGE_KEY = 'habits.filters.v1';
+  type SortBy = 'priority' | 'name' | 'streak';
+  type Persisted = { projectId: string | 'all'; categoryId: string | 'all'; sortBy: SortBy };
+
+  const loadPersisted = (): Persisted => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { projectId: 'all', categoryId: 'all', sortBy: 'priority' };
+      const data = JSON.parse(raw) as Partial<Persisted>;
+      return {
+        projectId: data.projectId ?? 'all',
+        categoryId: data.categoryId ?? 'all',
+        sortBy: (data.sortBy as SortBy) ?? 'priority',
+      };
+    } catch {
+      return { projectId: 'all', categoryId: 'all', sortBy: 'priority' };
+    }
+  };
+
+  const persisted = typeof window !== 'undefined' ? loadPersisted() : { projectId: 'all', categoryId: 'all', sortBy: 'priority' as SortBy };
+
+  const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(persisted.projectId);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(persisted.categoryId);
+  const [sortBy, setSortBy] = useState<SortBy>(persisted.sortBy);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const data: Persisted = { projectId: selectedProjectId, categoryId: selectedCategoryId, sortBy };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {}
+  }, [selectedProjectId, selectedCategoryId, sortBy]);
+
+  // Helper to calculate streak for sorting
+  const calculateStreak = (habit: Habit) => {
+    let streak = 0;
+    const today = new Date();
+    const todayISO = getISODate(today);
+    const startDayOffset = (isHabitDueOnDate(habit, today) && !habit.completionHistory.includes(todayISO)) ? 1 : 0;
+    for (let i = startDayOffset; i < 365 * 5; i++) {
+      const date = new Date();
+      date.setDate(today.getDate() - i);
+      if (date < new Date(habit.recurrence.startDate)) break;
+      if (isHabitDueOnDate(habit, date)) {
+        if (habit.completionHistory.includes(getISODate(date))) streak++;
+        else break;
+      }
+    }
+    return streak;
+  };
 
   const sortedHabits = [...habits].sort((a, b) => {
-    const priorityA = a.priority || 99;
-    const priorityB = b.priority || 99;
-    if (priorityA !== priorityB) {
-        return priorityA - priorityB;
+    switch (sortBy) {
+      case 'priority': {
+        const priorityA = a.priority || 99;
+        const priorityB = b.priority || 99;
+        if (priorityA !== priorityB) return priorityA - priorityB;
+        return a.name.localeCompare(b.name);
+      }
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'streak': {
+        const streakA = calculateStreak(a);
+        const streakB = calculateStreak(b);
+        return streakB - streakA; // Higher streak first
+      }
+      default:
+        return 0;
     }
-    return a.name.localeCompare(b.name);
   });
   
   const filteredHabits = sortedHabits.filter(habit => {
@@ -343,8 +443,24 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
         </button>
       </Header>
             <div className="flex-1 overflow-y-auto">
-                {/* Full-width toolbar with bottom divider */}
-                <div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                {/* Mobile: Compact filter button */}
+                <div className="md:hidden bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <div className="px-4 py-3">
+                        <button
+                            onClick={() => setFilterPanelOpen(true)}
+                            className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Icon name="tune" className="text-xl" />
+                                <span className="font-semibold">Filters & Sort</span>
+                            </div>
+                            <Icon name="chevron_right" className="text-xl" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Desktop: Full toolbar */}
+                <div className="hidden md:block bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div className="px-4 sm:px-6">
                         <div className="w-full py-4">
                             <UnifiedToolbar 
@@ -356,10 +472,68 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                                 onChangeCategory={setSelectedCategoryId}
                                 showPeriod={false}
                                 compactHeight="h10"
+                                rightExtras={<HabitsSortDropdown value={sortBy} onChange={setSortBy} />}
                             />
                         </div>
                     </div>
                 </div>
+
+                {/* Sliding Filter Panel (Mobile) */}
+                {filterPanelOpen && (
+                    <>
+                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setFilterPanelOpen(false)} />
+                        <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl z-50 md:hidden transform transition-transform duration-300">
+                            <div className="flex flex-col h-full">
+                                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters & Sort</h3>
+                                    <button onClick={() => setFilterPanelOpen(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <CloseIcon />
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Project</label>
+                                        <FilterDropdown items={projects} selectedId={selectedProjectId} onSelect={setSelectedProjectId} type="project" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                        <FilterDropdown items={userCategories} selectedId={selectedCategoryId} onSelect={setSelectedCategoryId} type="category" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Sort By</label>
+                                        <div className="space-y-2">
+                                            {[
+                                                { value: 'priority' as const, label: 'Priority' },
+                                                { value: 'name' as const, label: 'Name' },
+                                                { value: 'streak' as const, label: 'Streak' }
+                                            ].map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => setSortBy(opt.value)}
+                                                    className={`w-full px-4 py-2.5 rounded-lg text-left font-medium transition-colors ${
+                                                        sortBy === opt.value
+                                                            ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                                                            : 'bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                                    }`}
+                                                >
+                                                    {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                                    <button
+                                        onClick={() => setFilterPanelOpen(false)}
+                                        className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold"
+                                    >
+                                        Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
                 <div className="px-4 sm:px-6">
                     <div className="mx-auto w-full max-w-[52rem]">
                         <main className="py-4 sm:py-6">

@@ -1,5 +1,5 @@
 import { getSupabase } from './supabaseClient';
-import { Project, UserCategory, Checklist, Task, Habit, Note, ProjectFile, Event, Story, Conversation, Message, UserPreferences, Sender, Request, RequestUpdate } from '../types';
+import { Project, UserCategory, Checklist, Task, Habit, Note, ProjectFile, Event, Story, Conversation, Message, UserPreferences, Sender, Request, RequestUpdate, ProjectMember, ProjectInvite, ProjectRole, ProjectAccessStatus, ProjectInviteStatus } from '../types';
 
 // This service provides minimal CRUD wrappers for the new normalized schema.
 // It assumes RLS is enabled and auth user is set; we always set user_id on insert.
@@ -71,6 +71,131 @@ export const relationalDb = {
     const supabase = getSupabase();
     if (!supabase) return;
     await supabase.from('projects').delete().eq('id', id);
+  },
+
+  // Project collaborators & invites
+  async listProjectMembers(projectId: string): Promise<ProjectMember[]> {
+    const supabase = getSupabase();
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from('project_users')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('invited_at', { ascending: true });
+    if (error) return [];
+    return (data || []).map(row => {
+      const status = (row.status as ProjectAccessStatus) || 'pending';
+      const role = (row.role as ProjectRole) || 'collaborator';
+      return {
+        id: row.user_id || row.email,
+        email: row.email || undefined,
+        name: row.display_name || row.name || undefined,
+        role,
+        status,
+        invitedAt: row.invited_at || row.created_at || new Date().toISOString(),
+        acceptedAt: row.accepted_at || undefined,
+        invitedBy: row.invited_by || undefined,
+      } as ProjectMember;
+    });
+  },
+
+  async upsertProjectMember(projectId: string, member: ProjectMember & { userId?: string }): Promise<ProjectMember | null> {
+    const supabase = getSupabase();
+    const u = await withUser();
+    if (!supabase || !u) return null;
+    const payload = {
+      project_id: projectId,
+      user_id: member.id || member.email,
+      email: member.email || null,
+      display_name: member.name || null,
+      role: member.role,
+      status: member.status,
+      invited_at: member.invitedAt,
+      accepted_at: member.acceptedAt || null,
+      invited_by: member.invitedBy || u.user_id,
+      updated_by: u.user_id,
+    } as any;
+    const { data, error } = await supabase
+      .from('project_users')
+      .upsert(payload, { onConflict: 'project_id,user_id' })
+      .select('*')
+      .single();
+    if (error || !data) return null;
+    return {
+      id: data.user_id || data.email,
+      email: data.email || undefined,
+      name: data.display_name || undefined,
+      role: (data.role as ProjectRole) || member.role,
+      status: (data.status as ProjectAccessStatus) || member.status,
+      invitedAt: data.invited_at || member.invitedAt,
+      acceptedAt: data.accepted_at || undefined,
+      invitedBy: data.invited_by || member.invitedBy,
+    };
+  },
+
+  async deleteProjectMember(projectId: string, memberId: string): Promise<void> {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await supabase.from('project_users').delete().match({ project_id: projectId, user_id: memberId });
+  },
+
+  async listProjectInvites(projectId: string): Promise<ProjectInvite[]> {
+    const supabase = getSupabase();
+    if (!supabase) return [];
+    const { data, error } = await supabase
+      .from('project_invites')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false });
+    if (error) return [];
+    return (data || []).map(row => ({
+      id: row.id,
+      projectId: row.project_id,
+      email: row.email,
+      role: (row.role as ProjectRole) || 'collaborator',
+      invitedBy: row.invited_by,
+      status: (row.status as ProjectInviteStatus) || 'pending',
+      token: row.token,
+      createdAt: row.created_at,
+      respondedAt: row.responded_at || undefined,
+      message: row.message || undefined,
+    } as ProjectInvite));
+  },
+
+  async createProjectInvite(invite: Omit<ProjectInvite, 'id' | 'status'> & { status?: ProjectInviteStatus }): Promise<ProjectInvite | null> {
+    const supabase = getSupabase();
+    const u = await withUser();
+    if (!supabase || !u) return null;
+    const payload = {
+      project_id: invite.projectId,
+      email: invite.email,
+      role: invite.role,
+      invited_by: invite.invitedBy,
+      status: invite.status || 'pending',
+      token: invite.token,
+      message: invite.message || null,
+      created_at: invite.createdAt,
+    } as any;
+    const { data, error } = await supabase.from('project_invites').insert(payload).select('*').single();
+    if (error || !data) return null;
+    return {
+      id: data.id,
+      projectId: data.project_id,
+      email: data.email,
+      role: (data.role as ProjectRole) || invite.role,
+      invitedBy: data.invited_by,
+      status: (data.status as ProjectInviteStatus) || 'pending',
+      token: data.token,
+      createdAt: data.created_at,
+      respondedAt: data.responded_at || undefined,
+      message: data.message || undefined,
+    };
+  },
+
+  async updateProjectInviteStatus(inviteId: string, status: ProjectInviteStatus, respondedAt?: string): Promise<void> {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    await supabase.from('project_invites').update({ status, responded_at: respondedAt || new Date().toISOString() }).eq('id', inviteId);
   },
 
   // Checklists

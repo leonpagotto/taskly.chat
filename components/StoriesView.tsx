@@ -67,8 +67,18 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 		});
 	}, [stories, selectedProjectId, selectedCategoryId, statusFilter]);
 
-	// Placeholder sorting (no timestamps in Story type yet). Keeps array as-is; hook ready for future fields.
-	const sortedStories = filteredStories; 
+	// Apply sorting based on sortBy value
+	const sortedStories = useMemo(() => {
+		const arr = [...filteredStories];
+		switch (sortBy) {
+			case 'updated':
+				return arr.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+			case 'created':
+				return arr.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+			default:
+				return arr;
+		}
+	}, [filteredStories, sortBy]); 
 
 	// Simple menu state for per-story actions (Edit/Delete). One menu open at a time.
 	const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
@@ -224,8 +234,14 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 					{sortedStories.length === 0 ? (
 						<div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
 							<EmptyStateIcon icon={<Icon name="auto_stories" />} size="lg" />
-							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No stories yet</h2>
-							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">Create your first story to track narrative progress.</p>
+							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+								{stories.length === 0 ? 'No stories yet' : 'No stories match filters'}
+							</h2>
+							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">
+								{stories.length === 0 
+									? 'Create your first story to track narrative progress.' 
+									: 'Try adjusting your filters (project, category, or status) or create a new story.'}
+							</p>
 							<div className="flex items-center gap-2">
 								<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">New Story</button>
 								{onLoadSampleData && (
