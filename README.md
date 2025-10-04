@@ -35,9 +35,11 @@ Taskly Chat is a React + Vite + TypeScript single-page app. It runs fully in the
 - Calendar and Files pages
 - Requests: intake form, prioritization board, and update timeline synced to Supabase
 - Collaboration: shared projects with invites, member roles, and live updates
-- Authentication: email/password, magic links, and Google OAuth powered by Supabase Auth
+- Authentication: email/password, magic links, and password reset powered by Supabase Auth
 - Offline queue with local fallbacks; sync once connectivity returns
 - Optional Gemini AI integration for drafting and assistance
+
+⚠️ **Authentication Setup:** If you're experiencing login timeouts, see [SUPABASE_AUTH_SETUP.md](./SUPABASE_AUTH_SETUP.md) for fixing email rate limit issues.
 
 ## Pricing and plans (October 2025)
 

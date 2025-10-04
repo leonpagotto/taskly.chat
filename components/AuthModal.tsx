@@ -72,7 +72,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 			
 			if (result.error) {
 				console.error('🔐 [AuthModal] Sign-in error:', result.error);
-				setError(result.error);
+				
+				// Check if it's a timeout error (likely rate limit issue)
+				if (result.error.includes('timed out')) {
+					setError('Connection timeout. This is often caused by Supabase email rate limits. See README for fix: disable email confirmations in Supabase Dashboard → Auth → Email settings.');
+				} else {
+					setError(result.error);
+				}
+				
 				if (result.requiresVerification) {
 					setPendingVerificationEmail(trimmedEmail);
 					setMessage('Please confirm your email to continue. We can resend the verification email below.');
