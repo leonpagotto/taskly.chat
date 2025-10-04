@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { CloseIcon } from './icons';
 import ModalOverlay from './ModalOverlay';
+import TasklyLogo from './TasklyLogo';
 
 type AuthMode = 'sign-in' | 'sign-up';
 
@@ -180,7 +181,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 		<ModalOverlay className="flex items-center justify-center p-4" onClick={onClose}>
 			<div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md" onClick={e => e.stopPropagation()}>
 				<header className="p-4 flex items-center justify-between border-b border-gray-700">
-					<h2 className="text-lg font-semibold">{title}</h2>
+					<div className="flex items-center gap-2">
+						<TasklyLogo size={24} fill="white" />
+						<h2 className="text-lg font-semibold">{title}</h2>
+					</div>
 					<button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
 				</header>
 				<div className="px-6 pt-4">

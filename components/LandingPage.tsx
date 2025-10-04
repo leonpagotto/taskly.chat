@@ -1,4 +1,5 @@
 import React from 'react';
+import TasklyLogo from './TasklyLogo';
 
 type LandingPageProps = {
 	onSignIn: () => void;
@@ -133,7 +134,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 				<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
 					<div className="flex items-center gap-2">
 						<span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--color-primary-600)] to-purple-500 text-white shadow-lg">
-							<span className="material-symbols-outlined text-[22px]">task_alt</span>
+							<TasklyLogo size={24} fill="white" />
 						</span>
 						<p className="text-base font-semibold leading-tight sm:text-lg">Taskly.chat</p>
 					</div>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Project, Conversation, AppView, UserCategory, Note } from '../types';
 import { Icon, AddIcon, ChatBubbleIcon, TodayIcon, ListAltIcon, AutorenewIcon, StyleIcon, SettingsIcon, DescriptionIcon, ChevronLeftIcon, CreateNewFolderIcon, NoteAddIcon, FolderOpenIcon, LeftPanelCloseIcon, NewHabitIcon, FilePresentIcon, ChatAddOnIcon, WidthNormalIcon, CalendarMonthIcon, FolderIcon, MoreVertIcon, EditIcon, DeleteIcon, ChevronRightIcon, ExpandMoreIcon } from './icons';
 import { subscriptionService } from '../services/subscriptionService';
+import TasklyLogo from './TasklyLogo';
 
 interface SidebarProps {
   projects: Project[];
@@ -337,7 +338,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   <div className={`flex items-center mb-4 flex-shrink-0 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
             <div className="flex items-center ml-2 gap-2">
-              <span className="material-symbols-outlined text-2xl text-white">things_to_do</span>
+              <TasklyLogo size={28} fill="white" />
               <span className="text-lg font-medium text-white">Taskly.Chat</span>
             </div>
           ) : (
