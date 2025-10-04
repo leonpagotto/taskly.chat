@@ -7,23 +7,117 @@ type LandingPageProps = {
 const features = [
 	{
 		icon: 'task_alt',
-		title: 'Tasks & Projects',
-		description: 'Organize your work with smart checklists, projects, and kanban boards.',
+		title: 'Tasks & Habits',
+		description: 'Track daily tasks and build lasting habits with smart checklists and recurring reminders.',
+	},
+	{
+		icon: 'concierge',
+		title: 'Requests Intake',
+		description: 'Collect and manage incoming work requests with priority, skills, and AI-powered conversion to Stories.',
+	},
+	{
+		icon: 'auto_stories',
+		title: 'User Stories & Kanban',
+		description: 'Plan work with user stories, acceptance criteria, and visual Kanban boards for agile workflows.',
+	},
+	{
+		icon: 'folder_open',
+		title: 'Projects & Organization',
+		description: 'Structure work with projects, categories, and team collaboration features.',
 	},
 	{
 		icon: 'calendar_month',
-		title: 'Calendar & Events',
-		description: 'Stay on schedule with integrated calendar and reminders.',
+		title: 'Calendar & Scheduling',
+		description: 'Stay on schedule with integrated calendar, events, and deadline tracking.',
 	},
 	{
 		icon: 'psychology',
-		title: 'AI Assistant',
-		description: 'Get help planning, writing, and organizing with smart AI.',
+		title: 'Smart AI Assistant',
+		description: 'Generate tasks, suggest skills, create stories, and get intelligent help powered by Google Gemini.',
 	},
 	{
 		icon: 'note',
-		title: 'Notes & Docs',
-		description: 'Capture ideas and knowledge in one organized place.',
+		title: 'Notes & Files',
+		description: 'Capture ideas, manage documents, and organize knowledge in one secure workspace.',
+	},
+	{
+		icon: 'insights',
+		title: 'Skills Management',
+		description: 'Define team skills, tag work with required expertise, and match talent to tasks.',
+	},
+];
+
+const plans = [
+	{
+		name: 'Free',
+		subtitle: 'Starter',
+		price: '$0',
+		period: 'forever',
+		description: 'For individuals exploring Taskly',
+		features: [
+			'Up to 50 tasks, 5 habits, 2 projects',
+			'Basic reminders',
+			'List view only',
+			'Up to 3 Requests/month',
+			'No AI assistance',
+			'No collaboration',
+		],
+		cta: 'Get Started',
+		highlighted: false,
+	},
+	{
+		name: 'Lifetime',
+		subtitle: 'One-Time Payment',
+		price: '$25',
+		period: 'one-time',
+		description: 'Unlimited personal use, no subscriptions',
+		features: [
+			'Unlimited tasks, habits, projects',
+			'Unlimited Requests (text-based)',
+			'Light AI suggestions (5/day)',
+			'Sync across devices',
+			'Profile customization',
+			'No collaboration or Stories',
+		],
+		cta: 'Buy Once',
+		highlighted: false,
+	},
+	{
+		name: 'Pro',
+		subtitle: 'Power Users & Teams',
+		price: '$10',
+		period: '/user/month',
+		description: 'Collaboration + Smart AI',
+		features: [
+			'Unlimited everything',
+			'Requests → Stories conversion',
+			'Smart AI (natural language, SpecKit)',
+			'Up to 5 team collaborators',
+			'Calendar sync (Google, Outlook)',
+			'Basic Kanban board',
+			'Priority support',
+		],
+		cta: 'Start Pro Trial',
+		highlighted: true,
+	},
+	{
+		name: 'Enterprise',
+		subtitle: 'Organizations',
+		price: 'Custom',
+		period: 'pricing',
+		description: 'Advanced workflows + unlimited AI',
+		features: [
+			'Everything in Pro, plus:',
+			'Advanced Stories (criteria, estimation)',
+			'Full Kanban workflows',
+			'Unlimited AI (SpecKit, auto-Stories)',
+			'Team management & permissions',
+			'Advanced analytics & reporting',
+			'Enterprise integrations (Slack, Jira)',
+			'SSO, audit logs, dedicated support',
+		],
+		cta: 'Contact Sales',
+		highlighted: false,
 	},
 ];
 
@@ -81,8 +175,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 					</div>
 				</section>
 
-				<section className="px-4 pb-20">
+				<section className="px-4 pb-12">
 					<div className="mx-auto max-w-6xl">
+						<h2 className="mb-10 text-center text-2xl font-bold sm:text-3xl">Everything you need to stay productive</h2>
 						<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 							{features.map((feature) => (
 								<div
@@ -100,11 +195,71 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 					</div>
 				</section>
 
+				<section className="px-4 py-16 sm:py-20">
+					<div className="mx-auto max-w-6xl">
+						<div className="mb-12 text-center">
+							<h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Simple, transparent pricing</h2>
+							<p className="mt-4 text-base text-gray-300 sm:text-lg">
+								Choose the plan that fits your needs. Start free, upgrade anytime.
+							</p>
+						</div>
+						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+							{plans.map((plan) => (
+								<div
+									key={plan.name}
+									className={`relative rounded-3xl border p-6 transition ${
+										plan.highlighted
+											? 'border-[var(--color-primary-600)] bg-gradient-to-br from-[var(--color-primary-600)]/10 to-purple-500/10 shadow-xl shadow-[var(--color-primary-600)]/20'
+											: 'border-white/10 bg-white/5 hover:bg-white/10'
+									}`}
+								>
+									{plan.highlighted && (
+										<div className="absolute -top-3 left-1/2 -translate-x-1/2">
+											<span className="rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-500 px-3 py-1 text-xs font-semibold text-white">
+												Most Popular
+											</span>
+										</div>
+									)}
+									<div className="mb-4">
+										<h3 className="text-xl font-bold text-white">{plan.name}</h3>
+										<p className="text-sm text-gray-400">{plan.subtitle}</p>
+									</div>
+									<div className="mb-4">
+										<span className="text-3xl font-bold text-white">{plan.price}</span>
+										<span className="ml-1 text-sm text-gray-400">{plan.period}</span>
+									</div>
+									<p className="mb-6 text-sm text-gray-300">{plan.description}</p>
+									<button
+										onClick={onSignIn}
+										className={`mb-6 w-full rounded-full py-2.5 text-sm font-semibold transition ${
+											plan.highlighted
+												? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-500 text-white shadow-lg hover:shadow-xl'
+												: 'border border-white/20 text-gray-200 hover:bg-white/10'
+										}`}
+									>
+										{plan.cta}
+									</button>
+									<ul className="space-y-2.5">
+										{plan.features.map((feature, idx) => (
+											<li key={idx} className="flex items-start gap-2 text-sm text-gray-300">
+												<span className="material-symbols-outlined mt-0.5 text-[18px] text-[var(--color-primary-400)]">
+													check_circle
+												</span>
+												<span>{feature}</span>
+											</li>
+										))}
+									</ul>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+
 				<section className="px-4 pb-24">
 					<div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-gradient-to-br from-[var(--color-primary-600)]/10 via-slate-900 to-black p-8 sm:p-12 text-center">
-						<h2 className="text-2xl font-bold sm:text-3xl">Ready to get organized?</h2>
+						<h2 className="text-2xl font-bold sm:text-3xl">Ready to transform your productivity?</h2>
 						<p className="mt-4 text-base text-gray-300 sm:text-lg">
-							Join thousands of users managing their work smarter with Taskly.
+							Join thousands of users managing tasks, requests, and projects with AI-powered intelligence.
 						</p>
 						<button
 							onClick={onSignIn}

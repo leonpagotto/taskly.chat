@@ -1,153 +1,80 @@
-# Landing Page Update - Complete! ✅
+# Landing Page Update - Feature & Pricing Alignment
+
+## Overview
+Updated the Taskly.chat landing page to accurately showcase all implemented features and align with the 4-tier pricing strategy.
 
 ## Changes Made
 
-### 1. **Hidden Navigation on Landing Page**
-- ✅ Mobile bottom navigation bar now hidden when viewing landing page
-- ✅ Floating Action Button (FAB) now hidden when viewing landing page
-- ✅ Both only appear after user signs in to the app
+### ✅ Features Section (8 Feature Cards)
 
-**Technical Change:**
-```tsx
-// In App.tsx - wrapped mobile nav in conditional check
-{!isLanding && (
-    <>
-        <div className="md:hidden">
-            <BottomNavBar ... />
-            <FloatingActionButton ... />
-        </div>
-    </>
-)}
-```
+Expanded from 4 to **8 comprehensive feature cards** covering all platform capabilities:
 
-### 2. **Simplified Landing Page**
-Created a much cleaner, simpler landing page with:
-- ✅ Clean hero section with gradient headline
-- ✅ 4 key features (instead of 10+ sections)
-- ✅ Simple CTA section
-- ✅ Minimal footer
-- ✅ Removed: testimonials, FAQs, use cases, day flow, privacy details, pricing tables
+1. **Tasks & Habits**
+   - Icon: `task_alt`
+   - Daily task tracking and habit building
+   - Smart checklists and recurring reminders
 
-**Before:** 460+ lines, 8 major sections
-**After:** 144 lines, 3 focused sections
+2. **Requests Intake** ⭐ NEW
+   - Icon: `concierge`
+   - Collect and manage incoming work requests
+   - Priority, skills, and AI-powered conversion to Stories
 
-### 3. **Mobile-Optimized Design**
-- ✅ Responsive typography (text-3xl → text-6xl on larger screens)
-- ✅ Stacked buttons on mobile, row on desktop
-- ✅ Feature grid: 1 column mobile → 4 columns desktop
-- ✅ Clean, minimal header with logo + sign in button
+3. **User Stories & Kanban** ⭐ NEW
+   - Icon: `auto_stories`
+   - Plan work with user stories and acceptance criteria
+   - Visual Kanban boards for agile workflows
 
----
+4. **Projects & Organization**
+   - Icon: `folder_open`
+   - Structure work with projects and categories
+   - Team collaboration features
+
+5. **Calendar & Scheduling**
+   - Icon: `calendar_month`
+   - Integrated calendar and events
+   - Deadline tracking
+
+6. **Smart AI Assistant**
+   - Icon: `psychology`
+   - Generate tasks and suggest skills
+   - Create stories with Google Gemini AI
+
+7. **Notes & Files**
+   - Icon: `note`
+   - Capture ideas and manage documents
+   - Organize knowledge workspace
+
+8. **Skills Management** ⭐ NEW
+   - Icon: `insights`
+   - Define team skills
+   - Match talent to tasks
+
+### ✅ Pricing Section (4 Plans)
+
+#### 1. Free Plan - $0
+- 50 tasks, 5 habits, 2 projects
+- 3 Requests/month
+- No AI, no collaboration
+
+#### 2. Lifetime - $25 (one-time)
+- Unlimited personal use
+- Light AI (5/day)
+- No subscriptions
+
+#### 3. Pro - $10/user/month ⭐ HIGHLIGHTED
+- Unlimited everything
+- Smart AI + SpecKit
+- 5 team members
+- Requests → Stories
+
+#### 4. Enterprise - Custom
+- Advanced Stories & Kanban
+- Unlimited AI
+- Team management
+- Integrations (Slack, Jira)
 
 ## Build Status
-
-✅ **Production build successful:**
-```
-dist/index.html          12.21 kB (gzip: 3.42 kB)
-dist/assets/index-*.js   1,015.23 kB (gzip: 241.31 kB)
-```
-
-**Note:** JS file hash changed from `Bzx3NKn_.js` to `BGo4yCto.js`
-
----
-
-## Files Modified
-
-1. **App.tsx**
-   - Added conditional rendering for mobile navigation
-   - Only shows BottomNavBar and FAB when `!isLanding`
-
-2. **components/LandingPage.tsx**
-   - Complete rewrite: 460+ lines → 144 lines
-   - Removed complex sections, kept only essentials
-   - Mobile-first responsive design
-
----
-
-## Next Steps
-
-### Upload New Build
-1. Delete old files from `public_html/`:
-   - `index.html`
-   - `assets/index-Bzx3NKn_.js` (old JS file)
-   
-2. Upload new files:
-   - `dist/index.html` → `public_html/index.html`
-   - `dist/assets/` → `public_html/assets/`
-   - **Important:** New JS file is `index-BGo4yCto.js`
-
-3. Keep existing `.htaccess` file (don't delete)
-
-### Test on Mobile
-1. Visit `https://taskly.chat` on mobile browser
-2. ✅ Should see **NO navigation bar** at bottom
-3. ✅ Should see **NO floating chat button**
-4. ✅ Should see clean, simple landing page
-5. Click "Get Started" or "Sign In"
-6. After signing in: navigation and FAB should appear
-
----
-
-## Landing Page Structure (New)
-
-```
-┌─────────────────────────┐
-│ Header (Logo + Sign In) │
-├─────────────────────────┤
-│                         │
-│   Hero Section          │
-│   - Big headline        │
-│   - Subtext             │
-│   - 2 CTA buttons       │
-│                         │
-├─────────────────────────┤
-│                         │
-│   Features (4 cards)    │
-│   - Tasks & Projects    │
-│   - Calendar & Events   │
-│   - AI Assistant        │
-│   - Notes & Docs        │
-│                         │
-├─────────────────────────┤
-│                         │
-│   Final CTA Section     │
-│   - "Ready to get       │
-│     organized?"         │
-│   - Sign up button      │
-│                         │
-├─────────────────────────┤
-│ Footer (Copyright)      │
-└─────────────────────────┘
-```
-
----
-
-## What Was Removed
-
-From the old 460+ line landing page:
-
-- ❌ "Why Taskly" section with 3 pillars
-- ❌ "Your day on Taskly" timeline
-- ❌ "Use cases" grid (4 cards)
-- ❌ Pricing table (3 plans)
-- ❌ Privacy/security section
-- ❌ Testimonials (3 quotes)
-- ❌ FAQ section (4 questions)
-- ❌ "Trusted by" logo bar
-- ❌ Hero stats (3 metrics)
-- ❌ Complex navigation menu
-- ❌ Multiple scroll-to sections
-
-**Result:** Clean, focused, mobile-friendly landing page! 🎉
-
----
-
-## Ready to Deploy!
-
-The new build is ready to upload. Once deployed:
-- Landing page will be simple and clean
-- No navigation/FAB on landing page
-- Full app navigation appears after sign in
-- Mobile experience significantly improved
-
-Upload `dist/` contents to `public_html/` and you're done! 🚀
+- ✅ TypeScript compilation successful
+- ✅ Bundle: 1,042 KB
+- ✅ Responsive design
+- ✅ Production ready
