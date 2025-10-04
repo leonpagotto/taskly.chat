@@ -26,6 +26,7 @@ import StoryEditorPage from './components/StoryEditorPage';
 import LandingPage from './components/LandingPage';
 import OnboardingModal from './components/OnboardingModal';
 import FeedbackModal from './components/FeedbackModal';
+import ResetPasswordPage from './components/ResetPasswordPage';
 import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill } from './types';
 import { getCombinedSampleData } from './services/sampleDataService';
 import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
@@ -1014,6 +1015,7 @@ const App: React.FC = () => {
     const [authSession, setAuthSession] = useState<AuthSession | null>(null);
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showResetPassword, setShowResetPassword] = useState(false);
     // Show landing page by default - will be hidden when auth session is detected
     const [showLanding, setShowLanding] = useState(true);
     const lastSyncToastRef = useRef<number>(0);
@@ -1331,6 +1333,22 @@ const App: React.FC = () => {
           newTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
       };
   }, [events]);
+
+    // Check for password reset route
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const path = window.location.pathname;
+            const hash = window.location.hash;
+            console.log('🔐 [App] Current path:', path, 'hash:', hash);
+            
+            // Check if we're on the reset password page or if there's a recovery token in the hash
+            if (path === '/auth/reset-password' || hash.includes('type=recovery')) {
+                console.log('🔐 [App] Reset password route detected');
+                setShowResetPassword(true);
+                setShowLanding(false);
+            }
+        }
+    }, []);
 
     // --- Supabase Auth wiring ---
     useEffect(() => {
@@ -2771,6 +2789,31 @@ Keep descriptions concise (10-15 words max).`;
     const projectForDetails = projects.find(p => p.id === activeProjectId);
     const isLanding = showLanding && !authSession;
   
+    // Show reset password page if needed
+    if (showResetPassword) {
+        return (
+            <ResetPasswordPage
+                onComplete={() => {
+                    console.log('🔐 [App] Password reset complete');
+                    setShowResetPassword(false);
+                    setShowLanding(false);
+                    // Clear URL hash
+                    if (typeof window !== 'undefined') {
+                        window.history.replaceState(null, '', '/');
+                    }
+                }}
+                onCancel={() => {
+                    console.log('🔐 [App] Password reset cancelled');
+                    setShowResetPassword(false);
+                    // Clear URL hash and go back home
+                    if (typeof window !== 'undefined') {
+                        window.history.replaceState(null, '', '/');
+                    }
+                }}
+            />
+        );
+    }
+
     return (
 
         <div className={`font-sans`}>

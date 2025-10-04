@@ -31,23 +31,41 @@ const cacheVerificationTimestamp = (email: string) => {
 	}
 };
 
+// Helper to add timeout to async operations
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, operation: string): Promise<T> => {
+	return Promise.race([
+		promise,
+		new Promise<T>((_, reject) => 
+			setTimeout(() => reject(new Error(`${operation} timed out after ${timeoutMs}ms. Please check your internet connection and try again.`)), timeoutMs)
+		)
+	]);
+};
+
 export const authService = {
 	isEnabled(): boolean { return !!getSupabase(); },
 	async signUpWithEmail(email: string, password: string): Promise<AuthResult> {
 		const supabase = getSupabase();
 		if (!supabase) return { error: 'Supabase not configured' };
 		const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
-		const { data, error } = await supabase.auth.signUp({
-			email,
-			password,
-			options: {
-				emailRedirectTo: redirectTo,
-			},
-		});
-		if (error) return { error: error.message };
-		const requiresVerification = !data.session;
-		cacheVerificationTimestamp(email);
-		return { requiresVerification };
+		try {
+			const { data, error } = await withTimeout(
+				supabase.auth.signUp({
+					email,
+					password,
+					options: {
+						emailRedirectTo: redirectTo,
+					},
+				}),
+				10000,
+				'Sign up'
+			);
+			if (error) return { error: error.message };
+			const requiresVerification = !data.session;
+			cacheVerificationTimestamp(email);
+			return { requiresVerification };
+		} catch (err) {
+			return { error: err instanceof Error ? err.message : 'Sign up failed' };
+		}
 	},
 	async signInWithPassword(email: string, password: string): Promise<AuthResult> {
 		console.log('🔐 [authService] signInWithPassword called');
@@ -56,42 +74,90 @@ export const authService = {
 			console.error('🔐 [authService] Supabase not configured!');
 			return { error: 'Supabase not configured' };
 		}
-		console.log('🔐 [authService] Calling supabase.auth.signInWithPassword...');
-		const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-		console.log('🔐 [authService] Supabase response - data:', data, 'error:', error);
-		if (error) {
-			const message = error.message || 'Unable to sign in';
-			const requiresVerification = /confirm your email/i.test(message) || error.status === 400;
-			console.error('🔐 [authService] Sign-in error:', message, 'requiresVerification:', requiresVerification);
-			return { error: message, requiresVerification };
+		try {
+			console.log('🔐 [authService] Calling supabase.auth.signInWithPassword...');
+			const { data, error } = await withTimeout(
+				supabase.auth.signInWithPassword({ email, password }),
+				10000,
+				'Sign in'
+			);
+			console.log('🔐 [authService] Supabase response - data:', data, 'error:', error);
+			if (error) {
+				const message = error.message || 'Unable to sign in';
+				const requiresVerification = /confirm your email/i.test(message) || error.status === 400;
+				console.error('🔐 [authService] Sign-in error:', message, 'requiresVerification:', requiresVerification);
+				return { error: message, requiresVerification };
+			}
+			const result = { requiresVerification: !data.session };
+			console.log('🔐 [authService] Sign-in successful, result:', result);
+			return result;
+		} catch (err) {
+			console.error('🔐 [authService] Sign-in exception:', err);
+			return { error: err instanceof Error ? err.message : 'Sign in failed' };
 		}
-		const result = { requiresVerification: !data.session };
-		console.log('🔐 [authService] Sign-in successful, result:', result);
-		return result;
 	},
 	async resendVerification(email: string): Promise<{ error?: string }> {
 		const supabase = getSupabase();
 		if (!supabase) return { error: 'Supabase not configured' };
-		const { error } = await supabase.auth.resend({ type: 'signup', email });
-		if (error) return { error: error.message };
-		cacheVerificationTimestamp(email);
-		return {};
+		try {
+			const { error } = await withTimeout(
+				supabase.auth.resend({ type: 'signup', email }),
+				10000,
+				'Resend verification'
+			);
+			if (error) return { error: error.message };
+			cacheVerificationTimestamp(email);
+			return {};
+		} catch (err) {
+			return { error: err instanceof Error ? err.message : 'Failed to resend verification' };
+		}
 	},
 	async signInWithMagicLink(email: string): Promise<{ error?: string }> {
 		const supabase = getSupabase();
 		if (!supabase) return { error: 'Supabase not configured' };
-		const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
-		const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
-		if (error) return { error: error.message };
-		return {};
+		try {
+			const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined;
+			const { error } = await withTimeout(
+				supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } }),
+				10000,
+				'Magic link sign in'
+			);
+			if (error) return { error: error.message };
+			return {};
+		} catch (err) {
+			return { error: err instanceof Error ? err.message : 'Failed to send magic link' };
+		}
 	},
 	async resetPassword(email: string): Promise<{ error?: string }> {
 		const supabase = getSupabase();
 		if (!supabase) return { error: 'Supabase not configured' };
-		const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : undefined;
-		const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-		if (error) return { error: error.message };
-		return {};
+		try {
+			const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : undefined;
+			const { error } = await withTimeout(
+				supabase.auth.resetPasswordForEmail(email, { redirectTo }),
+				10000,
+				'Password reset'
+			);
+			if (error) return { error: error.message };
+			return {};
+		} catch (err) {
+			return { error: err instanceof Error ? err.message : 'Failed to send password reset email' };
+		}
+	},
+	async updatePassword(newPassword: string): Promise<{ error?: string }> {
+		const supabase = getSupabase();
+		if (!supabase) return { error: 'Supabase not configured' };
+		try {
+			const { error } = await withTimeout(
+				supabase.auth.updateUser({ password: newPassword }),
+				10000,
+				'Password update'
+			);
+			if (error) return { error: error.message };
+			return {};
+		} catch (err) {
+			return { error: err instanceof Error ? err.message : 'Failed to update password' };
+		}
 	},
 		async signInWithGoogle(): Promise<{ error?: string }> {
 			const supabase = getSupabase();
