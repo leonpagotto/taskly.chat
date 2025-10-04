@@ -1,16 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <defs>
-    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#A855F7;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="48" height="48" rx="8" fill="url(#brandGradient)"/>
-  <!-- Checkmark icon (simplified to-do list representation) -->
-  <g transform="translate(10, 10)">
-    <!-- First checkmark -->
-    <path d="M2 8 L8 14 L18 4" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <!-- Second checkmark -->
-    <path d="M2 16 L8 22 L18 12" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#667eea">
+  <path d="M188-172v-28h104v-186h-52v-28h52q0-71 51-120t123-54v-156h180v100H494v56q72 5 123 54t51 120h52v28h-52v186h104v28H188Zm132-28h146v-186H320v186Zm174 0h146v-186H494v186ZM320-414h320q0-63-47.5-104.5T480-560q-65 0-112.5 41.5T320-414Zm160 0Z"/>
 </svg>
