@@ -179,13 +179,13 @@
         vertical-align: top;
       }
       /* Global: unify button/nav radius */
-      button { border-radius: var(--radius-button) !important; }
+      button:not(.rounded-full) { border-radius: var(--radius-button) !important; }
       .rounded-lg { border-radius: var(--radius-card) !important; }
       .rounded-xl { border-radius: var(--radius-surface) !important; }
       .rounded-2xl { border-radius: calc(var(--radius-surface) + 4px) !important; }
       /* Preserve explicit tiny radii and full circles when intended */
       .rounded, .rounded-sm, .rounded-md { border-radius: inherit; }
-      .rounded-full { border-radius: 9999px !important; }
+      button.rounded-full, .rounded-full { border-radius: 9999px !important; }
 
       /* Collapsed nav: active background enhancement matching item shape (no circular mismatch) */
       .nav-active-collapsed::before {
