@@ -27,7 +27,7 @@ import LandingPage from './components/LandingPage';
 import OnboardingModal from './components/OnboardingModal';
 import FeedbackModal from './components/FeedbackModal';
 import ResetPasswordPage from './components/ResetPasswordPage';
-import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill } from './types';
+import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill, BottomNavItemKey } from './types';
 import { getCombinedSampleData } from './services/sampleDataService';
 import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
 import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon, SearchIcon } from './components/icons';
@@ -39,6 +39,7 @@ import { migrateToRelational } from './services/migrateToRelational';
 import { relationalDb } from './services/relationalDatabaseService';
 import { offlineSync } from './services/offlineQueue';
 import { feedbackService } from './services/feedbackService';
+import { hasSupabaseEnv } from './services/supabaseClient';
 
 
 // === SHARED MODAL COMPONENTS ===
@@ -936,6 +937,30 @@ const initialUserCategories: UserCategory[] = [
     { id: 'cat-13', name: 'Others', icon: 'more_horiz', color: '#64748B' },
 ];
 
+const BOTTOM_NAV_CANONICAL_ORDER: BottomNavItemKey[] = ['dashboard', 'lists', 'habits', 'notes', 'requests', 'calendar', 'stories', 'files', 'projects'];
+const DEFAULT_BOTTOM_NAV_ITEMS: BottomNavItemKey[] = ['dashboard', 'lists', 'habits', 'notes', 'requests', 'calendar'];
+const MIN_BOTTOM_NAV_ITEMS = 3;
+const MAX_BOTTOM_NAV_ITEMS = 6;
+
+// Keep the saved bottom navigation selection valid and within the supported range without altering the user-defined order.
+const normalizeBottomNavItems = (items?: BottomNavItemKey[] | null): BottomNavItemKey[] => {
+    if (Array.isArray(items)) {
+        const cleaned: BottomNavItemKey[] = [];
+        const seen = new Set<BottomNavItemKey>();
+        for (const key of items) {
+            if (!BOTTOM_NAV_CANONICAL_ORDER.includes(key)) continue;
+            if (seen.has(key)) continue;
+            cleaned.push(key);
+            seen.add(key);
+            if (cleaned.length >= MAX_BOTTOM_NAV_ITEMS) break;
+        }
+        if (cleaned.length >= MIN_BOTTOM_NAV_ITEMS) {
+            return cleaned;
+        }
+    }
+    return [...DEFAULT_BOTTOM_NAV_ITEMS];
+};
+
 const defaultPreferences: UserPreferences = {
   personality: 'smart',
   nickname: 'User',
@@ -951,6 +976,52 @@ const defaultPreferences: UserPreferences = {
   pulseWidgets: [],
   aiSnapshotVerbosity: 'concise',
   defaultView: 'dashboard', // Always default to Today view
+    bottomNavItems: [...DEFAULT_BOTTOM_NAV_ITEMS],
+};
+
+const APP_VIEW_STORAGE_KEY = 'app.currentView.v1';
+const ACTIVE_PROJECT_STORAGE_KEY = 'app.activeProjectId.v1';
+const VALID_APP_VIEWS: AppView[] = [
+    'dashboard',
+    'lists',
+    'habits',
+    'settings',
+    'notes',
+    'files',
+    'projects',
+    'calendar',
+    'stories',
+    'storyEditor',
+    'requests',
+    'requestIntake',
+];
+
+const readStoredView = (): AppView | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+        const stored = window.localStorage.getItem(APP_VIEW_STORAGE_KEY);
+            if (stored && VALID_APP_VIEWS.includes(stored as AppView)) {
+                if (stored === 'storyEditor') return 'stories';
+                return stored as AppView;
+        }
+    } catch {
+        // Ignore storage access errors (e.g., private mode)
+    }
+    return null;
+};
+
+const getInitialView = (): AppView => {
+    return readStoredView() ?? defaultPreferences.defaultView;
+};
+
+const readStoredActiveProjectId = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+        const stored = window.localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY);
+        return stored && stored.trim() ? stored : null;
+    } catch {
+        return null;
+    }
 };
 
 // FIX: Changed payload for 'newTask' to Partial<Checklist> to allow properties like categoryId.
@@ -965,6 +1036,7 @@ export type ViewAction =
     | null;
 
 const App: React.FC = () => {
+    const hasSupabaseConfigured = hasSupabaseEnv();
   // App State
   const [projects, setProjects] = useState<Project[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -981,9 +1053,9 @@ const App: React.FC = () => {
   
   // UI State
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+    const [activeProjectId, setActiveProjectId] = useState<string | null>(() => readStoredActiveProjectId());
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [currentView, setCurrentView] = useState<AppView>('dashboard');
+    const [currentView, setCurrentView] = useState<AppView>(() => getInitialView());
   const [previousView, setPreviousView] = useState<AppView | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -1016,8 +1088,9 @@ const App: React.FC = () => {
     const [isAuthModalOpen, setAuthModalOpen] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [showResetPassword, setShowResetPassword] = useState(false);
-    // Show landing page by default - will be hidden when auth session is detected
-    const [showLanding, setShowLanding] = useState(true);
+            // Show landing page only when Supabase auth is configured
+            const [showLanding, setShowLanding] = useState(() => hasSupabaseConfigured);
+            const [isAuthReady, setAuthReady] = useState(() => !hasSupabaseConfigured);
     const lastSyncToastRef = useRef<number>(0);
         const [isFeedbackOpen, setFeedbackOpen] = useState(false);
 
@@ -1102,7 +1175,12 @@ const App: React.FC = () => {
           if (!parsedPrefs.pulseWidgets) parsedPrefs.pulseWidgets = [];
           if (!parsedPrefs.size) parsedPrefs.size = 'md';
           if (!parsedPrefs.aiSnapshotVerbosity) parsedPrefs.aiSnapshotVerbosity = 'concise';
-          setPreferences(parsedPrefs);
+          const normalizedPreferences: UserPreferences = {
+            ...defaultPreferences,
+            ...parsedPrefs,
+            bottomNavItems: normalizeBottomNavItems(parsedPrefs.bottomNavItems),
+          };
+          setPreferences(normalizedPreferences);
       } else {
           setPreferences(defaultPreferences);
       }
@@ -1153,7 +1231,9 @@ const App: React.FC = () => {
                 setEvents([]);
                 setUserCategories([]);
                 setStories([]);
-                setCurrentView('dashboard');
+                if (!readStoredView()) {
+                    setCurrentView('dashboard');
+                }
                 // Landing page already shown by default for new users
             }
       
@@ -1173,6 +1253,36 @@ const App: React.FC = () => {
 
     } catch (error) { console.error("Failed to load data from localStorage", error); }
   }, []);
+
+    // Persist the active view so refreshes reopen the same experience
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const viewToPersist: AppView = currentView === 'storyEditor' ? 'stories' : currentView;
+        try {
+            window.localStorage.setItem(APP_VIEW_STORAGE_KEY, viewToPersist);
+        } catch {
+            // Ignore storage writes that fail (e.g., Safari private mode)
+        }
+    }, [currentView]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            if (activeProjectId) {
+                window.localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, activeProjectId);
+            } else {
+                window.localStorage.removeItem(ACTIVE_PROJECT_STORAGE_KEY);
+            }
+        } catch {
+            // Ignore storage writes that fail (e.g., Safari private mode)
+        }
+    }, [activeProjectId]);
+
+    useEffect(() => {
+        if (!activeProjectId) return;
+        if (projects.some(project => project.id === activeProjectId)) return;
+        setActiveProjectId(null);
+    }, [projects, activeProjectId]);
 
     // Track viewport range changes and auto-collapse/restore accordingly
     useEffect(() => {
@@ -1352,24 +1462,34 @@ const App: React.FC = () => {
 
     // --- Supabase Auth wiring ---
     useEffect(() => {
+        let isMounted = true;
         if (!authService.isEnabled()) {
             console.log('🔐 [App] Auth service not enabled');
+            setAuthReady(true);
             return;
         }
         console.log('🔐 [App] Setting up auth state listeners');
         // Get initial session
         authService.getSession().then((session) => {
+            if (!isMounted) return;
             console.log('🔐 [App] Initial session:', session);
             setAuthSession(session);
         }).catch((err) => {
+            if (!isMounted) return;
             console.error('🔐 [App] Error getting initial session:', err);
+        }).finally(() => {
+            if (isMounted) setAuthReady(true);
         });
         // Subscribe to changes
         const unsub = authService.onAuthStateChange((session) => {
+            if (!isMounted) return;
             console.log('🔐 [App] Auth state changed:', session);
             setAuthSession(session);
         });
-        return () => unsub();
+        return () => {
+            isMounted = false;
+            unsub();
+        };
     }, []);
 
     // Show onboarding after auth if not completed yet
@@ -1445,7 +1565,13 @@ const App: React.FC = () => {
                             setNotes(nts);
                             setProjectFiles(files);
                             setStories(strs);
-                            if (prefs) setPreferences({ ...defaultPreferences, ...prefs });
+                            if (prefs) {
+                                setPreferences({
+                                    ...defaultPreferences,
+                                    ...prefs,
+                                    bottomNavItems: normalizeBottomNavItems(prefs.bottomNavItems),
+                                });
+                            }
                             setConversations(convos);
                             setRequests(reqs);
                             setToastMessage('Loaded your data from database');
@@ -1467,7 +1593,12 @@ const App: React.FC = () => {
                         setEvents(remote.events || []);
                         setStories(remote.stories || []);
                         setUserCategories(remote.userCategories || []);
-                        setPreferences({ ...defaultPreferences, ...(remote.preferences || {}) });
+                        const remotePrefs = remote.preferences || {};
+                        setPreferences({
+                            ...defaultPreferences,
+                            ...remotePrefs,
+                            bottomNavItems: normalizeBottomNavItems(remotePrefs.bottomNavItems),
+                        });
                         setNotes(remote.notes || []);
                         setProjectFiles(remote.projectFiles || []);
                         setRequests(remote.requests || []);
@@ -1612,18 +1743,22 @@ const App: React.FC = () => {
         // Merge locally for immediate UI response, and persist to relational DB if enabled
         setPreferences(prev => {
             const merged = { ...prev, ...newPreferences };
+            const normalizedPreferences = {
+                ...merged,
+                bottomNavItems: normalizeBottomNavItems(merged.bottomNavItems),
+            };
             try {
                 const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
                 if (authSession && useRelDb && relationalDb.isEnabled()) {
                     relationalDb
-                        .savePreferences(merged)
+                        .savePreferences(normalizedPreferences)
                             .catch(() => {
                             try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
                                 maybeShowSyncFailureToast();
                         });
                 }
             } catch {}
-            return merged;
+            return normalizedPreferences;
         });
     };
   const handleResetPreferences = () => setPreferences(defaultPreferences);
@@ -1729,6 +1864,8 @@ const App: React.FC = () => {
                 }
                 setViewAction({ type: 'newRequest', payload });
                 setCurrentView('requestIntake');
+                setMobileChatOpen(false);
+                setChatOpenMode(null);
             };
             const onCreateStoryFromRequest = (e: Event) => {
                 const detail = (e as unknown as CustomEvent<any>).detail as { id: string };
@@ -2787,7 +2924,9 @@ Keep descriptions concise (10-15 words max).`;
     const activeStory = pendingStoryId ? stories.find(s => s.id === pendingStoryId) : null;
     const activeProjectForChat = activeConversation?.projectId ? projects.find(p => p.id === activeConversation.projectId) : undefined;
     const projectForDetails = projects.find(p => p.id === activeProjectId);
-    const isLanding = showLanding && !authSession;
+    const isLanding = showLanding && !authSession && isAuthReady;
+    const isRequestsView = currentView === 'requests';
+    const shouldShowDesktopCommandBar = !isLanding && !isMobileChatOpen && (Boolean(activeConversation) || isRequestsView);
   
     // Show reset password page if needed
     if (showResetPassword) {
@@ -2818,7 +2957,7 @@ Keep descriptions concise (10-15 words max).`;
 
         <div className={`font-sans`}>
                 <div className={`flex w-screen ${isLanding ? 'min-h-screen overflow-y-auto bg-transparent text-white' : 'h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100'}`}>
-            {!(showLanding && !authSession) && (
+            {!isLanding && (
                 <Sidebar
                     projects={projects}
                     conversations={conversations}
@@ -2844,7 +2983,7 @@ Keep descriptions concise (10-15 words max).`;
             )}
             <div className="flex-1 flex flex-col min-w-0 relative">
                 <div className="flex-1 flex flex-col min-h-0">
-                    {showLanding && !authSession ? (
+                    {isLanding ? (
                         <LandingPage onSignIn={() => setAuthModalOpen(true)} />
                     ) : activeConversation ? (
                         <ChatView
@@ -3093,6 +3232,7 @@ Keep descriptions concise (10-15 words max).`;
                                                                                                 onNew={() => { setViewAction({ type: 'newRequest', payload: {} }); setCurrentView('requestIntake'); }}
                                                                                                 mode={requestsViewMode}
                                                                                                 onToggleMode={setRequestsViewMode}
+                                                                                                onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                                                                                             />
                                                                                         ) : (
                                                                                             <RequestsBoardPage
@@ -3109,6 +3249,7 @@ Keep descriptions concise (10-15 words max).`;
                                                                                                 onGenerateStories={handleGenerateStoriesFromRequest}
                                                                                                 mode={requestsViewMode}
                                                                                                 onToggleMode={setRequestsViewMode}
+                                                                                                onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                                                                                             />
                                                                                         )
                                                                                 ) : currentView === 'requestIntake' ? (
@@ -3146,7 +3287,7 @@ Keep descriptions concise (10-15 words max).`;
                                 {/* Request intake is now a dedicated page (currentView === 'requestIntake') */}
                 
 
-                {activeConversation && !isMobileChatOpen && (
+                {shouldShowDesktopCommandBar && (
                     <div className="hidden md:block">
                     <ChatInputBar
                         onSendMessage={handleSendMessage}
@@ -3155,6 +3296,7 @@ Keep descriptions concise (10-15 words max).`;
                         activeProjectId={activeProjectId}
                         t={t}
                         language={preferences.language}
+                        mode={isRequestsView ? 'request' : 'chat'}
                     />
                     </div>
                 )}
@@ -3291,7 +3433,17 @@ Keep descriptions concise (10-15 words max).`;
                                     console.log('🔐 [App] onSignIn called');
                                     const res = await authService.signInWithPassword(email, password);
                                     console.log('🔐 [App] signInWithPassword result:', res);
-                                    if (!res.error && !res.requiresVerification) setToastMessage('Signed in successfully.');
+                                    if (!res.error && !res.requiresVerification) {
+                                        setToastMessage('Signed in successfully.');
+                                        if (res.session) {
+                                            console.log('🔐 [App] Applying session from sign-in result');
+                                            setAuthSession(res.session);
+                                        } else {
+                                            const freshSession = await authService.getSession();
+                                            console.log('🔐 [App] Fetched session after sign-in:', freshSession);
+                                            if (freshSession) setAuthSession(freshSession);
+                                        }
+                                    }
                                     return res;
                                 }}
                                 onSignUp={async (email, password) => {
@@ -3337,7 +3489,13 @@ Keep descriptions concise (10-15 words max).`;
             {!isLanding && (
                 <>
                     <div className="md:hidden">
-                        <BottomNavBar currentView={currentView} onSelectView={handleSelectView} onOpenFeedback={handleOpenFeedback} t={t} />
+                        <BottomNavBar
+                            currentView={currentView}
+                            onSelectView={handleSelectView}
+                            onOpenFeedback={handleOpenFeedback}
+                            t={t}
+                            selectedItems={preferences.bottomNavItems}
+                        />
                         <FloatingActionButton
                             onClick={() => { setMobileChatOpen(true); setChatOpenMode('text'); }}
                             isChatOpen={isMobileChatOpen}
@@ -3357,6 +3515,7 @@ Keep descriptions concise (10-15 words max).`;
                             isMobileOverlay={true}
                             initialMode={chatOpenMode}
                             onClose={() => setMobileChatOpen(false)}
+                            mode={isRequestsView ? 'request' : 'chat'}
                         />
                     )}
                 </>
