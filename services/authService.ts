@@ -74,24 +74,30 @@ export const authService = {
 			console.error('🔐 [authService] Supabase not configured!');
 			return { error: 'Supabase not configured' };
 		}
+		
 		try {
-			console.log('🔐 [authService] Calling supabase.auth.signInWithPassword...');
-			// Temporarily remove timeout to see actual Supabase error
+			console.log('🔐 [authService] Calling supabase.auth.signInWithPassword');
+			
 			const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-			console.log('🔐 [authService] Supabase response received');
-			console.log('🔐 [authService] Data:', JSON.stringify(data, null, 2));
-			console.log('🔐 [authService] Error:', JSON.stringify(error, null, 2));
+			
+			console.log('🔐 [authService] ✅ Sign-in completed');
+			
 			if (error) {
 				const message = error.message || 'Unable to sign in';
 				const requiresVerification = /confirm your email/i.test(message) || error.status === 400;
 				console.error('🔐 [authService] Sign-in error:', message, 'requiresVerification:', requiresVerification);
 				return { error: message, requiresVerification };
 			}
+			
+			if (data?.session) {
+				console.log('🔐 [authService] ✅ Session created successfully');
+			}
+			
 			const result = { requiresVerification: !data.session };
 			console.log('🔐 [authService] Sign-in successful, result:', result);
 			return result;
 		} catch (err) {
-			console.error('🔐 [authService] Sign-in exception:', err);
+			console.error('🔐 [authService] ❌ Sign-in exception:', err);
 			return { error: err instanceof Error ? err.message : 'Sign in failed' };
 		}
 	},
