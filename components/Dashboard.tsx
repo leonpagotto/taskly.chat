@@ -40,6 +40,7 @@ import {
 import PulseWidget from './PulseWidget';
 import Header from './Header';
 import EmptyStateIcon from './EmptyStateIcon';
+import { emptyStateSecondaryButtonBaseClass } from './buttonStyles';
 import OnboardingModal from './OnboardingModal';
 import ModalOverlay from './ModalOverlay';
 
@@ -202,7 +203,6 @@ interface DashboardProps {
   onModalClosed: () => void;
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
-  onLoadSampleData: () => void;
 }
 
 interface DailyItemWrapper {
@@ -294,7 +294,7 @@ const MonthlyCalendar: React.FC<{
                 key={day}
                 onClick={() => { onDateSelect(date); onClose(); }}
                 className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors text-sm
-                  ${isSelected ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white' : ''}
+                  ${isSelected ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white' : ''}
                   ${!isSelected && isToday ? 'border border-gray-500' : ''}
                   ${!isSelected ? 'hover:bg-gray-700' : ''}
                 `}
@@ -475,7 +475,7 @@ const DashboardItemsModal: React.FC<{
                 </div>
               );
             }) : (
-              <p className="text-center text-gray-500 py-8">No sub-items in this list.</p>
+              <p className="text-center text-gray-400 dark:text-gray-500 py-8 text-sm">No sub-items in this list.</p>
             )}
           </main>
           {hasSubtasks && (
@@ -1130,8 +1130,8 @@ const DayEventsTimeline: React.FC<{
             const top = minutes * MIN_PX;
             return (
               <div className="absolute left-0 right-0 pointer-events-none z-20" style={{ top }}>
-                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-br from-[var(--color-primary-600)] to-purple-600" />
-                <div className="h-0.5 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 opacity-80" />
+                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-br from-[var(--color-primary-600)] to-[var(--color-primary-end)]" />
+                <div className="h-0.5 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] opacity-80" />
               </div>
             )
           })()}
@@ -1332,32 +1332,31 @@ const DateScroller: React.FC<{
   today.setHours(0,0,0,0);
 
   return (
-    <div
-      ref={scrollerRef}
-      className="flex items-center space-x-2 overflow-x-auto pb-2.5 scrollbar-hide px-4 sm:px-6"
-    >
+    <div className="-mx-2 sm:-mx-3 px-2 sm:px-3">
+      <div
+        ref={scrollerRef}
+        className="flex items-center gap-2 overflow-x-auto overflow-y-visible py-3 scrollbar-hide px-4 sm:px-6"
+      >
       {allDates.map((date) => {
           const isSelected = isSameDay(date, selectedDate)
           const isToday = isSameDay(date, today);
           return (
-      <button
+    <button
               key={date.toISOString()}
               onClick={() => onDateSelect(date)}
-        className={`flex-shrink-0 flex flex-col items-center justify-center w-11 h-14 rounded-[var(--radius-button)] transition-colors relative shadow-md
-              ${isSelected ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white date-item-selected' : 'bg-gray-200 dark:bg-gray-700/50 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'}
-              ${isToday ? 'date-item-today' : ''}
-              `}
+  className={`flex-shrink-0 flex flex-col items-center justify-center w-12 h-16 rounded-[18px] relative transition-transform duration-150 ${isSelected ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-[0_18px_45px_rgba(124,58,237,0.45)] date-item-selected' : 'resend-secondary hover:-translate-y-[2px]'} ${!isSelected ? 'text-slate-100' : ''} ${isToday ? 'date-item-today' : ''}`}
           >
               <span className="text-[10px] uppercase">
               {date.toLocaleDateString('en-US', { weekday: 'short' })}
               </span>
               <span className="text-base font-bold">{date.getDate()}</span>
-              {isToday && !isSelected && (
-                  <div className="absolute bottom-1.5 left-3 right-3 h-[3px] bg-[var(--color-primary-700)] rounded-full"></div>
+        {isToday && !isSelected && (
+          <div className="absolute bottom-1.5 left-3 right-3 h-[3px] rounded-full bg-[rgba(139,92,246,0.55)]"></div>
               )}
           </button>
           )
       })}
+      </div>
     </div>
   )
 }
@@ -1532,16 +1531,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>('all');
   // Flash map for completion transitions keyed by item id
   const [flashCompleted, setFlashCompleted] = useState<Record<string, number>>({});
-  // First-run onboarding
-  useEffect(() => {
-    try {
-      const seen = localStorage.getItem('onboarding.seen');
-      if (!seen) {
-        setOnboardingOpen(true);
-        localStorage.setItem('onboarding.seen', 'true');
-      }
-    } catch {}
-  }, []);
+  // Onboarding is now controlled by preferences.onboardingCompleted at App level
   const [mobileTab, setMobileTab] = useState<'events' | 'tasks'>('tasks');
 
   const formatNoteDate = (isoDate: string) => {
@@ -1593,6 +1583,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   };
 
   const selectedISODate = getISODate(selectedDate)
+  const emptyStateActionButtonClass = `px-4 py-2 flex items-center gap-1.5 ${emptyStateSecondaryButtonBaseClass}`;
 
   useEffect(() => {
     if (modalToClose === modalItemId) {
@@ -1630,6 +1621,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     const dailyItems: DailyItemWrapper[] = [
       ...tasksForRender.map((task): DailyItemWrapper => ({ item: task, type: 'task' as const, id: task.id })),
       ...habitsForRender.map((habit): DailyItemWrapper => ({ item: habit, type: 'habit' as const, id: habit.id })),
+      ...eventsForRender.map((event): DailyItemWrapper => ({ item: event, type: 'event' as const, id: event.id })),
     ];
       
       const isItemCompleted = (itemWrapper: DailyItemWrapper, isoDate: string): boolean => {
@@ -1759,7 +1751,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     .sort((a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime())
     .slice(0, 5)
     
-  const hasTasksOrHabits = orderedDailyItems.length > 0;
+  const tasksAndHabits = orderedDailyItems.filter(item => item.type !== 'event');
+  const hasTasksOrHabits = tasksAndHabits.length > 0;
   const hasEvents = eventsForDay.length > 0;
   const isEmpty = !hasTasksOrHabits && !hasEvents;
   const isTrulyEmpty = checklists.length === 0 && habits.length === 0 && events.length === 0 && projects.length === 0 && notes.length === 0 && userCategories.length === 0;
@@ -1770,7 +1763,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
   const modalProject = modalItem?.projectId ? projects.find(p => p.id === modalItem.projectId) : undefined;
   
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    <div className="flex-1 flex flex-col h-full">
       {/* Modals / overlays */}
       <DashboardItemsModal
         item={modalItem}
@@ -1805,7 +1798,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
       {/* Global search rendered at App root */}
 
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 bg-gray-100 dark:bg-gray-800">
+      <div className="sticky top-0 z-30">
         <Header
           title={formatDateForHeader(selectedDate)}
           onToggleSidebar={onToggleSidebar}
@@ -1821,19 +1814,19 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
             {/* Search first, then calendar, then help; equal gaps */}
             <button
               onClick={() => window.dispatchEvent(new Event('taskly.openSearch'))}
-              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              className="w-10 h-10 rounded-[var(--radius-button)] resend-secondary flex items-center justify-center transition-transform duration-150 hover:-translate-y-[1px]"
               aria-label="Search"
               title="Search (⌘/Ctrl+K)"
             ><SearchIcon /></button>
             <button
               onClick={() => setIsCalendarOpen(true)}
-              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              className="w-10 h-10 rounded-[var(--radius-button)] resend-secondary flex items-center justify-center transition-transform duration-150 hover:-translate-y-[1px]"
               aria-label="Open calendar"
               title="Open calendar"
             ><CalendarTodayIcon /></button>
             <button
               onClick={() => setOnboardingOpen(true)}
-              className="w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center"
+              className="w-10 h-10 rounded-[var(--radius-button)] resend-secondary flex items-center justify-center transition-transform duration-150 hover:-translate-y-[1px]"
               aria-label="Help"
               title="Help & Tips"
             ><HelpOutlineIcon /></button>
@@ -1845,23 +1838,23 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
       <main className="flex-1 px-4 sm:px-6 text-gray-800 dark:text-white overflow-y-auto md:overflow-hidden min-h-0">
         <div className="flex flex-col h-full min-h-0">
           {/* Full-width date scroller row */}
-          <div className="bg-gray-100 dark:bg-gray-800 md:sticky md:top-0 z-20 pt-1.5 pb-2 md:pb-0">
+          <div className="md:sticky md:top-0 z-20 pt-1.5 pb-2 md:pb-0">
             <DateScroller selectedDate={selectedDate} onDateSelect={onDateSelect} />
             <div className="flex items-center gap-2 mt-2">
-              <div className="md:hidden flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] shadow-md">
+              <div className="md:hidden flex items-center gap-1 p-1 rounded-[var(--radius-button)] resend-secondary shadow-md">
                 <button
                   onClick={() => setMobileTab('tasks')}
-                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}
+                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'tasks' ? 'bg-white/20 text-white shadow-inner' : 'text-gray-300 hover:bg-white/10'}`}
                 >Tasks & Habits</button>
                 <button
                   onClick={() => setMobileTab('events')}
-                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/60 dark:hover:bg-gray-700/60'}`}
+                  className={`px-3 py-1.5 rounded-[var(--radius-button)] text-xs font-semibold transition-colors ${mobileTab === 'events' ? 'bg-white/20 text-white shadow-inner' : 'text-gray-300 hover:bg-white/10'}`}
                 >Agenda</button>
               </div>
               <div className="flex md:hidden items-center gap-2 ml-auto">
-                <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
-                <button onClick={onNewHabit} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors shadow-md" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px] shadow-md" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px] shadow-md" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                <button onClick={onNewHabit} className="w-10 h-10 flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px] shadow-md" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
               </div>
             </div>
           </div>
@@ -1875,20 +1868,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     <EmptyStateIcon icon={<TodayIcon />} size="lg" />
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('dashboard_empty_title')}</h2>
                     <p className="max-w-md mt-1 mb-6">{t('dashboard_empty_subtitle')}</p>
-                    <div className="flex items-center justify-center gap-3">
-                      <button
-                        onClick={() => props.onLoadSampleData()}
-                        className="w-10 h-10 flex items-center justify-center text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:shadow-lg transition-all"
-                        aria-label="Load sample data"
-                        title="Load sample data"
-                      >
-                        <Icon name="wand_stars" />
-                      </button>
-                    </div>
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewTaskIcon /> <span>New Task</span></button>
-                      <button onClick={() => onNewEvent(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><CalendarAddOnIcon /> <span>New Event</span></button>
-                      <button onClick={onNewHabit} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewHabitIcon /> <span>New Habit</span></button>
+                      <button onClick={() => onNewTask(selectedISODate)} className={emptyStateActionButtonClass}><NewTaskIcon /> <span>New Task</span></button>
+                      <button onClick={() => onNewEvent(selectedISODate)} className={emptyStateActionButtonClass}><CalendarAddOnIcon /> <span>New Event</span></button>
+                      <button onClick={onNewHabit} className={emptyStateActionButtonClass}><NewHabitIcon /> <span>New Habit</span></button>
                     </div>
                   </>
                 ) : (
@@ -1897,9 +1880,9 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-1">Organize your day</h3>
                     <p className="max-w-md text-sm mb-5">You have no tasks, habits, or events for this date. Add what matters and get going.</p>
                     <div className="flex gap-3 flex-wrap items-center justify-center">
-                      <button onClick={() => onNewTask(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewTaskIcon /> <span>New Task</span></button>
-                      <button onClick={() => onNewEvent(selectedISODate)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><CalendarAddOnIcon /> <span>New Event</span></button>
-                      <button onClick={onNewHabit} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-[var(--radius-button)] font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"><NewHabitIcon /> <span>New Habit</span></button>
+                      <button onClick={() => onNewTask(selectedISODate)} className={emptyStateActionButtonClass}><NewTaskIcon /> <span>New Task</span></button>
+                      <button onClick={() => onNewEvent(selectedISODate)} className={emptyStateActionButtonClass}><CalendarAddOnIcon /> <span>New Event</span></button>
+                      <button onClick={onNewHabit} className={emptyStateActionButtonClass}><NewHabitIcon /> <span>New Habit</span></button>
                     </div>
                   </>
                 )}
@@ -1909,7 +1892,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 {/* Mobile stacked view */}
                 <div className="md:hidden mt-2 space-y-2">
                   {mobileTab === 'events' ? (
-                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col h-[65vh] mb-12 scroll-fade">
+                    <div className="overflow-hidden rounded-xl resend-glass-panel border border-transparent flex flex-col h-[65vh] mb-12 scroll-fade" data-elevated={true}>
                       <DayEventsTimeline
                         events={eventsForDay}
                         projects={projects}
@@ -1919,16 +1902,20 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                       />
                     </div>
                   ) : (
-                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col h-[65vh] mb-12 scroll-fade">
+                    <div className="overflow-hidden rounded-xl resend-glass-panel border border-transparent flex flex-col h-[65vh] mb-12 scroll-fade" data-elevated={true}>
                       <div className="p-2 space-y-2 overflow-y-auto min-h-0 flex-1 pt-1">
-                        {orderedDailyItems.length === 0 && (
-                          <div className="flex items-center justify-center py-8"><p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p></div>
+                        {tasksAndHabits.length === 0 && (
+                          <div className="flex items-center justify-center py-8">
+                            <p className="text-sm text-gray-400 dark:text-gray-500">No tasks or habits for this day.</p>
+                          </div>
                         )}
-                        {orderedDailyItems.map(itemWrapper => {
+                        {tasksAndHabits.map(itemWrapper => {
                           const { item, type } = itemWrapper;
-                          const category = userCategories.find(c => c.id === item.categoryId);
+                          const typedItem = item as Checklist | Habit;
+                          const category = typedItem.categoryId ? userCategories.find(c => c.id === typedItem.categoryId) : undefined;
+                          const project = 'projectId' in typedItem && typedItem.projectId ? projects.find(p => p.id === typedItem.projectId) : undefined;
                           const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                          const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                          const isCompleted = typedItem.completionHistory?.includes(selectedISODate);
                           const isCompleting = completingItemIds.has(item.id);
                           if (isCompleting && isCompleted) return null;
                           return (
@@ -1941,7 +1928,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                     onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
                                     onEdit={() => onEditItem(item)}
                                     onOpenModal={() => setModalItemId(item.id)}
-                                    isCompleted={isCompleted}
+                                    isCompleted={!!isCompleted}
                                     isRecentlyCompleted={isRecentlyCompleted}
                                     onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
                                     isCompleting={isCompleting}
@@ -1950,7 +1937,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                   <DashboardMultiTaskList
                                     list={item as Checklist}
                                     category={category}
-                                    project={projects.find(p => p.id === (item as Checklist).projectId)}
+                                    project={project}
                                     onOpenModal={(list) => setModalItemId(list.id)}
                                     onEdit={() => onEditItem(item)}
                                     selectedDate={selectedDate}
@@ -1964,7 +1951,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                 <DashboardHabitCard
                                   habit={item as Habit}
                                   category={category}
-                                  project={projects.find(p => p.id === (item as Habit).projectId)}
+                                  project={project}
                                   selectedDate={selectedDate}
                                   onToggleHabitCompletion={onToggleHabitCompletion}
                                   onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
@@ -1990,22 +1977,26 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     <div className="flex items-center justify-between mb-2 px-1">
                       <h3 className="text-base font-semibold text-gray-800 dark:text-white">Tasks & Habits</h3>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
-                        <button onClick={onNewHabit} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
+                        <button onClick={() => onNewTask(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px]" aria-label="New Task" title="New Task"><NewTaskIcon /></button>
+                        <button onClick={onNewHabit} className="w-10 h-10 hidden md:flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px]" aria-label="New Habit" title="New Habit"><NewHabitIcon /></button>
                       </div>
                     </div>
-                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col min-h-0 flex-1 scroll-fade">
+                    <div className="overflow-hidden rounded-xl resend-glass-panel border border-transparent flex flex-col min-h-0 flex-1 scroll-fade" data-elevated={true}>
                       {(() => {
                         return (
                           <div className={`px-2 pb-2 pt-1 space-y-2 overflow-y-auto min-h-0 flex-1`}>
-                            {orderedDailyItems.length === 0 && (
-                              <div className="flex items-center justify-center py-10"><p className="text-sm text-gray-500 dark:text-gray-400 italic">No tasks or habits.</p></div>
+                            {tasksAndHabits.length === 0 && (
+                              <div className="flex items-center justify-center py-10">
+                                <p className="text-sm text-gray-400 dark:text-gray-500">No tasks or habits for this day.</p>
+                              </div>
                             )}
-                            {orderedDailyItems.map(itemWrapper => {
+                            {tasksAndHabits.map(itemWrapper => {
                               const { item, type } = itemWrapper;
-                              const category = userCategories.find(c => c.id === item.categoryId);
+                              const typedItem = item as Checklist | Habit;
+                              const category = typedItem.categoryId ? userCategories.find(c => c.id === typedItem.categoryId) : undefined;
+                              const project = 'projectId' in typedItem && typedItem.projectId ? projects.find(p => p.id === typedItem.projectId) : undefined;
                               const isRecentlyCompleted = recentlyCompletedItemId === item.id;
-                              const isCompleted = (item as Checklist | Habit).completionHistory?.includes(selectedISODate);
+                              const isCompleted = typedItem.completionHistory?.includes(selectedISODate);
                               const isCompleting = completingItemIds.has(item.id);
                               if (isCompleting && isCompleted) return null;
                               return (
@@ -2018,7 +2009,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                         onToggleCompletion={() => onToggleSingleTaskCompletion(item.id, selectedISODate)}
                                         onEdit={() => onEditItem(item)}
                                         onOpenModal={() => setModalItemId(item.id)}
-                                        isCompleted={isCompleted}
+                                        isCompleted={!!isCompleted}
                                         isRecentlyCompleted={isRecentlyCompleted}
                                         onOpenPriorityModal={() => setPriorityModalItem(item as Checklist)}
                                         isCompleting={isCompleting}
@@ -2027,7 +2018,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                       <DashboardMultiTaskList
                                         list={item as Checklist}
                                         category={category}
-                                        project={projects.find(p => p.id === (item as Checklist).projectId)}
+                                        project={project}
                                         onOpenModal={(list) => setModalItemId(list.id)}
                                         onEdit={() => onEditItem(item)}
                                         selectedDate={selectedDate}
@@ -2041,7 +2032,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                                     <DashboardHabitCard
                                       habit={item as Habit}
                                       category={category}
-                                      project={projects.find(p => p.id === (item as Habit).projectId)}
+                                      project={project}
                                       selectedDate={selectedDate}
                                       onToggleHabitCompletion={onToggleHabitCompletion}
                                       onOpenSubtaskModal={(habit) => setModalItemId(habit.id)}
@@ -2066,10 +2057,10 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                     <div className="flex items-center justify-between mb-2 px-1">
                       <h3 className="text-base font-semibold text-gray-800 dark:text-white">Agenda</h3>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors hover:bg-gray-300 dark:hover:bg-gray-700" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
+                        <button onClick={() => onNewEvent(selectedISODate)} className="w-10 h-10 hidden md:flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px]" aria-label="New Event" title="New Event"><CalendarAddOnIcon /></button>
                       </div>
                     </div>
-                    <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-200 dark:bg-gray-900 flex flex-col min-h-0 flex-1 scroll-fade">
+                    <div className="overflow-hidden rounded-xl resend-glass-panel border border-transparent flex flex-col min-h-0 flex-1 scroll-fade" data-elevated={true}>
                       <div className="flex-1 min-h-0 h-full">
                         <DayEventsTimeline
                           events={eventsForDay}
@@ -2086,7 +2077,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                   <div className="flex flex-col min-h-0 md:col-span-2 lg:col-span-1 lg:col-start-3 lg:row-start-1">
                     <div className="flex items-center justify-between mb-2 px-1">
                       <h3 className="text-base font-semibold text-gray-800 dark:text-white">{t('recent_notes')}</h3>
-                      <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700/50 rounded-[var(--radius-button)] transition-colors" aria-label="New Note" title="New Note"><NoteAddIcon /></button>
+                      <button onClick={() => onNewNote({})} className="w-10 h-10 flex items-center justify-center resend-secondary rounded-[var(--radius-button)] transition-transform duration-150 hover:-translate-y-[1px]" aria-label="New Note" title="New Note"><NoteAddIcon /></button>
                     </div>
                     {/* md: horizontal scroll; lg+: vertical list in fixed 120px column */}
                     <div className="min-h-0 flex-1 md:flex md:flex-row md:space-x-3 md:overflow-x-auto md:space-y-0 md:pb-1 lg:flex-col lg:space-x-0 lg:space-y-3 lg:overflow-y-auto">

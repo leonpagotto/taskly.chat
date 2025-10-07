@@ -27,8 +27,8 @@ import LandingPage from './components/LandingPage';
 import OnboardingModal from './components/OnboardingModal';
 import FeedbackModal from './components/FeedbackModal';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import GuestExperience from './components/guest/GuestExperience';
 import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill, BottomNavItemKey } from './types';
-import { getCombinedSampleData } from './services/sampleDataService';
 import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
 import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon, SearchIcon } from './components/icons';
 import GlobalSearch from './components/GlobalSearch';
@@ -40,6 +40,7 @@ import { relationalDb } from './services/relationalDatabaseService';
 import { offlineSync } from './services/offlineQueue';
 import { feedbackService } from './services/feedbackService';
 import { hasSupabaseEnv } from './services/supabaseClient';
+import { guestSessionService } from './services/guestSessionService';
 
 
 // === SHARED MODAL COMPONENTS ===
@@ -66,7 +67,7 @@ const FloatingActionButton: React.FC<{onClick: () => void, isChatOpen: boolean}>
         <div className={`md:hidden fixed right-4 bottom-20 z-40 transition-transform duration-300 ease-in-out ${isChatOpen ? 'translate-y-48' : 'translate-y-0'}`}>
             <button
                 onClick={onClick}
-                className="w-14 h-14 flex items-center justify-center bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                className="w-14 h-14 flex items-center justify-center bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                 aria-label="Open Command Bar"
             >
                 <span className="material-symbols-outlined text-3xl">chat</span>
@@ -375,7 +376,7 @@ const TaskEditorModal: React.FC<{
             itemInputsRef.current[tasks.length - 1]?.focus();
             return;
         }
-        const newTasks = [...tasks, { id: `task-new-${Date.now()}`, text: '', completedAt: null }];
+        const newTasks = [...tasks, { id: crypto.randomUUID(), text: '', completedAt: null }];
         handleUpdateField('tasks', newTasks);
     };
     
@@ -506,7 +507,7 @@ const TaskEditorModal: React.FC<{
                                 Delete
                             </button>
                         ) : <div></div>}
-                        <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+                        <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
                              {isEditing ? 'Save Changes' : 'Create Task'}
                         </button>
                     </footer>
@@ -586,7 +587,7 @@ const HabitModal: React.FC<{
             habitItemInputsRef.current[tasks.length - 1]?.focus();
             return;
         }
-        const newTasks = [...tasks, { id: `task-new-${Date.now()}`, text: '', completedAt: null }];
+        const newTasks = [...tasks, { id: crypto.randomUUID(), text: '', completedAt: null }];
         handleUpdateField('tasks', newTasks);
     };
     
@@ -696,7 +697,7 @@ const HabitModal: React.FC<{
                 Delete
               </button>
             ) : <div></div>}
-            <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+            <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
                 {isEditing ? 'Save Changes' : 'Create Habit'}
             </button>
           </footer>
@@ -1089,19 +1090,108 @@ const App: React.FC = () => {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [showResetPassword, setShowResetPassword] = useState(false);
             // Show landing page only when Supabase auth is configured
-            const [showLanding, setShowLanding] = useState(() => hasSupabaseConfigured);
+            const [showLanding, setShowLanding] = useState(false);
             const [isAuthReady, setAuthReady] = useState(() => !hasSupabaseConfigured);
     const lastSyncToastRef = useRef<number>(0);
+            const guestImportUserRef = useRef<string | null>(null);
         const [isFeedbackOpen, setFeedbackOpen] = useState(false);
 
-    const maybeShowSyncFailureToast = (message?: string) => {
+    const maybeShowSyncFailureToast = (errorOrMessage?: unknown, fallbackMessage?: string) => {
         const now = Date.now();
         if (now - lastSyncToastRef.current < 20000) return; // 20s cooldown
         lastSyncToastRef.current = now;
-        setToastMessage(message || 'You are offline. Changes will sync when reconnected.');
+
+        if (typeof errorOrMessage === 'string' && errorOrMessage.trim()) {
+            setToastMessage(errorOrMessage);
+            return;
+        }
+
+        if (typeof fallbackMessage === 'string' && fallbackMessage.trim()) {
+            setToastMessage(fallbackMessage);
+            return;
+        }
+
+        if (!offlineSync.isOnline()) {
+            setToastMessage('You are offline. Changes will sync when reconnected.');
+            return;
+        }
+
+        const extractErrorMessage = (error: unknown): string | null => {
+            if (!error) return null;
+            if (error instanceof Error && typeof error.message === 'string' && error.message.trim()) {
+                return error.message;
+            }
+            if (typeof error === 'object') {
+                const maybeMessage = (error as Record<string, unknown>).message
+                    ?? (error as Record<string, unknown>).error_description
+                    ?? (error as Record<string, unknown>).error;
+                if (typeof maybeMessage === 'string' && maybeMessage.trim()) {
+                    return maybeMessage;
+                }
+            }
+            if (typeof error === 'string' && error.trim()) {
+                return error;
+            }
+            return null;
+        };
+
+        const errorMessage = extractErrorMessage(errorOrMessage);
+        if (errorMessage) {
+            setToastMessage(`Cloud sync failed: ${errorMessage}`);
+        } else {
+            setToastMessage('Cloud sync failed. We\'ll retry when possible.');
+        }
+    };
+
+    // Helper: determine if we should write to the relational database right away
+    const canSyncRelational = (): boolean => {
+        const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+        return !!(authSession && useRelDb && relationalDb.isEnabled());
+    };
+
+    // Helper: flag that we need to retry relational sync once we are back online
+    const markRelationalDirty = () => {
+        try { offlineSync.markDirty(); } catch {}
+    };
+
+    // Helper: persist checklist updates to Supabase when possible
+    const syncChecklistToRelational = (checklist: Checklist) => {
+        if (!canSyncRelational()) return;
+        void relationalDb.upsertChecklist(checklist).catch((error) => {
+            markRelationalDirty();
+            maybeShowSyncFailureToast(error);
+        });
+    };
+
+    const deleteChecklistFromRelational = (checklistId: string) => {
+        if (!canSyncRelational()) return;
+        void relationalDb.deleteChecklist(checklistId).catch((error) => {
+            markRelationalDirty();
+            maybeShowSyncFailureToast(error);
+        });
+    };
+
+    // Helper: persist habit updates to Supabase when possible
+    const syncHabitToRelational = (habit: Habit) => {
+        if (!canSyncRelational()) return;
+        void relationalDb.upsertHabit({ ...habit, completionHistory: habit.completionHistory }).catch((error) => {
+            markRelationalDirty();
+            maybeShowSyncFailureToast(error);
+        });
+    };
+
+    const deleteHabitFromRelational = (habitId: string) => {
+        if (!canSyncRelational()) return;
+        void relationalDb.deleteHabit(habitId).catch((error) => {
+            markRelationalDirty();
+            maybeShowSyncFailureToast(error);
+        });
     };
     const handleOpenFeedback = () => {
         setFeedbackOpen(true);
+    };
+    const handleOpenTutorial = () => {
+        setShowOnboarding(true);
     };
     const handleCloseFeedback = () => setFeedbackOpen(false);
     const handleSubmitFeedback = async (payload: { email?: string; type: FeedbackType; message: string }) => {
@@ -1325,24 +1415,6 @@ const App: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [isSidebarCollapsed, autoCollapsedByViewport]);
 
-        const handleLoadSampleData = () => {
-            const bundle = getCombinedSampleData();
-        setProjects(bundle.projects);
-        setConversations(bundle.conversations);
-        setChecklists(bundle.checklists);
-        setHabits(bundle.habits);
-        setEvents(bundle.events);
-        setUserCategories(bundle.userCategories);
-        setNotes(bundle.notes);
-        setProjectFiles(bundle.projectFiles);
-        setStories(bundle.stories || []);
-        try {
-            localStorage.setItem('sampleLoaded_v1', 'true');
-                localStorage.setItem('sampleTemplate_v1', 'combined');
-        } catch {}
-        setCurrentView('dashboard');
-    };
-
     // Save state to local storage
     useEffect(() => {
         try {
@@ -1369,16 +1441,17 @@ const App: React.FC = () => {
     // Theme
     if (preferences.theme === 'dark') root.classList.add('dark');
     else root.classList.remove('dark');
-    // Color
+    // Color - now includes dynamic gradient end color
     const colorMap = {
-      blue: { 600: '#3B82F6', 700: '#2563EB' },
-      purple: { 600: '#8B5CF6', 700: '#7C3AED' },
-      green: { 600: '#22C55E', 700: '#16A34A' },
-      orange: { 600: '#F97316', 700: '#EA580C' },
+      blue: { 600: '#3B82F6', 700: '#2563EB', end: '#6366F1' }, // indigo
+      purple: { 600: '#8B5CF6', 700: '#7C3AED', end: '#A855F7' }, // purple
+      green: { 600: '#22C55E', 700: '#16A34A', end: '#10B981' }, // emerald
+      orange: { 600: '#F97316', 700: '#EA580C', end: '#F59E0B' }, // amber
     };
-    const themeColors = colorMap[preferences.colorTheme] || colorMap.blue;
+    const themeColors = colorMap[preferences.colorTheme] || colorMap.purple;
     root.style.setProperty('--color-primary-600', themeColors[600]);
     root.style.setProperty('--color-primary-700', themeColors[700]);
+    root.style.setProperty('--color-primary-end', themeColors.end);
     // Size
     root.classList.remove('size-sm', 'size-lg');
     if (preferences.size === 'sm') {
@@ -1504,6 +1577,83 @@ const App: React.FC = () => {
             if (!completed) setShowOnboarding(true);
         }
     }, [authSession, preferences.onboardingCompleted]);
+
+    useEffect(() => {
+        if (!authSession) {
+            guestImportUserRef.current = null;
+            return;
+        }
+        if (typeof window === 'undefined') return;
+
+        const userId = authSession.userId;
+        if (!userId) return;
+        if (guestImportUserRef.current === userId) return;
+
+        const sessionState = guestSessionService.load();
+        const guestTasks = (sessionState.tasks || []).filter(task => Boolean(task.text && task.text.trim()));
+        const chatsWithUserMessages = (sessionState.chats || []).filter(chat =>
+            Array.isArray(chat.messages) && chat.messages.some(message =>
+                message.sender === Sender.User && Boolean(message.text && message.text.trim())
+            )
+        );
+
+        if (!guestTasks.length && !chatsWithUserMessages.length) {
+            guestSessionService.clear();
+            guestImportUserRef.current = userId;
+            return;
+        }
+
+        const timestamp = Date.now();
+        let importedSomething = false;
+
+        if (guestTasks.length) {
+            const completedDate = (iso: string) => {
+                try {
+                    return getISODate(new Date(iso));
+                } catch {
+                    return getISODate();
+                }
+            };
+            const importedChecklist: Checklist = {
+                id: crypto.randomUUID(),
+                name: 'Tasks from guest session',
+                tasks: guestTasks.map((task) => ({
+                    id: crypto.randomUUID(),
+                    text: task.text,
+                    completedAt: task.completed ? completedDate(task.createdAt) : null,
+                })),
+                completionHistory: [],
+            };
+            setChecklists(prev => [importedChecklist, ...prev]);
+            importedSomething = true;
+        }
+
+        if (chatsWithUserMessages.length) {
+            const importedConversations: Conversation[] = chatsWithUserMessages.map((chat, index) => ({
+                id: `convo-guest-${timestamp}-${index}`,
+                name: chat.title?.trim() || `Guest chat ${index + 1}`,
+                messages: chat.messages.map((message, msgIndex) => ({
+                    ...message,
+                    id: message.id || `msg-guest-${timestamp}-${index}-${msgIndex}`,
+                    suggestions: message.suggestions?.map(suggestion => ({
+                        ...suggestion,
+                        isApproved: !!suggestion.isApproved,
+                    })),
+                })),
+            }));
+            setConversations(prev => [...importedConversations, ...prev]);
+            if (!activeChatId && conversations.length === 0 && importedConversations.length) {
+                setActiveChatId(importedConversations[0].id);
+            }
+            importedSomething = true;
+        }
+
+        guestSessionService.clear();
+        guestImportUserRef.current = userId;
+        if (importedSomething) {
+            setToastMessage('We saved your guest workspace to your account.');
+        }
+    }, [authSession, activeChatId, conversations.length]);
 
     useEffect(() => {
         if (!authSession) return;
@@ -1675,7 +1825,7 @@ const App: React.FC = () => {
             const d = env.data as Partial<Checklist> & { tasks?: { text: string }[] };
             const created = handleCreateChecklist({
                 name: d.name || 'Imported List',
-                tasks: (d.tasks || []).map((t, i) => ({ id: `task-${Date.now()}-${i}`, text: t.text, completedAt: null })),
+                tasks: (d.tasks || []).map((t) => ({ id: crypto.randomUUID(), text: t.text, completedAt: null })),
                 completionHistory: [],
                 priority: d.priority ?? 10,
                 dueDate: d.dueDate || undefined,
@@ -1752,9 +1902,9 @@ const App: React.FC = () => {
                 if (authSession && useRelDb && relationalDb.isEnabled()) {
                     relationalDb
                         .savePreferences(normalizedPreferences)
-                            .catch(() => {
+                        .catch((error) => {
                             try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
-                                maybeShowSyncFailureToast();
+                            maybeShowSyncFailureToast(error);
                         });
                 }
             } catch {}
@@ -1956,7 +2106,7 @@ const App: React.FC = () => {
 
   // Project Handlers
   const handleCreateProject = (projectData: Omit<Project, 'id'>) => {
-    const newProject: Project = { id: `proj-${Date.now()}`, ...projectData };
+    const newProject: Project = { id: crypto.randomUUID(), ...projectData };
     setProjects(prev => [newProject, ...prev]);
     setToastMessage(t('project_created_success'));
   };
@@ -1984,7 +2134,7 @@ const App: React.FC = () => {
   const handleCreateNote = (details: { projectId?: string; name?: string; content?: string } = {}) => {
     const { projectId, name = 'Untitled Note', content = `<h1>${name}</h1><p></p>` } = details;
     const newNote: Note = { 
-        id: `note-${Date.now()}`, 
+        id: crypto.randomUUID(), 
         name, 
         content, 
         projectId, 
@@ -2075,9 +2225,9 @@ const App: React.FC = () => {
                     if (authSession && useRelDb && relationalDb.isEnabled()) {
                         const convo = conversations.find(c => c.id === conversationId);
                         const name = convo?.name || 'Chat';
-                        relationalDb.upsertConversation({ id: conversationId, name, projectId }).catch(() => {
+                        relationalDb.upsertConversation({ id: conversationId, name, projectId }).catch((error) => {
                             try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
-                            maybeShowSyncFailureToast();
+                            maybeShowSyncFailureToast(error);
                         });
                     }
         } catch {}
@@ -2114,8 +2264,8 @@ const App: React.FC = () => {
         
         if (!listCreated) {
             listName = message.suggestionListName;
-            const tasksToCreate: Task[] = message.suggestions.map((sugg, i) => ({
-                id: `task-approved-${Date.now()}-${i}`,
+            const tasksToCreate: Task[] = message.suggestions.map((sugg) => ({
+                id: crypto.randomUUID(),
                 text: sugg.text,
                 completedAt: null,
             }));
@@ -2146,7 +2296,7 @@ const App: React.FC = () => {
       setCategoryModalData('new');
   };
   const handleSaveCategoryFromModal = (categoryData: Omit<UserCategory, 'id'>) => {
-    const newCategory: UserCategory = { id: `cat-${Date.now()}`, ...categoryData };
+    const newCategory: UserCategory = { id: crypto.randomUUID(), ...categoryData };
     setUserCategories(prev => [...prev, newCategory]);
     if (onCategoryCreateCallbackRef.current) {
         onCategoryCreateCallbackRef.current(newCategory.id);
@@ -2246,9 +2396,10 @@ Keep descriptions concise (10-15 words max).`;
 
   // Checklist and Task Handlers
   const handleCreateChecklist = (checklistData: Omit<Checklist, 'id'>): Checklist => {
-    const newChecklist: Checklist = { id: `cl-${Date.now()}`, ...checklistData, completionHistory: [], tasks: checklistData.tasks || [] };
+    const newChecklist: Checklist = { id: crypto.randomUUID(), ...checklistData, completionHistory: [], tasks: checklistData.tasks || [] };
     setChecklists(prev => [newChecklist, ...prev]);
     setToastMessage(t('task_created_success'));
+        syncChecklistToRelational(newChecklist);
     return newChecklist;
   };
 
@@ -2270,7 +2421,7 @@ Keep descriptions concise (10-15 words max).`;
         try {
             const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
             if (authSession && useRelDb && relationalDb.isEnabled()) {
-                relationalDb.upsertRequest(req).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+                relationalDb.upsertRequest(req).catch((error) => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(error); });
             }
         } catch {}
     };
@@ -2285,7 +2436,7 @@ Keep descriptions concise (10-15 words max).`;
                     const current = prevReq;
                     const merged = current ? { ...current, ...updated } : null;
                     if (merged) {
-                      relationalDb.upsertRequest(merged as any).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+                      relationalDb.upsertRequest(merged as any).catch((error) => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(error); });
                       // If status changed, log a request update entry
                       if (current && updates.status && updates.status !== current.status) {
                         const action = `Status changed from ${current.status} -> ${updates.status}`;
@@ -2300,7 +2451,7 @@ Keep descriptions concise (10-15 words max).`;
         try {
             const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
             if (authSession && useRelDb && relationalDb.isEnabled()) {
-                relationalDb.deleteRequest(id).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(); });
+                relationalDb.deleteRequest(id).catch((error) => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(error); });
             }
         } catch {}
     };
@@ -2381,33 +2532,47 @@ Keep descriptions concise (10-15 words max).`;
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [checklists]);
-  const handleUpdateChecklist = (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => {
-    setChecklists(prev => prev.map(cl => cl.id === checklistId ? { ...cl, ...updatedData } : cl));
-  };
-  const handleDeleteChecklist = (checklistId: string) => {
-    setChecklists(prev => prev.filter(cl => cl.id !== checklistId));
-  };
+    const handleUpdateChecklist = (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => {
+        let updatedChecklist: Checklist | null = null;
+        setChecklists(prev => prev.map(cl => {
+                if (cl.id !== checklistId) return cl;
+                updatedChecklist = { ...cl, ...updatedData };
+                return updatedChecklist;
+        }));
+        if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
+    };
+    const handleDeleteChecklist = (checklistId: string) => {
+        setChecklists(prev => prev.filter(cl => cl.id !== checklistId));
+        deleteChecklistFromRelational(checklistId);
+    };
   const handleDuplicateChecklist = (checklist: Checklist) => {
     const duplicatedData: Omit<Checklist, 'id'> = {
         ...checklist,
         name: `${checklist.name} (Copy)`,
         completionHistory: [],
-        tasks: checklist.tasks.map(t => ({...t, id: `task-dup-${Date.now()}-${Math.random()}`, completedAt: null})),
+        tasks: checklist.tasks.map(t => ({...t, id: crypto.randomUUID(), completedAt: null})),
         sourceNoteId: undefined, 
         generatedChecklistId: undefined,
         priority: (checklist.priority || 90) + 1
     };
     handleCreateChecklist(duplicatedData);
   };
-  const handleCreateTask = (checklistId: string, text: string) => {
-    const newTask: Task = { id: `task-${Date.now()}`, text, completedAt: null };
-    setChecklists(prev => prev.map(cl => cl.id === checklistId ? { ...cl, tasks: [...cl.tasks, newTask] } : cl));
-  };
+    const handleCreateTask = (checklistId: string, text: string) => {
+        const newTask: Task = { id: crypto.randomUUID(), text, completedAt: null };
+        let updatedChecklist: Checklist | null = null;
+        setChecklists(prev => prev.map(cl => {
+                if (cl.id !== checklistId) return cl;
+                updatedChecklist = { ...cl, tasks: [...cl.tasks, newTask] };
+                return updatedChecklist;
+        }));
+        if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
+    };
   const handleToggleTask = (checklistId: string, taskId: string) => {
     const today = getISODate();
     let parentCompleted = false;
 
-    setChecklists(prev => prev.map(cl => {
+        let toggledChecklist: Checklist | null = null;
+        setChecklists(prev => prev.map(cl => {
         if (cl.id !== checklistId) return cl;
 
         const taskToToggle = cl.tasks.find(t => t.id === taskId);
@@ -2439,19 +2604,24 @@ Keep descriptions concise (10-15 words max).`;
             newCompletionHistory = newCompletionHistory.filter(d => d !== today);
         }
         
-        return { ...cl, tasks: newTasks, completionHistory: newCompletionHistory };
+        toggledChecklist = { ...cl, tasks: newTasks, completionHistory: newCompletionHistory };
+        return toggledChecklist;
     }));
+    if (toggledChecklist) syncChecklistToRelational(toggledChecklist);
     
     if (parentCompleted) {
         setTimeout(() => setModalToClose(checklistId), 200);
         setCompletingItemIds(prev => new Set(prev).add(checklistId));
         setTimeout(() => {
+            let completedChecklist: Checklist | null = null;
             setChecklists(prev => prev.map(cl => {
                  if (cl.id !== checklistId) return cl;
                  const newCompletionHistory = [...cl.completionHistory];
                  if (!newCompletionHistory.includes(today)) newCompletionHistory.push(today);
-                 return { ...cl, completionHistory: newCompletionHistory };
+                 completedChecklist = { ...cl, completionHistory: newCompletionHistory };
+                 return completedChecklist;
             }));
+            if (completedChecklist) syncChecklistToRelational(completedChecklist);
             setCompletingItemIds(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(checklistId);
@@ -2468,10 +2638,13 @@ Keep descriptions concise (10-15 words max).`;
     if (isCompleting) {
         setCompletingItemIds(prev => new Set(prev).add(checklistId));
         setTimeout(() => {
+            let completedChecklist: Checklist | null = null;
             setChecklists(prev => prev.map(cl => {
                 if (cl.id !== checklistId) return cl;
-                return { ...cl, completionHistory: [...cl.completionHistory, date] };
+                completedChecklist = { ...cl, completionHistory: [...cl.completionHistory, date] };
+                return completedChecklist;
             }));
+            if (completedChecklist) syncChecklistToRelational(completedChecklist);
             setCompletingItemIds(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(checklistId);
@@ -2479,17 +2652,32 @@ Keep descriptions concise (10-15 words max).`;
             });
         }, 400); // Animation duration
     } else {
+        let updatedChecklist: Checklist | null = null;
         setChecklists(prev => prev.map(cl => {
             if (cl.id !== checklistId) return cl;
-            return { ...cl, completionHistory: cl.completionHistory.filter(d => d !== date) };
+            updatedChecklist = { ...cl, completionHistory: cl.completionHistory.filter(d => d !== date) };
+            return updatedChecklist;
         }));
+        if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
     }
   };
   const handleUpdateTask = (checklistId: string, taskId: string, newText: string) => {
-    setChecklists(prev => prev.map(cl => cl.id !== checklistId ? cl : { ...cl, tasks: cl.tasks.map(task => task.id === taskId ? { ...task, text: newText } : task) }));
+    let updatedChecklist: Checklist | null = null;
+    setChecklists(prev => prev.map(cl => {
+        if (cl.id !== checklistId) return cl;
+        updatedChecklist = { ...cl, tasks: cl.tasks.map(task => task.id === taskId ? { ...task, text: newText } : task) };
+        return updatedChecklist;
+    }));
+    if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
   };
   const handleDeleteTask = (checklistId: string, taskId: string) => {
-    setChecklists(prev => prev.map(cl => cl.id !== checklistId ? cl : { ...cl, tasks: cl.tasks.filter(task => task.id !== taskId) }));
+    let updatedChecklist: Checklist | null = null;
+    setChecklists(prev => prev.map(cl => {
+        if (cl.id !== checklistId) return cl;
+        updatedChecklist = { ...cl, tasks: cl.tasks.filter(task => task.id !== taskId) };
+        return updatedChecklist;
+    }));
+    if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
   };
   const handleCreateTaskInProject = (projectId: string, taskText: string) => {
     const project = projects.find(p => p.id === projectId);
@@ -2508,22 +2696,42 @@ Keep descriptions concise (10-15 words max).`;
   
   // Habit Handlers
   const handleCreateHabit = (habitData: Omit<Habit, 'id' | 'completionHistory'>) => {
-    const newHabit: Habit = { id: `habit-${Date.now()}`, completionHistory: [], ...habitData, priority: 10 };
+    const newHabit: Habit = { id: crypto.randomUUID(), completionHistory: [], ...habitData, priority: 10 };
     setHabits(prev => [...prev, newHabit]);
     setToastMessage(t('habit_created_success'));
+        syncHabitToRelational(newHabit);
   };
   const handleUpdateHabit = (habitId: string, updatedData: Partial<Omit<Habit, 'id'>>) => {
-    setHabits(prev => prev.map(h => h.id === habitId ? { ...h, ...updatedData } : h));
+        let updatedHabit: Habit | null = null;
+        setHabits(prev => prev.map(h => {
+                if (h.id !== habitId) return h;
+                updatedHabit = { ...h, ...updatedData };
+                return updatedHabit;
+        }));
+        if (updatedHabit) syncHabitToRelational(updatedHabit);
   };
   const handleDeleteHabit = (habitId: string) => {
-     setHabits(prev => prev.filter(h => h.id !== habitId));
+         setHabits(prev => prev.filter(h => h.id !== habitId));
+         deleteHabitFromRelational(habitId);
   };
 
   const handleUpdateItemPriority = (itemId: string, newPriority: number, itemType: 'task' | 'habit') => {
       if (itemType === 'task') {
-          setChecklists(prev => prev.map(cl => cl.id === itemId ? { ...cl, priority: newPriority } : cl));
+          let updatedChecklist: Checklist | null = null;
+          setChecklists(prev => prev.map(cl => {
+              if (cl.id !== itemId) return cl;
+              updatedChecklist = { ...cl, priority: newPriority };
+              return updatedChecklist;
+          }));
+          if (updatedChecklist) syncChecklistToRelational(updatedChecklist);
       } else {
-          setHabits(prev => prev.map(h => h.id === itemId ? { ...h, priority: newPriority } : h));
+          let updatedHabit: Habit | null = null;
+          setHabits(prev => prev.map(h => {
+              if (h.id !== itemId) return h;
+              updatedHabit = { ...h, priority: newPriority };
+              return updatedHabit;
+          }));
+          if (updatedHabit) syncHabitToRelational(updatedHabit);
       }
   };
 
@@ -2535,10 +2743,13 @@ Keep descriptions concise (10-15 words max).`;
     if (isCompleting) {
         setCompletingItemIds(prev => new Set(prev).add(habitId));
         setTimeout(() => {
+            let updatedHabit: Habit | null = null;
             setHabits(prev => prev.map(h => {
                 if (h.id !== habitId) return h;
-                return { ...h, completionHistory: [...h.completionHistory, date] };
+                updatedHabit = { ...h, completionHistory: [...h.completionHistory, date] };
+                return updatedHabit;
             }));
+            if (updatedHabit) syncHabitToRelational(updatedHabit);
             setCompletingItemIds(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(habitId);
@@ -2546,20 +2757,31 @@ Keep descriptions concise (10-15 words max).`;
             });
         }, 400);
     } else {
+        let updatedHabit: Habit | null = null;
         setHabits(prev => prev.map(h => {
             if (h.id !== habitId) return h;
-            return { ...h, completionHistory: h.completionHistory.filter(d => d !== date) };
+            updatedHabit = { ...h, completionHistory: h.completionHistory.filter(d => d !== date) };
+            return updatedHabit;
         }));
+        if (updatedHabit) syncHabitToRelational(updatedHabit);
     }
   };
   const handleAddTaskToHabit = (habitId: string, text: string) => {
     const newTask: Task = { id: `ht-${Date.now()}`, text, completedAt: null };
-    setHabits(prev => prev.map(h => h.id === habitId ? { ...h, tasks: [...(h.tasks || []), newTask] } : h));
+    let updatedHabit: Habit | null = null;
+    setHabits(prev => prev.map(h => {
+        if (h.id !== habitId) return h;
+        const tasks = [...(h.tasks || []), newTask];
+        updatedHabit = { ...h, tasks };
+        return updatedHabit;
+    }));
+    if (updatedHabit) syncHabitToRelational(updatedHabit);
   };
   const handleToggleHabitTask = (habitId: string, taskId: string, date: string) => {
     let parentCompleted = false;
 
-    setHabits(prevHabits => prevHabits.map(h => {
+        let toggledHabit: Habit | null = null;
+        setHabits(prevHabits => prevHabits.map(h => {
       if (h.id !== habitId || !h.tasks) return h;
       
       const taskToToggle = h.tasks.find(t => t.id === taskId);
@@ -2583,18 +2805,23 @@ Keep descriptions concise (10-15 words max).`;
           setTimeout(() => setModalToClose(habitId), 200);
       }
       
-      return { ...h, tasks: newTasks };
+      toggledHabit = { ...h, tasks: newTasks };
+      return toggledHabit;
     }));
+    if (toggledHabit) syncHabitToRelational(toggledHabit);
 
     if (parentCompleted) {
         setCompletingItemIds(prev => new Set(prev).add(habitId));
         setTimeout(() => {
+            let completedHabit: Habit | null = null;
             setHabits(prev => prev.map(h => {
                 if (h.id !== habitId) return h;
                 const newHistory = [...h.completionHistory];
                 if (!newHistory.includes(date)) newHistory.push(date);
-                return { ...h, completionHistory: newHistory };
+                completedHabit = { ...h, completionHistory: newHistory };
+                return completedHabit;
             }));
+            if (completedHabit) syncHabitToRelational(completedHabit);
             setCompletingItemIds(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(habitId);
@@ -2604,12 +2831,18 @@ Keep descriptions concise (10-15 words max).`;
     }
   };
   const handleDeleteHabitTask = (habitId: string, taskId: string) => {
-    setHabits(prev => prev.map(h => h.id !== habitId || !h.tasks ? h : { ...h, tasks: h.tasks.filter(t => t.id !== taskId) }));
+    let updatedHabit: Habit | null = null;
+    setHabits(prev => prev.map(h => {
+        if (h.id !== habitId || !h.tasks) return h;
+        updatedHabit = { ...h, tasks: h.tasks.filter(t => t.id !== taskId) };
+        return updatedHabit;
+    }));
+    if (updatedHabit) syncHabitToRelational(updatedHabit);
   };
 
   // Event Handlers
   const handleCreateEvent = (eventData: Omit<Event, 'id'>) => {
-    const newEvent: Event = { id: `event-${Date.now()}`, ...eventData };
+    const newEvent: Event = { id: crypto.randomUUID(), ...eventData };
     setEvents(prev => [newEvent, ...prev]);
   };
   const handleUpdateEvent = (eventId: string, updatedData: Partial<Omit<Event, 'id'>>) => {
@@ -2629,7 +2862,7 @@ Keep descriptions concise (10-15 words max).`;
     const handleCreateStory = (payload?: Partial<Story>) => {
         const now = new Date().toISOString();
         const newStory: Story = {
-            id: `st-${Date.now()}`,
+            id: crypto.randomUUID(),
             title: payload?.title || 'Untitled Story',
             description: payload?.description || '',
             status: payload?.status || 'backlog',
@@ -2688,15 +2921,15 @@ Keep descriptions concise (10-15 words max).`;
                     if (authSession && useRelDb && relationalDb.isEnabled()) {
                                 await relationalDb.upsertConversation({ id: newConversation.id, name: newConversation.name, projectId: newConversation.projectId });
                     }
-                } catch {
+                } catch (error) {
                     try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
-                            maybeShowSyncFailureToast();
+                    maybeShowSyncFailureToast(error);
                 }
     }
     
     if (!currentChatId) return;
 
-    const userMessage: Message = { id: `msg-${Date.now()}`, sender: Sender.User, text: messageText };
+    const userMessage: Message = { id: crypto.randomUUID(), sender: Sender.User, text: messageText };
     
     setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, userMessage] } : c));
         // Persist user message to relational DB if enabled
@@ -2705,9 +2938,9 @@ Keep descriptions concise (10-15 words max).`;
             if (authSession && useRelDb && relationalDb.isEnabled()) {
                 await relationalDb.addMessage(currentChatId, userMessage);
             }
-        } catch {
+        } catch (error) {
             try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
-            maybeShowSyncFailureToast();
+            maybeShowSyncFailureToast(error);
         }
     setIsLoading(true);
 
@@ -2772,7 +3005,7 @@ Keep descriptions concise (10-15 words max).`;
         }
 
         const aiResponse: AIResponse = await parseAIResponse(history, messageText, currentView, preferences, projectContext, filesForContext, projectSnapshot);
-        const modelMessage: Message = { id: `msg-${Date.now()}-ai`, sender: Sender.Model, text: aiResponse.text };
+        const modelMessage: Message = { id: crypto.randomUUID(), sender: Sender.Model, text: aiResponse.text };
 
         if (aiResponse.action) {
             switch(aiResponse.action.type) {
@@ -2786,10 +3019,10 @@ Keep descriptions concise (10-15 words max).`;
                     const { listName, items } = aiResponse.action.payload;
                     const existingList = checklists.find(cl => cl.name.toLowerCase() === listName.toLowerCase());
                     if (existingList) {
-                        const newTasks: Task[] = items.map((itemText: string) => ({ id: `task-${Date.now()}-${Math.random()}`, text: itemText, completedAt: null }));
+                        const newTasks: Task[] = items.map((itemText: string) => ({ id: crypto.randomUUID(), text: itemText, completedAt: null }));
                         handleUpdateChecklist(existingList.id, { tasks: [...existingList.tasks, ...newTasks] });
                     } else {
-                        const newTasks: Task[] = items.map((itemText: string) => ({ id: `task-${Date.now()}-${Math.random()}`, text: itemText, completedAt: null }));
+                        const newTasks: Task[] = items.map((itemText: string) => ({ id: crypto.randomUUID(), text: itemText, completedAt: null }));
                         handleCreateChecklist({ name: listName, completionHistory: [], tasks: newTasks });
                     }
                     break;
@@ -2907,13 +3140,13 @@ Keep descriptions concise (10-15 words max).`;
                     if (authSession && useRelDb && relationalDb.isEnabled()) {
                         await relationalDb.addMessage(currentChatId, modelMessage);
                     }
-                } catch {
+                } catch (error) {
                     try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
-                            maybeShowSyncFailureToast();
+                    maybeShowSyncFailureToast(error);
                 }
     } catch (error) {
         console.error("Error getting AI response:", error);
-        const errorMessage: Message = { id: `msg-${Date.now()}-err`, sender: Sender.Model, text: "Sorry, I encountered an error. Please try again." };
+        const errorMessage: Message = { id: crypto.randomUUID(), sender: Sender.Model, text: "Sorry, I encountered an error. Please try again." };
         setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, errorMessage] } : c));
     } finally {
         setIsLoading(false);
@@ -2927,6 +3160,83 @@ Keep descriptions concise (10-15 words max).`;
     const isLanding = showLanding && !authSession && isAuthReady;
     const isRequestsView = currentView === 'requests';
     const shouldShowDesktopCommandBar = !isLanding && !isMobileChatOpen && (Boolean(activeConversation) || isRequestsView);
+    const authModalElement = isAuthModalOpen ? (
+        <AuthModal
+            onClose={() => {
+                console.log('🔐 [App] Closing auth modal');
+                setAuthModalOpen(false);
+            }}
+            onSignIn={async (email, password) => {
+                console.log('🔐 [App] onSignIn called');
+                const res = await authService.signInWithPassword(email, password);
+                console.log('🔐 [App] signInWithPassword result:', res);
+                if (!res.error && !res.requiresVerification) {
+                    setToastMessage('Signed in successfully.');
+                    if (res.session) {
+                        console.log('🔐 [App] Applying session from sign-in result');
+                        setAuthSession(res.session);
+                    } else {
+                        const freshSession = await authService.getSession();
+                        console.log('🔐 [App] Fetched session after sign-in:', freshSession);
+                        if (freshSession) setAuthSession(freshSession);
+                    }
+                }
+                return res;
+            }}
+            onSignUp={async (email, password) => {
+                const res = await authService.signUpWithEmail(email, password);
+                if (!res.error) setToastMessage('Check your inbox to verify your email.');
+                return res;
+            }}
+            onResendVerification={async (email) => {
+                const res = await authService.resendVerification(email);
+                if (!res.error) setToastMessage('Verification email sent.');
+                return res;
+            }}
+            onMagicLink={async (email) => {
+                const res = await authService.signInWithMagicLink(email);
+                if (!res.error) setToastMessage('Check your email to finish sign in');
+                return res;
+            }}
+            onForgotPassword={async (email) => {
+                const res = await authService.resetPassword(email);
+                if (!res.error) setToastMessage('Password reset email sent. Check your inbox.');
+                return res;
+            }}
+        />
+    ) : null;
+    const feedbackModalElement = (
+        <FeedbackModal
+            isOpen={isFeedbackOpen}
+            defaultEmail={authSession?.email || undefined}
+            onClose={handleCloseFeedback}
+            onSubmit={handleSubmitFeedback}
+        />
+    );
+    const toastElement = toastMessage ? (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+    ) : null;
+    const showGuestExperience = isAuthReady && !authSession;
+
+    if (showGuestExperience) {
+        return (
+            <>
+                <GuestExperience
+                    onSignIn={() => {
+                        setAuthModalOpen(true);
+                        setShowLanding(false);
+                    }}
+                    onSignUp={() => {
+                        setAuthModalOpen(true);
+                        setShowLanding(false);
+                    }}
+                />
+                {authModalElement}
+                {feedbackModalElement}
+                {toastElement}
+            </>
+        );
+    }
   
     // Show reset password page if needed
     if (showResetPassword) {
@@ -2955,8 +3265,8 @@ Keep descriptions concise (10-15 words max).`;
 
     return (
 
-        <div className={`font-sans`}>
-                <div className={`flex w-screen ${isLanding ? 'min-h-screen overflow-y-auto bg-transparent text-white' : 'h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100'}`}>
+    <div className={`font-sans`}>
+        <div className={`resend-app-shell flex w-screen ${isLanding ? 'min-h-screen overflow-y-auto text-white' : 'h-screen overflow-hidden text-gray-100'}`}>
             {!isLanding && (
                 <Sidebar
                     projects={projects}
@@ -3060,7 +3370,6 @@ Keep descriptions concise (10-15 words max).`;
                             onModalClosed={() => setModalToClose(null)}
                             selectedDate={dashboardDate}
                             onDateSelect={setDashboardDate}
-                                     onLoadSampleData={handleLoadSampleData}
                         />
                     ) : currentView === 'lists' ? (
                         <ListsView
@@ -3129,6 +3438,7 @@ Keep descriptions concise (10-15 words max).`;
                             }}
                             supabaseEnabled={authService.isEnabled()}
                             onOpenFeedback={handleOpenFeedback}
+                            onOpenTutorial={handleOpenTutorial}
                         />
                     ) : currentView === 'notes' ? (
                         <NotesListPage
@@ -3172,7 +3482,6 @@ Keep descriptions concise (10-15 words max).`;
                             onEditStory={handleSelectStory}
                             onDeleteStory={handleDeleteStory}
                             onMoveStory={handleMoveStoryStatus}
-                            onLoadSampleData={handleLoadSampleData}
                         />
                     ) : currentView === 'storyEditor' && activeStory ? (
                         <StoryEditorPage
@@ -3405,9 +3714,7 @@ Keep descriptions concise (10-15 words max).`;
             {previewingFile && (
                 <FilePreviewModal file={previewingFile} onClose={() => setPreviewingFile(null)} />
             )}
-            {toastMessage && (
-                <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
-            )}
+            {toastElement}
             {/* Global Search Overlay */}
             <GlobalSearch
                 isOpen={isGlobalSearchOpen}
@@ -3423,51 +3730,7 @@ Keep descriptions concise (10-15 words max).`;
                 onSelectProject={handleSelectProject}
                 onSelectView={handleSelectView}
             />
-                        {isAuthModalOpen && (
-                            <AuthModal
-                                onClose={() => {
-                                    console.log('🔐 [App] Closing auth modal');
-                                    setAuthModalOpen(false);
-                                }}
-                                onSignIn={async (email, password) => {
-                                    console.log('🔐 [App] onSignIn called');
-                                    const res = await authService.signInWithPassword(email, password);
-                                    console.log('🔐 [App] signInWithPassword result:', res);
-                                    if (!res.error && !res.requiresVerification) {
-                                        setToastMessage('Signed in successfully.');
-                                        if (res.session) {
-                                            console.log('🔐 [App] Applying session from sign-in result');
-                                            setAuthSession(res.session);
-                                        } else {
-                                            const freshSession = await authService.getSession();
-                                            console.log('🔐 [App] Fetched session after sign-in:', freshSession);
-                                            if (freshSession) setAuthSession(freshSession);
-                                        }
-                                    }
-                                    return res;
-                                }}
-                                onSignUp={async (email, password) => {
-                                    const res = await authService.signUpWithEmail(email, password);
-                                    if (!res.error) setToastMessage('Check your inbox to verify your email.');
-                                    return res;
-                                }}
-                                onResendVerification={async (email) => {
-                                    const res = await authService.resendVerification(email);
-                                    if (!res.error) setToastMessage('Verification email sent.');
-                                    return res;
-                                }}
-                                onMagicLink={async (email) => {
-                                    const res = await authService.signInWithMagicLink(email);
-                                    if (!res.error) setToastMessage('Check your email to finish sign in');
-                                    return res;
-                                }}
-                                onForgotPassword={async (email) => {
-                                    const res = await authService.resetPassword(email);
-                                    if (!res.error) setToastMessage('Password reset email sent. Check your inbox.');
-                                    return res;
-                                }}
-                            />
-                        )}
+                        {authModalElement}
             {showOnboarding && (
                 <OnboardingModal
                   isOpen={showOnboarding}
@@ -3478,12 +3741,7 @@ Keep descriptions concise (10-15 words max).`;
                 />
             )}
 
-            <FeedbackModal
-                isOpen={isFeedbackOpen}
-                defaultEmail={authSession?.email || undefined}
-                onClose={handleCloseFeedback}
-                onSubmit={handleSubmitFeedback}
-            />
+            {feedbackModalElement}
             
             {/* Only show mobile navigation and FAB when NOT on landing page */}
             {!isLanding && (

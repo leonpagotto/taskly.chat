@@ -27,6 +27,7 @@ interface SettingsViewProps {
   onSignOut?: () => void;
   supabaseEnabled?: boolean;
   onOpenFeedback?: () => void;
+  onOpenTutorial?: () => void;
 }
 
 const personalityOptions: { value: AIPersonality; label: string; description: string }[] = [
@@ -161,7 +162,7 @@ const PulseConfigModal: React.FC<{
 
 
 const SettingsView: React.FC<SettingsViewProps> = (props) => {
-    const { preferences, onUpdate, onReset, onToggleSidebar, t, categories, onNewCategory, onEditCategory, targetTab, skillCategories, onUpdateSkills, onGenerateSkills, authEmail, onSignIn, onSignOut, supabaseEnabled, onOpenFeedback } = props;
+    const { preferences, onUpdate, onReset, onToggleSidebar, t, categories, onNewCategory, onEditCategory, targetTab, skillCategories, onUpdateSkills, onGenerateSkills, authEmail, onSignIn, onSignOut, supabaseEnabled, onOpenFeedback, onOpenTutorial } = props;
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
     const [localPrefs, setLocalPrefs] = useState(preferences);
     const [showSaved, setShowSaved] = useState(false);
@@ -321,6 +322,19 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                     className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
                                 >
                                     Open feedback form
+                                </button>
+                            </SettingsCard>
+                        )}
+                        {onOpenTutorial && (
+                            <SettingsCard title="Tutorial">
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Need a refresher? Replay the welcome tutorial to learn about Taskly.Chat's features and shortcuts.
+                                </p>
+                                <button
+                                    onClick={onOpenTutorial}
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                >
+                                    View tutorial
                                 </button>
                             </SettingsCard>
                         )}

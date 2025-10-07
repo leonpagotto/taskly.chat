@@ -5,14 +5,27 @@ const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProper
 );
 
 export const CATEGORY_ICONS = [
+  // Original icons
   'work', 'person', 'shopping_cart', 'fitness_center', 'account_balance_wallet', 'home',
   'flight_takeoff', 'school', 'groups', 'sports_esports', 'lightbulb', 'event', 'list_alt',
   'autorenew', 'style', 'cake', 'celebration', 'music_note', 'movie', 'construction',
-  'cloud', 'palette', 'rocket_launch', 'favorite'
+  'cloud', 'palette', 'rocket_launch', 'favorite',
+  // New work & professional icons
+  'business_center', 'badge', 'handshake', 'workspace_premium', 'corporate_fare', 'analytics',
+  // New technology icons
+  'code', 'computer', 'developer_mode', 'terminal', 'memory', 'smartphone',
+  // New media & creative icons
+  'photo_camera', 'videocam', 'brush', 'design_services',
+  // New study & learning icons
+  'menu_book', 'psychology', 'science', 'history_edu'
 ];
 export const COLORS = [
+  // Original colors
   '#EF4444', '#F97316', '#EAB308', '#84CC16', '#22C55E', '#14B8A6',
-  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#64748B'
+  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#64748B',
+  // New color variations
+  '#DC2626', '#EA580C', '#CA8A04', '#65A30D', '#16A34A', '#0D9488',
+  '#0891B2', '#2563EB', '#4F46E5', '#7C3AED', '#DB2777', '#475569', '#F59E0B'
 ];
 
 interface IconColorPickerProps {
