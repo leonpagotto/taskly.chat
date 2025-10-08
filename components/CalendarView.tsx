@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { Event, Checklist } from '../types';
 import { UserCategory, Habit, RecurrenceRule } from '../types';
-import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon, CheckCircleIcon, RadioButtonUncheckedIcon } from './icons';
+import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon } from './icons';
 import Header from './Header';
 
 interface CalendarViewProps {
@@ -32,7 +32,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   t 
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
+  const [viewMode, setViewMode] = useState<'month' | 'week' | 'workdays' | '3days'>('month');
 
   const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
   const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -43,18 +43,34 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const handlePrev = () => {
     if (viewMode === 'month') {
       setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-    } else {
+    } else if (viewMode === 'week') {
       const d = new Date(currentDate);
       d.setDate(d.getDate() - 7);
+      setCurrentDate(d);
+    } else if (viewMode === 'workdays') {
+      const d = new Date(currentDate);
+      d.setDate(d.getDate() - 7); // Go back one full week to maintain Monday start
+      setCurrentDate(d);
+    } else if (viewMode === '3days') {
+      const d = new Date(currentDate);
+      d.setDate(d.getDate() - 3);
       setCurrentDate(d);
     }
   };
   const handleNext = () => {
     if (viewMode === 'month') {
       setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-    } else {
+    } else if (viewMode === 'week') {
       const d = new Date(currentDate);
       d.setDate(d.getDate() + 7);
+      setCurrentDate(d);
+    } else if (viewMode === 'workdays') {
+      const d = new Date(currentDate);
+      d.setDate(d.getDate() + 7); // Go forward one full week to maintain Monday start
+      setCurrentDate(d);
+    } else if (viewMode === '3days') {
+      const d = new Date(currentDate);
+      d.setDate(d.getDate() + 3);
       setCurrentDate(d);
     }
   };
@@ -158,6 +174,32 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     });
   }, [currentDate]);
 
+  // Compute working days (Mon-Fri) for currentDate  
+  const workDays = useMemo(() => {
+    const base = new Date(currentDate);
+    const day = base.getDay(); // 0=Sun..6=Sat
+    const mondayOffset = (day + 6) % 7; // days since Monday
+    const monday = new Date(base);
+    monday.setDate(base.getDate() - mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+    return Array.from({ length: 5 }).map((_, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      return d;
+    });
+  }, [currentDate]);
+
+  // Compute 3 consecutive days starting from currentDate
+  const threeDays = useMemo(() => {
+    const base = new Date(currentDate);
+    base.setHours(0, 0, 0, 0);
+    return Array.from({ length: 3 }).map((_, i) => {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      return d;
+    });
+  }, [currentDate]);
+
   const weekLabel = useMemo(() => {
     const start = weekDays[0];
     const end = weekDays[6];
@@ -165,6 +207,37 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const endFmt = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     return `${startFmt} – ${endFmt}`;
   }, [weekDays]);
+
+  const workDaysLabel = useMemo(() => {
+    const start = workDays[0];
+    const end = workDays[4];
+    const startFmt = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const endFmt = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${startFmt} – ${endFmt}`;
+  }, [workDays]);
+
+  const threeDaysLabel = useMemo(() => {
+    const start = threeDays[0];
+    const end = threeDays[2];
+    const startFmt = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const endFmt = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${startFmt} – ${endFmt}`;
+  }, [threeDays]);
+
+  // Check if today is visible in current view
+  const isTodayVisible = useMemo(() => {
+    const today = new Date();
+    
+    if (viewMode === 'month') {
+      return today.getMonth() === currentDate.getMonth() && today.getFullYear() === currentDate.getFullYear();
+    } else if (viewMode === 'week') {
+      return weekDays.some(date => isSameDay(date, today));
+    } else if (viewMode === 'workdays') {
+      return workDays.some(date => isSameDay(date, today));
+    } else { // 3days
+      return threeDays.some(date => isSameDay(date, today));
+    }
+  }, [viewMode, currentDate, weekDays, workDays, threeDays]);
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -180,38 +253,73 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           <button onClick={handlePrev} className="w-10 h-10 inline-flex items-center justify-center rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"><ChevronLeftIcon /></button>
           {viewMode === 'month' ? (
             <h2 className="text-lg font-semibold whitespace-nowrap">{currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2>
-          ) : (
+          ) : viewMode === 'week' ? (
             <h2 className="text-lg font-semibold whitespace-nowrap">{weekLabel}</h2>
+          ) : viewMode === 'workdays' ? (
+            <h2 className="text-lg font-semibold whitespace-nowrap">{workDaysLabel}</h2>
+          ) : (
+            <h2 className="text-lg font-semibold whitespace-nowrap">{threeDaysLabel}</h2>
           )}
           <button onClick={handleNext} className="w-10 h-10 inline-flex items-center justify-center rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"><ChevronRightIcon /></button>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center h-10 px-1 rounded-[12px] resend-secondary">
+          {!isTodayVisible && (
+            <button onClick={handleToday} className="px-4 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold resend-secondary transition-transform duration-150 hover:-translate-y-[1px]">Today</button>
+          )}
+          <div className="flex items-center h-10 px-1 rounded-[12px] bg-gray-800/60 border border-gray-700/50">
             <button
               type="button"
-              className={`h-8 px-3 rounded-[12px] text-sm font-semibold transition-colors ${viewMode === 'month' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+              className={`h-8 px-3 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === 'month' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
               onClick={() => setViewMode('month')}
             >Month</button>
             <button
               type="button"
-              className={`h-8 px-3 rounded-[12px] text-sm font-semibold transition-colors ${viewMode === 'week' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+              className={`h-8 px-3 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === 'week' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
               onClick={() => setViewMode('week')}
             >Week</button>
+            <button
+              type="button"
+              className={`h-8 px-2 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === 'workdays' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
+              onClick={() => setViewMode('workdays')}
+            >Work</button>
+            <button
+              type="button"
+              className={`h-8 px-2 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === '3days' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
+              onClick={() => setViewMode('3days')}
+            >3 Days</button>
           </div>
-          <button onClick={handleToday} className="px-4 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold resend-secondary transition-transform duration-150 hover:-translate-y-[1px]">Today</button>
         </div>
       </div>
 
       <main className="flex-1 overflow-y-auto p-2">
-        <div className="grid grid-cols-7 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
-            <div key={day} className="py-2">
-              {day}
-              {viewMode === 'week' && (
-                <div className="text-[10px] text-gray-400">{weekDays[i].getDate()}</div>
-              )}
-            </div>
-          ))}
+        <div className={`grid text-center text-xs font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 ${
+          viewMode === 'month' || viewMode === 'week' ? 'grid-cols-7' : 
+          viewMode === 'workdays' ? 'grid-cols-5' : 'grid-cols-3'
+        }`}>
+          {viewMode === 'month' || viewMode === 'week' ? (
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
+              <div key={day} className="py-2">
+                {day}
+                {viewMode === 'week' && (
+                  <div className="text-[10px] text-gray-400">{weekDays[i].getDate()}</div>
+                )}
+              </div>
+            ))
+          ) : viewMode === 'workdays' ? (
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((day, i) => (
+              <div key={day} className="py-2">
+                {day}
+                <div className="text-[10px] text-gray-400">{workDays[i].getDate()}</div>
+              </div>
+            ))
+          ) : (
+            threeDays.map((date, i) => (
+              <div key={i} className="py-2">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date.getDay() === 0 ? 6 : date.getDay() - 1]}
+                <div className="text-[10px] text-gray-400">{date.getDate()}</div>
+              </div>
+            ))
+          )}
         </div>
 
         {viewMode === 'month' ? (
@@ -263,129 +371,45 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     {dayChecklists.map(checklist => {
                       const category = userCategories.find(c => c.id === checklist.categoryId);
                       const color = category?.color || '#64748B';
-                      const isCompleted = checklist.completionHistory.includes(isoDate);
                       return (
-                        <div key={checklist.id} className="space-y-0.5">
-                          <button
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              if (checklist.tasks.length === 0) {
-                                // Simple checklist toggle
-                                const today = new Date().toISOString().split('T')[0];
-                                if (checklist.recurrence) {
-                                  // Handle recurring checklist completion
-                                } else {
-                                  // Handle one-time checklist completion
-                                }
-                              }
-                            }}
-                            style={{ backgroundColor: `${color}20`, color: color }}
-                            className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                          >
-                            {isCompleted ? (
-                              <CheckCircleIcon className="w-2 h-2" style={{color}} />
-                            ) : (
-                              <RadioButtonUncheckedIcon className="w-2 h-2" style={{color}} />
-                            )}
-                            <span className="truncate">{checklist.name}</span>
-                          </button>
-                          {checklist.tasks.length > 0 && (
-                            <div className="ml-2 space-y-0.5">
-                              {checklist.tasks.slice(0, 2).map(task => {
-                                const isTaskCompleted = task.completedAt === isoDate;
-                                return (
-                                  <button
-                                    key={task.id}
-                                    onClick={(e) => { 
-                                      e.stopPropagation(); 
-                                      onToggleTask(checklist.id, task.id);
-                                    }}
-                                    style={{ backgroundColor: `${color}10`, color: color }}
-                                    className="w-full text-left p-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                                  >
-                                    {isTaskCompleted ? (
-                                      <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
-                                    ) : (
-                                      <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
-                                    )}
-                                    <span className="truncate">{task.text}</span>
-                                  </button>
-                                );
-                              })}
-                              {checklist.tasks.length > 2 && (
-                                <div className="text-[9px] text-gray-400 ml-2">
-                                  +{checklist.tasks.length - 2} more
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        <button
+                          key={checklist.id}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            // Handle checklist interaction - could navigate to checklist or toggle completion
+                          }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{checklist.name}</span>
+                        </button>
                       );
                     })}
-                    {dayHabits.length > 0 && (
-                      <div className="pt-0.5 space-y-0.5">
-                        {dayHabits.map(h => {
-                          const cat = userCategories.find(c => c.id === h.categoryId);
-                          const color = cat?.color || '#64748B';
-                          const isHabitCompleted = h.completionHistory.includes(isoDate);
-                          return (
-                            <div key={`habit-${h.id}`} className="space-y-0.5">
-                              <button
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  onToggleHabitCompletion(h.id, isoDate);
-                                }}
-                                className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
-                                style={{ backgroundColor: `${color}14`, color }}
-                              >
-                                {isHabitCompleted ? (
-                                  <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
-                                ) : (
-                                  <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
-                                )}
-                                <span className="truncate">{h.name}</span>
-                              </button>
-                              {h.type === 'checklist' && h.tasks && h.tasks.length > 0 && (
-                                <div className="ml-2 space-y-0.5">
-                                  {h.tasks.slice(0, 2).map(task => {
-                                    const isTaskCompleted = task.completedAt === isoDate;
-                                    return (
-                                      <button
-                                        key={task.id}
-                                        onClick={(e) => { 
-                                          e.stopPropagation(); 
-                                          onToggleHabitTask(h.id, task.id, isoDate);
-                                        }}
-                                        style={{ backgroundColor: `${color}10`, color }}
-                                        className="w-full text-left p-0.5 rounded-sm text-[9px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                                      >
-                                        {isTaskCompleted ? (
-                                          <CheckCircleIcon className="w-1 h-1" style={{color}} />
-                                        ) : (
-                                          <RadioButtonUncheckedIcon className="w-1 h-1" style={{color}} />
-                                        )}
-                                        <span className="truncate">{task.text}</span>
-                                      </button>
-                                    );
-                                  })}
-                                  {h.tasks.length > 2 && (
-                                    <div className="text-[8px] text-gray-400 ml-2">
-                                      +{h.tasks.length - 2} more
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                    {dayHabits.map(h => {
+                      const cat = userCategories.find(c => c.id === h.categoryId);
+                      const color = cat?.color || '#64748B';
+                      return (
+                        <button
+                          key={`habit-${h.id}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onToggleHabitCompletion(h.id, isoDate);
+                          }}
+                          className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                          style={{ backgroundColor: `${color}14`, color }}
+                        >
+                          <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{h.name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
           </div>
-        ) : (
+        ) : viewMode === 'week' ? (
           <div className="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700/50 flex-1">
             {weekDays.map((date, idx) => {
               const isoDate = getISODate(date);
@@ -431,115 +455,207 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     {dayChecklists.map(checklist => {
                       const category = userCategories.find(c => c.id === checklist.categoryId);
                       const color = category?.color || '#64748B';
-                      const isCompleted = checklist.completionHistory.includes(isoDate);
                       return (
-                        <div key={checklist.id} className="space-y-0.5">
-                          <button
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              // Handle checklist completion
-                            }}
-                            style={{ backgroundColor: `${color}20`, color: color }}
-                            className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                          >
-                            {isCompleted ? (
-                              <CheckCircleIcon className="w-2 h-2" style={{color}} />
-                            ) : (
-                              <RadioButtonUncheckedIcon className="w-2 h-2" style={{color}} />
-                            )}
-                            <span className="truncate">{checklist.name}</span>
-                          </button>
-                          {checklist.tasks.length > 0 && (
-                            <div className="ml-2 space-y-0.5">
-                              {checklist.tasks.slice(0, 3).map(task => {
-                                const isTaskCompleted = task.completedAt === isoDate;
-                                return (
-                                  <button
-                                    key={task.id}
-                                    onClick={(e) => { 
-                                      e.stopPropagation(); 
-                                      onToggleTask(checklist.id, task.id);
-                                    }}
-                                    style={{ backgroundColor: `${color}10`, color: color }}
-                                    className="w-full text-left p-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                                  >
-                                    {isTaskCompleted ? (
-                                      <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
-                                    ) : (
-                                      <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
-                                    )}
-                                    <span className="truncate">{task.text}</span>
-                                  </button>
-                                );
-                              })}
-                              {checklist.tasks.length > 3 && (
-                                <div className="text-[9px] text-gray-400 ml-2">
-                                  +{checklist.tasks.length - 3} more
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        <button
+                          key={checklist.id}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            // Handle checklist interaction
+                          }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{checklist.name}</span>
+                        </button>
                       );
                     })}
-                    {dayHabits.length > 0 && (
-                      <div className="pt-0.5 space-y-0.5">
-                        {dayHabits.map(h => {
-                          const cat = userCategories.find(c => c.id === h.categoryId);
-                          const color = cat?.color || '#64748B';
-                          const isHabitCompleted = h.completionHistory.includes(isoDate);
-                          return (
-                            <div key={`habit-${h.id}`} className="space-y-0.5">
-                              <button
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  onToggleHabitCompletion(h.id, isoDate);
-                                }}
-                                className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
-                                style={{ backgroundColor: `${color}14`, color }}
-                              >
-                                {isHabitCompleted ? (
-                                  <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
-                                ) : (
-                                  <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
-                                )}
-                                <span className="truncate">{h.name}</span>
-                              </button>
-                              {h.type === 'checklist' && h.tasks && h.tasks.length > 0 && (
-                                <div className="ml-2 space-y-0.5">
-                                  {h.tasks.slice(0, 3).map(task => {
-                                    const isTaskCompleted = task.completedAt === isoDate;
-                                    return (
-                                      <button
-                                        key={task.id}
-                                        onClick={(e) => { 
-                                          e.stopPropagation(); 
-                                          onToggleHabitTask(h.id, task.id, isoDate);
-                                        }}
-                                        style={{ backgroundColor: `${color}10`, color }}
-                                        className="w-full text-left p-0.5 rounded-sm text-[9px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
-                                      >
-                                        {isTaskCompleted ? (
-                                          <CheckCircleIcon className="w-1 h-1" style={{color}} />
-                                        ) : (
-                                          <RadioButtonUncheckedIcon className="w-1 h-1" style={{color}} />
-                                        )}
-                                        <span className="truncate">{task.text}</span>
-                                      </button>
-                                    );
-                                  })}
-                                  {h.tasks.length > 3 && (
-                                    <div className="text-[8px] text-gray-400 ml-2">
-                                      +{h.tasks.length - 3} more
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                    {dayHabits.map(h => {
+                      const cat = userCategories.find(c => c.id === h.categoryId);
+                      const color = cat?.color || '#64748B';
+                      return (
+                        <button
+                          key={`habit-${h.id}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onToggleHabitCompletion(h.id, isoDate);
+                          }}
+                          className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                          style={{ backgroundColor: `${color}14`, color }}
+                        >
+                          <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{h.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : viewMode === 'workdays' ? (
+          <div className="grid grid-cols-5 gap-px bg-gray-200 dark:bg-gray-700/50 flex-1">
+            {workDays.map((date, idx) => {
+              const isoDate = getISODate(date);
+              const isTodayFlag = isSameDay(date, today);
+              const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
+              const dayChecklists = checklists.filter(c => isChecklistDueOnDate(c, date));
+              const totalItems = dayEvents.length + dayHabits.length + dayChecklists.length;
+              
+              return (
+                <div
+                  key={idx}
+                  className="group relative flex flex-col rounded-sm border border-gray-700/50 bg-gray-900/55 p-2 min-h-[150px] overflow-hidden cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:border-[var(--color-primary-600)]/60 hover:shadow-xl"
+                  onClick={() => onNewEventRequest(isoDate)}
+                  title={`Create event on ${isoDate}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
+                      {date.getDate()}
+                    </span>
+                    {totalItems > 0 && (
+                      <span className="text-xs font-semibold text-gray-500 group-hover:text-gray-300">
+                        {totalItems}
+                      </span>
                     )}
+                  </div>
+                  <div className="flex-1 mt-2 space-y-0.5 overflow-y-auto scrollbar-hide">
+                    {dayEvents.map(event => {
+                      const category = userCategories.find(c => c.id === event.categoryId);
+                      const color = category?.color || '#64748B';
+                      return (
+                        <button
+                          key={event.id}
+                          onClick={(e) => { e.stopPropagation(); onEditEventRequest(event); }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-1.5 rounded-sm text-sm font-semibold flex items-center gap-1.5 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          {!event.isAllDay && <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>}
+                          <span className="truncate">{event.title}</span>
+                        </button>
+                      );
+                    })}
+                    {dayChecklists.map(checklist => {
+                      const category = userCategories.find(c => c.id === checklist.categoryId);
+                      const color = category?.color || '#64748B';
+                      return (
+                        <button
+                          key={checklist.id}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            // Handle checklist interaction
+                          }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-1.5 rounded-sm text-sm font-semibold flex items-center gap-1.5 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{checklist.name}</span>
+                        </button>
+                      );
+                    })}
+                    {dayHabits.map(h => {
+                      const cat = userCategories.find(c => c.id === h.categoryId);
+                      const color = cat?.color || '#64748B';
+                      return (
+                        <button
+                          key={`habit-${h.id}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onToggleHabitCompletion(h.id, isoDate);
+                          }}
+                          className="w-full text-left p-1.5 rounded-sm text-sm font-semibold flex items-center gap-1.5 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                          style={{ backgroundColor: `${color}14`, color }}
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{h.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-px bg-gray-200 dark:bg-gray-700/50 flex-1">
+            {threeDays.map((date, idx) => {
+              const isoDate = getISODate(date);
+              const isTodayFlag = isSameDay(date, today);
+              const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
+              const dayChecklists = checklists.filter(c => isChecklistDueOnDate(c, date));
+              const totalItems = dayEvents.length + dayHabits.length + dayChecklists.length;
+              
+              return (
+                <div
+                  key={idx}
+                  className="group relative flex flex-col rounded-sm border border-gray-700/50 bg-gray-900/55 p-3 min-h-[200px] overflow-hidden cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:border-[var(--color-primary-600)]/60 hover:shadow-xl"
+                  onClick={() => onNewEventRequest(isoDate)}
+                  title={`Create event on ${isoDate}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`flex items-center justify-center w-8 h-8 rounded-full text-base font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
+                      {date.getDate()}
+                    </span>
+                    {totalItems > 0 && (
+                      <span className="text-sm font-semibold text-gray-500 group-hover:text-gray-300">
+                        {totalItems}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 mt-3 space-y-1 overflow-y-auto scrollbar-hide">
+                    {dayEvents.map(event => {
+                      const category = userCategories.find(c => c.id === event.categoryId);
+                      const color = category?.color || '#64748B';
+                      return (
+                        <button
+                          key={event.id}
+                          onClick={(e) => { e.stopPropagation(); onEditEventRequest(event); }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-2 rounded-sm text-base font-semibold flex items-center gap-2 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          {!event.isAllDay && <div className="w-2 h-2 rounded-full" style={{backgroundColor: color}}></div>}
+                          <span className="truncate">{event.title}</span>
+                        </button>
+                      );
+                    })}
+                    {dayChecklists.map(checklist => {
+                      const category = userCategories.find(c => c.id === checklist.categoryId);
+                      const color = category?.color || '#64748B';
+                      return (
+                        <button
+                          key={checklist.id}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            // Handle checklist interaction
+                          }}
+                          style={{ backgroundColor: `${color}20`, color: color }}
+                          className="w-full text-left p-2 rounded-sm text-base font-semibold flex items-center gap-2 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{checklist.name}</span>
+                        </button>
+                      );
+                    })}
+                    {dayHabits.map(h => {
+                      const cat = userCategories.find(c => c.id === h.categoryId);
+                      const color = cat?.color || '#64748B';
+                      return (
+                        <button
+                          key={`habit-${h.id}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            onToggleHabitCompletion(h.id, isoDate);
+                          }}
+                          className="w-full text-left p-2 rounded-sm text-base font-semibold flex items-center gap-2 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                          style={{ backgroundColor: `${color}14`, color }}
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{backgroundColor: color}}></div>
+                          <span className="truncate">{h.name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               );

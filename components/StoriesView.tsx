@@ -238,11 +238,11 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 							inlineExtras={<StatusDropdown value={statusFilter} onChange={setStatusFilter} />}
 							rightExtras={
 								<>
-									<div className="resend-secondary flex items-center h-10 px-1 rounded-[var(--radius-button)]">
-										<button onClick={() => setViewMode('list')} className={`h-8 px-3 rounded-[var(--radius-button)] text-sm font-semibold transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+									<div className="flex items-center h-10 px-1 rounded-[12px] bg-gray-800/60 border border-gray-700/50">
+										<button onClick={() => setViewMode('list')} className={`h-8 px-3 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === 'list' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_list" className="text-base" /> <span className="hidden sm:inline">List</span></span>
 										</button>
-										<button onClick={() => setViewMode('board')} className={`h-8 px-3 rounded-[var(--radius-button)] text-sm font-semibold transition-all ${viewMode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+										<button onClick={() => setViewMode('board')} className={`h-8 px-3 rounded-[8px] text-sm font-semibold transition-all duration-150 ${viewMode === 'board' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_kanban" className="text-base" /> <span className="hidden sm:inline">Board</span></span>
 										</button>
 									</div>

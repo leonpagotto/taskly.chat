@@ -236,10 +236,10 @@ const RequestsBoardPage: React.FC<{
                     />
                     
                     {/* Control 1: List/Board Toggle */}
-                    <div className="flex h-10 items-center rounded-[12px] border border-white/10 bg-white px-1 shadow-[0_14px_42px_rgba(10,12,34,0.18)] backdrop-blur dark:border-white/8 dark:bg-white/10">
+                    <div className="flex h-10 items-center rounded-[12px] bg-gray-800/60 border border-gray-700/50 px-1">
                       <button 
                         onClick={() => onToggleMode('list')} 
-                        className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+                        className={`h-8 rounded-[8px] px-3 text-sm font-semibold transition-all duration-150 ${mode === 'list' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
                         aria-label="List view"
                         aria-pressed={mode === 'list'}
                       >
@@ -250,7 +250,7 @@ const RequestsBoardPage: React.FC<{
                       </button>
                       <button 
                         onClick={() => onToggleMode('board')} 
-                        className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+                        className={`h-8 rounded-[8px] px-3 text-sm font-semibold transition-all duration-150 ${mode === 'board' ? 'resend-secondary border border-gray-600/50' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/40'}`}
                         aria-label="Board view"
                         aria-pressed={mode === 'board'}
                       >
