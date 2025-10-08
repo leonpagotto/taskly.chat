@@ -390,15 +390,15 @@ const NoteEditor: React.FC<{
     <>
        <div className="flex-1 flex flex-col min-h-0 bg-transparent">
            <div className="p-2 border-b border-white/10 flex items-center justify-between gap-1 flex-shrink-0 bg-white/8 backdrop-blur-xl">
-                <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap overflow-x-auto scrollbar-hide">
-                    <div ref={formatDropdownRef} className="relative">
+                <div className="flex items-center gap-1 min-w-0 flex-1">
+                    <div ref={formatDropdownRef} className="relative flex-shrink-0">
                         <button onClick={() => setFormatDropdownOpen(p => !p)} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm flex-shrink-0">
                             <TextFieldsIcon />
                             <span className="hidden md:inline">{currentBlockType}</span>
                             <ExpandMoreIcon className="text-base" />
                         </button>
                         {formatDropdownOpen && (
-                            <div className="absolute top-full left-0 mt-1 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10 w-40">
+                            <div className="absolute top-full left-0 mt-1 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[100] w-40">
                                 {formatOptions.map(opt => (
                                     <button
                                         key={opt.block}
@@ -412,16 +412,21 @@ const NoteEditor: React.FC<{
                             </div>
                         )}
                     </div>
-                    <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                    <EditorButton icon={<FormatBoldIcon />} command="bold" />
-                    <EditorButton icon={<FormatItalicIcon />} command="italic" />
-                    <EditorButton icon={<FormatUnderlinedIcon />} command="underline" />
-                    <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                    <EditorButton icon={<FormatListBulletedIcon />} command="insertUnorderedList" />
-                    <EditorButton icon={<FormatListNumberedIcon />} command="insertOrderedList" />
-                    <EditorButton icon={<PlaylistAddCheckIcon />} command="insertCheckboxList" onClick={handleInsertCheckboxList} label="Checklist" />
+                    <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1 flex-shrink-0"></div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        <EditorButton icon={<FormatBoldIcon />} command="bold" />
+                        <EditorButton icon={<FormatItalicIcon />} command="italic" />
+                        <EditorButton icon={<FormatUnderlinedIcon />} command="underline" />
+                    </div>
+                    <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1 flex-shrink-0"></div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        <EditorButton icon={<FormatListBulletedIcon />} command="insertUnorderedList" />
+                        <EditorButton icon={<FormatListNumberedIcon />} command="insertOrderedList" />
+                    </div>
                     
-                    <div className="hidden sm:flex items-center gap-1">
+                    {/* Only show checklist on desktop, moved to more menu on mobile */}
+                    <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
+                        <EditorButton icon={<PlaylistAddCheckIcon />} command="insertCheckboxList" onClick={handleInsertCheckboxList} label="Checklist" />
                         <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
                         <EditorButton icon={<ImageIcon />} command="insertImage" onClick={handleInsertImageClick} />
                         <EditorButton icon={<FormatQuoteIcon />} command="formatBlock" value="blockquote" />
@@ -434,12 +439,12 @@ const NoteEditor: React.FC<{
                         <MoreVertIcon />
                     </button>
                      {moreToolsOpen && (
-                        <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10 p-1">
+                        <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] p-1">
                             <div className="sm:hidden">
+                                <MoreMenuItem icon={<PlaylistAddCheckIcon />} label="Checklist" onClick={handleInsertCheckboxList} />
                                 <MoreMenuItem icon={<ImageIcon />} label="Insert Image" onClick={handleInsertImageClick} />
                                 <MoreMenuItem icon={<FormatQuoteIcon />} label="Blockquote" onClick={() => applyFormat('formatBlock', 'blockquote')} />
                                 <MoreMenuItem icon={<CodeIcon />} label="Code Block" onClick={() => applyFormat('formatBlock', 'pre')} />
-                                <MoreMenuItem icon={<PlaylistAddCheckIcon />} label="Checklist" onClick={handleInsertCheckboxList} />
                             </div>
                             <MoreMenuItem icon={<PaperclipIcon />} label="Attach File" onClick={handleUploadClick} />
                         </div>
@@ -614,14 +619,14 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     <div ref={actionsMenuRef} className="relative">
                         <button 
                             onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
-                            className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
+                            className="px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
                             title="More actions"
                         >
                             <MoreVertIcon className="text-base" />
                         </button>
                         
                         {isActionsMenuOpen && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-[9999]">
                                 {!project && (
                                     <button 
                                         onClick={() => {
