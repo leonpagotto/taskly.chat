@@ -2531,12 +2531,29 @@ Keep descriptions concise (10-15 words max).`;
         setRequests(prev => [req, ...prev]);
         setToastMessage('Request submitted');
         // Mirror to relational DB if enabled
-        try {
-            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
-            if (authSession && useRelDb && relationalDb.isEnabled()) {
-                relationalDb.upsertRequest(req).catch((error) => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} maybeShowSyncFailureToast(error); });
+        const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+        if (authSession && useRelDb && relationalDb.isEnabled()) {
+            relationalDb.upsertRequest(req).then((saved) => {
+                if (saved) {
+                    console.log('Request saved to database:', saved.id);
+                } else {
+                    console.warn('Request not saved to database (returned null)');
+                    setToastMessage('Request created locally (database save issue)');
+                }
+            }).catch((error) => {
+                console.error('Failed to save request to database:', error);
+                setToastMessage('Request created locally (database save failed)');
+                try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {}
+            });
+        } else {
+            if (!authSession) {
+                console.warn('Request not saved to database: No auth session');
+            } else if (!useRelDb) {
+                console.warn('Request not saved to database: VITE_USE_REL_DB not enabled');
+            } else if (!relationalDb.isEnabled()) {
+                console.warn('Request not saved to database: relationalDb not enabled');
             }
-        } catch {}
+        }
     };
     const handleUpdateRequest = (id: string, updates: Partial<Request>) => {
             const updated = { ...updates, updatedAt: new Date().toISOString() } as Partial<Request>;

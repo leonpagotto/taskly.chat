@@ -516,7 +516,10 @@ export const relationalDb = {
   async upsertRequest(payload: Omit<Request, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Request | null> {
     const supabase = getSupabase();
     const u = await withUser();
-    if (!supabase || !u) return null;
+    if (!supabase || !u) {
+      console.warn('upsertRequest: Missing supabase or user', { hasSupabase: !!supabase, hasUser: !!u });
+      return null;
+    }
     const base = {
       ...(payload as any).id ? { id: (payload as any).id } : {},
       user_id: u.user_id,
@@ -537,7 +540,10 @@ export const relationalDb = {
       skill_ids: payload.skillIds || [],
     } as any;
     const { data, error } = await supabase.from('requests').upsert(base).select('*').single();
-    if (error) return null;
+    if (error) {
+      console.error('upsertRequest error:', error);
+      return null;
+    }
     return {
       id: data.id,
       product: data.product,
