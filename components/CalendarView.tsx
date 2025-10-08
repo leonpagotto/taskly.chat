@@ -69,8 +69,48 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays % (recurrence.interval || 1) === 0;
       }
+      case 'monthly': {
+        const interval = recurrence.interval || 1;
+        const targetDay = recurrence.dayOfMonth || startDate.getDate();
+        
+        // Check if it's the correct day of month
+        if (checkDate.getDate() !== targetDay) return false;
+        
+        // Calculate month difference
+        const startYear = startDate.getFullYear();
+        const startMonth = startDate.getMonth();
+        const checkYear = checkDate.getFullYear();
+        const checkMonth = checkDate.getMonth();
+        
+        const monthDiff = (checkYear - startYear) * 12 + (checkMonth - startMonth);
+        return monthDiff >= 0 && monthDiff % interval === 0;
+      }
+      case 'yearly': {
+        const interval = recurrence.interval || 1;
+        const targetMonth = recurrence.monthOfYear !== undefined ? recurrence.monthOfYear : startDate.getMonth();
+        const targetDay = recurrence.dayOfMonth || startDate.getDate();
+        
+        // Check if it's the correct month and day
+        if (checkDate.getMonth() !== targetMonth || checkDate.getDate() !== targetDay) return false;
+        
+        // Calculate year difference
+        const yearDiff = checkDate.getFullYear() - startDate.getFullYear();
+        return yearDiff >= 0 && yearDiff % interval === 0;
+      }
       default: return false;
     }
+  };
+
+  const isEventDueOnDate = (event: Event, date: Date): boolean => {
+    if (event.recurrence) {
+        return isRecurrentItemDue(event.recurrence, date);
+    }
+    // For non-recurring events, check date range
+    const eventStartDate = new Date(event.startDate + 'T00:00:00');
+    const eventEndDate = event.endDate ? new Date(event.endDate + 'T00:00:00') : eventStartDate;
+    const checkDate = new Date(date);
+    checkDate.setHours(0,0,0,0);
+    return checkDate >= eventStartDate && checkDate <= eventEndDate;
   };
 
   // Compute week range (Mon-Sun) for currentDate
@@ -152,7 +192,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
               const isoDate = getISODate(date);
               const isTodayFlag = isSameDay(date, today);
-              const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
               return (
                 <div
@@ -211,7 +251,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
             {weekDays.map((date, idx) => {
               const isoDate = getISODate(date);
               const isTodayFlag = isSameDay(date, today);
-              const dayEvents = events.filter(e => e.startDate === isoDate).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+              const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
               return (
                 <div

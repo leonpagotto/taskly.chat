@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Note, Project, UserCategory, ProjectFile, Checklist, Task, AppView } from '../types';
-import { DescriptionIcon, FormatBoldIcon, FormatItalicIcon, FormatUnderlinedIcon, FormatListBulletedIcon, FormatListNumberedIcon, CodeIcon, FormatQuoteIcon, AddIcon, FolderIcon, CloseIcon, ArrowBackIcon, CreateNewFolderIcon, PaperclipIcon, ImageIcon, PictureAsPdfIcon, ArticleIcon, DeleteIcon, TextFieldsIcon, ExpandMoreIcon, PlaylistAddCheckIcon, MoreVertIcon, WidthNormalIcon } from './icons';
+import { DescriptionIcon, FormatBoldIcon, FormatItalicIcon, FormatUnderlinedIcon, FormatListBulletedIcon, FormatListNumberedIcon, CodeIcon, FormatQuoteIcon, AddIcon, FolderIcon, CloseIcon, ArrowBackIcon, CreateNewFolderIcon, PaperclipIcon, ImageIcon, PictureAsPdfIcon, ArticleIcon, DeleteIcon, TextFieldsIcon, ExpandMoreIcon, PlaylistAddCheckIcon, MoreVertIcon, WidthNormalIcon, Icon } from './icons';
 import ProjectLinkModal from './ProjectLinkModal';
 import NoteToTaskModal from './NoteToTaskModal';
 import { generateTasksFromNote } from '../services/geminiService';
@@ -11,6 +11,8 @@ const FileIcon: React.FC<{ mimeType: string; className?: string }> = ({ mimeType
   if (mimeType === 'application/pdf') return <PictureAsPdfIcon className={className} />;
   return <ArticleIcon className={className} />;
 };
+
+const RequestIcon: React.FC<{ className?: string }> = ({ className }) => <Icon name="concierge" className={className} />;
 
 interface NotesViewProps {
   note: Note;
@@ -578,7 +580,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     ) : (project ? <FolderIcon className="text-xl text-gray-500" /> : <DescriptionIcon className="text-xl text-gray-500" />)
                     }
                     <div className="truncate flex-1">
-                        {project && <span className="text-sm text-gray-500 dark:text-gray-400">{project.name} / </span>}
+                        {project && <span className="text-xs text-gray-500 dark:text-gray-400">{project.name} / </span>}
                         <span className="truncate font-semibold text-lg">{note.name}</span>
                     </div>
                 </div>
@@ -618,7 +620,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                         className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
                         title="Convert to Request"
                     >
-                        <AddIcon className="text-base" />
+                        <RequestIcon className="text-base" />
                         <span className="hidden sm:inline">Request</span>
                     </button>
                     <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">

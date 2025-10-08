@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Event, UserCategory, Project, ReminderSetting } from '../types';
-import { CloseIcon, WarningIcon, AddIcon, FolderIcon, ExpandMoreIcon, NotificationsIcon, DeleteIcon, CalendarTodayIcon } from './icons';
+import { Event, UserCategory, Project, ReminderSetting, RecurrenceRule } from '../types';
+import { CloseIcon, WarningIcon, AddIcon, FolderIcon, ExpandMoreIcon, NotificationsIcon, DeleteIcon, CalendarTodayIcon, AutorenewIcon } from './icons';
 import ModalOverlay from './ModalOverlay';
 
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
@@ -93,10 +93,11 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
         title: '', description: '', categoryId: '', projectId: '', 
         startDate: new Date().toISOString().split('T')[0], startTime: '09:00',
         endDate: new Date().toISOString().split('T')[0], endTime: '10:00',
-    isAllDay: false, reminders: ['15m'],
+    isAllDay: false, reminders: ['15m'], recurrence: undefined,
         ...initialData
     });
   const [isConfirmingDelete, setConfirmingDelete] = useState(false);
+  const [isRecurrenceExpanded, setIsRecurrenceExpanded] = useState(!!initialData?.recurrence);
 
   // When a project is selected, auto-select and lock the corresponding category.
   useEffect(() => {
@@ -128,6 +129,7 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
 
     // Compute dirty state and time validity
     const normalizeReminders = (arr?: ReminderSetting[]) => (arr ? [...arr].sort().join(',') : '');
+    const normalizeRecurrence = (rec?: RecurrenceRule) => rec ? JSON.stringify(rec) : '';
     const isDirty = (() => {
       const init = initialData || {};
       const fields: (keyof Event)[] = ['title','description','categoryId','projectId','startDate','startTime','endDate','endTime','isAllDay'];
@@ -135,6 +137,7 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
         if ((localData as any)[f] !== (init as any)[f]) return true;
       }
       if (normalizeReminders(localData.reminders as ReminderSetting[]) !== normalizeReminders(init.reminders as ReminderSetting[])) return true;
+      if (normalizeRecurrence(localData.recurrence) !== normalizeRecurrence(init.recurrence)) return true;
       return false;
     })();
 
@@ -174,6 +177,45 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
   const reminderOptions: {value: ReminderSetting, label: string}[] = [
     {value: 'start', label: 'At event time'}, {value: '5m', label: '5 min before'}, {value: '15m', label: '15 min before (default)'}, {value: '1h', label: '1 hour before'}, {value: '1d', label: '1 day before'}
     ];
+
+  // Recurrence helpers
+  const updateRecurrence = (field: keyof RecurrenceRule, value: any) => {
+    const currentRecurrence = localData.recurrence || { type: 'daily', startDate: localData.startDate || new Date().toISOString().split('T')[0] };
+    const updatedRecurrence = { ...currentRecurrence, [field]: value };
+    
+    // Clear incompatible fields when changing type
+    if (field === 'type') {
+      const baseRecurrence = { type: value, startDate: updatedRecurrence.startDate };
+      if (value === 'weekly') {
+        (baseRecurrence as any).daysOfWeek = ['Mon'];
+        (baseRecurrence as any).interval = 1;
+      } else if (value === 'monthly') {
+        (baseRecurrence as any).dayOfMonth = parseInt(updatedRecurrence.startDate.split('-')[2]);
+        (baseRecurrence as any).interval = 1;
+      } else if (value === 'yearly') {
+        const startDate = new Date(updatedRecurrence.startDate);
+        (baseRecurrence as any).dayOfMonth = startDate.getDate();
+        (baseRecurrence as any).monthOfYear = startDate.getMonth() + 1;
+        (baseRecurrence as any).interval = 1;
+      } else if (value === 'interval') {
+        (baseRecurrence as any).interval = 1;
+      }
+      handleUpdateField('recurrence', baseRecurrence);
+    } else {
+      handleUpdateField('recurrence', updatedRecurrence);
+    }
+  };
+
+  const removeRecurrence = () => {
+    handleUpdateField('recurrence', undefined);
+    setIsRecurrenceExpanded(false);
+  };
+
+  const addRecurrence = () => {
+    const startDate = localData.startDate || new Date().toISOString().split('T')[0];
+    updateRecurrence('type', 'daily');
+    setIsRecurrenceExpanded(true);
+  };
 
   return (
     <>
@@ -229,6 +271,142 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                                         <button key={opt.value} onClick={() => toggleReminder(opt.value)} className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${localData.reminders?.includes(opt.value) ? 'bg-blue-600 text-white' : 'bg-gray-600 hover:bg-gray-500'}`}>{opt.label}</button>
                                     ))}
                                 </div>
+                           </FormRow>
+                           
+                           {/* Recurrence Section */}
+                           <FormRow label="Repeat">
+                             <div className="space-y-3">
+                               {localData.recurrence ? (
+                                 <div className="space-y-3">
+                                   <div className="flex items-center justify-between">
+                                     <div className="flex items-center gap-2">
+                                       <AutorenewIcon className="text-base text-blue-400" />
+                                       <span className="text-sm text-blue-400">Recurring event</span>
+                                     </div>
+                                     <button onClick={removeRecurrence} className="text-red-400 hover:text-red-300 text-sm">
+                                       Remove
+                                     </button>
+                                   </div>
+                                   
+                                   {/* Recurrence Type */}
+                                   <div className="space-y-2">
+                                     <label className="text-xs text-gray-400 uppercase tracking-wider">Repeat</label>
+                                     <select 
+                                       value={localData.recurrence.type} 
+                                       onChange={e => updateRecurrence('type', e.target.value)}
+                                       className="w-full bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                     >
+                                       <option value="daily">Daily</option>
+                                       <option value="weekly">Weekly</option>
+                                       <option value="monthly">Monthly</option>
+                                       <option value="yearly">Yearly</option>
+                                       <option value="interval">Every N days</option>
+                                     </select>
+                                   </div>
+
+                                   {/* Interval for weekly, monthly, yearly */}
+                                   {(localData.recurrence.type === 'weekly' || localData.recurrence.type === 'monthly' || localData.recurrence.type === 'yearly' || localData.recurrence.type === 'interval') && (
+                                     <div className="space-y-2">
+                                       <label className="text-xs text-gray-400 uppercase tracking-wider">
+                                         Every
+                                       </label>
+                                       <div className="flex items-center gap-2">
+                                         <input 
+                                           type="number" 
+                                           min="1" 
+                                           max="365"
+                                           value={localData.recurrence.interval || 1} 
+                                           onChange={e => updateRecurrence('interval', parseInt(e.target.value))}
+                                           className="w-20 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                         />
+                                         <span className="text-sm text-gray-300">
+                                           {localData.recurrence.type === 'weekly' ? 'week(s)' : 
+                                            localData.recurrence.type === 'monthly' ? 'month(s)' : 
+                                            localData.recurrence.type === 'yearly' ? 'year(s)' : 'day(s)'}
+                                         </span>
+                                       </div>
+                                     </div>
+                                   )}
+
+                                   {/* Days of week for weekly */}
+                                   {localData.recurrence.type === 'weekly' && (
+                                     <div className="space-y-2">
+                                       <label className="text-xs text-gray-400 uppercase tracking-wider">On days</label>
+                                       <div className="flex flex-wrap gap-2">
+                                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                           <button 
+                                             key={day}
+                                             onClick={() => {
+                                               const currentDays = localData.recurrence?.daysOfWeek || [];
+                                               const newDays = currentDays.includes(day as any) 
+                                                 ? currentDays.filter(d => d !== day)
+                                                 : [...currentDays, day as any];
+                                               updateRecurrence('daysOfWeek', newDays);
+                                             }}
+                                             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                                               localData.recurrence?.daysOfWeek?.includes(day as any) 
+                                                 ? 'bg-blue-600 text-white' 
+                                                 : 'bg-gray-600 hover:bg-gray-500'
+                                             }`}
+                                           >
+                                             {day}
+                                           </button>
+                                         ))}
+                                       </div>
+                                     </div>
+                                   )}
+
+                                   {/* Day of month for monthly */}
+                                   {localData.recurrence.type === 'monthly' && (
+                                     <div className="space-y-2">
+                                       <label className="text-xs text-gray-400 uppercase tracking-wider">On day of month</label>
+                                       <input 
+                                         type="number" 
+                                         min="1" 
+                                         max="31"
+                                         value={localData.recurrence.dayOfMonth || 1} 
+                                         onChange={e => updateRecurrence('dayOfMonth', parseInt(e.target.value))}
+                                         className="w-20 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       />
+                                     </div>
+                                   )}
+
+                                   {/* Month and day for yearly */}
+                                   {localData.recurrence.type === 'yearly' && (
+                                     <div className="space-y-2">
+                                       <label className="text-xs text-gray-400 uppercase tracking-wider">On</label>
+                                       <div className="flex items-center gap-2">
+                                         <select 
+                                           value={localData.recurrence.monthOfYear || 1} 
+                                           onChange={e => updateRecurrence('monthOfYear', parseInt(e.target.value))}
+                                           className="bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                         >
+                                           {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, idx) => (
+                                             <option key={idx} value={idx + 1}>{month}</option>
+                                           ))}
+                                         </select>
+                                         <input 
+                                           type="number" 
+                                           min="1" 
+                                           max="31"
+                                           value={localData.recurrence.dayOfMonth || 1} 
+                                           onChange={e => updateRecurrence('dayOfMonth', parseInt(e.target.value))}
+                                           className="w-20 bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                         />
+                                       </div>
+                                     </div>
+                                   )}
+                                 </div>
+                               ) : (
+                                 <button 
+                                   onClick={addRecurrence} 
+                                   className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                 >
+                                   <AddIcon className="text-base" />
+                                   Add recurrence
+                                 </button>
+                               )}
+                             </div>
                            </FormRow>
                         </div>
                     </main>

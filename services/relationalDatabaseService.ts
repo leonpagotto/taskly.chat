@@ -390,7 +390,22 @@ export const relationalDb = {
     const supabase = getSupabase();
     if (!supabase) return [];
     const { data } = await supabase.from('events').select('*').order('start_date', { ascending: false });
-    return (data || []).map(e => ({ id: e.id, title: e.title, description: e.description || undefined, location: e.location || undefined, attendees: e.attendees || undefined, startDate: e.start_date, startTime: e.start_time || null, endDate: e.end_date || null, endTime: e.end_time || null, isAllDay: e.is_all_day, reminders: e.reminders || [], categoryId: e.category_id || undefined, projectId: e.project_id || undefined }));
+    return (data || []).map(e => ({ 
+      id: e.id, 
+      title: e.title, 
+      description: e.description || undefined, 
+      location: e.location || undefined, 
+      attendees: e.attendees || undefined, 
+      startDate: e.start_date, 
+      startTime: e.start_time || null, 
+      endDate: e.end_date || null, 
+      endTime: e.end_time || null, 
+      isAllDay: e.is_all_day, 
+      reminders: e.reminders || [], 
+      categoryId: e.category_id || undefined, 
+      projectId: e.project_id || undefined,
+      recurrence: e.recurrence || undefined
+    }));
   },
   async upsertEvent(payload: Omit<Event, 'id'> & { id?: string }): Promise<Event | null> {
     const supabase = getSupabase();
@@ -411,10 +426,26 @@ export const relationalDb = {
       reminders: payload.reminders || [],
       category_id: payload.categoryId || null,
       project_id: payload.projectId || null,
+      recurrence: payload.recurrence || null,
     } as any;
     const { data, error } = await supabase.from('events').upsert(base).select('*').single();
     if (error) return null;
-    return { id: data.id, title: data.title, description: data.description || undefined, location: data.location || undefined, attendees: data.attendees || undefined, startDate: data.start_date, startTime: data.start_time || null, endDate: data.end_date || null, endTime: data.end_time || null, isAllDay: data.is_all_day, reminders: data.reminders || [], categoryId: data.category_id || undefined, projectId: data.project_id || undefined };
+    return { 
+      id: data.id, 
+      title: data.title, 
+      description: data.description || undefined, 
+      location: data.location || undefined, 
+      attendees: data.attendees || undefined, 
+      startDate: data.start_date, 
+      startTime: data.start_time || null, 
+      endDate: data.end_date || null, 
+      endTime: data.end_time || null, 
+      isAllDay: data.is_all_day, 
+      reminders: data.reminders || [], 
+      categoryId: data.category_id || undefined, 
+      projectId: data.project_id || undefined,
+      recurrence: data.recurrence || undefined
+    };
   },
   async deleteEvent(id: string): Promise<void> {
     const supabase = getSupabase();

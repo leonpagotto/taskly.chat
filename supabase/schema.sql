@@ -1328,6 +1328,7 @@ create table if not exists public.events (
   reminders text[] not null default '{}',
   category_id uuid references public.user_categories(id) on delete set null,
   project_id uuid references public.projects(id) on delete set null,
+  recurrence jsonb, -- matches RecurrenceRule
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

@@ -67,7 +67,7 @@ interface ListsViewProps {
   onUpdateChecklist: (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => void;
   onDeleteChecklist: (checklistId: string) => void;
   onToggleTask: (checklistId: string, taskId: string) => void;
-  onToggleSingleTaskCompletion: (checklistId: string) => void;
+  onToggleSingleTaskCompletion: (checklistId: string, date: string) => void;
   onToggleSidebar: () => void;
   onSelectNote: (noteId: string) => void;
   recentlyCompletedItemId: string | null;
@@ -146,7 +146,7 @@ const ChecklistCard: React.FC<{
   project?: Project;
   onUpdateChecklist: (checklistId: string, updatedData: Partial<Omit<Checklist, 'id'>>) => void;
   onToggleTask: (checklistId: string, taskId: string) => void;
-  onToggleSingleTaskCompletion: (checklistId: string) => void;
+  onToggleSingleTaskCompletion: (checklistId: string, date: string) => void;
   onCreateTask: (checklistId: string, text: string) => void;
   onUpdateTask: (checklistId: string, taskId: string, newText: string) => void;
   onDeleteTask: (checklistId: string, taskId: string) => void;
@@ -205,9 +205,9 @@ const ChecklistCard: React.FC<{
                 onClick={() => {
                   if (!isCompleted) {
                     setJustChecked(true);
-                    window.setTimeout(() => onToggleSingleTaskCompletion(checklist.id), 700);
+                    window.setTimeout(() => onToggleSingleTaskCompletion(checklist.id, new Date().toISOString().split('T')[0]), 700);
                   } else {
-                    onToggleSingleTaskCompletion(checklist.id);
+                    onToggleSingleTaskCompletion(checklist.id, new Date().toISOString().split('T')[0]);
                   }
                 }}
                 aria-label={`Toggle task: ${checklist.name}`}>

@@ -38,36 +38,38 @@ const ProjectCard: React.FC<{
           background: `radial-gradient(circle at 20% 20%, ${color}33, transparent 55%)`,
         }}
       />
-      <div className="relative flex items-start gap-4">
-        <div
-          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner"
-          style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18), 0 8px 20px ${color}25` }}
-        >
-          <Icon name={iconName} className="text-2xl" style={{ color }} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate text-lg font-semibold text-gray-100">{project.name}</h3>
-            {category && (
-              <span className="resend-badge !text-[10px] uppercase tracking-[0.08em]" style={{ borderColor: `${color}55`, background: `${color}18`, color: `${color}ee` }}>
-                {category.name}
-              </span>
-            )}
+      <div className="relative flex flex-col h-full">
+        <div className="flex items-start gap-4">
+          <div
+            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner"
+            style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18), 0 8px 20px ${color}25` }}
+          >
+            <Icon name={iconName} className="text-2xl" style={{ color }} />
           </div>
-          <p className="mt-2 line-clamp-3 text-sm text-gray-400">
-            {project.description || 'No description provided yet. Add a quick summary to orient collaborators.'}
-          </p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="truncate text-lg font-semibold text-gray-100">{project.name}</h3>
+              {category && (
+                <span className="resend-badge !text-[10px] uppercase tracking-[0.08em]" style={{ borderColor: `${color}55`, background: `${color}18`, color: `${color}ee` }}>
+                  {category.name}
+                </span>
+              )}
+            </div>
+            <p className="mt-2 line-clamp-3 text-sm text-gray-400">
+              {project.description || 'No description provided yet. Add a quick summary to orient collaborators.'}
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="relative mt-6 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-gray-500">
-        <span className="flex items-center gap-2 font-semibold">
-          <WidthNormalIcon className="text-base" />
-          {project.instructions ? 'AI BRIEF ACTIVE' : 'PROJECT OVERVIEW'}
-        </span>
-        <span className="flex items-center gap-2 text-[10px]">
-          <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
-          {project.members?.length ? `${project.members.length} collaborators` : 'Solo workspace'}
-        </span>
+        <div className="relative mt-auto pt-6 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-gray-500">
+          <span className="flex items-center gap-2 font-semibold">
+            <WidthNormalIcon className="text-base" />
+            {project.instructions ? 'AI BRIEF ACTIVE' : ''}
+          </span>
+          <span className="flex items-center gap-2 text-[10px]">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+            {project.members?.length ? `${project.members.length} collaborators` : 'Solo workspace'}
+          </span>
+        </div>
       </div>
     </button>
   );

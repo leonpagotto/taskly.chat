@@ -108,6 +108,34 @@ const isRecurrentItemDue = (
       const diffTime = Math.abs(checkDate.getTime() - startDate.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
       return diffDays % (recurrence.interval || 1) === 0
+    case 'monthly': {
+      const interval = recurrence.interval || 1
+      const targetDay = recurrence.dayOfMonth || startDate.getDate()
+      
+      // Check if it's the correct day of month
+      if (checkDate.getDate() !== targetDay) return false
+      
+      // Calculate month difference
+      const startYear = startDate.getFullYear()
+      const startMonth = startDate.getMonth()
+      const checkYear = checkDate.getFullYear()
+      const checkMonth = checkDate.getMonth()
+      
+      const monthDiff = (checkYear - startYear) * 12 + (checkMonth - startMonth)
+      return monthDiff >= 0 && monthDiff % interval === 0
+    }
+    case 'yearly': {
+      const interval = recurrence.interval || 1
+      const targetMonth = recurrence.monthOfYear !== undefined ? recurrence.monthOfYear : startDate.getMonth()
+      const targetDay = recurrence.dayOfMonth || startDate.getDate()
+      
+      // Check if it's the correct month and day
+      if (checkDate.getMonth() !== targetMonth || checkDate.getDate() !== targetDay) return false
+      
+      // Calculate year difference
+      const yearDiff = checkDate.getFullYear() - startDate.getFullYear()
+      return yearDiff >= 0 && yearDiff % interval === 0
+    }
     default:
       return false
   }
@@ -126,6 +154,18 @@ const isTaskDueOnDate = (task: Checklist, date: Date): boolean => {
     return !task.dueDate || task.dueDate <= isoDate;
 }
 
+const isEventDueOnDate = (event: CalendarEvent, date: Date): boolean => {
+    if (event.recurrence) {
+        return isRecurrentItemDue(event.recurrence, date);
+    }
+    // For non-recurring events, check date range
+    const eventStartDate = new Date(event.startDate + 'T00:00:00');
+    const eventEndDate = event.endDate ? new Date(event.endDate + 'T00:00:00') : eventStartDate;
+    const checkDate = new Date(date);
+    checkDate.setHours(0,0,0,0);
+    return checkDate >= eventStartDate && checkDate <= eventEndDate;
+}
+
 const getRecurrenceText = (rule: RecurrenceRule): string => {
     switch(rule.type) {
         case 'daily': return 'Daily';
@@ -135,6 +175,20 @@ const getRecurrenceText = (rule: RecurrenceRule): string => {
             return `Weekly on ${rule.daysOfWeek.join(', ')}`;
         case 'interval':
             return `Every ${rule.interval || 1} days`;
+        case 'monthly':
+            const monthInterval = rule.interval || 1;
+            const monthText = monthInterval === 1 ? 'Monthly' : `Every ${monthInterval} months`;
+            const dayOfMonth = rule.dayOfMonth;
+            return dayOfMonth ? `${monthText} on day ${dayOfMonth}` : monthText;
+        case 'yearly':
+            const yearInterval = rule.interval || 1;
+            const yearText = yearInterval === 1 ? 'Yearly' : `Every ${yearInterval} years`;
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthName = rule.monthOfYear !== undefined ? monthNames[rule.monthOfYear] : undefined;
+            const dayOfYear = rule.dayOfMonth;
+            if (monthName && dayOfYear) return `${yearText} on ${monthName} ${dayOfYear}`;
+            if (monthName) return `${yearText} in ${monthName}`;
+            return yearText;
         default: return 'Recurring';
     }
 };
@@ -1412,19 +1466,19 @@ const ProjectFilterDropdown: React.FC<{
     <div ref={dropdownRef} className={`relative ${className}`}>
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="w-full h-9 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full h-10 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
       >
         <Icon name="folder" className="text-base flex-shrink-0" />
         <span className="truncate flex-1 text-left">{selectedProject ? selectedProject.name : 'All Projects'}</span>
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             <li>
               <button
                 onClick={() => { onSelectProject('all'); setIsOpen(false); }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-gray-200"
               >
                 All Projects
               </button>
@@ -1433,7 +1487,7 @@ const ProjectFilterDropdown: React.FC<{
               <li key={p.id}>
                 <button
                   onClick={() => { onSelectProject(p.id); setIsOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedProjectId === p.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800 truncate text-gray-200 ${selectedProjectId === p.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {p.name}
                 </button>
@@ -1472,19 +1526,19 @@ const CategoryFilterDropdown: React.FC<{
     <div ref={dropdownRef} className={`relative ${className || ''}`}>
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="w-full h-9 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+        className="w-full h-10 flex items-center gap-2 px-2.5 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
       >
         <Icon name="category" className="text-base flex-shrink-0" />
         <span className="truncate flex-1 text-left">{selectedCategory ? selectedCategory.name : 'All Categories'}</span>
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-60 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             <li>
               <button
                 onClick={() => { onSelectCategory('all'); setIsOpen(false); }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-gray-200"
               >
                 All Categories
               </button>
@@ -1493,7 +1547,7 @@ const CategoryFilterDropdown: React.FC<{
               <li key={c.id}>
                 <button
                   onClick={() => { onSelectCategory(c.id); setIsOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedCategoryId === c.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800 truncate text-gray-200 ${selectedCategoryId === c.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   <span className="inline-flex items-center gap-2">
                     <Icon name={c.icon} style={{ color: c.color }} className="text-base" />
@@ -1637,13 +1691,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
 
       const habitsForRender = projectFilteredHabits.filter((habit) => isHabitDueOnDate(habit, selectedDate));
       
-      const eventsForRender = projectFilteredEvents.filter(event => {
-        const eventStartDate = new Date(event.startDate + 'T00:00:00');
-        const eventEndDate = event.endDate ? new Date(event.endDate + 'T00:00:00') : eventStartDate;
-        const checkDate = new Date(selectedDate);
-        checkDate.setHours(0,0,0,0);
-        return checkDate >= eventStartDate && checkDate <= eventEndDate;
-      });
+      const eventsForRender = projectFilteredEvents.filter(event => isEventDueOnDate(event, selectedDate));
 
     const dailyItems: DailyItemWrapper[] = [
       ...tasksForRender.map((task): DailyItemWrapper => ({ item: task, type: 'task' as const, id: task.id })),

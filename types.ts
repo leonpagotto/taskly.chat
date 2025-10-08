@@ -31,10 +31,12 @@ export type Task = {
 };
 
 export type RecurrenceRule = {
-  type: 'daily' | 'weekly' | 'interval';
+  type: 'daily' | 'weekly' | 'monthly' | 'yearly' | 'interval';
   startDate: string; // YYYY-MM-DD
-  daysOfWeek?: ('Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat')[];
-  interval?: number; // for 'interval' type
+  daysOfWeek?: ('Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat')[]; // for weekly
+  interval?: number; // for 'interval', 'weekly', 'monthly', 'yearly' types (e.g., every 2 weeks, every 3 months)
+  dayOfMonth?: number; // for monthly (1-31)
+  monthOfYear?: number; // for yearly (1-12)
 };
 
 export type Reminder = {
@@ -188,6 +190,7 @@ export type Event = {
   reminders: ReminderSetting[];
   categoryId?: string;
   projectId?: string;
+  recurrence?: RecurrenceRule; // New recurring functionality
   // External calendar integration
   externalSource?: 'microsoft' | 'google'; // Which external calendar this event is synced from
   externalId?: string; // Original event ID from external calendar
