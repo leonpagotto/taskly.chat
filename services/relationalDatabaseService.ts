@@ -242,15 +242,15 @@ export const relationalDb = {
     const rpcChecklist = {
       id: id || null,
       name: rest.name,
-      categoryId: rest.categoryId || null,
-      projectId: rest.projectId || null,
-      dueDate: rest.dueDate || null,
-      dueTime: rest.dueTime || null,
+      category_id: rest.categoryId || null,  // Fixed: use snake_case for database
+      project_id: rest.projectId || null,     // Fixed: use snake_case for database
+      due_date: rest.dueDate || null,         // Fixed: use snake_case for database
+      due_time: rest.dueTime || null,         // Fixed: use snake_case for database
       priority: rest.priority || null,
       recurrence: rest.recurrence || null,
       reminder: rest.reminder || null,
-      sourceNoteId: rest.sourceNoteId || null,
-      generatedChecklistId: rest.generatedChecklistId || null,
+      source_note_id: rest.sourceNoteId || null,        // Fixed: use snake_case for database
+      generated_checklist_id: rest.generatedChecklistId || null,  // Fixed: use snake_case for database
     } as any;
     const { data: rpcData, error: rpcErr } = await supabase.rpc('upsert_checklist_bundle', {
       p_checklist: rpcChecklist,
