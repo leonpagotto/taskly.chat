@@ -199,7 +199,7 @@ const HistoryItem: React.FC<{
         )}
       </div>
       {isMenuOpen && (
-        <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-[#120a21] text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-20 p-1">
+        <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-gray-900 text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-20 p-1">
           <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onShare?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-white/10">
             <Icon name="ios_share" className="text-base" />
             <span>Share</span>
@@ -214,7 +214,7 @@ const HistoryItem: React.FC<{
               <ChevronRightIcon className="text-sm" />
             </button>
             {isMoveOpen && (
-              <div className="absolute top-0 left-full ml-1 w-56 bg-[#120a21] text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-30 p-1">
+              <div className="absolute top-0 left-full ml-1 w-56 bg-gray-900 text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-30 p-1">
                 {allProjects.map(p => (
                   <button key={p.id} onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); setIsMoveOpen(false); onMoveToProject?.(p.id); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-white/10">
                     <Icon name={p.icon || 'folder'} className="text-base" style={{ color: p.color }} />
@@ -310,7 +310,7 @@ const ProjectItem: React.FC<{
           </div>
         )}
         {isMenuOpen && (
-          <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-[#120a21] text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-20 p-1">
+          <div ref={menuRef} className="absolute top-full right-0 mt-1 w-56 bg-gray-900 text-slate-200 rounded-xl shadow-xl shadow-[0_18px_40px_rgba(10,0,32,0.5)] border border-white/10 z-20 p-1">
             <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onShare?.(); }} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-white/10">
               <Icon name="ios_share" className="text-base" />
               <span>Share</span>
@@ -409,7 +409,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 <ExpandMoreIcon className={`text-lg transition-transform ${brandMenuOpen ? 'rotate-180' : ''}`} />
               </button>
               {brandMenuOpen && (
-                <div className="absolute left-0 top-full z-[80] mt-2 w-56 rounded-2xl border border-white/12 bg-[#120b26] p-2 shadow-[0_24px_60px_rgba(15,0,40,0.55)] backdrop-blur-lg dark:border-white/10">
+                <div className="absolute left-0 top-full z-[80] mt-2 w-56 rounded-2xl border border-white/12 bg-gray-900 p-2 shadow-[0_24px_60px_rgba(15,0,40,0.55)] backdrop-blur-lg dark:border-white/10">
                   <button
                     type="button"
                     onClick={() => {
