@@ -23,15 +23,15 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar, children, leftE
     return () => window.removeEventListener('keydown', handler);
   }, [onOpenSearch]);
   return (
-    <header className="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+  <header className="flex items-center justify-between px-4 py-3 flex-shrink-0 gap-4">
       <div className="flex items-center gap-3 min-w-0">
         <button
           onClick={onToggleSidebar}
-          className="md:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          className="md:hidden text-gray-400 hover:text-gray-100 transition-transform duration-150 hover:scale-105"
         >
           <WidthNormalIcon className="w-6 h-6" />
         </button>
-        <div className="text-xl font-semibold truncate flex items-center gap-4">
+        <div className="text-xl font-semibold truncate flex items-center gap-4" style={{ color: '#FFFFFF' }}>
           <span>{title}</span>
           {leftExtras && (
             <div className="hidden md:flex items-center gap-3">
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ title, onToggleSidebar, children, leftE
         {onOpenSearch && (
           <button
             onClick={onOpenSearch}
-            className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+            className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-button)] resend-secondary"
             title="Search (⌘/Ctrl+K)"
             aria-label="Search"
           >

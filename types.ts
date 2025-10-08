@@ -188,6 +188,10 @@ export type Event = {
   reminders: ReminderSetting[];
   categoryId?: string;
   projectId?: string;
+  // External calendar integration
+  externalSource?: 'microsoft' | 'google'; // Which external calendar this event is synced from
+  externalId?: string; // Original event ID from external calendar
+  isReadOnly?: boolean; // Whether this event can be edited in the app
 };
 
 export type AIResponse = {
@@ -228,7 +232,7 @@ export type Story = {
   updatedAt: string; // ISO
 };
 
-export type AppView = 'dashboard' | 'lists' | 'habits' | 'settings' | 'notes' | 'files' | 'projects' | 'calendar' | 'stories' | 'storyEditor' | 'requests' | 'requestIntake';
+export type AppView = 'dashboard' | 'lists' | 'habits' | 'settings' | 'notes' | 'files' | 'projects' | 'calendar' | 'stories' | 'storyEditor' | 'requests' | 'requestIntake' | 'categories';
 
 // --- Requests Intake ---
 export type RequestPriority = 'low' | 'medium' | 'high' | 'critical';
@@ -283,6 +287,18 @@ export type AppColorTheme = 'blue' | 'purple' | 'green' | 'orange';
 export type AppLanguage = 'en' | 'pt' | 'nl' | 'auto';
 export type AppSize = 'sm' | 'md' | 'lg';
 
+export type BottomNavItemKey =
+  | 'dashboard'
+  | 'lists'
+  | 'habits'
+  | 'notes'
+  | 'requests'
+  | 'calendar'
+  | 'stories'
+  | 'files'
+  | 'projects'
+  | 'categories';
+
 // --- Pulse Widget Types ---
 export type PulseWidgetType = 'weather' | 'stock' | 'crypto' | 'email' | 'calendar' | 'exchange' | 'trending';
 
@@ -318,6 +334,7 @@ export type UserPreferences = {
   avatarUrl?: string;
   contactEmail?: string;
   defaultView?: AppView;
+  bottomNavItems: BottomNavItemKey[];
 };
 
 

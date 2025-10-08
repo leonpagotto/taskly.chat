@@ -97,9 +97,9 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, initial, on
             <div className="flex items-center gap-2">
               <button onClick={() => go(-1)} disabled={steps.indexOf(step)===0} className="px-3 py-2 rounded-md bg-gray-700 disabled:opacity-50">Back</button>
               {step !== 'Finish' ? (
-                <button onClick={() => go(1)} className="px-4 py-2 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600">Next</button>
+                <button onClick={() => go(1)} className="px-4 py-2 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)]">Next</button>
               ) : (
-                <button onClick={finish} className="px-4 py-2 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600">Finish</button>
+                <button onClick={finish} className="px-4 py-2 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)]">Finish</button>
               )}
             </div>
           </footer>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+  Dedicated marketing entry for the "About" experience.
+  Keeps styling self-contained so designers can iterate quickly without touching the main SPA shell.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/taskly_symbol.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Taskly | Taskly.chat</title>
+    <meta name="description" content="Discover Taskly, the AI-powered workspace for tasks, notes, and projects. Learn about features, pricing, and how Taskly helps teams move faster." />
+    <meta property="og:title" content="Taskly.chat — Your AI-Powered Workspace" />
+    <meta property="og:description" content="Plan tasks, manage projects, and collaborate with Taskly's AI assistant." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://taskly.chat/about" />
+    <meta property="og:image" content="https://taskly.chat/social-card.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300&display=swap" />
+    <style>
+      :root {
+        --color-primary-600: #3B82F6;
+        --color-primary-700: #2563EB;
+        --radius-button: 8px;
+        --radius-card: 12px;
+        --radius-surface: 16px;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 300,
+          'GRAD' 0,
+          'opsz' 24;
+        line-height: 1;
+        vertical-align: middle;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-white">
+    <div id="root"></div>
+    <!--
+      The Vite entry point that hydrates the LandingPage marketing view.
+      Designers can edit about.tsx for layout/content without needing deeper React knowledge.
+    -->
+    <script type="module" src="/about.tsx"></script>
+  </body>
+</html>

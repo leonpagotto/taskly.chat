@@ -83,7 +83,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ onClose, onSave, onUpdate
                 Delete
               </button>
             )}
-            <button onClick={handleSave} disabled={!name.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+            <button onClick={handleSave} disabled={!name.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
               {isEditing ? 'Save Changes' : 'Create Category'}
             </button>
           </footer>

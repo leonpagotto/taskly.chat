@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Checklist, Task, UserCategory, Reminder, Project, Note, RecurrenceRule } from '../types';
-import { AddIcon, DeleteIcon, CheckCircleIcon, RadioButtonUncheckedIcon, CalendarTodayIcon, NotificationsIcon, CloseIcon, EditIcon, WarningIcon, ListAltIcon, /* ExpandMoreIcon */ CheckIcon, TabDuplicateIcon, DescriptionIcon, FolderIcon, NewTaskIcon, AutorenewIcon, MoreVertIcon, WidthNormalIcon } from './icons';
+import { AddIcon, DeleteIcon, CheckCircleIcon, RadioButtonUncheckedIcon, CalendarTodayIcon, NotificationsIcon, CloseIcon, EditIcon, WarningIcon, ListAltIcon, ExpandMoreIcon, CheckIcon, TabDuplicateIcon, DescriptionIcon, FolderIcon, NewTaskIcon, AutorenewIcon, MoreVertIcon, WidthNormalIcon } from './icons';
 import Header from './Header';
 import UnifiedToolbar from './UnifiedToolbar';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
+import { emptyStateSecondaryButtonClass } from './buttonStyles';
 
 // A generic Icon component for Material Symbols
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
@@ -94,11 +95,18 @@ const TaskItem: React.FC<{
         // let parent state take over; reset local once it reflects
       }, 700);
     } else {
+      // When unchecking, reset justChecked immediately
+      setJustChecked(false);
       onToggle();
     }
   };
   useEffect(() => {
-    if (task.completedAt && justChecked) setJustChecked(false);
+    // Reset justChecked when the actual state changes
+    if (task.completedAt && justChecked) {
+      setJustChecked(false);
+    } else if (!task.completedAt && justChecked) {
+      setJustChecked(false);
+    }
   }, [task.completedAt, justChecked]);
   return (
     <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-700/60 group">
@@ -503,21 +511,82 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
       </button>
     );
 
+  /**
+   * Dropdown mirrors the compact controls used in Habits/Stories toolbars so the tasks toolbar
+   * matches their 40px height, typography, and rounded geometry.
+   */
+  const TaskSortDropdown: React.FC<{ value: SortBy; onChange: (v: SortBy) => void }> = ({ value, onChange }) => {
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+      const handleClick = (event: MouseEvent) => {
+        if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+          setOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
+
+    const options: Array<{ value: SortBy; label: string }> = [
+      { value: 'time', label: 'Due time' },
+      { value: 'priority', label: 'Priority' },
+      { value: 'name', label: 'Name' },
+    ];
+    const active = options.find(opt => opt.value === value) ?? options[0];
+
+    return (
+      <div ref={wrapperRef} className="relative w-full sm:w-52">
+        <button
+          onClick={() => setOpen(prev => !prev)}
+          className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+        >
+          <div className="flex items-center gap-2 truncate">
+            <Icon name="sort" className="text-base flex-shrink-0" />
+            <span className="truncate">Sort: {active.label}</span>
+          </div>
+          <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
+        </button>
+        {open && (
+          <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
+            <ul role="listbox" className="max-h-72 overflow-y-auto">
+              {options.map(opt => (
+                <li key={opt.value}>
+                  <button
+                    onClick={() => { onChange(opt.value); setOpen(false); }}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                    role="option"
+                    aria-selected={value === opt.value}
+                  >
+                    {opt.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    <div className="flex-1 flex flex-col h-full">
   <Header title={t('tasks')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
-        <button onClick={onNewChecklistRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={onNewChecklistRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm" style={{ color: '#FFFFFF' }}>
           <NewTaskIcon />
           <span className="hidden sm:inline">{t('new_task')}</span>
         </button>
       </Header>
       <div className="flex-1 overflow-y-auto">
         {/* Mobile: Compact filter button */}
-        <div className="md:hidden bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="md:hidden border-b border-white/10">
           <div className="px-4 py-3">
             <button
               onClick={() => setFilterPanelOpen(true)}
-              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"
             >
               <div className="flex items-center gap-2">
                 <Icon name="tune" className="text-xl" />
@@ -529,7 +598,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         </div>
 
         {/* Desktop: Full toolbar */}
-        <div className="hidden md:block bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="hidden md:block border-b border-white/10">
           <div className="px-4 sm:px-6">
               <div className="w-full py-4">
                 {/* Row: Filters + Sort (styled like other controls) */}
@@ -540,19 +609,12 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                   selectedCategoryId={selectedCategoryId}
                   onChangeProject={(id) => setSelectedProjectId(id)}
                   onChangeCategory={(id) => setSelectedCategoryId(id)}
-                  sortBy={sortBy}
-                  onChangeSortBy={(v) => setSortBy(v as SortBy)}
-                  sortOptions={[
-                    { value: 'time', label: 'Time' },
-                    { value: 'priority', label: 'Priority' },
-                    { value: 'name', label: 'Name' },
-                  ]}
                   compactHeight="h10"
-                  fluidControls
                   timeFilter={timeFilter}
                   onChangeTimeFilter={(k) => setTimeFilter(k as TimeFilterKey)}
                   customDateRange={customRange}
                   onChangeCustomDateRange={(r) => setCustomRange(r)}
+                  rightExtras={<TaskSortDropdown value={sortBy} onChange={setSortBy} />}
                 />
               </div>
           </div>
@@ -562,9 +624,9 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
         {filterPanelOpen && (
           <>
             <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setFilterPanelOpen(false)} />
-            <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl z-50 md:hidden transform transition-transform duration-300 overflow-y-auto">
+            <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[rgba(31,41,55,0.95)] shadow-2xl z-50 md:hidden transform transition-transform duration-300 overflow-y-auto backdrop-blur-lg">
               <div className="flex flex-col min-h-full">
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-[rgba(31,41,55,0.95)] z-10 backdrop-blur-lg">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters & Sort</h3>
                   <button onClick={() => setFilterPanelOpen(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                     <CloseIcon />
@@ -576,7 +638,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                     <select 
                       value={selectedProjectId} 
                       onChange={e => setSelectedProjectId(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                      className="w-full px-4 py-2.5 pr-10 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:24px_24px] bg-[right_0.5rem_center] bg-no-repeat"
                     >
                       <option value="all">All Projects</option>
                       {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -587,7 +649,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                     <select 
                       value={selectedCategoryId} 
                       onChange={e => setSelectedCategoryId(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                      className="w-full px-4 py-2.5 pr-10 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:24px_24px] bg-[right_0.5rem_center] bg-no-repeat"
                     >
                       <option value="all">All Categories</option>
                       {userCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -598,7 +660,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                     <select 
                       value={timeFilter} 
                       onChange={e => setTimeFilter(e.target.value as any)}
-                      className="w-full px-4 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600"
+                      className="w-full px-4 py-2.5 pr-10 rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:24px_24px] bg-[right_0.5rem_center] bg-no-repeat"
                     >
                       <option value="all">All Time</option>
                       <option value="today">Today</option>
@@ -622,7 +684,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                           onClick={() => setSortBy(opt.value)}
                           className={`w-full px-4 py-2.5 rounded-lg text-left font-medium transition-colors ${
                             sortBy === opt.value
-                              ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                              ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white'
                               : 'bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                           }`}
                         >
@@ -635,7 +697,7 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700 sticky bottom-0 bg-white dark:bg-gray-800">
                   <button
                     onClick={() => setFilterPanelOpen(false)}
-                    className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold"
+                    className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white font-semibold"
                   >
                     Apply Filters
                   </button>
@@ -657,18 +719,37 @@ const ListsView: React.FC<ListsViewProps> = (props) => {
           </div>
         )}
         {checklists.length === 0 ? (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
-            <EmptyStateIcon icon={<ListAltIcon />} size="lg" />
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_tasks_yet')}</h2>
-            <p className="max-w-md mt-1 mb-6">{t('no_tasks_yet_subtitle')}</p>
-            <button onClick={onNewChecklistRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
-              {t('create_task')}
-            </button>
-          </div>
+          <EmptyState
+            icon={<ListAltIcon />}
+            title={t('no_tasks_yet')}
+            description={t('no_tasks_yet_subtitle')}
+            primaryAction={{
+              label: t('create_task'),
+              onClick: onNewChecklistRequest,
+              icon: <NewTaskIcon className="text-base" />,
+            }}
+            variant="minimal"
+            className="mx-auto my-16 w-full max-w-3xl"
+          />
         ) : filteredChecklists.length === 0 ? (
-          <div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
-            <p className="mb-2">No tasks match the current filters.</p>
-          </div>
+          <EmptyState
+            icon={<Icon name="filter_alt_off" />}
+            title="No tasks match the current filters"
+            description="Try adjusting your filters to see more results, or create a new task."
+            secondaryAction={{
+              label: 'Reset filters',
+              onClick: () => {
+                setStatusFilter('all');
+                setSelectedCategoryId('all');
+                setSelectedProjectId('all');
+                setTimeFilter('all');
+              },
+              icon: <Icon name="filter_alt_off" className="text-base" />,
+              variant: 'secondary',
+            }}
+            variant="minimal"
+            className="mx-auto my-16 w-full max-w-3xl"
+          />
         ) : (
           <div className="space-y-4">
             {filteredChecklists.map(list => (

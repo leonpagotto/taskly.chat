@@ -2,44 +2,33 @@
 
 ## 🎨 Logo Locations
 
-The Taskly logo SVG has been implemented throughout the application:
+The gradient Taskly badge lives in `public/taskly_symbol.svg` and is surfaced across the product via the `TasklyLogo` component:
 
 ### 1. **Landing Page** (`components/LandingPage.tsx`)
-- Location: Header navigation bar
-- Size: 24px (inside 40px gradient container)
-- Color: White fill
-- Context: Next to "Taskly.chat" text
+- Location: Header navigation brand link
+- Size: 40px (renders the full rounded gradient badge)
+- Context: Paired with the “Taskly.chat” wordmark
 
 ### 2. **Application Sidebar** (`components/Sidebar.tsx`)
-- Location: Top left branding area (when expanded)
+- Location: Top-left brand lockup when the sidebar is expanded
 - Size: 28px
-- Color: White fill
-- Context: Next to "Taskly.Chat" text
+- Context: Displays ahead of the product name for instant brand recognition
 
 ### 3. **Authentication Modal** (`components/AuthModal.tsx`)
 - Location: Modal header
-- Size: 24px
-- Color: White fill
-- Context: Next to modal title ("Welcome back" / "Create your account")
+- Size: 28px
+- Context: Introduces the brand before the sign-in / sign-up flows
 
 ### 4. **Browser Tab** (`index.html` + `public/taskly_symbol.svg`)
 - Location: Browser favicon
 - Size: 24px
-- Color: Brand purple (#667eea)
-- Context: Appears in browser tab, bookmarks, history
+- Context: Appears in the tab bar, bookmarks, and history listings
 
-### 5. **Email Templates** (All 5 templates)
-- **Confirm Signup** (`email-templates/confirm-signup.html`)
-- **Invite User** (`email-templates/invite-user.html`)
-- **Magic Link** (`email-templates/magic-link.html`)
-- **Reset Password** (`email-templates/reset-password.html`)
-- **Change Email** (`email-templates/change-email.html`)
-
-Each email template includes:
-- Location: Header section (purple gradient background)
+### 5. **Email Templates** (All transactional layouts)
+- Templates: Confirm Signup, Invite User, Magic Link, Reset Password, Change Email
 - Size: 48px
-- Color: White fill
-- Context: Above the main heading, centered
+- Variant: Monochrome (`variant="mono"`) for high-contrast placement on gradient headers
+- Context: Centered at the top of each message
 
 ---
 
@@ -48,106 +37,77 @@ Each email template includes:
 ### TasklyLogo Component (`components/TasklyLogo.tsx`)
 
 **Props:**
-- `className?: string` - Additional CSS classes
-- `size?: number` - Height/width in pixels (default: 24)
-- `fill?: string` - SVG fill color (default: 'currentColor')
+- `className?: string` – Tailwind or custom classes for layout fine-tuning
+- `size?: number` – Pixel dimension for both width and height (default: `24`)
+- `label?: string` – Accessible name announced to assistive tech (default: `"Taskly"`)
+- `decorative?: boolean` – Set to `true` to hide the logo from screen readers when redundant
+- `glow?: boolean` – Enables a subtle drop shadow to lift the badge on dark UIs (default: `true`)
+- `variant?: 'brand' | 'mono'` – Select the gradient brand badge or the single-color mark (default: `'brand'`)
+- `monoColor?: string` – Hex/rgba value used when `variant='mono'` (default: `#FFFFFF`)
 
 **Usage Examples:**
 
 ```tsx
-// Basic usage (white, 24px)
-<TasklyLogo fill="white" />
+// Default gradient badge, ideal for app surfaces
+<TasklyLogo size={32} />
 
-// Custom size (28px)
-<TasklyLogo size={28} fill="white" />
+// Decorative brand mark inside headings (hides from screen readers)
+<TasklyLogo size={24} decorative className="ml-2" />
 
-// With current text color
-<TasklyLogo size={20} />
+// Email-safe monochrome treatment on light backgrounds
+<TasklyLogo variant="mono" monoColor="#1F2937" size={48} label="Taskly" />
 
-// Email template (48px, white)
-<TasklyLogo size={48} fill="#ffffff" />
+// Turn off glow when embedding inside tight layouts
+<TasklyLogo size={20} glow={false} />
 ```
 
 ---
 
-## 🎨 SVG Source
+## 🎨 Brand Asset Notes
 
-The logo SVG is the "things_to_do" Material Design icon, representing task management:
-
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#667eea">
-    <path d="M188-172v-28h104v-186h-52v-28h52q0-71 51-120t123-54v-156h180v100H494v56q72 5 123 54t51 120h52v28h-52v186h104v28H188Zm132-28h146v-186H320v186Zm174 0h146v-186H494v186ZM320-414h320q0-63-47.5-104.5T480-560q-65 0-112.5 41.5T320-414Zm160 0Z"/>
-</svg>
-```
-
----
-
-## 🎨 Brand Colors
-
-The logo uses Taskly's brand purple palette:
-
-- **Primary Purple**: `#667eea` (blue-purple)
-- **Secondary Purple**: `#764ba2` (darker purple)
-- **Gradient**: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`
-
-**Where used:**
-- Favicon: Solid `#667eea`
-- Email headers: White (`#ffffff`) on gradient background
-- App UI: White (`#ffffff`) on dark backgrounds
+- The primary badge is a rounded square with a conic-gradient core and subtle inner highlights.
+- `public/taskly_symbol.svg` should remain the single source of truth; update this file when brand art evolves.
+- The component loads the SVG via `<img>` for the gradient version and falls back to inline SVG paths for the monochrome mark.
 
 ---
 
 ## 📐 Size Guidelines
 
-| Context | Size | Rationale |
-|---------|------|-----------|
-| **Email Headers** | 48px | Prominent, establishes brand at top of email |
-| **Sidebar Branding** | 28px | Visible but not overwhelming in sidebar |
-| **Auth Modal** | 24px | Subtle branding in modal header |
-| **Landing Page** | 24px | Compact navigation logo |
-| **Favicon** | 24px | Standard favicon size (scales automatically) |
+| Context | Size | Notes |
+|---------|------|-------|
+| **Landing Header** | 40px | Matches navigation height and remains legible on retina displays |
+| **Sidebar Branding** | 28px | Balances with title typography without overwhelming navigation items |
+| **Auth Modal** | 28px | Provides instant brand context inside dialogs |
+| **App Toolbar / Buttons** | 20–24px | Works well alongside iconography and text labels |
+| **Email Headers** | 48px | Crisp at standard inbox zoom levels |
+| **Favicon** | 24px | Delivered automatically by browsers |
 
 ---
 
 ## 🚀 Implementation Checklist
 
-- [x] Created reusable `TasklyLogo` component
-- [x] Updated Landing Page header
-- [x] Updated Sidebar branding
-- [x] Updated Auth Modal header
-- [x] Created favicon SVG in public directory
-- [x] Updated index.html favicon reference
-- [x] Added logo to Confirm Signup email
-- [x] Added logo to Invite User email
-- [x] Added logo to Magic Link email
-- [x] Added logo to Reset Password email
-- [x] Added logo to Change Email email
-- [x] Tested build (successful - 1,050.55 kB)
-- [x] Committed and pushed to GitHub
+- [x] Replaced legacy Material Symbol placeholder with official SVG badge
+- [x] Wired the logo into the landing page, sidebar, and authentication flows
+- [x] Published the badge as the favicon for all static pages
+- [x] Updated transactional emails to use the monochrome variant
+- [x] Documented the `TasklyLogo` API for designers and engineers
+- [x] Verified production build after integration
 
 ---
 
 ## 🎯 Benefits
 
-1. **Brand Consistency**: Same logo across web app, emails, and browser
-2. **Professional Appearance**: Custom branding instead of generic icons
-3. **Reusable Component**: Single source of truth for logo rendering
-4. **Scalable**: SVG scales perfectly at any size
-5. **Flexible**: Supports custom colors via `fill` prop
-6. **Lightweight**: SVG is only ~300 bytes
+1. **Brand Consistency** – One visual identity across app, web, and email.
+2. **Accessibility Ready** – ARIA-friendly defaults with explicit controls for decorative use.
+3. **Flexible Variants** – Switch between gradient or monochrome without swapping assets manually.
+4. **Performance Friendly** – SVG-based implementation keeps downloads lean and pixel-perfect.
+5. **Designer Friendly** – Clear API surface lets designers adjust placement without diving into SVG internals.
 
 ---
 
 ## 📝 Next Steps (Optional)
 
-1. **Logo Variants**: Create colored versions for light backgrounds
-2. **Loading States**: Show logo in loading/splash screens
-3. **404 Page**: Add logo to error pages
-4. **Documentation**: Add logo to README and docs
-5. **Social Media**: Create social preview images with logo
-
----
-
-**Commit:** `0fa0ad6`  
-**Date:** 2025-10-04  
-**Files Changed:** 11 files (11 additions, 5 deletions)
+1. Publish light-mode and dark-mode social preview images featuring the new badge.
+2. Add the logo to onboarding/loading states for cohesive first impressions.
+3. Explore animated treatments (e.g., gentle glow pulse) for interactive contexts.
+4. Mirror this documentation in the public brand guidelines for partners.

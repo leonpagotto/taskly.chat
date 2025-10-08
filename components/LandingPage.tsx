@@ -5,6 +5,12 @@ type LandingPageProps = {
 	onSignIn: () => void;
 };
 
+const navigationLinks = [
+	{ label: 'About', href: '/about.html' },
+	{ label: 'Features', href: '/features.html' },
+	{ label: 'Contact', href: '/contact.html' },
+];
+
 const features = [
 	{
 		icon: 'task_alt',
@@ -132,12 +138,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
 			<header className="relative z-10 border-b border-white/5 bg-slate-950/70 backdrop-blur">
 				<div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-					<div className="flex items-center gap-2">
-						<span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--color-primary-600)] to-purple-500 text-white shadow-lg">
-							<TasklyLogo size={24} fill="white" />
-						</span>
+					<a className="flex items-center gap-2" href="/about.html" aria-label="Go to Taskly about page">
+						<TasklyLogo size={40} />
 						<p className="text-base font-semibold leading-tight sm:text-lg">Taskly.chat</p>
-					</div>
+					</a>
+					<nav aria-label="Primary marketing pages" className="hidden items-center gap-6 text-sm font-medium text-gray-200 md:flex">
+						{navigationLinks.map((link) => (
+							<a key={link.label} href={link.href} className="transition hover:text-white">
+								{link.label}
+							</a>
+						))}
+					</nav>
 					<button
 						onClick={onSignIn}
 						className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-200 sm:px-5"
@@ -162,7 +173,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 						<div className="flex flex-col gap-3 items-center justify-center pt-4 sm:flex-row sm:gap-4">
 							<button
 								onClick={onSignIn}
-								className="w-full sm:w-auto rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-500 px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--color-primary-600)]/40 transition hover:shadow-xl"
+								className="w-full sm:w-auto rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-[var(--color-primary-600)]/40 transition hover:shadow-xl"
 							>
 								Get Started Free
 							</button>
@@ -185,7 +196,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 									key={feature.title}
 									className="rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:bg-white/10"
 								>
-									<span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-primary-600)]/20 to-purple-500/20 text-[var(--color-primary-400)]">
+									<span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--color-primary-600)]/20 to-[var(--color-primary-end)]/20 text-[var(--color-primary-400)]">
 										<span className="material-symbols-outlined text-[28px]">{feature.icon}</span>
 									</span>
 									<h3 className="mt-4 text-lg font-semibold text-white">{feature.title}</h3>
@@ -210,13 +221,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 									key={plan.name}
 									className={`relative rounded-3xl border p-6 transition ${
 										plan.highlighted
-											? 'border-[var(--color-primary-600)] bg-gradient-to-br from-[var(--color-primary-600)]/10 to-purple-500/10 shadow-xl shadow-[var(--color-primary-600)]/20'
+											? 'border-[var(--color-primary-600)] bg-gradient-to-br from-[var(--color-primary-600)]/10 to-[var(--color-primary-end)]/10 shadow-xl shadow-[var(--color-primary-600)]/20'
 											: 'border-white/10 bg-white/5 hover:bg-white/10'
 									}`}
 								>
 									{plan.highlighted && (
 										<div className="absolute -top-3 left-1/2 -translate-x-1/2">
-											<span className="rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-purple-500 px-3 py-1 text-xs font-semibold text-white">
+											<span className="rounded-full bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] px-3 py-1 text-xs font-semibold text-white">
 												Most Popular
 											</span>
 										</div>
@@ -234,7 +245,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 										onClick={onSignIn}
 										className={`mb-6 w-full rounded-full py-2.5 text-sm font-semibold transition ${
 											plan.highlighted
-												? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-500 text-white shadow-lg hover:shadow-xl'
+												? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg hover:shadow-xl'
 												: 'border border-white/20 text-gray-200 hover:bg-white/10'
 										}`}
 									>

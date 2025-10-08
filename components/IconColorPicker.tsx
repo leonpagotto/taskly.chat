@@ -17,15 +17,27 @@ export const CATEGORY_ICONS = [
   // New media & creative icons
   'photo_camera', 'videocam', 'brush', 'design_services',
   // New study & learning icons
-  'menu_book', 'psychology', 'science', 'history_edu'
+  'menu_book', 'psychology', 'science', 'history_edu',
+  // Additional varied icons
+  'restaurant', 'local_cafe', 'pets', 'eco'
 ];
 export const COLORS = [
-  // Original colors
-  '#EF4444', '#F97316', '#EAB308', '#84CC16', '#22C55E', '#14B8A6',
-  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#64748B',
-  // New color variations
-  '#DC2626', '#EA580C', '#CA8A04', '#65A30D', '#16A34A', '#0D9488',
-  '#0891B2', '#2563EB', '#4F46E5', '#7C3AED', '#DB2777', '#475569', '#F59E0B'
+  // Cold tones - White
+  '#FFFFFF',
+  // Cold tones - Blue shades
+  '#3B82F6', '#2563EB', '#6366F1',
+  // Cold tones - Cyan & Teal
+  '#06B6D4', '#14B8A6', '#0D9488',
+  // Medium tones - Green shades
+  '#22C55E', '#16A34A', '#84CC16',
+  // Medium tones - Yellow
+  '#EAB308', '#F59E0B',
+  // Warm tones - Orange & Red
+  '#F97316', '#EA580C', '#EF4444', '#DC2626',
+  // Warm tones - Purple & Pink
+  '#8B5CF6', '#7C3AED', '#EC4899', '#DB2777',
+  // Neutral - Gray
+  '#64748B'
 ];
 
 interface IconColorPickerProps {

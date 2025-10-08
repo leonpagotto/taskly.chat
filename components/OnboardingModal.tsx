@@ -174,9 +174,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
               <div className="flex items-center gap-2">
                 <button onClick={goPrev} disabled={step===0} className="px-3 py-2 rounded-[var(--radius-button)] bg-gray-700 disabled:opacity-50 hover:bg-gray-600 text-sm font-semibold">Back</button>
                 {step < total - 1 ? (
-                  <button onClick={goNext} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-sm font-semibold">Next</button>
+                  <button onClick={goNext} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-sm font-semibold">Next</button>
                 ) : (
-                  <button onClick={onClose} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-sm font-semibold">Start using Taskly</button>
+                  <button onClick={onClose} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-sm font-semibold">Start using Taskly</button>
                 )}
               </div>
             </div>

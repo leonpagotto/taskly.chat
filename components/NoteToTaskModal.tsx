@@ -103,7 +103,7 @@ const NoteToTaskModal: React.FC<NoteToTaskModalProps> = ({ isOpen, onClose, onCr
                     <button 
                         onClick={handleCreate} 
                         disabled={!listName.trim() || tasks.length === 0 || tasks.some(t => !t.text.trim())}
-                        className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all"
+                        className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all"
                     >
                         Create Task List
                     </button>

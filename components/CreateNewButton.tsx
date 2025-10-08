@@ -42,7 +42,7 @@ const CreateNewButton: React.FC<CreateNewButtonProps> = ({ onNewTask, onNewHabit
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+        className="w-10 h-10 flex items-center justify-center bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
         aria-label="Create new item"
         aria-haspopup="true"
         aria-expanded={isOpen}

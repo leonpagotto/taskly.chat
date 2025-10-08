@@ -101,7 +101,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, checklists
           {results.length > 0 ? (
             <ul>{results.map(item => <li key={`${item.itemType}-${item.id}`}><ResultItem item={item} /></li>)}</ul>
           ) : (
-            <p className="text-center text-gray-500 p-8">{query.length > 1 ? 'No results found.' : 'Start typing to search.'}</p>
+            <p className="text-center text-gray-400 dark:text-gray-500 p-8 text-sm">{query.length > 1 ? 'No results found.' : 'Start typing to search.'}</p>
           )}
         </div>
       </div>

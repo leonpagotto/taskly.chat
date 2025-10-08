@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Note, Project, UserCategory, AppView, Checklist, ProjectFile } from '../types';
 import NotesView from './NotesView';
 import Header from './Header';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
 import { DescriptionIcon, NoteAddIcon, ExpandMoreIcon, WidthNormalIcon } from './icons';
 
 // Compact list item in the Notes list column
@@ -66,18 +66,19 @@ const NotesListColumn: React.FC<{
   const standaloneNotes = sortedNotes.filter(n => !n.projectId);
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-800/50">
+  <div className="h-full flex flex-col">
       {showHeader && (
         <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700/50 flex-shrink-0">
           <div className="flex items-center gap-3">
             <button onClick={onToggleSidebar} className="md:hidden p-2 -ml-2 text-gray-500 dark:text-gray-300 hover:text-white">
               <WidthNormalIcon />
             </button>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('notes')}</h2>
+            <h2 className="text-xl font-semibold" style={{ color: '#FFFFFF' }}>{t('notes')}</h2>
           </div>
           <button
             onClick={onCreateNote}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
+            style={{ color: '#FFFFFF' }}
             title={t('create_note')}
           >
             <NoteAddIcon />
@@ -148,14 +149,31 @@ const NotesListPage: React.FC<{
   t: (key: string) => string;
 }> = (props) => {
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
-  const [sidebarWidth, setSidebarWidth] = useState(Math.round((typeof window !== 'undefined' ? window.innerWidth : 1200) * 0.33));
+  const [sidebarWidth, setSidebarWidth] = useState(Math.round((typeof window !== 'undefined' ? window.innerWidth : 1200) * 0.26));
   const isResizing = useRef(false);
+  const createNoteRef = useRef(props.onCreateNote);
+  const bootstrappedFirstNote = useRef(false);
+
+  useEffect(() => {
+    createNoteRef.current = props.onCreateNote;
+  }, [props.onCreateNote]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (props.notes.length === 0) {
+      if (!bootstrappedFirstNote.current) {
+        bootstrappedFirstNote.current = true;
+        createNoteRef.current();
+      }
+    } else {
+      bootstrappedFirstNote.current = false;
+    }
+  }, [props.notes.length]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -208,38 +226,33 @@ const NotesListPage: React.FC<{
         />
       );
     }
-    return (
-      props.notes.length === 0 ? (
-        <div className="flex-1 min-h-0 flex items-center justify-center p-6 bg-gray-100 dark:bg-gray-800">
-          <div className="text-center text-gray-500 dark:text-gray-400 max-w-md">
-            <EmptyStateIcon icon={<DescriptionIcon />} size="lg" />
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">No notes yet</h2>
-            <p className="text-sm mb-5">Create your first note to get started.</p>
-            <button
-              onClick={() => props.onCreateNote()}
-              className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
-            >
-              {props.t('create_note')}
-            </button>
+    if (props.notes.length === 0) {
+      return (
+        <div className="flex-1 min-h-0 flex items-center justify-center p-6">
+          <div className="resend-glass-panel relative w-full max-w-sm rounded-[28px] px-6 py-10 text-center" data-elevated="true">
+            <div className="material-symbols-outlined mx-auto mb-3 text-4xl text-[var(--color-primary-400)] animate-pulse">stylus_note</div>
+            <p className="text-lg font-semibold text-slate-50">Opening a fresh note…</p>
+            <p className="mt-2 text-sm text-slate-300/90">Hang tight—we're setting up your first note so you can start writing immediately.</p>
           </div>
         </div>
-      ) : (
-        <NotesListColumn
-          {...props}
-          onSelectNote={(id) => props.onSelectNote(id)}
-          onCreateNote={() => props.onCreateNote()}
-        />
-      )
+      );
+    }
+    return (
+      <NotesListColumn
+        {...props}
+        onSelectNote={(id) => props.onSelectNote(id)}
+        onCreateNote={() => props.onCreateNote()}
+      />
     );
   }
 
   // Desktop layout
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-  <Header title={props.t('notes')} onToggleSidebar={props.onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
+    <div className="flex-1 flex flex-col h-full">
+      <Header title={props.t('notes')} onToggleSidebar={props.onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
         <button
           onClick={() => props.onCreateNote()}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
           title={props.t('create_note')}
         >
           <NoteAddIcon />
@@ -247,66 +260,55 @@ const NotesListPage: React.FC<{
         </button>
       </Header>
       <div className="h-px bg-gray-200 dark:bg-gray-700/50" />
-
-      {props.notes.length === 0 ? (
-        <div className="flex-1 min-h-0 flex items-center justify-center p-4">
-          <div className="text-center text-gray-500 dark:text-gray-400 max-w-md">
-            <EmptyStateIcon icon={<DescriptionIcon />} size="lg" />
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">No notes yet</h2>
-            <p className="text-sm mb-5">Create your first note to get started.</p>
-            <button
-              onClick={() => props.onCreateNote()}
-              className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
-            >
-              {props.t('create_note')}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex-1 min-h-0 flex w-full">
-          <div
-            className="h-full flex-shrink-0"
-            style={{ width: `${sidebarWidth}px` }}
-          >
-            <NotesListColumn
-              {...props}
-              onSelectNote={(id) => props.onSelectNote(id)}
-              onCreateNote={() => props.onCreateNote()}
-              showHeader={false}
-            />
-          </div>
-
-          <div
-            onMouseDown={handleMouseDown}
-            className="w-1.5 h-full cursor-col-resize flex-shrink-0 bg-gray-200 dark:bg-gray-700/50 hover:bg-[var(--color-primary-600)] transition-colors"
-            aria-label="Resize note panel"
-            role="separator"
+      <div className="flex-1 min-h-0 flex w-full">
+        <div
+          className="h-full flex-shrink-0"
+          style={{ width: `${sidebarWidth}px` }}
+        >
+          <NotesListColumn
+            {...props}
+            onSelectNote={(id) => props.onSelectNote(id)}
+            onCreateNote={() => props.onCreateNote()}
+            showHeader={false}
           />
-
-          <div className="flex-1 min-w-[300px]">
-            {selectedNote ? (
-              <NotesView
-                key={selectedNote.id}
-                note={selectedNote}
-                {...props}
-                isSplitView={true}
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400 p-4">
-                <EmptyStateIcon icon={<DescriptionIcon />} size="lg" />
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Select a note</h2>
-                <p className="max-w-xs mt-2">Select a note from the list to view its content.</p>
-                <button
-                  onClick={() => props.onCreateNote()}
-                  className="mt-6 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all"
-                >
-                  {props.t('create_note')}
-                </button>
-              </div>
-            )}
-          </div>
         </div>
-      )}
+        <div
+          className="w-1 bg-gray-200 dark:bg-gray-700/50 cursor-col-resize flex-shrink-0"
+          onMouseDown={handleMouseDown}
+        />
+        <div className="flex-1 min-h-0">
+          {selectedNote ? (
+            <NotesView
+              key={selectedNote.id}
+              note={selectedNote}
+              {...props}
+              isSplitView={true}
+            />
+          ) : props.notes.length === 0 ? (
+            <div className="flex h-full items-center justify-center p-6">
+              <div className="resend-glass-panel relative w-full max-w-lg rounded-[28px] px-8 py-12 text-center" data-elevated="true">
+                <div className="material-symbols-outlined mb-3 text-4xl text-[var(--color-primary-400)] animate-pulse">stylus_note</div>
+                <h3 className="text-xl font-semibold text-slate-50">Opening a fresh note…</h3>
+                <p className="mt-2 text-sm text-slate-300/90">We're spinning up your first note so you can start typing right away.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full p-6">
+              <EmptyState
+                icon={<DescriptionIcon />}
+                title="Select a note"
+                description="Choose a note from the list to start editing or create a new one."
+                primaryAction={{
+                  label: props.t('create_note'),
+                  onClick: () => props.onCreateNote(),
+                  icon: <NoteAddIcon className="text-base" />,
+                }}
+                className="w-full max-w-3xl"
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

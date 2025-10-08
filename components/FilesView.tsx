@@ -2,7 +2,7 @@ import React from 'react';
 import { ProjectFile, Project, UserCategory } from '../types';
 import { FolderOpenIcon, ImageIcon, PictureAsPdfIcon, ArticleIcon, DeleteIcon, FolderIcon, LeftPanelOpenIcon } from './icons';
 import Header from './Header';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
 
 const FileIcon: React.FC<{ mimeType: string; className?: string }> = ({ mimeType, className }) => {
   if (mimeType.startsWith('image/')) return <ImageIcon className={className} />;
@@ -37,7 +37,7 @@ const FilesView: React.FC<FilesViewProps> = ({ projectFiles, projects, userCateg
     })).filter(project => project.files.length > 0);
 
     return (
-        <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+        <div className="flex-1 flex flex-col h-full">
             <Header title={t('files')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))} />
             <div className="flex-1 overflow-y-auto">
               <div className="px-4 sm:px-6">
@@ -47,28 +47,40 @@ const FilesView: React.FC<FilesViewProps> = ({ projectFiles, projects, userCateg
                         {filesByProject.map(project => {
                             const category = userCategories.find(c => c.id === project.categoryId);
                             return (
-                                <div key={project.id}>
-                                    <div className="flex items-center gap-2 mb-3">
+                                <div key={project.id} className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[rgba(15,10,32,0.9)] backdrop-blur-xl p-4 sm:p-6 shadow-[0_22px_60px_rgba(12,0,32,0.45)]" data-elevated={true}>
+                                    <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/20 via-transparent to-[var(--color-primary-600)]/18" aria-hidden="true" />
+                                    <div className="relative flex items-center gap-2 mb-4">
                                         <FolderIcon className="text-xl" style={{ color: category?.color }} />
-                                        <h2 className="text-lg font-semibold">{project.name}</h2>
+                                        <h2 className="text-lg font-semibold text-slate-100 tracking-tight">{project.name}</h2>
                                     </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                    <div className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                         {project.files.map(file => (
-                                             <div key={file.id} onClick={() => onPreviewFile(file)} className="bg-white dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700/50 flex flex-col items-center justify-center aspect-square group relative cursor-pointer overflow-hidden">
+                                            <div
+                                                key={file.id}
+                                                onClick={() => onPreviewFile(file)}
+                                                className="group relative flex flex-col items-center justify-center aspect-square rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg cursor-pointer overflow-hidden transition-transform hover:-translate-y-[3px]"
+                                            >
                                                 {file.mimeType.startsWith('image/') ? (
-                                                   <img src={`data:${file.mimeType};base64,${file.data}`} alt={file.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                                    <img src={`data:${file.mimeType};base64,${file.data}`} alt={file.name} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110" />
                                                 ) : (
-                                                    <div className="flex flex-col items-center gap-2 text-center p-2">
-                                                        <FileIcon mimeType={file.mimeType} className="text-4xl text-gray-500 dark:text-gray-400" />
-                                                        <p className="text-xs text-gray-500">{formatBytes(file.size)}</p>
+                                                    <div className="flex flex-col items-center gap-2 text-center p-3">
+                                                        <FileIcon mimeType={file.mimeType} className="text-4xl text-slate-100" />
+                                                        <p className="text-xs text-slate-200/80">{formatBytes(file.size)}</p>
                                                     </div>
                                                 )}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                                <div className="absolute bottom-0 left-0 right-0 p-1.5 text-white text-xs truncate text-center">
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent pointer-events-none" />
+                                                <div className="absolute bottom-0 left-0 right-0 p-2 text-xs font-medium text-white truncate text-center drop-shadow-lg">
                                                     {file.name}
                                                 </div>
-                                                <button onClick={(e) => { e.stopPropagation(); onDeleteFile(file.id); }} className="absolute top-1 right-1 p-1 bg-black/40 rounded-full text-white hover:bg-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <DeleteIcon className="text-sm"/>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onDeleteFile(file.id);
+                                                    }}
+                                                    className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/55 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-black/70 backdrop-blur"
+                                                    aria-label={`Delete ${file.name}`}
+                                                >
+                                                    <DeleteIcon className="text-sm" />
                                                 </button>
                                             </div>
                                         ))}
@@ -78,11 +90,12 @@ const FilesView: React.FC<FilesViewProps> = ({ projectFiles, projects, userCateg
                         })}
                     </div>
                 ) : (
-                    <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
-                        <EmptyStateIcon icon={<FolderOpenIcon />} size="lg" />
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_files_yet')}</h2>
-                        <p className="max-w-md mt-1 mb-6">{t('no_files_yet_subtitle')}</p>
-                    </div>
+                    <EmptyState
+                        icon={<FolderOpenIcon />}
+                        title={t('no_files_yet')}
+                        description={t('no_files_yet_subtitle')}
+                        className="min-h-[48vh]"
+                    />
                 )}
                 </div>
               </div>

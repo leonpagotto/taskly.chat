@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- Marketing entry point for Taskly features overview. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/taskly_symbol.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Taskly Features | Taskly.chat</title>
+    <meta name="description" content="Explore Taskly’s AI-powered features for tasks, notes, requests, and stories. See how teams plan and execute in one workspace." />
+    <meta property="og:title" content="Taskly Features" />
+    <meta property="og:description" content="Discover AI-assisted planning, collaboration, and reporting inside Taskly." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://taskly.chat/features" />
+    <meta property="og:image" content="https://taskly.chat/social-card.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300&display=swap" />
+    <style>
+      :root {
+        --color-primary-600: #3B82F6;
+        --color-primary-700: #2563EB;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 300,
+          'GRAD' 0,
+          'opsz' 24;
+        line-height: 1;
+        vertical-align: middle;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-white">
+    <div id="root"></div>
+    <!--
+      Vite entry hydrates the React features page.
+      Designers can tweak copy inside FeaturesPage.tsx for rapid iteration.
+    -->
+    <script type="module" src="/features.tsx"></script>
+  </body>
+</html>

@@ -182,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 			<div className="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-md" onClick={e => e.stopPropagation()}>
 				<header className="p-4 flex items-center justify-between border-b border-gray-700">
 					<div className="flex items-center gap-2">
-						<TasklyLogo size={24} fill="white" />
+						<TasklyLogo size={28} />
 						<h2 className="text-lg font-semibold">{title}</h2>
 					</div>
 					<button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
@@ -272,7 +272,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSignIn, onSignU
 					<button
 						type="submit"
 						disabled={disablePrimary}
-						className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed"
+						className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed"
 					>
 						{status === 'loading' ? 'Please wait…' : mode === 'sign-in' ? 'Sign in' : 'Create account'}
 					</button>

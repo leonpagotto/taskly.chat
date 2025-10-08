@@ -83,7 +83,7 @@ const FilterDropdown: React.FC<{
     <div ref={dropdownRef} className={wrapperClass}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"}
+        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"}
       >
         <div className="flex items-center gap-2 truncate">
           <Icon name={type === 'project' ? 'folder' : 'category'} className="text-base flex-shrink-0" />
@@ -92,10 +92,10 @@ const FilterDropdown: React.FC<{
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             <li>
-              <button onClick={() => { onSelect('all'); setIsOpen(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600">
+              <button onClick={() => { onSelect('all'); setIsOpen(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80">
                 {defaultLabel}
               </button>
             </li>
@@ -103,7 +103,7 @@ const FilterDropdown: React.FC<{
               <li key={item.id}>
                 <button
                   onClick={() => { onSelect(item.id); setIsOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${selectedId === item.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${selectedId === item.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {(item as any).name}
                 </button>
@@ -147,7 +147,7 @@ const SortDropdown: React.FC<{
     <div ref={dropdownRef} className={wrapperClass}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"}
+        className={buttonClassName || "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"}
       >
         <div className="flex items-center gap-2 truncate">
           <Icon name="swap_vert" className="text-base flex-shrink-0" />
@@ -156,13 +156,13 @@ const SortDropdown: React.FC<{
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             {opts.map(opt => (
               <li key={opt.value}>
                 <button
                   onClick={() => { onChange(opt.value); setIsOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {opt.label}
                 </button>
@@ -217,7 +217,7 @@ const TimeDropdown: React.FC<{
     <div ref={dropdownRef} className={wrapperClass}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={buttonClassName || 'w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'}
+        className={buttonClassName || 'w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]'}
       >
         <div className="flex items-center gap-2 truncate">
           <CalendarTodayIcon className="text-base flex-shrink-0" />
@@ -226,14 +226,14 @@ const TimeDropdown: React.FC<{
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
           {!showPicker ? (
             <ul className="max-h-80 overflow-y-auto">
               {(['all','year','month','week','next30','next7','today'] as TimeFilterKey[]).map(k => (
                 <li key={k}>
                   <button
                     onClick={() => { onChange(k); setIsOpen(false); }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === k ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${value === k ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                   >
                     {labelFor(k)}
                   </button>
@@ -242,7 +242,7 @@ const TimeDropdown: React.FC<{
               <li>
                 <button
                   onClick={() => { onChange('custom'); setShowPicker(true); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === 'custom' ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${value === 'custom' ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   Custom range…
                 </button>
@@ -266,8 +266,18 @@ const TimeDropdown: React.FC<{
                 />
               </div>
               <div className="flex items-center justify-end gap-2 pt-1">
-                <button onClick={() => { onChangeCustomRange && onChangeCustomRange({ start: null, end: null }); onChange('custom'); setIsOpen(false); setShowPicker(false); }} className="px-3 py-1.5 text-sm rounded-md bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500">Clear</button>
-                <button onClick={() => { onChange('custom'); setIsOpen(false); setShowPicker(false); }} className="px-3 py-1.5 text-sm rounded-md bg-[var(--color-primary-600)] text-white hover:opacity-90">Apply</button>
+                <button
+                  onClick={() => { onChangeCustomRange && onChangeCustomRange({ start: null, end: null }); onChange('custom'); setIsOpen(false); setShowPicker(false); }}
+                  className="px-3 py-1.5 text-sm rounded-[var(--radius-button)] resend-secondary hover:-translate-y-[1px] transition-transform duration-150"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={() => { onChange('custom'); setIsOpen(false); setShowPicker(false); }}
+                  className="px-3 py-1.5 text-sm rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg hover:shadow-xl transition-transform duration-150 hover:-translate-y-[1px]"
+                >
+                  Apply
+                </button>
               </div>
             </div>
           )}
@@ -293,12 +303,12 @@ const UnifiedToolbar: React.FC<UnifiedToolbarProps> = (props) => {
   } = props;
 
   const controlButtonClass = compactHeight === 'h10'
-    ? "w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
-    : "w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700";
+    ? "w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
+    : "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]";
 
   const containerClass = fluidControls
     ? "flex items-center gap-2 sm:gap-3 flex-wrap"
-    : "flex items-center gap-2 sm:gap-3 flex-nowrap overflow-x-auto scrollbar-hide";
+    : "flex items-center gap-2 sm:gap-3 flex-nowrap overflow-x-auto overflow-y-visible scrollbar-hide";
   const filterWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
   const sortWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;
   const timeWrap = fluidControls ? "relative flex-1 min-w-0" : undefined;

@@ -153,19 +153,11 @@ export default function SkillsSettings({
   return (
     <div className="space-y-6">
       {/* Header with AI suggestion */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Skills & Expertise
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Manage your professional skills to tag requests and track expertise.
-          </p>
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
         {occupation && (
           <button
             onClick={onGenerateSkills}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-lg hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-lg hover:opacity-90 transition-opacity"
           >
             <span className="material-symbols-outlined text-lg">auto_awesome</span>
             Suggest Skills for {occupation}
@@ -192,7 +184,7 @@ export default function SkillsSettings({
         {skillCategories.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 dark:bg-gray-700/50 flex items-center justify-center">
-              <span className="material-symbols-outlined text-3xl bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 bg-clip-text text-transparent">
+              <span className="material-symbols-outlined text-3xl bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] bg-clip-text text-transparent">
                 psychology
               </span>
             </div>

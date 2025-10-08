@@ -47,14 +47,15 @@ const NoteEditor: React.FC<{
     const formatDropdownRef = useRef<HTMLDivElement>(null);
     const [moreToolsOpen, setMoreToolsOpen] = useState(false);
     const moreToolsRef = useRef<HTMLDivElement>(null);
-    const [currentBlockType, setCurrentBlockType] = useState('Paragraph');
 
-    const formatOptions: { label: string; value: 'h1' | 'h2' | 'h3' | 'p' }[] = [
-        { label: 'Heading 1', value: 'h1' },
-        { label: 'Heading 2', value: 'h2' },
-        { label: 'Heading 3', value: 'h3' },
-        { label: 'Paragraph', value: 'p' },
-    ];
+    const formatOptions = [
+        { label: 'Title', block: 'h1' },
+        { label: 'Heading', block: 'h2' },
+        { label: 'Subheading', block: 'h3' },
+        { label: 'Paragraph', block: 'p' },
+    ] as const;
+
+    const [currentBlockType, setCurrentBlockType] = useState<typeof formatOptions[number]['label']>('Paragraph');
 
     useEffect(() => {
         isFirstLoadForNote.current = true;
@@ -93,8 +94,9 @@ const NoteEditor: React.FC<{
     useEffect(() => {
         const updateBlockType = () => {
             if (document.activeElement === editorRef.current) {
-                const type = document.queryCommandValue('formatBlock').toLowerCase();
-                const matchedOption = formatOptions.find(opt => opt.value === type);
+                const commandValue = document.queryCommandValue('formatBlock');
+                const type = typeof commandValue === 'string' ? commandValue.replace(/[<>]/g, '').toLowerCase() : '';
+                const matchedOption = formatOptions.find(opt => opt.block === type);
                 setCurrentBlockType(matchedOption ? matchedOption.label : 'Paragraph');
             }
         };
@@ -131,11 +133,127 @@ const NoteEditor: React.FC<{
     
     const applyFormat = (command: string, value: string | null = null) => {
         editorRef.current?.focus();
-        document.execCommand(command, false, value);
+        const normalizedValue = command === 'formatBlock' && value
+            ? (value.startsWith('<') ? value : `<${value}>`)
+            : value;
+        document.execCommand(command, false, normalizedValue);
         handleContentChange();
     }
+
+    const focusEditableElement = (element: HTMLElement) => {
+        const selection = window.getSelection();
+        if (!selection) return;
+        const newRange = document.createRange();
+        newRange.selectNodeContents(element);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+    };
+
+    const findClosestElement = (node: Node | null, predicate: (el: HTMLElement) => boolean): HTMLElement | null => {
+        let current: HTMLElement | null = node instanceof HTMLElement ? node : node?.parentElement ?? null;
+        while (current) {
+            if (predicate(current)) return current;
+            current = current.parentElement;
+        }
+        return null;
+    };
+
+    // Build a fresh checkbox row the editor can insert/reuse when a checklist is created.
+    const createCheckboxItem = () => {
+        const li = document.createElement('li');
+        li.className = 'note-checkbox-item';
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'note-checkbox-input';
+        checkbox.setAttribute('contenteditable', 'false');
+        const span = document.createElement('span');
+        span.className = 'note-checkbox-content';
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        return { li, span };
+    };
+
+    // Designers: this handler drops in a checklist block and keeps the caret inside the editable label.
+    const handleInsertCheckboxList = () => {
+        editorRef.current?.focus();
+        const selection = window.getSelection();
+        if (!selection) return;
+
+        const checkboxContent = findClosestElement(selection.focusNode, el => el.classList.contains('note-checkbox-content'));
+        if (checkboxContent) {
+            const currentLi = checkboxContent.closest('li');
+            const parentList = currentLi?.parentElement;
+            if (!currentLi || !parentList) return;
+            const { li: newLi, span: newSpan } = createCheckboxItem();
+            parentList.insertBefore(newLi, currentLi.nextSibling);
+            focusEditableElement(newSpan);
+            handleContentChange();
+            return;
+        }
+
+        const tempId = `checkbox-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const checkboxHTML = `<ul class="note-checkbox-list"><li class="note-checkbox-item"><input type="checkbox" class="note-checkbox-input" /><span class="note-checkbox-content" data-checkbox-id="${tempId}"></span></li></ul>`;
+        document.execCommand('insertHTML', false, checkboxHTML);
+        const insertedSpan = editorRef.current?.querySelector(`.note-checkbox-content[data-checkbox-id="${tempId}"]`) as HTMLElement | null;
+        if (insertedSpan) {
+            insertedSpan.removeAttribute('data-checkbox-id');
+            focusEditableElement(insertedSpan);
+        }
+        handleContentChange();
+    };
     
     const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter') {
+            const selection = window.getSelection();
+            if (!selection?.focusNode || !selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            const checkboxContent = findClosestElement(selection.focusNode, el => el.classList.contains('note-checkbox-content'));
+            if (checkboxContent && !e.shiftKey && range.collapsed) {
+                e.preventDefault();
+                const currentLi = checkboxContent.closest('li');
+                const parentList = currentLi?.parentElement;
+                if (!currentLi || !parentList) return;
+                const { li: newLi, span: newSpan } = createCheckboxItem();
+                parentList.insertBefore(newLi, currentLi.nextSibling);
+                focusEditableElement(newSpan);
+                handleContentChange();
+                return;
+            }
+            return;
+        }
+
+        if (e.key === 'Backspace') {
+            const selection = window.getSelection();
+            if (!selection?.focusNode || !selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            if (!range.collapsed) return;
+            const checkboxContent = findClosestElement(selection.focusNode, el => el.classList.contains('note-checkbox-content'));
+            if (checkboxContent && (checkboxContent.textContent ?? '').trim() === '') {
+                e.preventDefault();
+                const currentLi = checkboxContent.closest('li');
+                const parentList = currentLi?.parentElement;
+                if (!currentLi || !parentList) return;
+                const previousLi = currentLi.previousElementSibling as HTMLLIElement | null;
+                currentLi.remove();
+                if (parentList.children.length === 0) {
+                    const fallbackParagraph = document.createElement('p');
+                    fallbackParagraph.innerHTML = '<br />';
+                    parentList.replaceWith(fallbackParagraph);
+                    focusEditableElement(fallbackParagraph);
+                } else if (previousLi) {
+                    const previousSpan = previousLi.querySelector('.note-checkbox-content') as HTMLElement | null;
+                    if (previousSpan) focusEditableElement(previousSpan);
+                } else {
+                    const nextLi = parentList.firstElementChild as HTMLLIElement | null;
+                    const nextSpan = nextLi?.querySelector('.note-checkbox-content') as HTMLElement | null;
+                    if (nextSpan) focusEditableElement(nextSpan);
+                }
+                handleContentChange();
+                return;
+            }
+        }
+
         if (e.key !== ' ') return;
         const selection = window.getSelection();
         if (!selection?.rangeCount) return;
@@ -146,22 +264,25 @@ const NoteEditor: React.FC<{
         
         if (parentElement && editorRef.current?.contains(parentElement)) {
             const blockText = parentElement.textContent;
-            const headingMatch = blockText.match(/^(#{1,3})$/);
-            if (headingMatch) {
+                const headingMatch = blockText.match(/^(#{1,3})$/);
+                if (headingMatch) {
                 e.preventDefault();
                 const level = headingMatch[1].length;
                 parentElement.textContent = '';
-                document.execCommand('formatBlock', false, `h${level}`);
+                    document.execCommand('formatBlock', false, `<h${level}>`);
+                    handleContentChange();
                 return;
             }
             if (blockText === '*' || blockText === '-') {
                 e.preventDefault();
                 document.execCommand('insertUnorderedList');
+                    handleContentChange();
                 return;
             }
             if (blockText === '1.') {
                 e.preventDefault();
                 document.execCommand('insertOrderedList');
+                    handleContentChange();
                 return;
             }
         }
@@ -184,6 +305,7 @@ const NoteEditor: React.FC<{
                 selection.removeAllRanges();
                 selection.addRange(replacementRange);
                 document.execCommand('insertHTML', false, `<strong>${content}</strong>&nbsp;`);
+                handleContentChange();
                 return;
             }
             
@@ -197,6 +319,7 @@ const NoteEditor: React.FC<{
                 selection.removeAllRanges();
                 selection.addRange(replacementRange);
                 document.execCommand('insertHTML', false, `<em>${content}</em>&nbsp;`);
+                handleContentChange();
                 return;
             }
         }
@@ -233,11 +356,14 @@ const NoteEditor: React.FC<{
         }
     };
 
-    const EditorButton: React.FC<{ icon: React.ReactNode, command: string, value?: string | null, onClick?: () => void }> = ({ icon, command, value, onClick }) => (
+    const EditorButton: React.FC<{ icon: React.ReactNode, command: string, value?: string | null, onClick?: () => void, label?: string }> = ({ icon, command, value, onClick, label }) => (
         <button 
+            type="button"
             onMouseDown={e => e.preventDefault()} 
             onClick={onClick ? onClick : () => applyFormat(command, value)} 
             className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            aria-label={label}
+            title={label}
         >
             {icon}
         </button>
@@ -258,8 +384,8 @@ const NoteEditor: React.FC<{
 
     return (
     <>
-        <div className="flex-1 flex flex-col dark:bg-gray-800 min-h-0">
-             <div className="p-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between gap-1 flex-shrink-0 bg-gray-100/50 dark:bg-gray-900/30">
+       <div className="flex-1 flex flex-col min-h-0 bg-transparent">
+           <div className="p-2 border-b border-white/10 flex items-center justify-between gap-1 flex-shrink-0 bg-white/8 backdrop-blur-xl">
                 <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap overflow-x-auto scrollbar-hide">
                     <div ref={formatDropdownRef} className="relative">
                         <button onClick={() => setFormatDropdownOpen(p => !p)} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm flex-shrink-0">
@@ -271,9 +397,9 @@ const NoteEditor: React.FC<{
                             <div className="absolute top-full left-0 mt-1 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10 w-40">
                                 {formatOptions.map(opt => (
                                     <button
-                                        key={opt.value}
+                                        key={opt.block}
                                         onMouseDown={e => e.preventDefault()}
-                                        onClick={() => { applyFormat('formatBlock', opt.value); setFormatDropdownOpen(false); }}
+                                        onClick={() => { applyFormat('formatBlock', opt.block); setFormatDropdownOpen(false); }}
                                         className="w-full text-left px-3 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700/50"
                                     >
                                         {opt.label}
@@ -289,6 +415,7 @@ const NoteEditor: React.FC<{
                     <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
                     <EditorButton icon={<FormatListBulletedIcon />} command="insertUnorderedList" />
                     <EditorButton icon={<FormatListNumberedIcon />} command="insertOrderedList" />
+                    <EditorButton icon={<PlaylistAddCheckIcon />} command="insertCheckboxList" onClick={handleInsertCheckboxList} label="Checklist" />
                     
                     <div className="hidden sm:flex items-center gap-1">
                         <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
@@ -308,6 +435,7 @@ const NoteEditor: React.FC<{
                                 <MoreMenuItem icon={<ImageIcon />} label="Insert Image" onClick={handleInsertImageClick} />
                                 <MoreMenuItem icon={<FormatQuoteIcon />} label="Blockquote" onClick={() => applyFormat('formatBlock', 'blockquote')} />
                                 <MoreMenuItem icon={<CodeIcon />} label="Code Block" onClick={() => applyFormat('formatBlock', 'pre')} />
+                                <MoreMenuItem icon={<PlaylistAddCheckIcon />} label="Checklist" onClick={handleInsertCheckboxList} />
                             </div>
                             <MoreMenuItem icon={<PaperclipIcon />} label="Attach File" onClick={handleUploadClick} />
                         </div>
@@ -320,11 +448,16 @@ const NoteEditor: React.FC<{
                 contentEditable
                 onInput={handleContentChange}
                 onKeyDown={handleEditorKeyDown}
-                className="prose prose-sm sm:prose-base dark:prose-invert max-w-none flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto focus:outline-none note-editor-content"
+                onPaste={(e) => {
+                    e.preventDefault();
+                    const text = e.clipboardData.getData('text/plain');
+                    document.execCommand('insertText', false, text);
+                }}
+                className="prose prose-sm sm:prose-base dark:prose-invert max-w-none flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto focus:outline-none note-editor-content bg-transparent"
                 suppressContentEditableWarning={true}
             />
              {attachedFiles.length > 0 && (
-                <div className="flex-shrink-0 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-900/30">
+                <div className="flex-shrink-0 p-3 border-t border-white/10 bg-white/8 backdrop-blur-xl">
                     <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide">
                         {attachedFiles.map(file => (
                             <div key={file.id} onClick={() => onPreviewFile(file)} className="flex-shrink-0 w-32 h-20 bg-gray-200 dark:bg-gray-800 rounded-lg flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden">
@@ -384,7 +517,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
     };
     
     const handleCreateTasksFromNote = (data: { listName: string, tasks: { text: string, dueDate?: string }[] }) => {
-        const newTasks: Task[] = data.tasks.map(t => ({ id: `task-${Date.now()}-${Math.random()}`, text: t.text, completedAt: null }));
+        const newTasks: Task[] = data.tasks.map(t => ({ id: crypto.randomUUID(), text: t.text, completedAt: null }));
         
         const newChecklist: Omit<Checklist, 'id'> = {
             name: data.listName,
@@ -421,8 +554,8 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
             onLink={handleLinkToProject}
             itemType="Note"
         />
-        <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-            <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-800 flex-shrink-0 gap-3">
+        <div className="flex-1 flex flex-col h-full bg-[rgba(15,18,31,0.92)] backdrop-blur-2xl shadow-[0_22px_68px_rgba(8,11,30,0.52)] overflow-hidden">
+            <header className="flex items-center justify-between px-5 py-4 gap-3 border-b border-white/10 bg-white/8 backdrop-blur-xl text-slate-100 flex-shrink-0">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                     <button onClick={onToggleSidebar} className="md:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                         <WidthNormalIcon className="w-6 h-6" />
@@ -445,7 +578,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     <button 
                         onClick={handleGenerateTasks} 
                         disabled={isGeneratingTasks}
-                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700 disabled:opacity-50"
+                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <PlaylistAddCheckIcon className="text-base" />
                         <span className="hidden sm:inline">{isGeneratingTasks ? 'Generating...' : 'Generate Tasks'}</span>
@@ -474,13 +607,13 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                             } as Partial<Request>;
                             window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
                         }}
-                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700"
+                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
                         title="Convert to Request"
                     >
                         <AddIcon className="text-base" />
                         <span className="hidden sm:inline">Request</span>
                     </button>
-                    <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-lg transition-colors bg-gray-200/80 dark:bg-gray-700/50 hover:bg-gray-300/80 dark:hover:bg-gray-700">
+                    <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
                         <CreateNewFolderIcon className="text-base" />
                     </button>
                 </div>

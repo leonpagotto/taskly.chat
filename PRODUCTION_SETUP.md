@@ -19,6 +19,12 @@ Notes:
 - If Supabase vars are missing, the app will continue using localStorage only.
 - The current implementation stores the whole app state as a single JSON document per user (`app_state.data`). You can later evolve this to normalized tables as needed.
 
+### Ship the static marketing pages
+
+- `about.html`, `features.html`, and `contact.html` are standalone entry points that share the marketing layout (`components/marketing/MarketingLayout.tsx`).
+- They are bundled automatically by `npm run build`; no extra configuration is required. When hosting on static platforms, ensure your web server serves these files directly rather than rewriting all routes to `index.html`.
+- The main SPA at `/` still handles authenticated and guest flows; marketing CTAs deep-link to `/` with `?login=open` so the auth modal opens immediately.
+
 ### Email + password authentication with verification
 
 1) In the Supabase Dashboard, enable **Email confirmations** under **Authentication → Providers → Email**. Keep the default `Confirm email` toggle on so users must verify their address before the first sign-in.

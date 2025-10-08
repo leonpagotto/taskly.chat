@@ -257,6 +257,10 @@ export const relationalDb = {
       p_tasks: tasks,
       p_completion_dates: completionHistory,
     });
+    if (rpcErr) {
+      console.error('❌ RPC upsert_checklist_bundle failed:', rpcErr);
+      console.error('📦 Payload was:', { p_checklist: rpcChecklist, p_tasks: tasks, p_completion_dates: completionHistory });
+    }
     if (!rpcErr && rpcData) {
       return this.getChecklist(rpcData as unknown as string);
     }
@@ -275,8 +279,12 @@ export const relationalDb = {
       source_note_id: rest.sourceNoteId || null,
       generated_checklist_id: rest.generatedChecklistId || null,
     } as any;
-    const { data: listRow } = await supabase.from('checklists').upsert(base).select('*').single();
-    const listId = listRow!.id as string;
+    const { data: listRow, error: upsertError } = await supabase.from('checklists').upsert(base).select('*').single();
+    if (upsertError || !listRow) {
+      console.error('❌ Failed to upsert checklist:', upsertError);
+      throw new Error(`Failed to save checklist: ${upsertError?.message || 'Unknown error'}`);
+    }
+    const listId = listRow.id as string;
     await supabase.from('tasks').delete().eq('checklist_id', listId);
     if (tasks.length) {
       const taskRows = tasks.map((t: Task) => ({ ...(t.id ? { id: t.id } : {}), user_id: u.user_id, checklist_id: listId, text: t.text, completed_at: t.completedAt || null }));
@@ -462,16 +470,16 @@ export const relationalDb = {
     const supabase = getSupabase();
     if (!supabase) return [];
     const { data } = await supabase.from('stories').select('*').order('created_at', { ascending: false });
-    return (data || []).map(s => ({ id: s.id, title: s.title, description: s.description || undefined, projectId: s.project_id || undefined, categoryId: s.category_id || undefined, status: s.status, acceptanceCriteria: (s.acceptance_criteria || []).map((ac: any, i: number) => ({ id: ac.id || `ac-${i}`, text: ac.text, done: !!ac.done })), estimatePoints: s.estimate_points || undefined, estimateTime: s.estimate_time || undefined, linkedTaskIds: s.linked_task_ids || [], assigneeUserId: s.assignee_user_id || undefined, assigneeName: s.assignee_name || undefined, requesterUserId: s.requester_user_id || undefined, requesterName: s.requester_name || undefined, createdAt: new Date(s.created_at).toISOString(), updatedAt: new Date(s.updated_at).toISOString() }));
+    return (data || []).map(s => ({ id: s.id, title: s.title, description: s.description || undefined, projectId: s.project_id || undefined, categoryId: s.category_id || undefined, status: s.status, acceptanceCriteria: (s.acceptance_criteria || []).map((ac: any, i: number) => ({ id: ac.id || `ac-${i}`, text: ac.text, done: !!ac.done })), estimatePoints: s.estimate_points || undefined, estimateTime: s.estimate_time || undefined, linkedTaskIds: s.linked_task_ids || [], skillIds: s.skill_ids || [], assigneeUserId: s.assignee_user_id || undefined, assigneeName: s.assignee_name || undefined, requesterUserId: s.requester_user_id || undefined, requesterName: s.requester_name || undefined, createdAt: new Date(s.created_at).toISOString(), updatedAt: new Date(s.updated_at).toISOString() }));
   },
   async upsertStory(payload: Omit<Story, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Story | null> {
     const supabase = getSupabase();
     const u = await withUser();
     if (!supabase || !u) return null;
-  const base = { ...(payload as any).id ? { id: (payload as any).id } : {}, user_id: u.user_id, title: payload.title, description: payload.description || null, project_id: payload.projectId || null, category_id: payload.categoryId || null, status: payload.status, acceptance_criteria: payload.acceptanceCriteria || [], estimate_points: payload.estimatePoints || null, estimate_time: payload.estimateTime || null, linked_task_ids: payload.linkedTaskIds || [], assignee_user_id: payload.assigneeUserId || null, assignee_name: payload.assigneeName || null, requester_user_id: payload.requesterUserId || null, requester_name: payload.requesterName || null } as any;
+  const base = { ...(payload as any).id ? { id: (payload as any).id } : {}, user_id: u.user_id, title: payload.title, description: payload.description || null, project_id: payload.projectId || null, category_id: payload.categoryId || null, status: payload.status, acceptance_criteria: payload.acceptanceCriteria || [], estimate_points: payload.estimatePoints || null, estimate_time: payload.estimateTime || null, linked_task_ids: payload.linkedTaskIds || [], skill_ids: payload.skillIds || [], assignee_user_id: payload.assigneeUserId || null, assignee_name: payload.assigneeName || null, requester_user_id: payload.requesterUserId || null, requester_name: payload.requesterName || null } as any;
     const { data, error } = await supabase.from('stories').upsert(base).select('*').single();
     if (error) return null;
-    return { id: data.id, title: data.title, description: data.description || undefined, projectId: data.project_id || undefined, categoryId: data.category_id || undefined, status: data.status, acceptanceCriteria: (data.acceptance_criteria || []).map((ac: any, i: number) => ({ id: ac.id || `ac-${i}`, text: ac.text, done: !!ac.done })), estimatePoints: data.estimate_points || undefined, estimateTime: data.estimate_time || undefined, linkedTaskIds: data.linked_task_ids || [], assigneeUserId: data.assignee_user_id || undefined, assigneeName: data.assignee_name || undefined, requesterUserId: data.requester_user_id || undefined, requesterName: data.requester_name || undefined, createdAt: new Date(data.created_at).toISOString(), updatedAt: new Date(data.updated_at).toISOString() };
+    return { id: data.id, title: data.title, description: data.description || undefined, projectId: data.project_id || undefined, categoryId: data.category_id || undefined, status: data.status, acceptanceCriteria: (data.acceptance_criteria || []).map((ac: any, i: number) => ({ id: ac.id || `ac-${i}`, text: ac.text, done: !!ac.done })), estimatePoints: data.estimate_points || undefined, estimateTime: data.estimate_time || undefined, linkedTaskIds: data.linked_task_ids || [], skillIds: data.skill_ids || [], assigneeUserId: data.assignee_user_id || undefined, assigneeName: data.assignee_name || undefined, requesterUserId: data.requester_user_id || undefined, requesterName: data.requester_name || undefined, createdAt: new Date(data.created_at).toISOString(), updatedAt: new Date(data.updated_at).toISOString() };
   },
   async deleteStory(id: string): Promise<void> {
     const supabase = getSupabase();
@@ -494,6 +502,7 @@ export const relationalDb = {
       affectedUsers: r.affected_users,
       priority: r.priority,
       requestedExpertise: r.requested_expertise || [],
+      skillIds: r.skill_ids || [],
       desiredStartDate: r.desired_start_date || null,
       desiredEndDate: r.desired_end_date || null,
       details: r.details || undefined,
@@ -525,6 +534,7 @@ export const relationalDb = {
       status: payload.status,
       linked_task_ids: payload.linkedTaskIds || [],
       requested_expertise: payload.requestedExpertise || [],
+      skill_ids: payload.skillIds || [],
     } as any;
     const { data, error } = await supabase.from('requests').upsert(base).select('*').single();
     if (error) return null;
@@ -538,6 +548,7 @@ export const relationalDb = {
       affectedUsers: data.affected_users,
       priority: data.priority,
       requestedExpertise: data.requested_expertise || [],
+      skillIds: data.skill_ids || [],
       desiredStartDate: data.desired_start_date || null,
       desiredEndDate: data.desired_end_date || null,
       details: data.details || undefined,

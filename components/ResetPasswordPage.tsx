@@ -110,7 +110,7 @@ export const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onComplete
 						<button
 							type="submit"
 							disabled={status === 'loading' || status === 'success' || !newPassword || !confirmPassword}
-							className="flex-1 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition"
+							className="flex-1 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition"
 						>
 							{status === 'loading' ? 'Updating...' : status === 'success' ? 'Success!' : 'Update Password'}
 						</button>

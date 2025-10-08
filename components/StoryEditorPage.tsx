@@ -87,12 +87,12 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, ski
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    <div className="flex-1 flex flex-col h-full">
       <Header
         title={<div className="flex items-center gap-2"><button onClick={onBack} className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"><ArrowBackIcon className="text-base" /></button><span className="truncate">Edit Story</span></div>}
         onToggleSidebar={() => {}}
       >
-        <button onClick={save} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">Save</button>
+        <button onClick={save} className="px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full font-semibold hover:shadow-lg transition-all text-sm">Save</button>
       </Header>
 
       <main className="flex-1 overflow-y-auto px-4 sm:px-6 pb-28">
@@ -184,7 +184,7 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, ski
                                 }}
                                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                                   isSelected
-                                    ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                                    ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white'
                                     : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
                                 }`}
                                 title={skill.description || skill.name}

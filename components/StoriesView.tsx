@@ -1,10 +1,9 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { Project, UserCategory, Story, StoryStatus } from '../types';
-import { Icon, ExpandMoreIcon } from './icons';
-import { MoreVertIcon } from './icons';
+import { Icon, ExpandMoreIcon, MoreVertIcon, AddIcon } from './icons';
 import UnifiedToolbar from './UnifiedToolbar';
 import Header from './Header';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
 
 interface StoriesViewProps {
 	stories: Story[];
@@ -16,10 +15,9 @@ interface StoriesViewProps {
 	onDeleteStory?: (id: string) => void;
 	onToggleSidebar?: () => void;
 	onMoveStory?: (id: string, status: StoryStatus) => void;
-  onLoadSampleData?: () => void;
 }
 
-const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCategories, onCreateStory, onSelectStory, onEditStory, onDeleteStory, onToggleSidebar, onMoveStory, onLoadSampleData }) => {
+const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCategories, onCreateStory, onSelectStory, onEditStory, onDeleteStory, onToggleSidebar, onMoveStory }) => {
 	const getCategory = (catId?: string) => userCategories.find(c => c.id === catId);
 	const getProject = (projId?: string) => projects.find(p => p.id === projId);
 	const STORAGE_KEY = 'stories.filters.v1';
@@ -50,6 +48,34 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 	const [viewMode, setViewMode] = useState<'list' | 'board'>(() => (typeof window !== 'undefined' ? loadPersisted().viewMode : 'list'));
 	const [statusFilter, setStatusFilter] = useState<'all' | StoryStatus>(() => (typeof window !== 'undefined' ? loadPersisted().status : 'all'));
 	const [sortBy, setSortBy] = useState<'updated' | 'created'>(() => (typeof window !== 'undefined' ? loadPersisted().sortBy : 'updated'));
+	const filtersActive = selectedProjectId !== 'all' || selectedCategoryId !== 'all' || statusFilter !== 'all';
+	const hasStories = stories.length > 0;
+
+	const handleResetFilters = () => {
+		setSelectedProjectId('all');
+		setSelectedCategoryId('all');
+		setStatusFilter('all');
+	};
+
+	const emptyTitle = hasStories ? 'No stories match these filters' : 'Create your first story';
+	const emptyDescription = hasStories
+		? 'Adjust your project, category, or status filters to surface more stories or start a new one.'
+		: 'Shape product narratives, capture requirements, and give the team a shared source of truth by drafting your first story.';
+	const emptyPrimaryAction = onCreateStory
+		? {
+			label: 'New Story',
+			onClick: () => onCreateStory(),
+			icon: <AddIcon className="text-base" />,
+		}
+		: undefined;
+	const emptySecondaryAction = hasStories && filtersActive
+		? {
+			label: 'Reset filters',
+			onClick: handleResetFilters,
+			icon: <Icon name="filter_alt_off" className="text-base" />,
+			variant: 'secondary' as const,
+		}
+		: undefined;
 
 	useEffect(() => {
 		try {
@@ -188,16 +214,16 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 	};
 
 	return (
-		<div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+		<div className="flex-1 flex flex-col h-full">
 			<Header title="Stories" onToggleSidebar={onToggleSidebar || (() => {})} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
-				<button onClick={onCreateStory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
+				<button onClick={onCreateStory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm" style={{ color: '#FFFFFF' }}>
 					<Icon name="auto_stories" />
 					<span className="hidden sm:inline">New Story</span>
 				</button>
 			</Header>
 
 			{/* Primary filter bar (full width background) */}
-			<div className="bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+			<div className="border-b border-white/10">
 				<div className="px-4 sm:px-6">
 					<div className="w-full py-4">
 						<UnifiedToolbar
@@ -232,23 +258,15 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 			<div className="px-4 sm:px-6">
 				<div className="w-full py-4 sm:py-6">
 					{sortedStories.length === 0 ? (
-						<div className="text-center text-gray-500 p-6 flex flex-col items-center justify-center min-h-[50vh]">
-							<EmptyStateIcon icon={<Icon name="auto_stories" />} size="lg" />
-							<h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-								{stories.length === 0 ? 'No stories yet' : 'No stories match filters'}
-							</h2>
-							<p className="max-w-md mt-1 mb-6 text-gray-500 dark:text-gray-400">
-								{stories.length === 0 
-									? 'Create your first story to track narrative progress.' 
-									: 'Try adjusting your filters (project, category, or status) or create a new story.'}
-							</p>
-							<div className="flex items-center gap-2">
-								<button onClick={onCreateStory} className="px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">New Story</button>
-								{onLoadSampleData && (
-									<button onClick={onLoadSampleData} className="px-6 py-3 rounded-[var(--radius-button)] font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">Load sample data</button>
-								)}
-							</div>
-						</div>
+						<EmptyState
+							icon={<Icon name="auto_stories" />}
+							title={emptyTitle}
+							description={emptyDescription}
+							primaryAction={emptyPrimaryAction}
+							secondaryAction={emptySecondaryAction}
+							variant="minimal"
+							className="mx-auto my-16 w-full max-w-3xl"
+						/>
 					) : viewMode === 'list' ? (
 						<div className="bg-transparent">
 							<div className="divide-y divide-gray-200 dark:divide-gray-700 rounded-xl overflow-hidden">
@@ -355,10 +373,10 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 												})
 											}
 											{sortedStories.filter(s => s.status === columnStatus).length === 0 && (
-													<div className="text-center text-gray-500 dark:text-gray-400 py-6">
-														<p className="text-sm">No stories in this column yet.</p>
-													</div>
-												)}
+												<div className="text-center py-8">
+													<p className="text-sm text-gray-400 dark:text-gray-500">No stories yet</p>
+												</div>
+											)}
 										</div>
 									</div>
 								);

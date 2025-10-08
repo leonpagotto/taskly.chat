@@ -3,7 +3,7 @@ import { Habit, Task, UserCategory, RecurrenceRule, Project, Checklist } from '.
 import { AddIcon, DeleteIcon, CheckCircleIcon, RadioButtonUncheckedIcon, CloseIcon, EditIcon, WarningIcon, AutorenewIcon, ExpandMoreIcon, CheckIcon, NewHabitIcon, FolderIcon, MoreVertIcon, CalendarTodayIcon, ListAltIcon, LocalFireDepartmentIcon, WidthNormalIcon } from './icons';
 import Header from './Header';
 import UnifiedToolbar from './UnifiedToolbar';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
 
 // A generic Icon component for Material Symbols
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
@@ -36,13 +36,13 @@ const FilterDropdown: React.FC<{
         <div ref={dropdownRef} className="relative flex-1 sm:flex-initial sm:w-52 min-w-0">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors bg-gray-100 dark:bg-gray-700/50 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600"
             >
                 <div className="flex items-center gap-2 truncate">
-                    <Icon name={type === 'project' ? 'folder' : 'category'} className="text-base flex-shrink-0" />
+                    <Icon name={type === 'project' ? 'folder' : 'category'} className="text-lg flex-shrink-0" />
                     <span className="truncate">{selectedItem ? selectedItem.name : defaultLabel}</span>
                 </div>
-                <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                <ExpandMoreIcon className={`text-xl transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
             {isOpen && (
                 <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
@@ -277,7 +277,7 @@ const HabitCard: React.FC<{
                     }
 
                     let dayStyle = 'bg-gray-200 dark:bg-gray-600/60 text-gray-600 dark:text-gray-400';
-                    if (isCompleted) dayStyle = 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white';
+                    if (isCompleted) dayStyle = 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white';
                     else if (isDue) dayStyle = 'hover:bg-gray-300 dark:hover:bg-gray-500';
 
                     let borderStyle = 'border-2 border-transparent';
@@ -325,7 +325,7 @@ const HabitsSortDropdown: React.FC<{ value: 'priority' | 'name' | 'streak'; onCh
     ];
     return (
         <div ref={ref} className="relative sm:w-52 w-full">
-            <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+            <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
                 <div className="flex items-center gap-2 truncate">
                     <Icon name="sort" className="text-base flex-shrink-0" />
                     <span className="truncate">{label}</span>
@@ -333,11 +333,11 @@ const HabitsSortDropdown: React.FC<{ value: 'priority' | 'name' | 'streak'; onCh
                 <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
-                <div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+                <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
                     <ul className="max-h-72 overflow-y-auto">
                         {opts.map(opt => (
                             <li key={opt.value}>
-                                <button onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
+                                <button onClick={() => { onChange(opt.value); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${value === opt.value ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
                                     {opt.label}
                                 </button>
                             </li>
@@ -379,9 +379,20 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
   const persisted = typeof window !== 'undefined' ? loadPersisted() : { projectId: 'all', categoryId: 'all', sortBy: 'priority' as SortBy };
 
   const [selectedProjectId, setSelectedProjectId] = useState<'all' | string>(persisted.projectId);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(persisted.categoryId);
-  const [sortBy, setSortBy] = useState<SortBy>(persisted.sortBy);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<'all' | string>(persisted.categoryId);
+    const [sortBy, setSortBy] = useState<SortBy>(persisted.sortBy);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+
+    // Track whether any filters are narrowing the list so we can surface a reset affordance in the empty state.
+    const filtersActive = selectedProjectId !== 'all' || selectedCategoryId !== 'all' || sortBy !== 'priority';
+    const hasHabits = habits.length > 0;
+
+    // Reset all filters back to their defaults when the empty state prompts the user to clear them.
+    const handleResetFilters = () => {
+        setSelectedProjectId('all');
+        setSelectedCategoryId('all');
+        setSortBy('priority');
+    };
 
   useEffect(() => {
     try {
@@ -428,27 +439,45 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
     }
   });
   
-  const filteredHabits = sortedHabits.filter(habit => {
+    const filteredHabits = sortedHabits.filter(habit => {
       const projectMatch = selectedProjectId === 'all' || habit.projectId === selectedProjectId;
       const categoryMatch = selectedCategoryId === 'all' || habit.categoryId === selectedCategoryId;
       return projectMatch && categoryMatch;
   });
 
-  return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    const emptyTitle = hasHabits ? 'No habits match these filters' : t('no_habits_yet');
+    const emptyDescription = hasHabits
+        ? 'Adjust the project, category, or sort controls to rediscover your routines.'
+        : t('no_habits_yet_subtitle');
+    const emptyPrimaryAction = {
+        label: t('create_habit'),
+        onClick: onNewHabitRequest,
+        icon: <AddIcon className="text-base" />,
+    };
+    const emptySecondaryAction = hasHabits && filtersActive
+        ? {
+                label: 'Reset filters',
+                onClick: handleResetFilters,
+                icon: <Icon name="filter_alt_off" className="text-base" />,
+                variant: 'secondary' as const,
+            }
+        : undefined;
+
+    return (
+        <div className="flex-1 flex flex-col h-full">
             <Header title={t('habits')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
-        <button onClick={onNewHabitRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={onNewHabitRequest} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm" style={{ color: '#FFFFFF' }}>
             <NewHabitIcon />
             <span className="hidden sm:inline">{t('new_habit')}</span>
         </button>
       </Header>
             <div className="flex-1 overflow-y-auto">
                 {/* Mobile: Compact filter button */}
-                <div className="md:hidden bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div className="md:hidden border-b border-white/10">
                     <div className="px-4 py-3">
                         <button
                             onClick={() => setFilterPanelOpen(true)}
-                            className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
+                            className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"
                         >
                             <div className="flex items-center gap-2">
                                 <Icon name="tune" className="text-xl" />
@@ -460,7 +489,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                 </div>
 
                 {/* Desktop: Full toolbar */}
-                <div className="hidden md:block bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div className="hidden md:block border-b border-white/10">
                     <div className="px-4 sm:px-6">
                         <div className="w-full py-4">
                             <UnifiedToolbar 
@@ -482,9 +511,9 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                 {filterPanelOpen && (
                     <>
                         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setFilterPanelOpen(false)} />
-                        <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl z-50 md:hidden transform transition-transform duration-300">
+                        <div className="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[rgba(31,41,55,0.95)] shadow-2xl z-50 md:hidden transform transition-transform duration-300 backdrop-blur-lg">
                             <div className="flex flex-col h-full">
-                                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-[rgba(31,41,55,0.95)] backdrop-blur-lg">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filters & Sort</h3>
                                     <button onClick={() => setFilterPanelOpen(false)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                                         <CloseIcon />
@@ -512,7 +541,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                                                     onClick={() => setSortBy(opt.value)}
                                                     className={`w-full px-4 py-2.5 rounded-lg text-left font-medium transition-colors ${
                                                         sortBy === opt.value
-                                                            ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white'
+                                                            ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white'
                                                             : 'bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                                     }`}
                                                 >
@@ -525,7 +554,7 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
                                 <div className="p-4 border-t border-gray-200 dark:border-gray-700">
                                     <button
                                         onClick={() => setFilterPanelOpen(false)}
-                                        className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold"
+                                        className="w-full px-4 py-2.5 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white font-semibold"
                                     >
                                         Apply Filters
                                     </button>
@@ -555,16 +584,17 @@ const HabitsView: React.FC<HabitsViewProps> = (props) => {
               )
             })}
           </div>
-        ) : (
-            <div className="text-center text-gray-500 flex flex-col items-center justify-center min-h-[50vh] p-6">
-                <EmptyStateIcon icon={<NewHabitIcon />} size="lg" />
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('no_habits_yet')}</h2>
-                <p className="max-w-md mt-1 mb-6">{habits.length > 0 ? 'No habits match the current filters.' : t('no_habits_yet_subtitle')}</p>
-                 <button onClick={onNewHabitRequest} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
-                    {t('create_habit')}
-                </button>
-            </div>
-        )}
+                ) : (
+                    <EmptyState
+                        icon={<NewHabitIcon className="text-4xl" />}
+                        title={emptyTitle}
+                        description={emptyDescription}
+                        primaryAction={emptyPrimaryAction}
+                        secondaryAction={emptySecondaryAction}
+                        variant="minimal"
+                        className="mx-auto my-16 w-full max-w-3xl"
+                    />
+                )}
                         </main>
                     </div>
                 </div>

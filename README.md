@@ -26,6 +26,7 @@ Taskly Chat is a React + Vite + TypeScript single-page app. It runs fully in the
 
 ## Features
 
+- Guest try-before-signup experience that mirrors the Auth SPA in a ChatGPT-style layout
 - Unified toolbar across Tasks, Habits, and Stories (project/category selectors, period/status toggles, right-side extras)
 - Consistent cards, headers, modals, and empty states
 - Stories: list + kanban board with drag-and-drop; full-page story editor
@@ -33,11 +34,20 @@ Taskly Chat is a React + Vite + TypeScript single-page app. It runs fully in the
 - Habits: streaks and completion rate, 7-day view, recurrence
 - Notes: simple rich text, attachments, “note to tasks” extraction
 - Calendar and Files pages
+- **Microsoft Calendar Integration**: Sync Outlook/Teams calendars via OAuth 2.0 (see [MICROSOFT_CALENDAR_QUICKSTART.md](./MICROSOFT_CALENDAR_QUICKSTART.md))
 - Requests: intake form, prioritization board, and update timeline synced to Supabase
 - Collaboration: shared projects with invites, member roles, and live updates
 - Authentication: email/password, magic links, and password reset powered by Supabase Auth
 - Offline queue with local fallbacks; sync once connectivity returns
 - Optional Gemini AI integration for drafting and assistance
+- **Optional Microsoft Calendar integration** for Outlook/Teams event syncing
+
+## Guest + marketing experiences
+
+- **Guest workspace** — Anonymous visitors land in `components/guest/GuestExperience.tsx`. They can chat with the AI and create up to five trial tasks. The session persists in `sessionStorage` via `services/guestSessionService.ts` so refreshing keeps progress intact.
+- **Automatic migration on signup** — After successful authentication, guest chats/tasks are imported into the signed-in account (see `App.tsx`, look for the `guestSessionService` effect). A toast confirms the import and the guest storage key is cleared.
+- **Marketing entry points** — Static HTML shells (`about.html`, `features.html`, `contact.html`) each load a dedicated Vite entry (`about.tsx`, `features.tsx`, `contact.tsx`). All pages share `components/marketing/MarketingLayout.tsx` for consistent navigation and footer styling. Update the copy in `components/marketing/*.tsx` to iterate quickly without touching the SPA shell.
+- **Linking back to the app** — Primary CTAs call `redirectToAppAuth`, which opens the main SPA with `?login=open` so users see the signup modal instantly.
 
 ⚠️ **Authentication Setup:** If you're experiencing login timeouts, see [SUPABASE_AUTH_SETUP.md](./SUPABASE_AUTH_SETUP.md) for fixing email rate limit issues.
 
@@ -153,6 +163,10 @@ npm run build
 ```bash
 npm run preview
 ```
+
+### Previewing static marketing pages locally
+
+After `npm run build`, open `dist/about.html`, `dist/features.html`, or `dist/contact.html` in a browser (or use `npm run preview` and navigate to `http://localhost:4173/about.html`, etc.). These pages are self-contained and deploy alongside the SPA bundle.
 
 ## Optional AI setup (Gemini)
 

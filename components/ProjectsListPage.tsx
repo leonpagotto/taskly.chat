@@ -2,7 +2,7 @@ import React from 'react';
 import { Project, UserCategory } from '../types';
 import { CreateNewFolderIcon, FolderIcon, WidthNormalIcon } from './icons';
 import Header from './Header';
-import EmptyStateIcon from './EmptyStateIcon';
+import EmptyState from './EmptyState';
 
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
   <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -23,54 +23,103 @@ const ProjectCard: React.FC<{
   onSelect: () => void;
 }> = ({ project, category, onSelect }) => {
   const color = category?.color || '#64748B';
+  const iconName = category?.icon || project.icon || 'folder';
+
   return (
-  <div onClick={onSelect} className="bg-white dark:bg-gray-700/50 p-3 rounded-xl flex flex-col gap-2 group transition-all hover:shadow-md cursor-pointer">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}20` }}>
-          <Icon name={category?.icon || 'folder'} style={{ color }} className="text-2xl" />
+    <button
+      onClick={onSelect}
+      className="resend-glass-panel group relative w-full h-full rounded-2xl px-5 py-6 text-left overflow-hidden transition-transform duration-200 hover:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:ring-[rgba(139,92,246,0.55)]"
+      style={{ borderRadius: '20px' }}
+    >
+      {/* Soft gradient wash that picks up the category color */}
+      <span
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={{
+          background: `radial-gradient(circle at 20% 20%, ${color}33, transparent 55%)`,
+        }}
+      />
+      <div className="relative flex items-start gap-4">
+        <div
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-inner"
+          style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.18), 0 8px 20px ${color}25` }}
+        >
+          <Icon name={iconName} className="text-2xl" style={{ color }} />
         </div>
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate flex-1">{project.name}</h3>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-lg font-semibold text-gray-100">{project.name}</h3>
+            {category && (
+              <span className="resend-badge !text-[10px] uppercase tracking-[0.08em]" style={{ borderColor: `${color}55`, background: `${color}18`, color: `${color}ee` }}>
+                {category.name}
+              </span>
+            )}
+          </div>
+          <p className="mt-2 line-clamp-3 text-sm text-gray-400">
+            {project.description || 'No description provided yet. Add a quick summary to orient collaborators.'}
+          </p>
+        </div>
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 flex-grow">{project.description || 'No description.'}</p>
-    </div>
+      <div className="relative mt-6 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-gray-500">
+        <span className="flex items-center gap-2 font-semibold">
+          <WidthNormalIcon className="text-base" />
+          {project.instructions ? 'AI BRIEF ACTIVE' : 'PROJECT OVERVIEW'}
+        </span>
+        <span className="flex items-center gap-2 text-[10px]">
+          <span className="h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+          {project.members?.length ? `${project.members.length} collaborators` : 'Solo workspace'}
+        </span>
+      </div>
+    </button>
   );
 };
 
 
 const ProjectsListPage: React.FC<ProjectsListPageProps> = ({ projects, userCategories, onSelectProject, onNewProject, onToggleSidebar, t }) => {
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
-  <Header title={t('projects')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
-        <button onClick={onNewProject} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
-          <CreateNewFolderIcon />
+    <div className="resend-app-shell flex h-full flex-1 flex-col">
+      <Header
+        title={t('projects')}
+        onToggleSidebar={onToggleSidebar}
+        onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}
+      >
+        <button
+          onClick={onNewProject}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm"
+          style={{ color: '#FFFFFF' }}
+          title={t('new_project')}
+          aria-label={t('new_project')}
+        >
+          <CreateNewFolderIcon className="text-base" />
           <span className="hidden sm:inline">{t('new_project')}</span>
         </button>
       </Header>
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-4 sm:px-6">
-          <div className="mx-auto w-full max-w-5xl py-4 sm:py-6">
-        {projects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {projects.map(project => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                category={userCategories.find(c => c.id === project.categoryId)}
-                onSelect={() => onSelectProject(project.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center min-h-[50vh] p-6">
-            <EmptyStateIcon icon={<FolderIcon />} size="lg" />
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">No Projects Yet</h2>
-            <p className="max-w-md mt-1 mb-6">Projects help you group related tasks, notes, and chats. Create your first project to get started.</p>
-            <button onClick={onNewProject} className="mt-6 px-6 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
-              Create Your First Project
-            </button>
-          </div>
-        )}
-          </div>
+      <div className="flex-1 overflow-y-auto px-4 pb-10 sm:px-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 py-6">
+          {projects.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {projects.map(project => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  category={userCategories.find(c => c.id === project.categoryId)}
+                  onSelect={() => onSelectProject(project.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={<FolderIcon />}
+              title="Create your first project"
+              description="Projects gather related tasks, notes, and files into a single workspace. Spin up a project to unlock tailored AI support and keep teams aligned."
+              primaryAction={{
+                label: t('new_project'),
+                onClick: onNewProject,
+                icon: <CreateNewFolderIcon className="text-base" />,
+              }}
+              variant="minimal"
+              className="mx-auto my-16 w-full max-w-3xl"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -209,7 +209,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, defaultEmail, def
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-3 rounded-[var(--radius-button)] text-sm font-semibold text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-5 py-3 rounded-[var(--radius-button)] text-sm font-semibold text-white bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? 'Sending…' : (
                   <>

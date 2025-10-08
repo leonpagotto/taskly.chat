@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { SendIcon, PaperclipIcon, MicIcon, CloseIcon, AttachFileIcon } from './icons';
 import { parseRequestFromPrompt, isAIAvailable } from '../services/geminiService';
 import { AppView, AppLanguage } from '../types';
@@ -53,6 +53,8 @@ interface ChatInputBarProps {
   isMobileOverlay?: boolean;
   initialMode?: 'text' | 'voice' | null;
   onClose?: () => void;
+  mode?: 'chat' | 'request';
+  onCreateRequestFromInput?: (text: string) => Promise<void> | void;
 }
 
 const getLangCodeForSpeech = (lang: AppLanguage): string => {
@@ -67,14 +69,18 @@ const getLangCodeForSpeech = (lang: AppLanguage): string => {
     }
 }
 
-const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, currentView, activeProjectId, t, language, isMobileOverlay = false, initialMode = null, onClose }) => {
+const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, currentView, activeProjectId, t, language, isMobileOverlay = false, initialMode = null, onClose, mode = 'chat', onCreateRequestFromInput }) => {
   const [input, setInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const silenceTimerRef = useRef<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [requestLoading, setRequestLoading] = useState(false);
   
   const isSpeechSupported = !!SpeechRecognitionAPI;
+  const isRequestMode = mode === 'request';
+  const effectiveLoading = isRequestMode ? requestLoading : isLoading;
+  const iconButtonBase = "w-10 h-10 rounded-[var(--radius-button)] flex items-center justify-center outline-none focus:outline-none focus-visible:outline-none transition-all hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-white/35 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
 
   const handleMicClick = () => {
     if (!isSpeechSupported) return;
@@ -140,11 +146,33 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
     if (isMobileOverlay) {
         if (initialMode === 'text') {
             setTimeout(() => textareaRef.current?.focus(), 150);
-        } else if (initialMode === 'voice') {
+        } else if (initialMode === 'voice' && !isRequestMode) {
             handleMicClick();
         }
     }
-  }, [isMobileOverlay, initialMode]);
+  }, [isMobileOverlay, initialMode, isRequestMode]);
+
+  const createRequestDraft = useCallback(async (draftText: string) => {
+    const text = draftText.trim();
+    if (!text || requestLoading) return;
+    setRequestLoading(true);
+    try {
+      if (onCreateRequestFromInput) {
+        await onCreateRequestFromInput(text);
+      } else {
+        if (!isAIAvailable()) {
+          window.dispatchEvent(new CustomEvent('taskly.toast', { detail: 'AI not configured. Using a simple fallback to seed your request.' }));
+        }
+        const draft = await parseRequestFromPrompt(text);
+        window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
+      }
+      setInput('');
+    } catch (e) {
+      console.warn('Failed to parse request draft', e);
+    } finally {
+      setRequestLoading(false);
+    }
+  }, [onCreateRequestFromInput, requestLoading]);
 
   // Listen for global quick prompts to prefill or auto-send
   useEffect(() => {
@@ -164,14 +192,18 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
       if (!send) {
         setTimeout(() => textareaRef.current?.focus(), 0);
       }
-      if (send && !isLoading) {
-        onSendMessage(text.trim());
-        setInput('');
+      if (send) {
+        if (isRequestMode) {
+          createRequestDraft(text);
+        } else if (!isLoading) {
+          onSendMessage(text.trim());
+          setInput('');
+        }
       }
     };
     window.addEventListener('taskly.quickPrompt', handler as EventListener);
     return () => window.removeEventListener('taskly.quickPrompt', handler as EventListener);
-  }, [isListening, isLoading, onSendMessage]);
+  }, [isListening, isLoading, onSendMessage, isRequestMode, createRequestDraft]);
 
   const handleSend = () => {
     if (isListening && recognitionRef.current) {
@@ -179,6 +211,10 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
     }
     const text = input.trim();
     if (!text) return;
+    if (isRequestMode) {
+      createRequestDraft(text);
+      return;
+    }
     // Slash command to create a Request from the message: /request ... or /new-request ...
     if (text.toLowerCase().startsWith('/request ') || text.toLowerCase().startsWith('/new-request ')) {
       const payload = text.replace(/^\/(new-)?request\s+/i, '');
@@ -201,44 +237,36 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
   };
 
   const handleCreateRequestFromInput = async () => {
-    const text = input.trim();
-    if (!text) return;
-    try {
-      if (!isAIAvailable()) {
-        window.dispatchEvent(new CustomEvent('taskly.toast', { detail: 'AI not configured. Using a simple fallback to seed your request.' }));
-      }
-      const draft = await parseRequestFromPrompt(text);
-      // Open dedicated Request Intake page with AI-filled draft
-      window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
-      setInput('');
-    } catch (e) {
-      // Silent fail; optionally we could toast
-      console.warn('Failed to parse request draft', e);
-    }
+    createRequestDraft(input);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      if (isRequestMode) {
+        createRequestDraft(input);
+        return;
+      }
       handleSend();
     }
   };
   
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Reset height to recalculate
-      const scrollHeight = textareaRef.current.scrollHeight;
-      const maxHeight = window.innerHeight * 0.4;
-      if (scrollHeight > maxHeight) {
-        textareaRef.current.style.height = `${maxHeight}px`;
-      } else {
-        textareaRef.current.style.height = `${scrollHeight}px`;
-      }
-    }
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const minHeight = 56; // ensure a full line displays before scrolling appears
+    textarea.style.minHeight = `${minHeight}px`;
+    textarea.style.height = 'auto';
+    const scrollHeight = textarea.scrollHeight;
+    const maxHeight = window.innerHeight * 0.4;
+    const nextHeight = Math.max(scrollHeight, minHeight);
+    textarea.style.height = `${Math.min(nextHeight, maxHeight)}px`;
+    textarea.style.overflowY = nextHeight >= maxHeight ? 'auto' : 'hidden';
   }, [input]);
 
   const getPlaceholder = () => {
-    if (isListening) return "Listening...";
+  if (isListening) return "Listening...";
+  if (isRequestMode) return "Paste a request in one message…";
     if (isMobileOverlay) return "Ask or type command...";
     if (activeProjectId) return "Start a new chat in this project...";
     switch (currentView) {
@@ -248,17 +276,17 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
       default: return "Ask me anything...";
     }
   };
+  const wrapperClasses = isMobileOverlay
+    ? "fixed bottom-0 left-0 right-0 z-50 p-3 resend-glass-panel shadow-xl backdrop-blur-xl animate-slide-in-up"
+    : "p-4 resend-glass-panel shadow-xl flex-shrink-0 backdrop-blur-md";
   
   return (
     <>
-      <div className={isMobileOverlay 
-        ? "fixed bottom-0 left-0 right-0 z-50 p-2 bg-gray-100 dark:bg-gray-800 animate-slide-in-up" 
-        : "p-4 bg-gray-100 dark:bg-gray-800 flex-shrink-0"
-      }>
+      <div className={wrapperClasses} data-elevated={true}>
         <div className="mx-auto w-full max-w-[52rem]">
-        <div style={{ minHeight: '52px' }} className="bg-gray-200 dark:bg-gray-700 rounded-[14px] flex items-center py-1 px-2">
+        <div style={{ minHeight: '52px' }} className="resend-glass-panel flex items-center py-1 px-2 rounded-[14px] shadow-lg" data-elevated={true}>
           {isMobileOverlay && (
-            <button onClick={onClose} className="w-10 h-10 rounded-[var(--radius-button)] text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center mr-1">
+            <button onClick={onClose} className={`${iconButtonBase} resend-secondary mr-1`}>
               <CloseIcon className="text-2xl" />
             </button>
           )}
@@ -268,28 +296,43 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({ onSendMessage, isLoading, c
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={getPlaceholder()}
-            className="chat-input-textarea flex-1 bg-transparent text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none resize-none px-2 py-2 max-h-[40vh] overflow-y-auto mr-1 placeholder:truncate"
+            className="chat-input-textarea flex-1 bg-transparent text-gray-100 placeholder-gray-400 focus:outline-none resize-none px-2 py-2 max-h-[40vh] mr-1 placeholder:truncate overflow-y-hidden min-h-[56px]"
             rows={1}
-            disabled={isLoading}
+            disabled={effectiveLoading}
           />
-          <button className="w-10 h-10 rounded-[var(--radius-button)] text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center">
-              <AttachFileIcon className="text-2xl" />
-          </button>
-          {isSpeechSupported && (
-            <button 
-              onClick={handleMicClick} 
-              className={`w-10 h-10 rounded-[var(--radius-button)] transition-colors flex items-center justify-center ${isListening ? 'text-red-500 bg-red-500/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+          {!isRequestMode && (
+            <>
+              <button className={`${iconButtonBase} resend-secondary`}>
+                <AttachFileIcon className="text-2xl" />
+              </button>
+              {isSpeechSupported && (
+                <button 
+                  onClick={handleMicClick} 
+                  className={isListening 
+                    ? `${iconButtonBase} transition-colors text-red-400 bg-red-600/20`
+                    : `${iconButtonBase} resend-secondary transition-colors`}
+                >
+                  <MicIcon className="text-2xl" />
+                </button>
+              )}
+              <button 
+                onClick={handleSend} 
+                disabled={!input.trim() || isLoading} 
+                className="w-10 h-10 flex-shrink-0 text-white bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] disabled:bg-gray-500/40 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:shadow-lg hover:-translate-y-[1px] ml-1 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              >
+                <SendIcon className="text-2xl" />
+              </button>
+            </>
+          )}
+          {isRequestMode && (
+            <button
+              onClick={handleCreateRequestFromInput}
+              disabled={!input.trim() || requestLoading}
+              className="ml-2 flex items-center justify-center whitespace-nowrap px-3 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] disabled:opacity-60 disabled:cursor-not-allowed hover:shadow-lg hover:-translate-y-[1px] transition-all"
             >
-              <MicIcon className="text-2xl" />
+              {requestLoading ? 'Drafting…' : 'AI Draft'}
             </button>
           )}
-          <button 
-            onClick={handleSend} 
-            disabled={!input.trim() || isLoading} 
-            className="w-10 h-10 flex-shrink-0 text-white bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 rounded-[var(--radius-button)] disabled:bg-gray-400 dark:disabled:bg-gray-500 disabled:cursor-not-allowed transition-all flex items-center justify-center hover:shadow-lg ml-1"
-          >
-            <SendIcon className="text-2xl" />
-          </button>
           {/* Quick command button removed per request */}
         </div>
         </div>

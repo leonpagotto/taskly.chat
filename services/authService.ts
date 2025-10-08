@@ -7,7 +7,7 @@ export type AuthSession = {
 	lastSignInAt?: string | null;
 };
 
-type AuthResult = { error?: string; requiresVerification?: boolean };
+type AuthResult = { error?: string; requiresVerification?: boolean; session?: AuthSession | null };
 
 const mapUserToSession = (user: any | null): AuthSession | null => {
 	if (!user) return null;
@@ -76,10 +76,21 @@ export const authService = {
 		}
 		
 		try {
-			console.log('🔐 [authService] Calling supabase.auth.signInWithPassword');
+			console.log('🔐 [authService] About to call signInWithPassword...');
+			console.log('🔐 [authService] Email:', email);
 			
-			const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+			// Add explicit promise wrapping to track execution
+			const startTime = Date.now();
+			console.log('🔐 [authService] START TIME:', new Date(startTime).toISOString());
 			
+			const signInPromise = supabase.auth.signInWithPassword({ email, password });
+			console.log('🔐 [authService] Promise created, awaiting response...');
+			
+			const result = await signInPromise;
+			const endTime = Date.now();
+			console.log('🔐 [authService] END TIME:', new Date(endTime).toISOString(), 'Duration:', endTime - startTime, 'ms');
+			
+			const { data, error } = result;
 			console.log('🔐 [authService] ✅ Sign-in completed');
 			
 			if (error) {
@@ -89,13 +100,15 @@ export const authService = {
 				return { error: message, requiresVerification };
 			}
 			
+			let mappedSession: AuthSession | null = null;
 			if (data?.session) {
 				console.log('🔐 [authService] ✅ Session created successfully');
+				mappedSession = mapUserToSession(data.session.user);
 			}
-			
-			const result = { requiresVerification: !data.session };
-			console.log('🔐 [authService] Sign-in successful, result:', result);
-			return result;
+
+			const returnResult: AuthResult = { requiresVerification: !data.session, session: mappedSession };
+			console.log('🔐 [authService] Sign-in successful, result:', returnResult);
+			return returnResult;
 		} catch (err) {
 			console.error('🔐 [authService] ❌ Sign-in exception:', err);
 			return { error: err instanceof Error ? err.message : 'Sign in failed' };
@@ -186,14 +199,26 @@ export const authService = {
 	async getSession(): Promise<AuthSession | null> {
 		const supabase = getSupabase();
 		if (!supabase) return null;
-		const { data } = await supabase.auth.getUser();
-		return mapUserToSession(data.user);
+		const { data, error } = await supabase.auth.getSession();
+		if (error) {
+			console.error('🔐 [authService] getSession error:', error);
+			return null;
+		}
+		return mapUserToSession(data.session?.user ?? null);
 	},
 	onAuthStateChange(callback: (session: AuthSession | null) => void): () => void {
 		const supabase = getSupabase();
 		if (!supabase) return () => {};
-		const { data: subscription } = supabase.auth.onAuthStateChange(async () => {
-			const { data } = await supabase.auth.getUser();
+		const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+			console.log('🔐 [authService] onAuthStateChange event:', event, 'session:', session);
+			if (session?.user) {
+				callback(mapUserToSession(session.user));
+				return;
+			}
+			const { data, error } = await supabase.auth.getUser();
+			if (error) {
+				console.error('🔐 [authService] getUser error inside onAuthStateChange:', error);
+			}
 			callback(mapUserToSession(data.user));
 		});
 		return () => subscription.subscription.unsubscribe();

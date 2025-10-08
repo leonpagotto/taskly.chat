@@ -340,7 +340,7 @@ Today > empty stat should at least show the sections (tasks, stories and habits 
 
 Optimize the homepage UI, the icon sizes, alignment and more contextual (right habits icon for example)
 
-apply this icon ad taskly logo (website): <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=preliminary" />
+Use the official Taskly badge everywhere (import `TasklyLogo` or reference `/taskly_symbol.svg` from `public/`).
 
 —
 # User Story: Metrics Overview for Tasks, Stories, and Habits

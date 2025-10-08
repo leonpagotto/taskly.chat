@@ -43,18 +43,18 @@ const IconSelect: React.FC<{
 
   return (
     <div ref={dropdownRef} className="relative">
-      <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <div className="flex items-center gap-2 truncate">
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-700/70 transition-colors">
+        <div className="flex items-center gap-2 truncate flex-grow">
             {selectedItem ? getIcon(selectedItem) : (type === 'project' ? <FolderIcon className="text-base text-gray-400" /> : <Icon name="label" className="text-base text-gray-400" />)}
             <span className={`truncate ${selectedItem ? '' : 'text-gray-400'}`}>{selectedItem ? selectedItem.name : placeholder}</span>
         </div>
-        <ExpandMoreIcon className={`text-base text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <svg className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-2 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
       </button>
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-20 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto animate-fade-in-down">
           <ul>
-            <li><button onClick={() => { onSelect(''); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-gray-600 text-gray-400"><span>{placeholder}</span></button></li>
-            {items.map(item => (<li key={item.id}><button onClick={() => { onSelect(item.id); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-gray-600"><div className="w-5">{getIcon(item)}</div><span className="truncate">{item.name}</span></button></li>))}
+            <li><button onClick={() => { onSelect(''); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2.5 hover:bg-gray-600 text-gray-400 transition-colors"><span>{placeholder}</span></button></li>
+            {items.map(item => (<li key={item.id}><button onClick={() => { onSelect(item.id); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2.5 hover:bg-gray-600 transition-colors"><div className="w-5">{getIcon(item)}</div><span className="truncate">{item.name}</span></button></li>))}
           </ul>
         </div>
       )}
@@ -178,10 +178,10 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
   return (
     <>
       <ModalOverlay onClick={onClose} className="md:flex md:items-center md:justify-center md:p-4">
-        <div className="fixed inset-x-0 bottom-0 md:relative bg-gray-800 rounded-t-xl md:rounded-xl border-t md:border border-gray-700 w-full max-w-2xl max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
-                    <header className="p-4 flex items-center justify-between border-b border-gray-700">
-                        <h2 className="text-lg font-semibold">{isEditing ? 'Edit Event' : 'New Event'}</h2>
-                        <button onClick={onClose} className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white" aria-label="Close">
+        <div className="fixed inset-0 md:relative md:inset-auto bg-gray-800 rounded-none md:rounded-xl border-0 md:border border-gray-700 w-full max-w-2xl max-h-screen md:max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
+                    <header className="sticky top-0 z-20 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 flex items-center justify-between border-b border-gray-700">
+                        <h2 className="text-lg md:text-xl font-semibold">{isEditing ? 'Edit Event' : 'New Event'}</h2>
+                        <button onClick={onClose} className="w-9 h-9 rounded-full hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors" aria-label="Close">
                           <CloseIcon />
                         </button>
                     </header>
@@ -232,13 +232,13 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
                            </FormRow>
                         </div>
                     </main>
-          <footer className="p-4 border-t border-gray-700 flex items-center justify-between gap-4 sticky bottom-0 bg-gray-800/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(theme(spacing.4),env(safe-area-inset-bottom))]">
+          <footer className="sticky bottom-0 z-10 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 border-t border-gray-700 flex items-center justify-between gap-4">
                         {isEditing && onDelete ? (
-                          <button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-gray-700 hover:bg-gray-600 text-red-400 rounded-[var(--radius-button)] text-sm font-semibold transition-colors">
+                          <button onClick={() => setConfirmingDelete(true)} className="px-4 py-2.5 md:py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">
                             Delete
                           </button>
                         ) : <div></div>}
-              <button onClick={handleSave} disabled={(isEditing ? !isDirty : !localData.title?.trim()) || !!timeError} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
+              <button onClick={handleSave} disabled={(isEditing ? !isDirty : !localData.title?.trim()) || !!timeError} className="flex-1 px-4 py-2.5 md:py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">{isEditing ? 'Save Changes' : 'Create Event'}</button>
                     </footer>
         </div>
       </ModalOverlay>

@@ -4,6 +4,7 @@ import { UserPreferences, AIPersonality, AppTheme, AppColorTheme, AppLanguage, U
 import { SettingsIcon, WarningIcon, CheckCircleIcon, CloseIcon, DeleteIcon, EditIcon, LeftPanelOpenIcon } from './icons';
 import CategoriesView from './CategoriesView';
 import SkillsSettings from './SkillsSettings';
+import MicrosoftCalendarSettings from './MicrosoftCalendarSettings';
 import Header from './Header';
 
 interface SettingsViewProps {
@@ -53,7 +54,7 @@ const languageOptions: { value: AppLanguage; label: string }[] = [
     { value: 'auto', label: 'Auto-Detect' },
 ];
 
-type SettingsTab = 'profile' | 'ai' | 'appearance' | 'categories' | 'skills' | 'pulse';
+type SettingsTab = 'profile' | 'ai' | 'appearance' | 'categories' | 'skills' | 'pulse' | 'integrations';
 
 const SettingsCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-white dark:bg-gray-900/50 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700/50">
@@ -151,7 +152,7 @@ const PulseConfigModal: React.FC<{
                     {renderMetaFields()}
                 </main>
                  <footer className="p-4">
-                    <button onClick={() => onSave(config)} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
+                    <button onClick={() => onSave(config)} className="w-full px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all">
                         {isNew ? 'Add Widget' : 'Save Changes'}
                     </button>
                 </footer>
@@ -215,6 +216,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
         { id: 'appearance', label: t('settings_appearance') },
         { id: 'categories', label: t('categories') },
         { id: 'skills', label: 'Skills' },
+        { id: 'integrations', label: 'Integrations' },
         { id: 'pulse', label: t('settings_pulse') },
     ];
     
@@ -281,7 +283,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                                                 ) : (
                                                                     <div className="flex items-center justify-between">
                                                                         <div className="text-sm text-gray-400">Sync your data across devices</div>
-                                                                        <button onClick={() => onSignIn?.()} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow">Sign in</button>
+                                                                        <button onClick={() => onSignIn?.()} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold hover:shadow">Sign in</button>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -291,7 +293,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setShowUpgrade(true)}
-                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold hover:shadow"
                                 >
                                     Upgrade (mock)
                                 </button>
@@ -319,7 +321,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 </p>
                                 <button
                                     onClick={onOpenFeedback}
-                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold hover:shadow"
                                 >
                                     Open feedback form
                                 </button>
@@ -332,7 +334,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 </p>
                                 <button
                                     onClick={onOpenTutorial}
-                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                    className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold hover:shadow"
                                 >
                                     View tutorial
                                 </button>
@@ -378,7 +380,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                             setShowSaved(true);
                                             setTimeout(() => setShowSaved(false), 2000);
                                         }}
-                                        className="px-3 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold hover:shadow"
+                                        className="px-3 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold hover:shadow"
                                     >
                                         {apiKeyInput ? 'Save' : 'Clear'}
                                     </button>
@@ -400,23 +402,32 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
             case 'appearance':
                 return (
                     <SettingsCard title={t('settings_appearance')}>
-                        <ToggleSwitch label={t('settings_dark_mode')} checked={localPrefs.theme === 'dark'} onChange={checked => handleUpdateLocal({ theme: checked ? 'dark' : 'light' })} />
-                        <FormRow label={t('settings_color_theme')} htmlFor="color-theme">
+                        <FormRow label={t('settings_dark_mode')} htmlFor="dark-mode">
+                            <ToggleSwitch label="" checked={localPrefs.theme === 'dark'} onChange={checked => handleUpdateLocal({ theme: checked ? 'dark' : 'light' })} />
+                        </FormRow>
+                        <FormRow label={t('settings_color_theme')} htmlFor="color-theme" description="Choose your color theme. The gradient will be applied throughout the app.">
                             <div className="flex items-center gap-4">
                                 {colorThemeOptions.map(opt => (
-                                <button key={opt.value} onClick={() => handleUpdateLocal({ colorTheme: opt.value })} style={{backgroundColor: opt.hex}} className={`w-8 h-8 rounded-full transition-transform transform hover:scale-110 ${localPrefs.colorTheme === opt.value ? 'ring-2 ring-offset-2 ring-offset-gray-100 dark:ring-offset-gray-800 ring-white' : ''}`}></button>
+                                <button 
+                                    key={opt.value} 
+                                    onClick={() => handleUpdateLocal({ colorTheme: opt.value })} 
+                                    style={{backgroundColor: opt.hex}} 
+                                    className={`w-10 h-10 rounded-full transition-transform transform hover:scale-110 ${localPrefs.colorTheme === opt.value ? 'ring-4 ring-offset-2 ring-offset-gray-100 dark:ring-offset-gray-800 ring-[var(--color-primary-600)] shadow-lg' : 'ring-2 ring-gray-300 dark:ring-gray-600'}`}
+                                    title={opt.value}
+                                    aria-label={`Select ${opt.value} theme`}
+                                ></button>
                                 ))}
                             </div>
                         </FormRow>
-                            <FormRow label="Element Size" htmlFor="element-size">
+                            <FormRow label="Element Size" htmlFor="element-size" description="Adjust the size of UI elements for better readability.">
                             <div className="flex items-center gap-1 p-1 bg-gray-200 dark:bg-gray-700 rounded-full">
                                 {sizeOptions.map(opt => (
                                     <button
                                         key={opt.value}
                                         onClick={() => handleUpdateLocal({ size: opt.value })}
-                                        className={`flex-1 px-3 py-1 rounded-full text-sm font-semibold transition-colors ${
+                                        className={`flex-1 px-3 py-1 rounded-full text-sm font-semibold transition-all ${
                                             localPrefs.size === opt.value
-                                            ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-white shadow'
+                                            ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-md'
                                             : 'text-gray-500 hover:bg-gray-300/50 dark:hover:bg-gray-600/50'
                                         }`}
                                     >
@@ -448,6 +459,18 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             onGenerateSkills={onGenerateSkills}
                         />
                     </SettingsCard>
+                );
+            case 'integrations':
+                return (
+                    <div className="space-y-6">
+                        <MicrosoftCalendarSettings 
+                            t={t}
+                            onSyncComplete={(count) => {
+                                setShowSaved(true);
+                                setTimeout(() => setShowSaved(false), 2500);
+                            }}
+                        />
+                    </div>
                 );
             case 'pulse':
                 const widgetTypes: { value: PulseWidgetType; label: string }[] = [
@@ -517,7 +540,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 <button 
                                     key={tab.id} 
                                     onClick={() => setActiveTab(tab.id as SettingsTab)}
-                                    className={`flex-shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === tab.id ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-800/50'}`}
+                                    className={`flex-shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-semibold transition-colors ${activeTab === tab.id ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-800/50'}`}
                                 >
                                     {tab.label}
                                 </button>
@@ -538,7 +561,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                             <button onClick={handleDiscard} className="px-4 py-2 rounded-[var(--radius-button)] bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 font-semibold transition-colors text-sm">
                                 {t('settings_discard_changes')}
                             </button>
-                            <button onClick={handleSave} className="px-6 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white font-semibold hover:shadow-lg transition-all text-sm">
+                            <button onClick={handleSave} className="px-6 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white font-semibold hover:shadow-lg transition-all text-sm">
                                 {t('settings_save_changes')}
                             </button>
                         </div>
@@ -571,7 +594,7 @@ const SettingsView: React.FC<SettingsViewProps> = (props) => {
                                 </main>
                                 <footer className="p-4 border-t border-gray-700 flex items-center justify-end gap-2">
                                     <button onClick={() => setShowUpgrade(false)} className="px-4 py-2 rounded-[var(--radius-button)] bg-gray-700 hover:bg-gray-600 text-sm font-semibold">Not now</button>
-                                    <button onClick={() => setShowUpgrade(false)} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold">Choose plan</button>
+                                    <button onClick={() => setShowUpgrade(false)} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold">Choose plan</button>
                                 </footer>
                             </div>
                         </div>

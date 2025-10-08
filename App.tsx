@@ -28,7 +28,8 @@ import OnboardingModal from './components/OnboardingModal';
 import FeedbackModal from './components/FeedbackModal';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import GuestExperience from './components/guest/GuestExperience';
-import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill, BottomNavItemKey } from './types';
+import MicrosoftCallback from './components/MicrosoftCallback';
+import { Project, Conversation, Message, Sender, Habit, Checklist, Task, AIResponse, UserCategory, AppView, UserPreferences, Note, AppLanguage, RecurrenceRule, ProjectFile, Reminder, AppSize, Event, ReminderSetting, Story, StoryStatus, Request, FeedbackType, SkillCategory, Skill, BottomNavItemKey, AcceptanceCriterion } from './types';
 import { parseAIResponse, generateTitleForChat, generateStoriesFromRequest } from './services/geminiService';
 import { AddIcon, CalendarTodayIcon, CloseIcon, DeleteIcon, NotificationsIcon, WarningIcon, FolderIcon, ExpandMoreIcon, ListAltIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChatAddOnIcon, SearchIcon } from './components/icons';
 import GlobalSearch from './components/GlobalSearch';
@@ -39,6 +40,7 @@ import { migrateToRelational } from './services/migrateToRelational';
 import { relationalDb } from './services/relationalDatabaseService';
 import { offlineSync } from './services/offlineQueue';
 import { feedbackService } from './services/feedbackService';
+import { microsoftGraphService } from './services/microsoftGraphService';
 import { hasSupabaseEnv } from './services/supabaseClient';
 import { guestSessionService } from './services/guestSessionService';
 
@@ -97,18 +99,20 @@ const StyledSelect: React.FC<{
 
     return (
         <div ref={dropdownRef} className="relative">
-            <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <span>{selectedOption?.label}</span>
-                <ExpandMoreIcon className={`text-base text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between gap-2 bg-gray-700/50 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)] hover:bg-gray-700/70 transition-colors">
+                <span className="truncate">{selectedOption?.label}</span>
+                <svg className={`w-5 h-5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
             </button>
             {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    <ul>
+                <div className="absolute z-20 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto animate-fade-in-down">
+                    <ul className="py-1">
                         {options.map(option => (
                             <li key={option.value}>
                                 <button
                                     onClick={() => { onChange(option.value); setIsOpen(false); }}
-                                    className="w-full text-left px-3 py-2 hover:bg-gray-600"
+                                    className="w-full text-left px-3 py-2.5 hover:bg-gray-600 text-white transition-colors"
                                 >
                                     {option.label}
                                 </button>
@@ -248,18 +252,20 @@ const IconSelect: React.FC<{
 
   return (
     <div ref={dropdownRef} className="relative">
-      <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <div className="flex items-center gap-2 truncate">
-            {selectedItem ? getIcon(selectedItem) : (type === 'project' ? <FolderIcon className="text-base text-gray-400" /> : <Icon name="label" className="text-base text-gray-400" />)}
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between gap-2 bg-gray-700/50 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-600)] hover:bg-gray-700/70 transition-colors">
+        <div className="flex items-center gap-2 truncate flex-1 min-w-0">
+            {selectedItem ? getIcon(selectedItem) : (type === 'project' ? <FolderIcon className="text-base text-gray-400 flex-shrink-0" /> : <Icon name="label" className="text-base text-gray-400 flex-shrink-0" />)}
             <span className={`truncate ${selectedItem ? '' : 'text-gray-400'}`}>{selectedItem ? selectedItem.name : placeholder}</span>
         </div>
-        <ExpandMoreIcon className={`text-base text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <svg className={`w-5 h-5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-          <ul>
+        <div className="absolute z-20 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto animate-fade-in-down">
+          <ul className="py-1">
             <li>
-              <button onClick={() => { onSelect(''); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-gray-600 text-gray-400">
+              <button onClick={() => { onSelect(''); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-3 py-2.5 hover:bg-gray-600 text-gray-400 transition-colors">
                 <span>{placeholder}</span>
               </button>
             </li>
@@ -267,7 +273,7 @@ const IconSelect: React.FC<{
               <li key={item.id}>
                 <button
                   onClick={() => { onSelect(item.id); setIsOpen(false); }}
-                  className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-gray-600"
+                  className="w-full text-left flex items-center gap-2 px-3 py-2.5 hover:bg-gray-600 text-white transition-colors"
                 >
                   {getIcon(item)}
                   <span className="truncate">{item.name}</span>
@@ -278,7 +284,7 @@ const IconSelect: React.FC<{
               <li>
                 <button
                   onClick={() => { onNewRequest(); setIsOpen(false); }}
-                  className="w-full text-left flex items-center gap-2 px-3 py-2 text-blue-400 hover:bg-gray-600"
+                  className="w-full text-left flex items-center gap-2 px-3 py-2.5 text-blue-400 hover:bg-gray-600 transition-colors"
                 >
                   <AddIcon className="text-base" />
                   <span>Create new...</span>
@@ -421,13 +427,13 @@ const TaskEditorModal: React.FC<{
 
     return (
         <>
-            <div className="fixed inset-0 bg-gray-900/80 z-50 md:flex md:items-center md:justify-center md:p-4" onClick={onClose}>
-                <div className="fixed inset-x-0 bottom-0 md:relative bg-gray-800 rounded-t-xl md:rounded-xl border-t md:border border-gray-700 w-full max-w-2xl max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
-                    <header className="p-4 flex items-center justify-between border-b border-gray-700">
-                        <h2 className="text-lg font-semibold">{isEditing ? 'Edit Task' : 'New Task'}</h2>
-                        <button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
+            <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 md:flex md:items-center md:justify-center md:p-4" onClick={onClose}>
+                <div className="fixed inset-0 md:relative md:inset-auto bg-gray-800 rounded-none md:rounded-2xl border-0 md:border border-gray-700 w-full max-w-2xl h-full md:h-auto md:max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                    <header className="sticky top-0 z-10 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 flex items-center justify-between border-b border-gray-700">
+                        <h2 className="text-lg md:text-xl font-semibold text-white">{isEditing ? 'Edit Task' : 'New Task'}</h2>
+                        <button onClick={onClose} className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors" aria-label="Close"><CloseIcon /></button>
                     </header>
-                    <main className="p-6 overflow-y-auto space-y-4">
+                    <main className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
                         <input
                             ref={nameInputRef}
                             type="text"
@@ -501,13 +507,13 @@ const TaskEditorModal: React.FC<{
                         </div>
 
                     </main>
-                    <footer className="p-4 border-t border-gray-700 flex items-center justify-between gap-4">
+                    <footer className="sticky bottom-0 z-10 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 border-t border-gray-700 flex items-center justify-between gap-4">
                         {isEditing && onDelete ? (
-                            <button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">
+                            <button onClick={() => setConfirmingDelete(true)} className="px-4 py-2.5 md:py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">
                                 Delete
                             </button>
                         ) : <div></div>}
-                        <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+                        <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-2.5 md:py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
                              {isEditing ? 'Save Changes' : 'Create Task'}
                         </button>
                     </footer>
@@ -625,13 +631,13 @@ const HabitModal: React.FC<{
     
     return (
      <>
-      <div className="fixed inset-0 bg-gray-900/80 z-50 md:flex md:items-center md:justify-center md:p-4" onClick={onClose}>
-        <div className="fixed inset-x-0 bottom-0 md:relative bg-gray-800 rounded-t-xl md:rounded-xl border-t md:border border-gray-700 w-full max-w-2xl h-[85vh] md:h-auto md:max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down" onClick={(e) => e.stopPropagation()}>
-          <header className="p-4 flex items-center justify-between border-b border-gray-700">
-            <h2 className="text-lg font-semibold">{isEditing ? 'Edit Habit' : 'New Habit'}</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-white"><CloseIcon /></button>
+      <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 md:flex md:items-center md:justify-center md:p-4" onClick={onClose}>
+        <div className="fixed inset-0 md:relative md:inset-auto bg-gray-800 rounded-none md:rounded-2xl border-0 md:border border-gray-700 w-full max-w-2xl h-full md:h-auto md:max-h-[90vh] flex flex-col animate-slide-in-up md:animate-fade-in-down shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <header className="sticky top-0 z-10 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 flex items-center justify-between border-b border-gray-700">
+            <h2 className="text-lg md:text-xl font-semibold text-white">{isEditing ? 'Edit Habit' : 'New Habit'}</h2>
+            <button onClick={onClose} className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors" aria-label="Close"><CloseIcon /></button>
           </header>
-          <main className="p-6 overflow-y-auto space-y-4">
+          <main className="flex-1 p-4 md:p-6 overflow-y-auto space-y-4">
              <input
                 ref={nameInputRef}
                 type="text"
@@ -691,13 +697,13 @@ const HabitModal: React.FC<{
             )}
 
           </main>
-          <footer className="p-4 border-t border-gray-700 flex items-center justify-between gap-4">
+          <footer className="sticky bottom-0 z-10 bg-gray-800/95 backdrop-blur-xl p-4 md:p-5 border-t border-gray-700 flex items-center justify-between gap-4">
             {isEditing && onDelete ? (
-              <button onClick={() => setConfirmingDelete(true)} className="px-4 py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">
+              <button onClick={() => setConfirmingDelete(true)} className="px-4 py-2.5 md:py-3 bg-red-600/20 text-red-400 rounded-full text-sm font-semibold hover:bg-red-600/40 hover:text-red-300 transition-colors">
                 Delete
               </button>
             ) : <div></div>}
-            <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
+            <button onClick={handleSave} disabled={!localData.name?.trim()} className="flex-1 px-4 py-2.5 md:py-3 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white rounded-full text-sm font-semibold hover:shadow-lg disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed transition-all">
                 {isEditing ? 'Save Changes' : 'Create Habit'}
             </button>
           </footer>
@@ -938,7 +944,7 @@ const initialUserCategories: UserCategory[] = [
     { id: 'cat-13', name: 'Others', icon: 'more_horiz', color: '#64748B' },
 ];
 
-const BOTTOM_NAV_CANONICAL_ORDER: BottomNavItemKey[] = ['dashboard', 'lists', 'habits', 'notes', 'requests', 'calendar', 'stories', 'files', 'projects'];
+const BOTTOM_NAV_CANONICAL_ORDER: BottomNavItemKey[] = ['dashboard', 'lists', 'habits', 'notes', 'requests', 'calendar', 'stories', 'files', 'projects', 'categories'];
 const DEFAULT_BOTTOM_NAV_ITEMS: BottomNavItemKey[] = ['dashboard', 'lists', 'habits', 'notes', 'requests', 'calendar'];
 const MIN_BOTTOM_NAV_ITEMS = 3;
 const MAX_BOTTOM_NAV_ITEMS = 6;
@@ -1851,6 +1857,62 @@ const App: React.FC = () => {
         window.history.replaceState({}, '', url.toString());
     }, []);
 
+    // Microsoft Calendar Integration: Handle OAuth callback and sync events
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        // Check if we're on the Microsoft OAuth callback route
+        const path = window.location.pathname;
+        const isOAuthCallback = path === '/microsoft/callback' || window.location.search.includes('code=');
+
+        if (!isOAuthCallback) {
+            // Setup event listener for manual sync from settings
+            const handleMicrosoftSync = (event: CustomEvent) => {
+                const { events: microsoftEvents } = event.detail;
+                if (!Array.isArray(microsoftEvents)) return;
+
+                // Merge Microsoft events with existing events
+                setEvents(prev => {
+                    // Remove old Microsoft events
+                    const nonMicrosoftEvents = prev.filter(e => e.externalSource !== 'microsoft');
+                    // Add new Microsoft events, marking them as read-only
+                    const updatedMicrosoftEvents = microsoftEvents.map(e => ({
+                        ...e,
+                        isReadOnly: true
+                    }));
+                    return [...nonMicrosoftEvents, ...updatedMicrosoftEvents];
+                });
+
+                setToastMessage(`Synced ${microsoftEvents.length} events from Microsoft Calendar`);
+            };
+
+            window.addEventListener('microsoft-calendar-sync', handleMicrosoftSync as EventListener);
+            return () => {
+                window.removeEventListener('microsoft-calendar-sync', handleMicrosoftSync as EventListener);
+            };
+        }
+    }, []);
+
+    // Handle URL parameters for settings tab navigation
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('view');
+        const tab = params.get('tab');
+
+        if (view === 'settings' && tab) {
+            setCurrentView('settings');
+            setTargetSettingsTab(tab);
+            
+            // Clean up URL parameters
+            const url = new URL(window.location.href);
+            url.searchParams.delete('view');
+            url.searchParams.delete('tab');
+            window.history.replaceState({}, '', url.toString());
+        }
+    }, []);
+
     // Share actions exposed to child views
     const handleShareChecklist = (checklist: Checklist) => {
         const env: ShareEnvelope = {
@@ -2021,21 +2083,72 @@ const App: React.FC = () => {
                 const detail = (e as unknown as CustomEvent<any>).detail as { id: string };
                 const req = detail?.id ? requests.find(r => r.id === detail.id) : undefined;
                 if (!req) return;
-                // Create a Story seeded from request
-                handleCreateStory({
+                
+                // Get current user for assignee
+                const currentUserName = authSession?.email ? authSession.email.split('@')[0] : preferences.nickname || 'User';
+                const currentUserId = authSession?.userId;
+                
+                // Create a Story seeded from request with enhanced pre-filling
+                const newStory: Story = {
+                    id: `story-${Date.now()}`,
                     title: req.product || (req.problem?.slice(0, 60) || 'New Story'),
                     description: [
-                        req.problem ? `Problem: ${req.problem}` : '',
-                        req.outcome ? `Desired outcome: ${req.outcome}` : '',
-                        req.valueProposition ? `Value: ${req.valueProposition}` : '',
-                        req.affectedUsers ? `Users: ${req.affectedUsers}` : '',
-                        req.details ? `Details: ${req.details}` : '',
+                        req.problem ? `**Problem:** ${req.problem}` : '',
+                        req.outcome ? `**Desired Outcome:** ${req.outcome}` : '',
+                        req.valueProposition ? `**Value Proposition:** ${req.valueProposition}` : '',
+                        req.affectedUsers ? `**Affected Users:** ${req.affectedUsers}` : '',
+                        req.details ? `**Additional Details:** ${req.details}` : '',
                     ].filter(Boolean).join('\n\n'),
-                    // If the request already has linked tasks, carry them into the story
+                    projectId: req.projectId,
+                    categoryId: req.categoryId,
+                    status: 'backlog',
+                    // Generate initial acceptance criteria from request
+                    acceptanceCriteria: [
+                        req.outcome ? { id: `ac-${Date.now()}-1`, text: req.outcome, done: false } : null,
+                    ].filter(Boolean) as AcceptanceCriterion[],
+                    estimatePoints: req.priority === 'critical' ? 13 : req.priority === 'high' ? 8 : req.priority === 'medium' ? 5 : 3,
+                    estimateTime: undefined,
                     linkedTaskIds: req.linkedTaskIds || [],
-                    // Carry over skills from the request
                     skillIds: req.skillIds || [],
-                });
+                    assigneeUserId: currentUserId,
+                    assigneeName: currentUserName,
+                    requesterUserId: undefined,
+                    requesterName: req.requester,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                };
+                
+                // Add story to state
+                setStories(prev => [newStory, ...prev]);
+                
+                // Persist to database
+                try {
+                    const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                    if (authSession && useRelDb && relationalDb.isEnabled()) {
+                        relationalDb.upsertStory({
+                            id: newStory.id,
+                            title: newStory.title,
+                            description: newStory.description,
+                            projectId: newStory.projectId,
+                            categoryId: newStory.categoryId,
+                            status: newStory.status,
+                            acceptanceCriteria: newStory.acceptanceCriteria,
+                            estimatePoints: newStory.estimatePoints,
+                            estimateTime: newStory.estimateTime,
+                            linkedTaskIds: newStory.linkedTaskIds,
+                            skillIds: newStory.skillIds,
+                            assigneeUserId: newStory.assigneeUserId,
+                            assigneeName: newStory.assigneeName,
+                            requesterUserId: newStory.requesterUserId,
+                            requesterName: newStory.requesterName,
+                        }).catch(() => {});
+                    }
+                } catch {}
+                
+                // Open story editor so user can review and refine
+                setViewAction({ type: 'editStory', payload: { id: newStory.id } });
+                setCurrentView('storyEditor');
+                setToastMessage('Story created from request - review and adjust as needed');
             };
             const onCreateTasksForRequest = (e: Event) => {
                 const detail = (e as unknown as CustomEvent<any>).detail as { id: string };
@@ -2473,33 +2586,99 @@ Keep descriptions concise (10-15 words max).`;
                     setToastMessage('AI could not generate stories');
                     return;
                 }
-                // Create stories and link tasks later (optional)
-                const created: Story[] = ideas.map((it) => ({
-                    id: `story-${Date.now()}-${Math.random()}`,
-                    title: it.title,
-                    description: it.description,
-                    projectId: undefined,
-                    categoryId: undefined,
-                    status: 'in_progress',
-                    acceptanceCriteria: [],
-                    linkedTaskIds: [],
-                    createdAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                }));
+                
+                // Get current user for assignee
+                const currentUserName = authSession?.email ? authSession.email.split('@')[0] : preferences.nickname || 'User';
+                const currentUserId = authSession?.userId;
+                
+                // Create stories with full details from AI
+                const created: Story[] = ideas.map((it) => {
+                    // Convert AI tasks to linked checklist
+                    let linkedTaskIds: string[] = [];
+                    if (it.tasks && it.tasks.length > 0) {
+                        const checklistId = `cl-${Date.now()}-${Math.random()}`;
+                        const checklist: Checklist = {
+                            id: checklistId,
+                            name: `${it.title} - Tasks`,
+                            tasks: it.tasks.map((t, idx) => ({
+                                id: `task-${Date.now()}-${idx}`,
+                                text: t.text,
+                                completedAt: null,
+                            })),
+                            completionHistory: [],
+                            categoryId: r.categoryId,
+                            projectId: r.projectId,
+                        };
+                        setChecklists(prev => [checklist, ...prev]);
+                        linkedTaskIds = [checklistId];
+                        
+                        // Persist checklist to DB
+                        try {
+                            const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                            if (authSession && useRelDb && relationalDb.isEnabled()) {
+                                relationalDb.upsertChecklist(checklist).catch(() => {});
+                            }
+                        } catch {}
+                    }
+                    
+                    return {
+                        id: `story-${Date.now()}-${Math.random()}`,
+                        title: it.title,
+                        description: it.description,
+                        projectId: r.projectId,
+                        categoryId: r.categoryId,
+                        status: 'backlog' as StoryStatus,
+                        acceptanceCriteria: it.acceptanceCriteria.map((ac, idx) => ({
+                            id: `ac-${Date.now()}-${idx}`,
+                            text: ac.text,
+                            done: false,
+                        })),
+                        estimatePoints: it.estimatePoints,
+                        estimateTime: it.estimateTime,
+                        linkedTaskIds,
+                        skillIds: r.skillIds || [],
+                        assigneeUserId: currentUserId,
+                        assigneeName: currentUserName,
+                        requesterUserId: r.requester ? undefined : currentUserId,
+                        requesterName: r.requester,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                    };
+                });
+                
                 setStories(prev => [...created, ...prev]);
-                // Optionally persist to relational DB
+                
+                // Persist stories to relational DB
                 try {
                     const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
                     if (authSession && useRelDb && relationalDb.isEnabled()) {
                         for (const s of created) {
-                            await relationalDb.upsertStory({ id: s.id, title: s.title, description: s.description, projectId: s.projectId, categoryId: s.categoryId, status: s.status, acceptanceCriteria: s.acceptanceCriteria, estimatePoints: s.estimatePoints, estimateTime: s.estimateTime, linkedTaskIds: s.linkedTaskIds, assigneeUserId: s.assigneeUserId, assigneeName: s.assigneeName, requesterUserId: s.requesterUserId, requesterName: s.requesterName });
+                            await relationalDb.upsertStory({ 
+                                id: s.id, 
+                                title: s.title, 
+                                description: s.description, 
+                                projectId: s.projectId, 
+                                categoryId: s.categoryId, 
+                                status: s.status, 
+                                acceptanceCriteria: s.acceptanceCriteria, 
+                                estimatePoints: s.estimatePoints, 
+                                estimateTime: s.estimateTime, 
+                                linkedTaskIds: s.linkedTaskIds, 
+                                skillIds: s.skillIds,
+                                assigneeUserId: s.assigneeUserId, 
+                                assigneeName: s.assigneeName, 
+                                requesterUserId: s.requesterUserId, 
+                                requesterName: s.requesterName 
+                            });
                         }
                     }
                 } catch {}
+                
                 // Move request to in_progress (work started)
                 handleUpdateRequest(id, { status: 'in_progress' });
-                setToastMessage(`Created ${created.length} stor${created.length === 1 ? 'y' : 'ies'} from request`);
+                setToastMessage(`Created ${created.length} stor${created.length === 1 ? 'y' : 'ies'} from request with tasks and acceptance criteria`);
             } catch (e) {
+                console.error('Failed to generate stories:', e);
                 setToastMessage('Failed to generate stories');
             }
         };
@@ -2859,33 +3038,104 @@ Keep descriptions concise (10-15 words max).`;
     };
 
     // Stories Handlers (lifted to component scope)
-    const handleCreateStory = (payload?: Partial<Story>) => {
-        const now = new Date().toISOString();
-        const newStory: Story = {
-            id: crypto.randomUUID(),
-            title: payload?.title || 'Untitled Story',
-            description: payload?.description || '',
-            status: payload?.status || 'backlog',
-            projectId: payload?.projectId,
-            categoryId: payload?.categoryId,
-            acceptanceCriteria: payload?.acceptanceCriteria || [],
-            estimatePoints: payload?.estimatePoints,
-            estimateTime: payload?.estimateTime,
-            linkedTaskIds: payload?.linkedTaskIds || [],
-            skillIds: payload?.skillIds || [],
-            createdAt: now,
-            updatedAt: now,
-        };
-        setStories(prev => [newStory, ...prev]);
-        setCurrentView('storyEditor');
-        setPendingStoryId(newStory.id);
+    const handleCreateStory = async (payload?: Partial<Story>) => {
+        try {
+            const now = new Date().toISOString();
+            const newStory: Story = {
+                id: crypto.randomUUID(),
+                title: payload?.title || 'Untitled Story',
+                description: payload?.description || '',
+                status: payload?.status || 'backlog',
+                projectId: payload?.projectId,
+                categoryId: payload?.categoryId,
+                acceptanceCriteria: payload?.acceptanceCriteria || [],
+                estimatePoints: payload?.estimatePoints,
+                estimateTime: payload?.estimateTime,
+                linkedTaskIds: payload?.linkedTaskIds || [],
+                skillIds: payload?.skillIds || [],
+                createdAt: now,
+                updatedAt: now,
+            };
+            setStories(prev => [newStory, ...prev]);
+            
+            // Persist to relational DB
+            try {
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                if (authSession && useRelDb && relationalDb.isEnabled()) {
+                    await relationalDb.upsertStory({
+                        id: newStory.id,
+                        title: newStory.title,
+                        description: newStory.description,
+                        projectId: newStory.projectId,
+                        categoryId: newStory.categoryId,
+                        status: newStory.status,
+                        acceptanceCriteria: newStory.acceptanceCriteria,
+                        estimatePoints: newStory.estimatePoints,
+                        estimateTime: newStory.estimateTime,
+                        linkedTaskIds: newStory.linkedTaskIds,
+                        skillIds: newStory.skillIds,
+                        assigneeUserId: newStory.assigneeUserId,
+                        assigneeName: newStory.assigneeName,
+                        requesterUserId: newStory.requesterUserId,
+                        requesterName: newStory.requesterName,
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to persist story to database:', error);
+                // Don't throw - local state is already updated
+            }
+            
+            setCurrentView('storyEditor');
+            setPendingStoryId(newStory.id);
+            setToastMessage('Story created successfully');
+        } catch (error) {
+            console.error('Failed to create story:', error);
+            setToastMessage('Failed to create story');
+            throw error;
+        }
     };
     const handleSelectStory = (id: string) => {
         setPendingStoryId(id);
         setCurrentView('storyEditor');
     };
-    const handleUpdateStory = (id: string, updates: Partial<Story>) => {
-        setStories(prev => prev.map(s => s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s));
+    const handleUpdateStory = async (id: string, updates: Partial<Story>) => {
+        try {
+            setStories(prev => prev.map(s => s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s));
+            
+            // Persist to relational DB
+            try {
+                const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
+                if (authSession && useRelDb && relationalDb.isEnabled()) {
+                    const story = stories.find(s => s.id === id);
+                    if (story) {
+                        const updatedStory = { ...story, ...updates, updatedAt: new Date().toISOString() };
+                        await relationalDb.upsertStory({
+                            id: updatedStory.id,
+                            title: updatedStory.title,
+                            description: updatedStory.description,
+                            projectId: updatedStory.projectId,
+                            categoryId: updatedStory.categoryId,
+                            status: updatedStory.status,
+                            acceptanceCriteria: updatedStory.acceptanceCriteria,
+                            estimatePoints: updatedStory.estimatePoints,
+                            estimateTime: updatedStory.estimateTime,
+                            linkedTaskIds: updatedStory.linkedTaskIds,
+                            skillIds: updatedStory.skillIds,
+                            assigneeUserId: updatedStory.assigneeUserId,
+                            assigneeName: updatedStory.assigneeName,
+                            requesterUserId: updatedStory.requesterUserId,
+                            requesterName: updatedStory.requesterName,
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to persist story update to database:', error);
+                // Don't throw - local state is already updated
+            }
+        } catch (error) {
+            console.error('Failed to update story:', error);
+            throw error;
+        }
     };
     const handleDeleteStory = (id: string) => {
         setStories(prev => prev.filter(s => s.id !== id));
@@ -3218,6 +3468,23 @@ Keep descriptions concise (10-15 words max).`;
     ) : null;
     const showGuestExperience = isAuthReady && !authSession;
 
+    // Check if we're on the Microsoft OAuth callback route
+    if (typeof window !== 'undefined') {
+        const path = window.location.pathname;
+        if (path === '/microsoft/callback' || window.location.search.includes('code=')) {
+            return (
+                <MicrosoftCallback
+                    onSuccess={() => {
+                        setToastMessage('Successfully connected to Microsoft Calendar');
+                    }}
+                    onError={(error) => {
+                        setToastMessage(`Microsoft Calendar connection failed: ${error}`);
+                    }}
+                />
+            );
+        }
+    }
+
     if (showGuestExperience) {
         return (
             <>
@@ -3491,7 +3758,16 @@ Keep descriptions concise (10-15 words max).`;
                             skillCategories={skillCategories}
                             checklists={checklists}
                             onBack={() => { setCurrentView('stories'); setPendingStoryId(null); }}
-                            onUpdate={(updates) => handleUpdateStory(activeStory.id, updates)}
+                            onUpdate={async (updates) => {
+                                try {
+                                    await handleUpdateStory(activeStory.id, updates);
+                                    setCurrentView('stories');
+                                    setPendingStoryId(null);
+                                    setToastMessage('Story saved successfully');
+                                } catch (error) {
+                                    setToastMessage('Failed to save story');
+                                }
+                            }}
                             onDelete={() => handleDeleteStory(activeStory.id)}
                             onLinkTask={(checklistId) => handleUpdateStory(activeStory.id, { linkedTaskIds: Array.from(new Set([...(activeStory.linkedTaskIds || []), checklistId])) })}
                             onUnlinkTask={(checklistId) => handleUpdateStory(activeStory.id, { linkedTaskIds: (activeStory.linkedTaskIds || []).filter(id => id !== checklistId) })}

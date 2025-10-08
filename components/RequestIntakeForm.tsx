@@ -3,7 +3,7 @@ import Header from './Header';
 import { ArrowBackIcon } from './icons';
 import { Checklist, Request, RequestPriority, RequestUpdate } from '../types';
 import { generateRequestAssist } from '../services/geminiService';
-import { ChevronRightIcon, AddIcon } from './icons';
+import { ExpandMoreIcon, AddIcon } from './icons';
 import { relationalDb } from '../services/relationalDatabaseService';
 
 const required = (v?: string | null) => !!v && v.trim().length > 0;
@@ -135,7 +135,7 @@ const RequestIntakeForm: React.FC<{
 
   // moved up for validation
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    <div className="flex-1 flex flex-col h-full">
   <Header
         title={
           <div className="flex items-center gap-2">
@@ -149,9 +149,9 @@ const RequestIntakeForm: React.FC<{
         onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}
       >
         <button onClick={handleAssist} disabled={assistLoading} className="mr-2 px-4 py-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-semibold disabled:opacity-50">{assistLoading ? 'Thinking…' : 'AI Assist'}</button>
-        <button onClick={handleSubmit} disabled={!isValid} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white text-sm font-semibold disabled:opacity-50">Submit</button>
+        <button onClick={handleSubmit} disabled={!isValid} className="px-4 py-2 rounded-[var(--radius-button)] bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-sm font-semibold disabled:opacity-50">Submit</button>
       </Header>
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+  <main className="flex-1 overflow-y-auto p-4 pb-24 sm:p-6 sm:pb-28">
         <div className="mx-auto w-full max-w-3xl space-y-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 space-y-3">
             <div>
@@ -299,7 +299,7 @@ const RequestIntakeForm: React.FC<{
                   <option value="high">High</option>
                   <option value="critical">Critical</option>
                 </select>
-                <ChevronRightIcon className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                <ExpandMoreIcon className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
               </div>
             </div>
             <div>
@@ -371,7 +371,7 @@ const RequestIntakeForm: React.FC<{
                     <option value="">Select an existing task list</option>
                     {existingChecklists.map(cl => (<option key={cl.id} value={cl.id}>{cl.name}</option>))}
                   </select>
-                  <ChevronRightIcon className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                  <ExpandMoreIcon className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                 </div>
                 <button onClick={() => { if (selectedExistingId) { handle('linkedTaskIds', Array.from(new Set([...(local.linkedTaskIds || []), selectedExistingId]))); setSelectedExistingId(''); } }} className="w-9 h-9 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center" title="Link"><AddIcon className="text-base" /></button>
               </div>

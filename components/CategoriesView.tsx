@@ -2,6 +2,7 @@ import React from 'react';
 import { UserCategory } from '../types';
 import { AddIcon, StyleIcon } from './icons';
 import CategoryModal from './CategoryModal';
+import EmptyState from './EmptyState';
 
 // A generic Icon component for Material Symbols
 const Icon: React.FC<{ name: string; className?: string; style?: React.CSSProperties }> = ({ name, className, style }) => (
@@ -29,10 +30,10 @@ const CategoryCard: React.FC<{ category: UserCategory; onEdit: () => void; }> = 
 const CategoriesView: React.FC<CategoriesViewProps> = ({ categories, onNewCategory, onEditCategory, t }) => {
   return (
     <div className="text-gray-900 dark:text-white">
-      <div className="flex justify-end mb-4">
-        <button onClick={onNewCategory} className="flex items-center justify-center gap-2 px-4 py-2 bg-[var(--color-primary-600)] text-white rounded-md font-semibold hover:bg-[var(--color-primary-700)] transition-colors text-sm">
-            <AddIcon />
-            <span>{t('new_category')}</span>
+      <div className="flex items-center justify-end mb-4">
+        <button onClick={onNewCategory} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm" style={{ color: '#FFFFFF' }}>
+          <AddIcon />
+          <span>{t('new_category')}</span>
         </button>
       </div>
 
@@ -47,11 +48,18 @@ const CategoriesView: React.FC<CategoriesViewProps> = ({ categories, onNewCatego
           ))}
         </div>
       ) : (
-          <div className="text-center text-gray-500 flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-              <StyleIcon className="text-5xl text-gray-400 dark:text-gray-500 mb-4" />
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">{t('no_categories_yet')}</h2>
-              <p className="max-w-md mt-1">{t('no_categories_yet_subtitle')}</p>
-          </div>
+        <EmptyState
+          icon={<StyleIcon />}
+          title={t('no_categories_yet')}
+          description={t('no_categories_yet_subtitle')}
+          primaryAction={{
+            label: t('new_category'),
+            onClick: onNewCategory,
+            icon: <AddIcon className="text-base" />,
+          }}
+          variant="minimal"
+          className="mx-auto my-16 w-full max-w-3xl"
+        />
       )}
     </div>
   );

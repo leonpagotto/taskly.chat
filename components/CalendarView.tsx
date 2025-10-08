@@ -97,9 +97,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
   }, [weekDays]);
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-800 h-full">
+    <div className="flex-1 flex flex-col h-full">
   <Header title={t('calendar')} onToggleSidebar={onToggleSidebar} onOpenSearch={() => window.dispatchEvent(new Event('taskly.openSearch'))}>
-        <button onClick={() => onNewEventRequest(new Date().toISOString().split('T')[0])} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-purple-600 text-white rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm">
+        <button onClick={() => onNewEventRequest(new Date().toISOString().split('T')[0])} className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] rounded-[var(--radius-button)] font-semibold hover:shadow-lg transition-all text-sm" style={{ color: '#FFFFFF' }}>
           <CalendarAddOnIcon />
           <span className="hidden sm:inline">New Event</span>
         </button>
@@ -107,16 +107,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
 
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-4">
-          <button onClick={handlePrev} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronLeftIcon /></button>
+          <button onClick={handlePrev} className="w-10 h-10 inline-flex items-center justify-center rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"><ChevronLeftIcon /></button>
           {viewMode === 'month' ? (
             <h2 className="text-lg font-semibold whitespace-nowrap">{currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h2>
           ) : (
             <h2 className="text-lg font-semibold whitespace-nowrap">{weekLabel}</h2>
           )}
-          <button onClick={handleNext} className="p-2 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700"><ChevronRightIcon /></button>
+          <button onClick={handleNext} className="w-10 h-10 inline-flex items-center justify-center rounded-[var(--radius-button)] resend-secondary transition-transform duration-150 hover:-translate-y-[1px]"><ChevronRightIcon /></button>
         </div>
         <div className="flex items-center gap-3">
-          <div className="bg-gray-200 dark:bg-gray-700/50 flex items-center h-10 px-1 rounded-[12px]">
+          <div className="flex items-center h-10 px-1 rounded-[12px] resend-secondary">
             <button
               type="button"
               className={`h-8 px-3 rounded-[12px] text-sm font-semibold transition-colors ${viewMode === 'month' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
@@ -128,7 +128,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               onClick={() => setViewMode('week')}
             >Week</button>
           </div>
-          <button onClick={handleToday} className="px-4 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold bg-gray-200 dark:bg-gray-700/50 hover:bg-gray-300 dark:hover:bg-gray-700">Today</button>
+          <button onClick={handleToday} className="px-4 py-1.5 rounded-[var(--radius-button)] text-sm font-semibold resend-secondary transition-transform duration-150 hover:-translate-y-[1px]">Today</button>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
 
         {viewMode === 'month' ? (
           <div className="grid grid-cols-7 grid-rows-5 auto-rows-fr gap-px bg-gray-200 dark:bg-gray-700/50 flex-1 h-full">
-            {Array.from({ length: startDay }).map((_, i) => <div key={`empty-${i}`} className="bg-gray-100 dark:bg-gray-800/50"></div>)}
+            {Array.from({ length: startDay }).map((_, i) => <div key={`empty-${i}`} className="rounded-2xl border border-transparent"></div>)}
             {Array.from({ length: daysInMonth }).map((_, dayIndex) => {
               const dayNumber = dayIndex + 1;
               const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber);
@@ -157,14 +157,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               return (
                 <div
                   key={dayNumber}
-                  className="bg-white dark:bg-gray-900/50 p-1.5 flex flex-col min-h-[100px] overflow-hidden cursor-pointer hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-600"
+                  className="group relative flex flex-col rounded-2xl border border-gray-700/50 bg-gray-900/55 p-2 min-h-[120px] overflow-hidden cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:border-[var(--color-primary-600)]/60 hover:shadow-xl"
                   onClick={() => onNewEventRequest(isoDate)}
                   title={`Create event on ${isoDate}`}
                 >
-                  <span className={`self-center flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold ${isTodayFlag ? 'bg-blue-600 text-white' : ''}`}>
-                    {dayNumber}
-                  </span>
-                  <div className="flex-1 mt-1 space-y-1 overflow-y-auto scrollbar-hide">
+                  <div className="flex items-center justify-between">
+                    <span className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
+                      {dayNumber}
+                    </span>
+                    {(dayEvents.length + dayHabits.length) > 0 && (
+                      <span className="text-[11px] font-semibold text-gray-500 group-hover:text-gray-300">
+                        {dayEvents.length + dayHabits.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 mt-2 space-y-1 overflow-y-auto scrollbar-hide">
                     {dayEvents.map(event => {
                       const category = userCategories.find(c => c.id === event.categoryId);
                       const color = category?.color || '#64748B';
@@ -173,7 +180,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                           key={event.id}
                           onClick={(e) => { e.stopPropagation(); onEditEventRequest(event); }}
                           style={{ backgroundColor: `${color}20`, color: color }}
-                          className={`w-full text-left p-1.5 rounded-md text-xs font-semibold flex items-center gap-1`}
+                          className="w-full text-left p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
                         >
                           {!event.isAllDay && <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>}
                           <span className="truncate">{event.title}</span>
@@ -186,7 +193,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                           const cat = userCategories.find(c => c.id === h.categoryId);
                           const color = cat?.color || '#64748B';
                           return (
-                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1" style={{ backgroundColor: `${color}14`, color }}>
+                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm" style={{ backgroundColor: `${color}14`, color }}>
                               <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
                               <span className="truncate">{h.name}</span>
                             </div>
@@ -209,14 +216,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               return (
                 <div
                   key={idx}
-                  className="bg-white dark:bg-gray-900/50 p-1.5 flex flex-col min-h-[140px] overflow-hidden cursor-pointer hover:ring-1 hover:ring-gray-300 dark:hover:ring-gray-600"
+                  className="group relative flex flex-col rounded-2xl border border-gray-700/50 bg-gray-900/55 p-2 min-h-[160px] overflow-hidden cursor-pointer transition-all duration-150 hover:-translate-y-1 hover:border-[var(--color-primary-600)]/60 hover:shadow-xl"
                   onClick={() => onNewEventRequest(isoDate)}
                   title={`Create event on ${isoDate}`}
                 >
-                  <span className={`self-center flex items-center justify-center w-7 h-7 rounded-full text-sm font-semibold ${isTodayFlag ? 'bg-blue-600 text-white' : ''}`}>
-                    {date.getDate()}
-                  </span>
-                  <div className="flex-1 mt-1 space-y-1 overflow-y-auto scrollbar-hide">
+                  <div className="flex items-center justify-between">
+                    <span className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
+                      {date.getDate()}
+                    </span>
+                    {(dayEvents.length + dayHabits.length) > 0 && (
+                      <span className="text-[11px] font-semibold text-gray-500 group-hover:text-gray-300">
+                        {dayEvents.length + dayHabits.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 mt-2 space-y-1 overflow-y-auto scrollbar-hide">
                     {dayEvents.map(event => {
                       const category = userCategories.find(c => c.id === event.categoryId);
                       const color = category?.color || '#64748B';
@@ -225,7 +239,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                           key={event.id}
                           onClick={(e) => { e.stopPropagation(); onEditEventRequest(event); }}
                           style={{ backgroundColor: `${color}20`, color: color }}
-                          className={`w-full text-left p-1.5 rounded-md text-xs font-semibold flex items-center gap-1`}
+                          className="w-full text-left p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
                         >
                           {!event.isAllDay && <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>}
                           <span className="truncate">{event.title}</span>
@@ -238,7 +252,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                           const cat = userCategories.find(c => c.id === h.categoryId);
                           const color = cat?.color || '#64748B';
                           return (
-                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-md text-[11px] font-semibold flex items-center gap-1" style={{ backgroundColor: `${color}14`, color }}>
+                            <div key={`habit-${h.id}`} className="w-full text-left p-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm" style={{ backgroundColor: `${color}14`, color }}>
                               <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: color}}></div>
                               <span className="truncate">{h.name}</span>
                             </div>

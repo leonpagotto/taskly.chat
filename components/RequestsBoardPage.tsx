@@ -215,52 +215,46 @@ const RequestsBoardPage: React.FC<{
                     </button>
                   </div>
                   
-                  {/* Desktop: Filters in one row - Left: Status, Expertise | Right: Toggle, Sort */}
-                  <div className="hidden lg:flex lg:items-center lg:justify-between lg:gap-3">
-                    {/* Left side: Filters */}
-                    <div className="flex items-center gap-3">
-                      {/* Filter 1: Status */}
-                      <StatusDropdown value={status} onChange={setStatus} />
-                      
-                      {/* Filter 2: Expertise */}
-                      <ExpertiseDropdown
-                        value={expertise}
-                        onChange={setExpertise}
-                        options={Array.from(new Set(requests.flatMap(r => r.requestedExpertise || [])))}
-                      />
+                  {/* Desktop: All controls aligned to the right */}
+                  <div className="hidden lg:flex lg:items-center lg:justify-end lg:gap-3">
+                    {/* Filter 1: Status */}
+                    <StatusDropdown value={status} onChange={setStatus} />
+                    
+                    {/* Filter 2: Expertise */}
+                    <ExpertiseDropdown
+                      value={expertise}
+                      onChange={setExpertise}
+                      options={Array.from(new Set(requests.flatMap(r => r.requestedExpertise || [])))}
+                    />
+                    
+                    {/* Control 1: List/Board Toggle */}
+                    <div className="flex h-10 items-center rounded-[12px] border border-white/10 bg-white px-1 shadow-[0_14px_42px_rgba(10,12,34,0.18)] backdrop-blur dark:border-white/8 dark:bg-white/10">
+                      <button 
+                        onClick={() => onToggleMode('list')} 
+                        className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+                        aria-label="List view"
+                        aria-pressed={mode === 'list'}
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          <Icon name="view_list" className="text-base" />
+                          <span>List</span>
+                        </span>
+                      </button>
+                      <button 
+                        onClick={() => onToggleMode('board')} 
+                        className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
+                        aria-label="Board view"
+                        aria-pressed={mode === 'board'}
+                      >
+                        <span className="inline-flex items-center gap-1">
+                          <Icon name="view_kanban" className="text-base" />
+                          <span>Board</span>
+                        </span>
+                      </button>
                     </div>
                     
-                    {/* Right side: View controls */}
-                    <div className="flex items-center gap-3">
-                      {/* Control 1: List/Board Toggle */}
-                      <div className="flex h-10 items-center rounded-[12px] border border-white/10 bg-white px-1 shadow-[0_14px_42px_rgba(10,12,34,0.18)] backdrop-blur dark:border-white/8 dark:bg-white/10">
-                        <button 
-                          onClick={() => onToggleMode('list')} 
-                          className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
-                          aria-label="List view"
-                          aria-pressed={mode === 'list'}
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <Icon name="view_list" className="text-base" />
-                            <span>List</span>
-                          </span>
-                        </button>
-                        <button 
-                          onClick={() => onToggleMode('board')} 
-                          className={`h-8 rounded-[12px] px-3 text-sm font-semibold transition-all ${mode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}
-                          aria-label="Board view"
-                          aria-pressed={mode === 'board'}
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <Icon name="view_kanban" className="text-base" />
-                            <span>Board</span>
-                          </span>
-                        </button>
-                      </div>
-                      
-                      {/* Control 2: Sort */}
-                      <RequestsSortDropdown value={sortBy} onChange={setSortBy} />
-                    </div>
+                    {/* Control 2: Sort */}
+                    <RequestsSortDropdown value={sortBy} onChange={setSortBy} />
                   </div>
                 </>
               }

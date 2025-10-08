@@ -599,17 +599,44 @@ Return ONLY JSON as specified.`;
   }
 };
 
-// Generate one or more stories from a Request
+// Enhanced story data returned from AI
+type GeneratedStory = {
+  title: string;
+  description: string;
+  acceptanceCriteria: Array<{ text: string }>;
+  estimatePoints?: number;
+  estimateTime?: string;
+  tasks?: Array<{ text: string }>;
+};
+
+// Generate one or more stories from a Request with full details
 export const generateStoriesFromRequest = async (
   req: Request
-): Promise<Array<Pick<Story, 'title' | 'description' | 'projectId' | 'categoryId'>>> => {
+): Promise<GeneratedStory[]> => {
   if (!ai) initAI();
   if (!ai) throw new Error('AI not configured');
 
-  const prompt = `You are a product/story writing assistant. Convert the following product request into 1-4 concise user stories.
-Return JSON: [{"title":"...","description":"..."}]. Keep titles short and descriptions clear and testable. If helpful, include bullet acceptance hints within description.
+  const prompt = `You are a product/story writing assistant. Convert the following product request into 1-4 comprehensive user stories.
 
-REQUEST:
+For each story, provide:
+- title: Short, action-oriented title (max 60 chars)
+- description: Clear description in user story format ("As a [user], I want [goal] so that [benefit]")
+- acceptanceCriteria: Array of 2-5 testable acceptance criteria (each with "text" field)
+- estimatePoints: Story point estimate (1, 2, 3, 5, 8, 13, or 21 - Fibonacci)
+- estimateTime: Optional time estimate (e.g., "2h", "1d", "3d")
+- tasks: Array of 2-6 actionable implementation tasks (each with "text" field)
+
+Return ONLY valid JSON array matching this exact schema:
+[{
+  "title": "...",
+  "description": "...",
+  "acceptanceCriteria": [{"text": "..."}, {"text": "..."}],
+  "estimatePoints": 5,
+  "estimateTime": "2d",
+  "tasks": [{"text": "..."}, {"text": "..."}]
+}]
+
+Base the stories on this REQUEST:
 Product: ${req.product}
 Requester: ${req.requester}
 Problem: ${req.problem}
@@ -617,7 +644,10 @@ Outcome: ${req.outcome}
 Value: ${req.valueProposition}
 Users: ${req.affectedUsers}
 Priority: ${req.priority}
-Expertise: ${(req.requestedExpertise || []).join(', ')}`;
+Expertise: ${(req.requestedExpertise || []).join(', ')}
+Details: ${req.details || 'None'}
+
+Make estimates realistic based on the complexity described. Break complex requests into multiple smaller stories.`;
 
   const result = await ai.models.generateContent({
     model,
@@ -633,7 +663,18 @@ Expertise: ${(req.requestedExpertise || []).join(', ')}`;
     if (Array.isArray(arr)) {
       return arr
         .filter((s: any) => s && typeof s.title === 'string')
-        .map((s: any) => ({ title: s.title, description: typeof s.description === 'string' ? s.description : '' })) as any;
+        .map((s: any) => ({
+          title: s.title,
+          description: typeof s.description === 'string' ? s.description : '',
+          acceptanceCriteria: Array.isArray(s.acceptanceCriteria) 
+            ? s.acceptanceCriteria.filter((ac: any) => ac && typeof ac.text === 'string')
+            : [],
+          estimatePoints: typeof s.estimatePoints === 'number' ? s.estimatePoints : undefined,
+          estimateTime: typeof s.estimateTime === 'string' ? s.estimateTime : undefined,
+          tasks: Array.isArray(s.tasks)
+            ? s.tasks.filter((t: any) => t && typeof t.text === 'string')
+            : [],
+        }));
     }
     return [];
   } catch (e) {
