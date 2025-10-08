@@ -583,7 +583,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
             itemType="Note"
         />
         <div className="flex-1 flex flex-col h-full bg-[rgba(15,18,31,0.92)] backdrop-blur-2xl shadow-[0_22px_68px_rgba(8,11,30,0.52)] overflow-hidden">
-            <header className="flex items-center justify-between px-5 py-4 gap-3 border-b border-white/10 bg-white/8 backdrop-blur-xl text-slate-100 flex-shrink-0">
+            <header className="flex items-center justify-between px-5 py-4 gap-3 border-b border-white/10 bg-white/8 backdrop-blur-xl text-slate-100 flex-shrink-0 relative z-[100]">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                     <button onClick={onToggleSidebar} className="md:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                         <WidthNormalIcon className="w-6 h-6" />
@@ -616,7 +616,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     )}
                     
                     {/* Secondary Actions Menu */}
-                    <div ref={actionsMenuRef} className="relative">
+                    <div ref={actionsMenuRef} className="relative z-[1000]">
                         <button 
                             onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
                             className="px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
@@ -626,7 +626,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                         </button>
                         
                         {isActionsMenuOpen && (
-                            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-[9999]">
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-[99999]">
                                 {!project && (
                                     <button 
                                         onClick={() => {
