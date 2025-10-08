@@ -239,18 +239,19 @@ export const relationalDb = {
     if (!supabase || !u) return null;
     const { id, tasks = [], completionHistory = [], ...rest } = payload as any;
     // Try RPC for atomic upsert; fallback to manual if RPC not available
+    // Note: RPC function expects camelCase in JSONB, not snake_case
     const rpcChecklist = {
       id: id || null,
       name: rest.name,
-      category_id: rest.categoryId || null,  // Fixed: use snake_case for database
-      project_id: rest.projectId || null,     // Fixed: use snake_case for database
-      due_date: rest.dueDate || null,         // Fixed: use snake_case for database
-      due_time: rest.dueTime || null,         // Fixed: use snake_case for database
+      categoryId: rest.categoryId || null,  // camelCase for JSONB RPC
+      projectId: rest.projectId || null,     // camelCase for JSONB RPC
+      dueDate: rest.dueDate || null,         // camelCase for JSONB RPC
+      dueTime: rest.dueTime || null,         // camelCase for JSONB RPC
       priority: rest.priority || null,
       recurrence: rest.recurrence || null,
       reminder: rest.reminder || null,
-      source_note_id: rest.sourceNoteId || null,        // Fixed: use snake_case for database
-      generated_checklist_id: rest.generatedChecklistId || null,  // Fixed: use snake_case for database
+      sourceNoteId: rest.sourceNoteId || null,        // camelCase for JSONB RPC
+      generatedChecklistId: rest.generatedChecklistId || null,  // camelCase for JSONB RPC
     } as any;
     const { data: rpcData, error: rpcErr } = await supabase.rpc('upsert_checklist_bundle', {
       p_checklist: rpcChecklist,
