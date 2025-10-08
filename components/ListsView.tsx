@@ -212,9 +212,13 @@ const ChecklistCard: React.FC<{
                 }}
                 aria-label={`Toggle task: ${checklist.name}`}>
           <div className="flex items-center min-w-0 flex-1 gap-3">
-            {category && (
+            {category ? (
               <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
                 <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700">
+                <ListAltIcon className="text-xl text-gray-500" />
               </div>
             )}
             <StaticName
@@ -257,9 +261,13 @@ const ChecklistCard: React.FC<{
     >
       {/* Col 1: icon + title */}
       <div className="flex items-center min-w-0 gap-3">
-        {category && (
+        {category ? (
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${category.color}20` }}>
             <Icon name={category.icon} style={{ color: category.color }} className="text-xl" />
+          </div>
+        ) : (
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-200 dark:bg-gray-700">
+            <ListAltIcon className="text-xl text-gray-500" />
           </div>
         )}
         <StaticName
