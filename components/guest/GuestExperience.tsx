@@ -3,15 +3,11 @@ import { AddIcon, CloseIcon } from '../icons';
 import { Message, Sender, UserPreferences } from '../../types';
 import { parseAIResponse } from '../../services/geminiService';
 import { guestSessionService, GuestChat, GuestTask } from '../../services/guestSessionService';
+import { generateUUID } from '../../utils/uuid';
 
 const MAX_GUEST_TASKS = 5;
 
-const createId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  return `id-${Math.random().toString(36).slice(2, 11)}-${Date.now()}`;
-};
+const createId = generateUUID;
 
 const guestPreferences: UserPreferences = {
   personality: 'smart',

@@ -4,6 +4,7 @@ import { DescriptionIcon, FormatBoldIcon, FormatItalicIcon, FormatUnderlinedIcon
 import ProjectLinkModal from './ProjectLinkModal';
 import NoteToTaskModal from './NoteToTaskModal';
 import { generateTasksFromNote } from '../services/geminiService';
+import { generateUUID } from '../utils/uuid';
 
 const FileIcon: React.FC<{ mimeType: string; className?: string }> = ({ mimeType, className }) => {
   if (mimeType.startsWith('image/')) return <ImageIcon className={className} />;
@@ -518,7 +519,7 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
     };
     
     const handleCreateTasksFromNote = (data: { listName: string, tasks: { text: string, dueDate?: string }[] }) => {
-        const newTasks: Task[] = data.tasks.map(t => ({ id: crypto.randomUUID(), text: t.text, completedAt: null }));
+        const newTasks: Task[] = data.tasks.map(t => ({ id: generateUUID(), text: t.text, completedAt: null }));
         
         const newChecklist: Omit<Checklist, 'id'> = {
             name: data.listName,

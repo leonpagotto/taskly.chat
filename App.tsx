@@ -43,6 +43,7 @@ import { feedbackService } from './services/feedbackService';
 import { microsoftGraphService } from './services/microsoftGraphService';
 import { hasSupabaseEnv } from './services/supabaseClient';
 import { guestSessionService } from './services/guestSessionService';
+import { generateUUID } from './utils/uuid';
 
 
 // === SHARED MODAL COMPONENTS ===
@@ -382,7 +383,7 @@ const TaskEditorModal: React.FC<{
             itemInputsRef.current[tasks.length - 1]?.focus();
             return;
         }
-        const newTasks = [...tasks, { id: crypto.randomUUID(), text: '', completedAt: null }];
+        const newTasks = [...tasks, { id: generateUUID(), text: '', completedAt: null }];
         handleUpdateField('tasks', newTasks);
     };
     
@@ -593,7 +594,7 @@ const HabitModal: React.FC<{
             habitItemInputsRef.current[tasks.length - 1]?.focus();
             return;
         }
-        const newTasks = [...tasks, { id: crypto.randomUUID(), text: '', completedAt: null }];
+        const newTasks = [...tasks, { id: generateUUID(), text: '', completedAt: null }];
         handleUpdateField('tasks', newTasks);
     };
     
@@ -1621,10 +1622,10 @@ const App: React.FC = () => {
                 }
             };
             const importedChecklist: Checklist = {
-                id: crypto.randomUUID(),
+                id: generateUUID(),
                 name: 'Tasks from guest session',
                 tasks: guestTasks.map((task) => ({
-                    id: crypto.randomUUID(),
+                    id: generateUUID(),
                     text: task.text,
                     completedAt: task.completed ? completedDate(task.createdAt) : null,
                 })),
@@ -1831,7 +1832,7 @@ const App: React.FC = () => {
             const d = env.data as Partial<Checklist> & { tasks?: { text: string }[] };
             const created = handleCreateChecklist({
                 name: d.name || 'Imported List',
-                tasks: (d.tasks || []).map((t) => ({ id: crypto.randomUUID(), text: t.text, completedAt: null })),
+                tasks: (d.tasks || []).map((t) => ({ id: generateUUID(), text: t.text, completedAt: null })),
                 completionHistory: [],
                 priority: d.priority ?? 10,
                 dueDate: d.dueDate || undefined,
@@ -2219,7 +2220,7 @@ const App: React.FC = () => {
 
   // Project Handlers
   const handleCreateProject = (projectData: Omit<Project, 'id'>) => {
-    const newProject: Project = { id: crypto.randomUUID(), ...projectData };
+    const newProject: Project = { id: generateUUID(), ...projectData };
     setProjects(prev => [newProject, ...prev]);
     setToastMessage(t('project_created_success'));
   };
@@ -2247,7 +2248,7 @@ const App: React.FC = () => {
   const handleCreateNote = (details: { projectId?: string; name?: string; content?: string } = {}) => {
     const { projectId, name = 'Untitled Note', content = `<h1>${name}</h1><p></p>` } = details;
     const newNote: Note = { 
-        id: crypto.randomUUID(), 
+        id: generateUUID(), 
         name, 
         content, 
         projectId, 
@@ -2378,7 +2379,7 @@ const App: React.FC = () => {
         if (!listCreated) {
             listName = message.suggestionListName;
             const tasksToCreate: Task[] = message.suggestions.map((sugg) => ({
-                id: crypto.randomUUID(),
+                id: generateUUID(),
                 text: sugg.text,
                 completedAt: null,
             }));
@@ -2409,7 +2410,7 @@ const App: React.FC = () => {
       setCategoryModalData('new');
   };
   const handleSaveCategoryFromModal = (categoryData: Omit<UserCategory, 'id'>) => {
-    const newCategory: UserCategory = { id: crypto.randomUUID(), ...categoryData };
+    const newCategory: UserCategory = { id: generateUUID(), ...categoryData };
     setUserCategories(prev => [...prev, newCategory]);
     if (onCategoryCreateCallbackRef.current) {
         onCategoryCreateCallbackRef.current(newCategory.id);
@@ -2509,7 +2510,7 @@ Keep descriptions concise (10-15 words max).`;
 
   // Checklist and Task Handlers
   const handleCreateChecklist = (checklistData: Omit<Checklist, 'id'>): Checklist => {
-    const newChecklist: Checklist = { id: crypto.randomUUID(), ...checklistData, completionHistory: [], tasks: checklistData.tasks || [] };
+    const newChecklist: Checklist = { id: generateUUID(), ...checklistData, completionHistory: [], tasks: checklistData.tasks || [] };
     setChecklists(prev => [newChecklist, ...prev]);
     setToastMessage(t('task_created_success'));
         syncChecklistToRelational(newChecklist);
@@ -2527,9 +2528,9 @@ Keep descriptions concise (10-15 words max).`;
             if (p.includes('calendar') || p.includes('event')) return `${payload.requester} · Team: Calendar`;
             return payload.requester;
         })();
-    const req: Request = { id: `req-${Date.now()}`, ...payload, requester: routedRequester, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+    const req: Request = { id: generateUUID(), ...payload, requester: routedRequester, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
         setRequests(prev => [req, ...prev]);
-        setToastMessage('Request submitted');
+        // Note: Success message is handled by the calling form for better UX
         // Mirror to relational DB if enabled
         const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
         if (authSession && useRelDb && relationalDb.isEnabled()) {
@@ -2746,7 +2747,7 @@ Keep descriptions concise (10-15 words max).`;
         ...checklist,
         name: `${checklist.name} (Copy)`,
         completionHistory: [],
-        tasks: checklist.tasks.map(t => ({...t, id: crypto.randomUUID(), completedAt: null})),
+        tasks: checklist.tasks.map(t => ({...t, id: generateUUID(), completedAt: null})),
         sourceNoteId: undefined, 
         generatedChecklistId: undefined,
         priority: (checklist.priority || 90) + 1
@@ -2754,7 +2755,7 @@ Keep descriptions concise (10-15 words max).`;
     handleCreateChecklist(duplicatedData);
   };
     const handleCreateTask = (checklistId: string, text: string) => {
-        const newTask: Task = { id: crypto.randomUUID(), text, completedAt: null };
+        const newTask: Task = { id: generateUUID(), text, completedAt: null };
         let updatedChecklist: Checklist | null = null;
         setChecklists(prev => prev.map(cl => {
                 if (cl.id !== checklistId) return cl;
@@ -2892,7 +2893,7 @@ Keep descriptions concise (10-15 words max).`;
   
   // Habit Handlers
   const handleCreateHabit = (habitData: Omit<Habit, 'id' | 'completionHistory'>) => {
-    const newHabit: Habit = { id: crypto.randomUUID(), completionHistory: [], ...habitData, priority: 10 };
+    const newHabit: Habit = { id: generateUUID(), completionHistory: [], ...habitData, priority: 10 };
     setHabits(prev => [...prev, newHabit]);
     setToastMessage(t('habit_created_success'));
         syncHabitToRelational(newHabit);
@@ -3038,7 +3039,7 @@ Keep descriptions concise (10-15 words max).`;
 
   // Event Handlers
   const handleCreateEvent = (eventData: Omit<Event, 'id'>) => {
-    const newEvent: Event = { id: crypto.randomUUID(), ...eventData };
+    const newEvent: Event = { id: generateUUID(), ...eventData };
     setEvents(prev => [newEvent, ...prev]);
   };
   const handleUpdateEvent = (eventId: string, updatedData: Partial<Omit<Event, 'id'>>) => {
@@ -3059,7 +3060,7 @@ Keep descriptions concise (10-15 words max).`;
         try {
             const now = new Date().toISOString();
             const newStory: Story = {
-                id: crypto.randomUUID(),
+                id: generateUUID(),
                 title: payload?.title || 'Untitled Story',
                 description: payload?.description || '',
                 status: payload?.status || 'backlog',
@@ -3196,7 +3197,7 @@ Keep descriptions concise (10-15 words max).`;
     
     if (!currentChatId) return;
 
-    const userMessage: Message = { id: crypto.randomUUID(), sender: Sender.User, text: messageText };
+    const userMessage: Message = { id: generateUUID(), sender: Sender.User, text: messageText };
     
     setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, userMessage] } : c));
         // Persist user message to relational DB if enabled
@@ -3272,7 +3273,7 @@ Keep descriptions concise (10-15 words max).`;
         }
 
         const aiResponse: AIResponse = await parseAIResponse(history, messageText, currentView, preferences, projectContext, filesForContext, projectSnapshot);
-        const modelMessage: Message = { id: crypto.randomUUID(), sender: Sender.Model, text: aiResponse.text };
+        const modelMessage: Message = { id: generateUUID(), sender: Sender.Model, text: aiResponse.text };
 
         if (aiResponse.action) {
             switch(aiResponse.action.type) {
@@ -3286,10 +3287,10 @@ Keep descriptions concise (10-15 words max).`;
                     const { listName, items } = aiResponse.action.payload;
                     const existingList = checklists.find(cl => cl.name.toLowerCase() === listName.toLowerCase());
                     if (existingList) {
-                        const newTasks: Task[] = items.map((itemText: string) => ({ id: crypto.randomUUID(), text: itemText, completedAt: null }));
+                        const newTasks: Task[] = items.map((itemText: string) => ({ id: generateUUID(), text: itemText, completedAt: null }));
                         handleUpdateChecklist(existingList.id, { tasks: [...existingList.tasks, ...newTasks] });
                     } else {
-                        const newTasks: Task[] = items.map((itemText: string) => ({ id: crypto.randomUUID(), text: itemText, completedAt: null }));
+                        const newTasks: Task[] = items.map((itemText: string) => ({ id: generateUUID(), text: itemText, completedAt: null }));
                         handleCreateChecklist({ name: listName, completionHistory: [], tasks: newTasks });
                     }
                     break;
@@ -3413,7 +3414,7 @@ Keep descriptions concise (10-15 words max).`;
                 }
     } catch (error) {
         console.error("Error getting AI response:", error);
-        const errorMessage: Message = { id: crypto.randomUUID(), sender: Sender.Model, text: "Sorry, I encountered an error. Please try again." };
+        const errorMessage: Message = { id: generateUUID(), sender: Sender.Model, text: "Sorry, I encountered an error. Please try again." };
         setConversations(prev => prev.map(c => c.id === currentChatId ? { ...c, messages: [...c.messages, errorMessage] } : c));
     } finally {
         setIsLoading(false);
@@ -3862,19 +3863,29 @@ Keep descriptions concise (10-15 words max).`;
                                                     setCurrentView('requests');
                                                 }}
                                                 onSubmit={(req) => {
-                                                    const editingId = (viewAction as any)?.payload?.id as string | undefined;
-                                                    if (!editingId) {
-                                                        let linkedIds = req.linkedTaskIds || [];
-                                                        if (!linkedIds.length && req.problem) {
-                                                            const created = handleCreateChecklist({ name: req.problem.slice(0, 80), completionHistory: [], tasks: [] });
-                                                            linkedIds = [created.id];
+                                                    try {
+                                                        const editingId = (viewAction as any)?.payload?.id as string | undefined;
+                                                        if (!editingId) {
+                                                            // Creating new request
+                                                            let linkedIds = req.linkedTaskIds || [];
+                                                            if (!linkedIds.length && req.problem) {
+                                                                const created = handleCreateChecklist({ name: req.problem.slice(0, 80), completionHistory: [], tasks: [] });
+                                                                linkedIds = [created.id];
+                                                            }
+                                                            handleCreateRequest({ ...req, linkedTaskIds: linkedIds });
+                                                            setToastMessage(`✅ Request "${req.product}" submitted successfully!`);
+                                                        } else {
+                                                            // Updating existing request
+                                                            handleUpdateRequest(editingId, { ...req });
+                                                            setToastMessage(`✅ Request "${req.product}" updated successfully!`);
                                                         }
-                                                        handleCreateRequest({ ...req, linkedTaskIds: linkedIds });
-                                                    } else {
-                                                        handleUpdateRequest(editingId, { ...req });
+                                                        // Navigate back to requests list
+                                                        setViewAction(null);
+                                                        setCurrentView('requests');
+                                                    } catch (error) {
+                                                        console.error('Failed to submit request:', error);
+                                                        setToastMessage('❌ Failed to submit request. Please try again.');
                                                     }
-                                                    setViewAction(null);
-                                                    setCurrentView('requests');
                                                 }}
                                                 onCreateLinkedTask={(name) => {
                                                     const created = handleCreateChecklist({ name, completionHistory: [], tasks: [] });

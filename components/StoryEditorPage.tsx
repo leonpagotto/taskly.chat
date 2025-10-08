@@ -3,6 +3,7 @@ import Header from './Header';
 import { ArrowBackIcon, AddIcon, DeleteIcon, CheckCircleIcon, RadioButtonUncheckedIcon, ChevronRightIcon } from './icons';
 import { Story, Project, UserCategory, Checklist, StoryStatus, AcceptanceCriterion, SkillCategory } from '../types';
 import { authService } from '../services/authService';
+import { generateUUID } from '../utils/uuid';
 
 type Props = {
   story: Story;
@@ -64,7 +65,7 @@ const StoryEditorPage: React.FC<Props> = ({ story, projects, userCategories, ski
   const addCriterion = () => {
     const text = newCriterion.trim();
     if (!text) return;
-    const crit: AcceptanceCriterion = { id: crypto.randomUUID(), text, done: false } as AcceptanceCriterion;
+    const crit: AcceptanceCriterion = { id: generateUUID(), text, done: false } as AcceptanceCriterion;
     handleField('acceptanceCriteria', [ ...(local.acceptanceCriteria || []), crit ] as any);
     setNewCriterion('');
   };
