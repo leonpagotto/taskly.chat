@@ -1,20 +1,36 @@
 import React, { useMemo, useState } from 'react';
-import type { Event } from '../types';
+import type { Event, Checklist } from '../types';
 import { UserCategory, Habit, RecurrenceRule } from '../types';
-import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon } from './icons';
+import { ChevronLeftIcon, ChevronRightIcon, AddIcon, EventNoteIcon, CalendarAddOnIcon, CheckCircleIcon, RadioButtonUncheckedIcon } from './icons';
 import Header from './Header';
 
 interface CalendarViewProps {
   events: Event[];
   habits: Habit[];
+  checklists: Checklist[];
   userCategories: UserCategory[];
   onNewEventRequest: (date: string) => void;
   onEditEventRequest: (event: Event) => void;
+  onToggleTask: (checklistId: string, taskId: string) => void;
+  onToggleHabitCompletion: (habitId: string, date: string) => void;
+  onToggleHabitTask: (habitId: string, taskId: string, date: string) => void;
   onToggleSidebar: () => void;
   t: (key: string) => string;
 }
 
-const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategories, onNewEventRequest, onEditEventRequest, onToggleSidebar, t }) => {
+const CalendarView: React.FC<CalendarViewProps> = ({ 
+  events, 
+  habits, 
+  checklists, 
+  userCategories, 
+  onNewEventRequest, 
+  onEditEventRequest, 
+  onToggleTask,
+  onToggleHabitCompletion,
+  onToggleHabitTask,
+  onToggleSidebar, 
+  t 
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
 
@@ -113,6 +129,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
     return checkDate >= eventStartDate && checkDate <= eventEndDate;
   };
 
+  const isChecklistDueOnDate = (checklist: Checklist, date: Date): boolean => {
+    if (checklist.recurrence) {
+        return isRecurrentItemDue(checklist.recurrence, date);
+    }
+    // For non-recurring checklists, check due date
+    if (checklist.dueDate) {
+        const dueDate = new Date(checklist.dueDate + 'T00:00:00');
+        const checkDate = new Date(date);
+        checkDate.setHours(0,0,0,0);
+        return checkDate.getTime() === dueDate.getTime();
+    }
+    return false;
+  };
+
   // Compute week range (Mon-Sun) for currentDate
   const weekDays = useMemo(() => {
     const base = new Date(currentDate);
@@ -194,6 +224,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
+              const dayChecklists = checklists.filter(c => isChecklistDueOnDate(c, date));
+              const totalItems = dayEvents.length + dayHabits.length + dayChecklists.length;
+              
               return (
                 <div
                   key={dayNumber}
@@ -205,9 +238,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                     <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
                       {dayNumber}
                     </span>
-                    {(dayEvents.length + dayHabits.length) > 0 && (
+                    {totalItems > 0 && (
                       <span className="text-[10px] font-semibold text-gray-500 group-hover:text-gray-300">
-                        {dayEvents.length + dayHabits.length}
+                        {totalItems}
                       </span>
                     )}
                   </div>
@@ -227,15 +260,121 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                         </button>
                       );
                     })}
+                    {dayChecklists.map(checklist => {
+                      const category = userCategories.find(c => c.id === checklist.categoryId);
+                      const color = category?.color || '#64748B';
+                      const isCompleted = checklist.completionHistory.includes(isoDate);
+                      return (
+                        <div key={checklist.id} className="space-y-0.5">
+                          <button
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              if (checklist.tasks.length === 0) {
+                                // Simple checklist toggle
+                                const today = new Date().toISOString().split('T')[0];
+                                if (checklist.recurrence) {
+                                  // Handle recurring checklist completion
+                                } else {
+                                  // Handle one-time checklist completion
+                                }
+                              }
+                            }}
+                            style={{ backgroundColor: `${color}20`, color: color }}
+                            className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                          >
+                            {isCompleted ? (
+                              <CheckCircleIcon className="w-2 h-2" style={{color}} />
+                            ) : (
+                              <RadioButtonUncheckedIcon className="w-2 h-2" style={{color}} />
+                            )}
+                            <span className="truncate">{checklist.name}</span>
+                          </button>
+                          {checklist.tasks.length > 0 && (
+                            <div className="ml-2 space-y-0.5">
+                              {checklist.tasks.slice(0, 2).map(task => {
+                                const isTaskCompleted = task.completedAt === isoDate;
+                                return (
+                                  <button
+                                    key={task.id}
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      onToggleTask(checklist.id, task.id);
+                                    }}
+                                    style={{ backgroundColor: `${color}10`, color: color }}
+                                    className="w-full text-left p-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                                  >
+                                    {isTaskCompleted ? (
+                                      <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
+                                    ) : (
+                                      <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
+                                    )}
+                                    <span className="truncate">{task.text}</span>
+                                  </button>
+                                );
+                              })}
+                              {checklist.tasks.length > 2 && (
+                                <div className="text-[9px] text-gray-400 ml-2">
+                                  +{checklist.tasks.length - 2} more
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                     {dayHabits.length > 0 && (
                       <div className="pt-0.5 space-y-0.5">
                         {dayHabits.map(h => {
                           const cat = userCategories.find(c => c.id === h.categoryId);
                           const color = cat?.color || '#64748B';
+                          const isHabitCompleted = h.completionHistory.includes(isoDate);
                           return (
-                            <div key={`habit-${h.id}`} className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm" style={{ backgroundColor: `${color}14`, color }}>
-                              <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
-                              <span className="truncate">{h.name}</span>
+                            <div key={`habit-${h.id}`} className="space-y-0.5">
+                              <button
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  onToggleHabitCompletion(h.id, isoDate);
+                                }}
+                                className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                                style={{ backgroundColor: `${color}14`, color }}
+                              >
+                                {isHabitCompleted ? (
+                                  <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
+                                ) : (
+                                  <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
+                                )}
+                                <span className="truncate">{h.name}</span>
+                              </button>
+                              {h.type === 'checklist' && h.tasks && h.tasks.length > 0 && (
+                                <div className="ml-2 space-y-0.5">
+                                  {h.tasks.slice(0, 2).map(task => {
+                                    const isTaskCompleted = task.completedAt === isoDate;
+                                    return (
+                                      <button
+                                        key={task.id}
+                                        onClick={(e) => { 
+                                          e.stopPropagation(); 
+                                          onToggleHabitTask(h.id, task.id, isoDate);
+                                        }}
+                                        style={{ backgroundColor: `${color}10`, color }}
+                                        className="w-full text-left p-0.5 rounded-sm text-[9px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                                      >
+                                        {isTaskCompleted ? (
+                                          <CheckCircleIcon className="w-1 h-1" style={{color}} />
+                                        ) : (
+                                          <RadioButtonUncheckedIcon className="w-1 h-1" style={{color}} />
+                                        )}
+                                        <span className="truncate">{task.text}</span>
+                                      </button>
+                                    );
+                                  })}
+                                  {h.tasks.length > 2 && (
+                                    <div className="text-[8px] text-gray-400 ml-2">
+                                      +{h.tasks.length - 2} more
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -253,6 +392,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
               const isTodayFlag = isSameDay(date, today);
               const dayEvents = events.filter(e => isEventDueOnDate(e, date)).sort((a,b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
               const dayHabits = habits.filter(h => isRecurrentItemDue(h.recurrence, date));
+              const dayChecklists = checklists.filter(c => isChecklistDueOnDate(c, date));
+              const totalItems = dayEvents.length + dayHabits.length + dayChecklists.length;
+              
               return (
                 <div
                   key={idx}
@@ -264,9 +406,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                     <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold transition-all ${isTodayFlag ? 'bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white shadow-lg' : 'bg-gray-800/60 text-gray-200 group-hover:bg-gray-700/70 group-hover:text-white'}`}>
                       {date.getDate()}
                     </span>
-                    {(dayEvents.length + dayHabits.length) > 0 && (
+                    {totalItems > 0 && (
                       <span className="text-[10px] font-semibold text-gray-500 group-hover:text-gray-300">
-                        {dayEvents.length + dayHabits.length}
+                        {totalItems}
                       </span>
                     )}
                   </div>
@@ -286,15 +428,113 @@ const CalendarView: React.FC<CalendarViewProps> = ({ events, habits, userCategor
                         </button>
                       );
                     })}
+                    {dayChecklists.map(checklist => {
+                      const category = userCategories.find(c => c.id === checklist.categoryId);
+                      const color = category?.color || '#64748B';
+                      const isCompleted = checklist.completionHistory.includes(isoDate);
+                      return (
+                        <div key={checklist.id} className="space-y-0.5">
+                          <button
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              // Handle checklist completion
+                            }}
+                            style={{ backgroundColor: `${color}20`, color: color }}
+                            className="w-full text-left p-1 rounded-sm text-[11px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                          >
+                            {isCompleted ? (
+                              <CheckCircleIcon className="w-2 h-2" style={{color}} />
+                            ) : (
+                              <RadioButtonUncheckedIcon className="w-2 h-2" style={{color}} />
+                            )}
+                            <span className="truncate">{checklist.name}</span>
+                          </button>
+                          {checklist.tasks.length > 0 && (
+                            <div className="ml-2 space-y-0.5">
+                              {checklist.tasks.slice(0, 3).map(task => {
+                                const isTaskCompleted = task.completedAt === isoDate;
+                                return (
+                                  <button
+                                    key={task.id}
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      onToggleTask(checklist.id, task.id);
+                                    }}
+                                    style={{ backgroundColor: `${color}10`, color: color }}
+                                    className="w-full text-left p-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                                  >
+                                    {isTaskCompleted ? (
+                                      <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
+                                    ) : (
+                                      <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
+                                    )}
+                                    <span className="truncate">{task.text}</span>
+                                  </button>
+                                );
+                              })}
+                              {checklist.tasks.length > 3 && (
+                                <div className="text-[9px] text-gray-400 ml-2">
+                                  +{checklist.tasks.length - 3} more
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                     {dayHabits.length > 0 && (
                       <div className="pt-0.5 space-y-0.5">
                         {dayHabits.map(h => {
                           const cat = userCategories.find(c => c.id === h.categoryId);
                           const color = cat?.color || '#64748B';
+                          const isHabitCompleted = h.completionHistory.includes(isoDate);
                           return (
-                            <div key={`habit-${h.id}`} className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm" style={{ backgroundColor: `${color}14`, color }}>
-                              <div className="w-1 h-1 rounded-full" style={{backgroundColor: color}}></div>
-                              <span className="truncate">{h.name}</span>
+                            <div key={`habit-${h.id}`} className="space-y-0.5">
+                              <button
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  onToggleHabitCompletion(h.id, isoDate);
+                                }}
+                                className="w-full text-left p-1 rounded-sm text-[10px] font-semibold flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]" 
+                                style={{ backgroundColor: `${color}14`, color }}
+                              >
+                                {isHabitCompleted ? (
+                                  <CheckCircleIcon className="w-1.5 h-1.5" style={{color}} />
+                                ) : (
+                                  <RadioButtonUncheckedIcon className="w-1.5 h-1.5" style={{color}} />
+                                )}
+                                <span className="truncate">{h.name}</span>
+                              </button>
+                              {h.type === 'checklist' && h.tasks && h.tasks.length > 0 && (
+                                <div className="ml-2 space-y-0.5">
+                                  {h.tasks.slice(0, 3).map(task => {
+                                    const isTaskCompleted = task.completedAt === isoDate;
+                                    return (
+                                      <button
+                                        key={task.id}
+                                        onClick={(e) => { 
+                                          e.stopPropagation(); 
+                                          onToggleHabitTask(h.id, task.id, isoDate);
+                                        }}
+                                        style={{ backgroundColor: `${color}10`, color }}
+                                        className="w-full text-left p-0.5 rounded-sm text-[9px] font-medium flex items-center gap-1 backdrop-blur-sm transition-transform duration-150 hover:-translate-y-[1px]"
+                                      >
+                                        {isTaskCompleted ? (
+                                          <CheckCircleIcon className="w-1 h-1" style={{color}} />
+                                        ) : (
+                                          <RadioButtonUncheckedIcon className="w-1 h-1" style={{color}} />
+                                        )}
+                                        <span className="truncate">{task.text}</span>
+                                      </button>
+                                    );
+                                  })}
+                                  {h.tasks.length > 3 && (
+                                    <div className="text-[8px] text-gray-400 ml-2">
+                                      +{h.tasks.length - 3} more
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           );
                         })}

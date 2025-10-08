@@ -3817,9 +3817,13 @@ Keep descriptions concise (10-15 words max).`;
                         <CalendarView
                             events={events}
                             habits={habits}
+                            checklists={checklists}
                             userCategories={userCategories}
                             onNewEventRequest={handleNewEvent}
                             onEditEventRequest={(e) => setViewAction({type: 'editEvent', payload: e})}
+                            onToggleTask={handleToggleTask}
+                            onToggleHabitCompletion={handleToggleHabitCompletion}
+                            onToggleHabitTask={handleToggleHabitTask}
                             onToggleSidebar={() => setMobileSidebarOpen(p => !p)}
                             t={t}
                         />
