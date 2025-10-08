@@ -82,15 +82,23 @@ const Column: React.FC<{
     if (id) onDrop(id, status);
   };
   return (
-    <div className="flex-1 min-w-[220px]">
-      <div className="px-3 py-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">{title}</h3>
-        <span className="text-xs text-gray-500">{items.length}</span>
+    <div className="flex-1 min-w-[220px] bg-white dark:bg-gray-700/50 rounded-xl p-3"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-100">{title}</h3>
+        <span className="text-xs text-gray-400">{items.length}</span>
       </div>
-      <div onDragOver={handleDragOver} onDrop={handleDrop} className="p-2 space-y-2 rounded-lg min-h-[200px] bg-gray-100/70 dark:bg-gray-700/40 border border-dashed border-gray-300 dark:border-gray-600">
+      <div className="space-y-2 min-h-[200px]">
         {items.map(r => (
           <RequestCard key={r.id} r={r} onSelect={onSelect} onGenerateStories={onGenerateStories} />
         ))}
+        {items.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-sm text-gray-400 dark:text-gray-500">No requests yet</p>
+          </div>
+        )}
       </div>
     </div>
   );
