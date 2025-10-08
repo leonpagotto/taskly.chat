@@ -2092,12 +2092,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                             className={`md:min-w-[220px] lg:min-w-0 w-full text-left p-3 rounded-[12px] shadow-sm flex flex-col transition-all hover:shadow-md border border-gray-200 dark:border-gray-700/50 border-l-4 ${color.bg} ${color.darkBg} ${color.border}`}
                           >
                             <h4 className="font-semibold text-gray-800 dark:text-white truncate">{note.name}</h4>
-                            <div className="mt-1">
-                              <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug truncate">
-                                <span className="font-semibold text-gray-700 dark:text-gray-300">{formattedDate}</span>
-                                <span className="mx-1">—</span>
-                                <span className="align-baseline">{contentPreview}</span>
-                              </p>
+                            <div className="mt-1 space-y-0.5">
+                              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">{formattedDate}</p>
                               <p className="text-sm text-gray-600 dark:text-gray-400 leading-snug line-clamp-1">{contentPreview}</p>
                             </div>
                           </button>
