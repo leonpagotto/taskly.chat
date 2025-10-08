@@ -51,6 +51,11 @@ const NoteEditor: React.FC<{
     const formatDropdownRef = useRef<HTMLDivElement>(null);
     const [moreToolsOpen, setMoreToolsOpen] = useState(false);
     const moreToolsRef = useRef<HTMLDivElement>(null);
+    
+    // Dynamic toolbar space detection
+    const [shouldShowOverflow, setShouldShowOverflow] = useState(false);
+    const toolbarContainerRef = useRef<HTMLDivElement>(null);
+    const allToolsRef = useRef<HTMLDivElement>(null);
 
     const formatOptions = [
         { label: 'Title', block: 'h1' },
@@ -106,6 +111,30 @@ const NoteEditor: React.FC<{
         };
         document.addEventListener('selectionchange', updateBlockType);
         return () => document.removeEventListener('selectionchange', updateBlockType);
+    }, []);
+    
+    // Dynamic toolbar space detection
+    useEffect(() => {
+        const checkToolbarSpace = () => {
+            if (toolbarContainerRef.current && allToolsRef.current) {
+                const containerWidth = toolbarContainerRef.current.offsetWidth;
+                const allToolsWidth = allToolsRef.current.scrollWidth;
+                // Add some buffer space for the more tools button
+                const needsOverflow = allToolsWidth > containerWidth - 60;
+                setShouldShowOverflow(needsOverflow);
+            }
+        };
+
+        // Check on mount and resize
+        checkToolbarSpace();
+        const resizeObserver = new ResizeObserver(checkToolbarSpace);
+        if (toolbarContainerRef.current) {
+            resizeObserver.observe(toolbarContainerRef.current);
+        }
+
+        return () => {
+            resizeObserver.disconnect();
+        };
     }, []);
 
 
@@ -389,8 +418,8 @@ const NoteEditor: React.FC<{
     return (
     <>
        <div className="flex-1 flex flex-col min-h-0 bg-transparent">
-           <div className="p-2 border-b border-white/10 flex items-center justify-between gap-1 flex-shrink-0 bg-white/8 backdrop-blur-xl">
-                <div className="flex items-center gap-1 min-w-0 flex-1">
+           <div ref={toolbarContainerRef} className="p-2 border-b border-white/10 flex items-center justify-between gap-1 flex-shrink-0 bg-white/8 backdrop-blur-xl">
+                <div ref={allToolsRef} className="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
                     <div ref={formatDropdownRef} className="relative flex-shrink-0">
                         <button onClick={() => setFormatDropdownOpen(p => !p)} className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm flex-shrink-0">
                             <TextFieldsIcon />
@@ -424,32 +453,35 @@ const NoteEditor: React.FC<{
                         <EditorButton icon={<FormatListNumberedIcon />} command="insertOrderedList" />
                     </div>
                     
-                    {/* Only show checklist on desktop, moved to more menu on mobile */}
-                    <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
-                        <EditorButton icon={<PlaylistAddCheckIcon />} command="insertCheckboxList" onClick={handleInsertCheckboxList} label="Checklist" />
-                        <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                        <EditorButton icon={<ImageIcon />} command="insertImage" onClick={handleInsertImageClick} />
-                        <EditorButton icon={<FormatQuoteIcon />} command="formatBlock" value="blockquote" />
-                        <EditorButton icon={<CodeIcon />} command="formatBlock" value="pre" />
-                    </div>
+                    {/* Show advanced tools only when there's space */}
+                    {!shouldShowOverflow && (
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                            <EditorButton icon={<PlaylistAddCheckIcon />} command="insertCheckboxList" onClick={handleInsertCheckboxList} label="Checklist" />
+                            <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                            <EditorButton icon={<ImageIcon />} command="insertImage" onClick={handleInsertImageClick} />
+                            <EditorButton icon={<FormatQuoteIcon />} command="formatBlock" value="blockquote" />
+                            <EditorButton icon={<CodeIcon />} command="formatBlock" value="pre" />
+                        </div>
+                    )}
                 </div>
                 
-                <div ref={moreToolsRef} className="relative">
-                    <button onClick={() => setMoreToolsOpen(p => !p)} className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                        <MoreVertIcon />
-                    </button>
-                     {moreToolsOpen && (
-                        <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] p-1">
-                            <div className="sm:hidden">
+                {/* Only show three-dots menu when space is constrained */}
+                {shouldShowOverflow && (
+                    <div ref={moreToolsRef} className="relative">
+                        <button onClick={() => setMoreToolsOpen(p => !p)} className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <MoreVertIcon />
+                        </button>
+                         {moreToolsOpen && (
+                            <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100 dark:bg-gray-900 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] p-1">
                                 <MoreMenuItem icon={<PlaylistAddCheckIcon />} label="Checklist" onClick={handleInsertCheckboxList} />
                                 <MoreMenuItem icon={<ImageIcon />} label="Insert Image" onClick={handleInsertImageClick} />
                                 <MoreMenuItem icon={<FormatQuoteIcon />} label="Blockquote" onClick={() => applyFormat('formatBlock', 'blockquote')} />
                                 <MoreMenuItem icon={<CodeIcon />} label="Code Block" onClick={() => applyFormat('formatBlock', 'pre')} />
+                                <MoreMenuItem icon={<PaperclipIcon />} label="Attach File" onClick={handleUploadClick} />
                             </div>
-                            <MoreMenuItem icon={<PaperclipIcon />} label="Attach File" onClick={handleUploadClick} />
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
             </div>
             
             <div 
