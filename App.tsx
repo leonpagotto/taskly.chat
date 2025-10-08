@@ -3645,6 +3645,8 @@ Keep descriptions concise (10-15 words max).`;
                                 else if ('tasks' in item) setViewAction({ type: 'editTask', payload: item as Checklist });
                                 else setViewAction({ type: 'editEvent', payload: item as Event });
                             }}
+                            onDeleteChecklist={handleDeleteChecklist}
+                            onDeleteHabit={handleDeleteHabit}
                             onUpdateItemPriority={handleUpdateItemPriority}
                             recentlyCompletedItemId={recentlyCompletedItemId}
                             t={t}

@@ -22,6 +22,7 @@ import {
   CheckIcon,
   AddIcon,
   EditIcon,
+  DeleteIcon,
   NoteAddIcon,
   NewTaskIcon,
   CalendarAddOnIcon,
@@ -193,6 +194,8 @@ interface DashboardProps {
   onNewNote: (details: {}) => void;
   onNewProject: () => void;
   onEditItem: (item: Checklist | Habit | CalendarEvent) => void;
+  onDeleteChecklist?: (checklistId: string) => void;
+  onDeleteHabit?: (habitId: string) => void;
   onUpdateItemPriority: (itemId: string, newPriority: number, itemType: 'task' | 'habit') => void;
   recentlyCompletedItemId: string | null;
   t: (key: string) => string;
@@ -360,12 +363,14 @@ const DashboardItemsModal: React.FC<{
   onToggleTask?: (listId: string, taskId: string) => void;
   onToggleHabitTask?: (habitId: string, taskId: string, date: string) => void;
   onEditRequest: (item: Checklist | Habit) => void;
+  onDeleteChecklist?: (checklistId: string) => void;
+  onDeleteHabit?: (habitId: string) => void;
   category?: UserCategory;
   project?: Project;
   selectedISODate: string;
   onCreateTask?: (listId: string, text: string) => void;
   onAddTaskToHabit?: (habitId: string, text: string) => void;
-}> = ({ item, onClose, onToggleTask, onToggleHabitTask, onEditRequest, category, project, selectedISODate, onCreateTask, onAddTaskToHabit }) => {
+}> = ({ item, onClose, onToggleTask, onToggleHabitTask, onEditRequest, onDeleteChecklist, onDeleteHabit, category, project, selectedISODate, onCreateTask, onAddTaskToHabit }) => {
   if (!item) return null;
 
   const isHabit = 'type' in item;
@@ -440,6 +445,26 @@ const DashboardItemsModal: React.FC<{
             </div>
           </div>
           <div className="flex items-center gap-1">
+            {(isHabit ? onDeleteHabit : onDeleteChecklist) && (
+              <button
+                onClick={() => { 
+                  const confirmMessage = `Are you sure you want to delete "${item.name}"? This action cannot be undone.`;
+                  if (window.confirm(confirmMessage)) {
+                    if (isHabit) {
+                      onDeleteHabit?.(item.id);
+                    } else {
+                      onDeleteChecklist?.(item.id);
+                    }
+                    onClose(); 
+                  }
+                }}
+                className="p-2 rounded-[var(--radius-button)] hover:bg-red-600/10 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                aria-label="Delete"
+                title="Delete"
+              >
+                <DeleteIcon />
+              </button>
+            )}
             <button
               onClick={() => { onEditRequest(item); onClose(); }}
               className="p-2 rounded-[var(--radius-button)] hover:bg-gray-700"
@@ -1507,6 +1532,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
     onNewEventAt,
     onNewNote,
     onEditItem,
+    onDeleteChecklist,
+    onDeleteHabit,
     onUpdateItemPriority,
     recentlyCompletedItemId,
     onCreateTask,
@@ -1771,6 +1798,8 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
         onToggleTask={onToggleTask}
         onToggleHabitTask={onToggleHabitTask}
         onEditRequest={(item) => onEditItem(item)}
+        onDeleteChecklist={onDeleteChecklist}
+        onDeleteHabit={onDeleteHabit}
         category={modalCategory}
         project={modalProject}
         selectedISODate={selectedISODate}
