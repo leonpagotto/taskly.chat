@@ -154,7 +154,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 		const label = value === 'all' ? 'All status' : value.replace('_',' ');
 		return (
 			<div ref={ref} className="relative sm:w-52 w-full">
-				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
 					<div className="flex items-center gap-2 truncate">
 						<Icon name="flag" className="text-base flex-shrink-0" />
 						<span className="truncate capitalize">{label}</span>
@@ -162,11 +162,11 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 					<ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
 				</button>
 				{open && (
-					<div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+					<div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-300 dark:border-gray-700/60 bg-gray-200 dark:bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
 						<ul className="max-h-72 overflow-y-auto">
 							{(['all','backlog','in_progress','review','done'] as const).map(opt => (
 								<li key={opt}>
-									<button onClick={() => { onChange(opt); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
+									<button onClick={() => { onChange(opt); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800/80 truncate capitalize ${value === opt ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
 										{opt === 'all' ? 'All status' : opt.replace('_',' ')}
 									</button>
 								</li>
@@ -189,7 +189,7 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 		const label = value === 'updated' ? 'Latest updated' : 'Latest created';
 		return (
 			<div ref={ref} className="relative sm:w-52">
-				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[12px] text-sm font-semibold transition-colors bg-gray-200 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700">
+				<button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-2 px-3 h-10 rounded-[var(--radius-button)] text-sm font-semibold transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
 					<div className="flex items-center gap-2 truncate">
 						<Icon name="sort" className="text-base flex-shrink-0" />
 						<span className="truncate">{label}</span>
@@ -197,11 +197,11 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 					<ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${open ? 'rotate-180' : ''}`} />
 				</button>
 				{open && (
-					<div className="absolute z-20 top-full mt-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-lg shadow-xl border border-gray-300 dark:border-gray-600 overflow-hidden">
+					<div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-300 dark:border-gray-700/60 bg-gray-200 dark:bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
 						<ul className="max-h-72 overflow-y-auto">
 							{(['updated', 'created'] as const).map(opt => (
 								<li key={opt}>
-									<button onClick={() => { onChange(opt); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-300 dark:hover:bg-gray-600 truncate ${value === opt ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
+									<button onClick={() => { onChange(opt); setOpen(false); }} className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800/80 truncate ${value === opt ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}>
 										{opt === 'updated' ? 'Latest updated' : 'Latest created'}
 									</button>
 								</li>
@@ -238,11 +238,11 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 							inlineExtras={<StatusDropdown value={statusFilter} onChange={setStatusFilter} />}
 							rightExtras={
 								<>
-									<div className="bg-gray-200 dark:bg-gray-700/50 flex items-center h-10 px-1 rounded-[12px]">
-										<button onClick={() => setViewMode('list')} className={`h-8 px-3 rounded-[12px] text-sm font-semibold ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+									<div className="resend-secondary flex items-center h-10 px-1 rounded-[var(--radius-button)]">
+										<button onClick={() => setViewMode('list')} className={`h-8 px-3 rounded-[var(--radius-button)] text-sm font-semibold transition-all ${viewMode === 'list' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_list" className="text-base" /> <span className="hidden sm:inline">List</span></span>
 										</button>
-										<button onClick={() => setViewMode('board')} className={`h-8 px-3 rounded-[12px] text-sm font-semibold ${viewMode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
+										<button onClick={() => setViewMode('board')} className={`h-8 px-3 rounded-[var(--radius-button)] text-sm font-semibold transition-all ${viewMode === 'board' ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-300/70 dark:hover:bg-gray-600/40'}`}>
 											<span className="inline-flex items-center gap-1"><Icon name="view_kanban" className="text-base" /> <span className="hidden sm:inline">Board</span></span>
 										</button>
 									</div>
@@ -330,44 +330,41 @@ const StoriesView: React.FC<StoriesViewProps> = ({ stories, projects, userCatego
 												.map(s => {
 													const category = getCategory(s.categoryId);
 													const project = getProject(s.projectId);
+													const estimateLabel = (() => {
+														const pts = s.estimatePoints != null ? `${s.estimatePoints} pts` : '';
+														const time = s.estimateTime || '';
+														if (pts && time) return `${pts} • ${time}`;
+														return pts || time;
+													})();
 													return (
 														<button
 															key={s.id}
 															draggable
 															onDragStart={(e) => e.dataTransfer.setData('text/plain', s.id)}
 															onClick={() => onSelectStory?.(s.id)}
-															className="w-full text-left p-2 rounded-lg bg-gray-100 dark:bg-gray-600 hover:shadow-md transition-all"
+															className="w-full text-left p-3 rounded-lg bg-gray-100 dark:bg-gray-600 hover:shadow-md transition-all min-h-[100px]"
 														>
-														<div className="flex items-start justify-between gap-2">
-															<div className="flex items-start gap-2 min-w-0">
-																<div className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
-																	<Icon name={category?.icon || project?.icon || 'auto_stories'} style={{ color: category?.color || project?.color || '#64748B' }} className="text-lg" />
+															<div className="flex flex-col gap-2">
+																{/* Icon and Title */}
+																<div className="flex items-start gap-2">
+																	<div className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${(category?.color || project?.color || '#64748B')}20` }}>
+																		<Icon name={category?.icon || project?.icon || 'auto_stories'} style={{ color: category?.color || project?.color || '#64748B' }} className="text-lg" />
+																	</div>
+																	<div className="flex-1 min-w-0">
+																		<div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2 leading-snug">{s.title}</div>
+																	</div>
 																</div>
-																<div className="min-w-0 flex-1">
-																	<div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{s.title}</div>
-																	{(project || category) && (
-																		<div className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-300 flex items-center gap-1">
-																			{project && <span className="truncate">{project.name}</span>}
-																			{project && category && <span>•</span>}
-																			{category && (
-																				<span className="inline-flex items-center gap-1 truncate"><Icon name={category.icon} className="text-xs" style={{ color: category.color }} />{category.name}</span>
-																			)}
-																		</div>
+																
+																{/* Story Points & Assignee */}
+																<div className="flex items-center justify-between gap-2 text-xs">
+																	{estimateLabel && (
+																		<span className="px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 whitespace-nowrap">{estimateLabel}</span>
+																	)}
+																	{s.assigneeName && (
+																		<span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 whitespace-nowrap truncate max-w-[120px]" title={s.assigneeName}>{s.assigneeName}</span>
 																	)}
 																</div>
 															</div>
-															<div className="flex items-center gap-2 relative">
-																{renderRightBadges(s)}
-																<button
-																	onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpenFor(p => p === s.id ? null : s.id); }}
-																	className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-gray-300/60 dark:hover:bg-gray-600/60"
-																	title="More"
-																>
-																	<MoreVertIcon />
-																</button>
-																{menuOpenFor === s.id && renderMenu(s.id)}
-															</div>
-														</div>
 														</button>
 													);
 												})

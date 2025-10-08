@@ -92,10 +92,10 @@ const FilterDropdown: React.FC<{
         <ExpandMoreIcon className={`text-base transition-transform transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-700/60 bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
+        <div className="absolute z-20 top-full mt-1.5 w-full rounded-xl border border-gray-300 dark:border-gray-700/60 bg-gray-200 dark:bg-gray-900/85 backdrop-blur-lg shadow-2xl overflow-hidden">
           <ul className="max-h-72 overflow-y-auto">
             <li>
-              <button onClick={() => { onSelect('all'); setIsOpen(false); }} className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80">
+              <button onClick={() => { onSelect('all'); setIsOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800/80">
                 {defaultLabel}
               </button>
             </li>
@@ -103,7 +103,7 @@ const FilterDropdown: React.FC<{
               <li key={item.id}>
                 <button
                   onClick={() => { onSelect(item.id); setIsOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-800/80 truncate ${selectedId === item.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800/80 truncate ${selectedId === item.id ? 'font-semibold text-[var(--color-primary-600)]' : ''}`}
                 >
                   {(item as any).name}
                 </button>
