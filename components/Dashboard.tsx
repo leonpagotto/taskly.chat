@@ -1971,7 +1971,7 @@ const Dashboard: React.FC<DashboardProps> = (props) => {
                 </div>
 
                 {/* Desktop layout: md = two columns (Tasks/Agenda) + bottom Notes; lg+ = two flexible columns + fixed 120px Notes */}
-                <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-[1fr_1fr_160px] md:gap-4 lg:gap-6 flex-1 min-h-0 mt-0 pb-6">
+                <div className="hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_160px] md:gap-4 lg:gap-6 flex-1 min-h-0 mt-0 pb-6">
                   {/* Column 1: Tasks & Habits */}
                   <div className="flex flex-col min-h-0">
                     <div className="flex items-center justify-between mb-2 px-1">
