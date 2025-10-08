@@ -16,6 +16,7 @@ interface NotesViewProps {
   projects: Project[];
   userCategories: UserCategory[];
   onUpdateNote: (noteId: string, updates: Partial<Omit<Note, 'id'>>) => void;
+  onDeleteNote?: (noteId: string) => void;
   onToggleSidebar: () => void;
   onCloseNote: () => void;
   t: (key: string) => string;
@@ -485,7 +486,7 @@ const NoteEditor: React.FC<{
 };
 
 const NotesView: React.FC<NotesViewProps> = (props) => {
-    const { note, projects, userCategories, onUpdateNote, onToggleSidebar, onCloseNote, t, projectFiles, onUploadFiles, onDeleteFile, onPreviewFile, onCreateChecklist, onSelectView, onNewCategoryRequest, isSplitView = false } = props;
+    const { note, projects, userCategories, onUpdateNote, onDeleteNote, onToggleSidebar, onCloseNote, t, projectFiles, onUploadFiles, onDeleteFile, onPreviewFile, onCreateChecklist, onSelectView, onNewCategoryRequest, isSplitView = false } = props;
     const project = note.projectId ? projects.find(p => p.id === note.projectId) : undefined;
     const category = note.categoryId ? userCategories.find(c => c.id === note.categoryId) : undefined;
     const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -532,6 +533,12 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
         onUpdateNote(note.id, { generatedChecklistId: createdChecklist.id });
         onSelectView('lists');
         setIsTaskModalOpen(false);
+    };
+    
+    const handleDelete = () => {
+        if (window.confirm(`Are you sure you want to delete "${note.name}"? This action cannot be undone.`)) {
+            onDeleteNote?.(note.id);
+        }
     };
 
     return (
@@ -616,6 +623,16 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
                         <CreateNewFolderIcon className="text-base" />
                     </button>
+                    {onDeleteNote && (
+                        <button 
+                            onClick={handleDelete} 
+                            className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px] text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                            title="Delete Note"
+                            aria-label="Delete Note"
+                        >
+                            <DeleteIcon className="text-base" />
+                        </button>
+                    )}
                 </div>
             </header>
              <NoteEditor 
