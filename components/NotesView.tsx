@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Note, Project, UserCategory, ProjectFile, Checklist, Task, AppView } from '../types';
+import { Note, Project, UserCategory, ProjectFile, Checklist, Task, AppView, Request } from '../types';
 import { DescriptionIcon, FormatBoldIcon, FormatItalicIcon, FormatUnderlinedIcon, FormatListBulletedIcon, FormatListNumberedIcon, CodeIcon, FormatQuoteIcon, AddIcon, FolderIcon, CloseIcon, ArrowBackIcon, CreateNewFolderIcon, PaperclipIcon, ImageIcon, PictureAsPdfIcon, ArticleIcon, DeleteIcon, TextFieldsIcon, ExpandMoreIcon, PlaylistAddCheckIcon, MoreVertIcon, WidthNormalIcon, Icon } from './icons';
 import ProjectLinkModal from './ProjectLinkModal';
 import NoteToTaskModal from './NoteToTaskModal';
@@ -496,6 +496,8 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [taskGenerationData, setTaskGenerationData] = useState<{ listName: string, tasks: { text: string, dueDate?: string }[] } | null>(null);
     const [isGeneratingTasks, setIsGeneratingTasks] = useState(false);
+    const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+    const actionsMenuRef = useRef<HTMLDivElement>(null);
 
     const handleLinkToProject = (projectId?: string) => {
         const linkedProject = projects.find(p => p.id === projectId);
@@ -505,6 +507,17 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
     const handleLinkToCategory = (categoryId?: string) => {
         onUpdateNote(note.id, { categoryId });
     };
+
+    // Close actions menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (actionsMenuRef.current && !actionsMenuRef.current.contains(event.target as Node)) {
+                setIsActionsMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleGenerateTasks = async () => {
         setIsGeneratingTasks(true);
@@ -585,57 +598,97 @@ const NotesView: React.FC<NotesViewProps> = (props) => {
                     </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <button 
-                        onClick={handleGenerateTasks} 
-                        disabled={isGeneratingTasks}
-                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <PlaylistAddCheckIcon className="text-base" />
-                        <span className="hidden sm:inline">{isGeneratingTasks ? 'Generating...' : 'Generate Tasks'}</span>
-                    </button>
-                    <button
-                        onClick={() => {
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = note.content;
-                            // heuristics to derive problem/outcome from note
-                            const firstP = tempDiv.querySelector('p')?.textContent?.trim() || '';
-                            const allText = tempDiv.textContent?.trim() || '';
-                            const problem = firstP || note.name;
-                            const outcome = '';
-                            const draft = {
-                                product: project?.name || 'General',
-                                requester: 'Unknown',
-                                problem,
-                                outcome,
-                                valueProposition: '',
-                                affectedUsers: '',
-                                priority: 'medium',
-                                details: allText,
-                                status: 'new',
-                                linkedTaskIds: [],
-                                requestedExpertise: [],
-                            } as Partial<Request>;
-                            window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
-                        }}
-                        className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
-                        title="Convert to Request"
-                    >
-                        <RequestIcon className="text-base" />
-                        <span className="hidden sm:inline">Request</span>
-                    </button>
-                    <button onClick={() => setIsProjectModalOpen(true)} className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]">
-                        <CreateNewFolderIcon className="text-base" />
-                    </button>
-                    {onDeleteNote && (
+                    {/* Primary Action: Generate Tasks (when project is linked) */}
+                    {project && (
                         <button 
-                            onClick={handleDelete} 
-                            className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px] text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                            title="Delete Note"
-                            aria-label="Delete Note"
+                            onClick={handleGenerateTasks} 
+                            disabled={isGeneratingTasks}
+                            className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <DeleteIcon className="text-base" />
+                            <PlaylistAddCheckIcon className="text-base" />
+                            <span className="hidden sm:inline">{isGeneratingTasks ? 'Generating...' : 'Generate Tasks'}</span>
                         </button>
                     )}
+                    
+                    {/* Secondary Actions Menu */}
+                    <div ref={actionsMenuRef} className="relative">
+                        <button 
+                            onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
+                            className="p-2 rounded-[var(--radius-button)] transition-transform duration-150 resend-secondary hover:-translate-y-[1px]"
+                            title="More actions"
+                        >
+                            <MoreVertIcon className="text-base" />
+                        </button>
+                        
+                        {isActionsMenuOpen && (
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-gray-900 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
+                                {!project && (
+                                    <button 
+                                        onClick={() => {
+                                            handleGenerateTasks();
+                                            setIsActionsMenuOpen(false);
+                                        }} 
+                                        disabled={isGeneratingTasks}
+                                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    >
+                                        <PlaylistAddCheckIcon className="text-base" />
+                                        {isGeneratingTasks ? 'Generating...' : 'Generate Tasks'}
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => {
+                                        const tempDiv = document.createElement('div');
+                                        tempDiv.innerHTML = note.content;
+                                        const firstP = tempDiv.querySelector('p')?.textContent?.trim() || '';
+                                        const allText = tempDiv.textContent?.trim() || '';
+                                        const problem = firstP || note.name;
+                                        const outcome = '';
+                                        const draft = {
+                                            product: project?.name || 'General',
+                                            requester: 'Unknown',
+                                            problem,
+                                            outcome,
+                                            valueProposition: '',
+                                            affectedUsers: '',
+                                            priority: 'medium',
+                                            details: allText,
+                                            status: 'new',
+                                            linkedTaskIds: [],
+                                            requestedExpertise: [],
+                                        } as Partial<Request>;
+                                        window.dispatchEvent(new CustomEvent('taskly.newRequest', { detail: draft }));
+                                        setIsActionsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-gray-200 flex items-center gap-2"
+                                >
+                                    <RequestIcon className="text-base" />
+                                    Convert to Request
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        setIsProjectModalOpen(true);
+                                        setIsActionsMenuOpen(false);
+                                    }} 
+                                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-gray-200 flex items-center gap-2"
+                                >
+                                    <CreateNewFolderIcon className="text-base" />
+                                    Link to Project
+                                </button>
+                                {onDeleteNote && (
+                                    <button 
+                                        onClick={() => {
+                                            handleDelete();
+                                            setIsActionsMenuOpen(false);
+                                        }} 
+                                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-800 text-red-400 hover:text-red-300 flex items-center gap-2"
+                                    >
+                                        <DeleteIcon className="text-base" />
+                                        Delete Note
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </header>
              <NoteEditor 
