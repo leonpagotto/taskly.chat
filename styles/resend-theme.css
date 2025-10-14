@@ -42,10 +42,10 @@ body {
   background-color: var(--resend-color-bg);
   color: var(--resend-color-text-primary);
   background-image:
-    radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.18), transparent 55%),
-    radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.14), transparent 50%),
-    radial-gradient(circle at 50% 85%, rgba(244, 114, 182, 0.12), transparent 52%),
-    linear-gradient(180deg, rgba(2, 6, 23, 0.92) 0%, rgba(3, 7, 18, 0.98) 100%);
+    radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.06), transparent 65%),
+    radial-gradient(circle at 85% 15%, rgba(59, 130, 246, 0.05), transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(244, 114, 182, 0.04), transparent 62%),
+    linear-gradient(180deg, rgba(1, 3, 12, 0.98) 0%, rgba(2, 4, 10, 0.99) 100%);
   background-attachment: fixed;
   min-height: 100vh;
 }
@@ -57,11 +57,11 @@ body::before {
   pointer-events: none;
   background: radial-gradient(
     circle at 50% 0%,
-    rgba(124, 58, 237, 0.35),
-    transparent 55%
+    rgba(124, 58, 237, 0.12),
+    transparent 65%
   );
   mix-blend-mode: screen;
-  opacity: 0.5;
+  opacity: 0.3;
   z-index: -1;
 }
 
@@ -421,3 +421,131 @@ input:focus, textarea:focus, select:focus {
     rgba(5, 6, 22, 0)
   ) !important;
 }
+
+/************ Notes Editor - Checkbox Lists ************/
+/* 
+  Interactive checkbox lists in notes.
+  These are persisted as part of the note content HTML.
+  Users can check/uncheck items directly in the note.
+*/
+
+/* Container for checkbox lists */
+ul.note-checkbox-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Individual checkbox list item */
+li.note-checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  transition: background-color 150ms ease;
+}
+
+li.note-checkbox-item:hover {
+  background-color: rgba(139, 92, 246, 0.08);
+}
+
+/* The checkbox input itself */
+input.note-checkbox-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  border: 2px solid rgba(129, 140, 248, 0.4);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 0.15rem;
+}
+
+input.note-checkbox-input:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+/* Checked state with gradient background */
+input.note-checkbox-input:checked {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(16, 185, 129, 0.9));
+  border-color: rgba(34, 197, 94, 0.8);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+/* Checkmark icon */
+input.note-checkbox-input:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* The text content next to the checkbox */
+span.note-checkbox-content {
+  flex: 1;
+  min-width: 0;
+  color: var(--resend-color-text-secondary);
+  line-height: 1.6;
+  cursor: text;
+  transition: all 150ms ease;
+  /* Make the content editable inline */
+  outline: none;
+}
+
+/* When checkbox is checked, apply strikethrough and muted color to text */
+input.note-checkbox-input:checked + span.note-checkbox-content {
+  text-decoration: line-through;
+  color: var(--resend-color-text-muted);
+  opacity: 0.7;
+}
+
+/* Focus state for keyboard navigation */
+input.note-checkbox-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+/* Smooth animation when checking/unchecking */
+@keyframes checkboxPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+input.note-checkbox-input:checked {
+  animation: checkboxPop 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Empty state placeholder for new checkbox items */
+span.note-checkbox-content:empty::before {
+  content: 'Type your item here...';
+  color: var(--resend-color-text-disabled);
+  font-style: italic;
+}
+
+/* Ensure proper spacing in paragraphs within checkbox content */
+span.note-checkbox-content p {
+  margin: 0;
+}
+

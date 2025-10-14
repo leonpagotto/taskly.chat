@@ -269,6 +269,7 @@ export type Request = {
   status: RequestStatus;
   linkedTaskIds: string[]; // Checklist IDs created/linked for this request
   skillIds?: string[]; // Skills tagged to this request
+  projectId?: string; // Link to project
   createdAt: string; // ISO
   updatedAt: string; // ISO
 };

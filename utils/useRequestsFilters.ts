@@ -7,6 +7,7 @@ type PersistedFilters = {
   status: RequestStatus | 'all';
   priority: RequestPriority | 'all';
   expertise: string; // 'all' or specific tag
+  projectId: string; // 'all' or specific project id
   sortBy: RequestsSort;
 };
 
@@ -16,6 +17,7 @@ const defaultState: PersistedFilters = {
   status: 'all',
   priority: 'all',
   expertise: 'all',
+  projectId: 'all',
   sortBy: 'updated',
 };
 
@@ -39,17 +41,19 @@ export const useRequestsFilters = () => {
   const [status, setStatus] = useState<PersistedFilters['status']>(initial.status);
   const [priority, setPriority] = useState<PersistedFilters['priority']>(initial.priority);
   const [expertise, setExpertise] = useState<PersistedFilters['expertise']>(initial.expertise);
+  const [projectId, setProjectId] = useState<PersistedFilters['projectId']>(initial.projectId);
   const [sortBy, setSortBy] = useState<PersistedFilters['sortBy']>(initial.sortBy);
 
   // Persist whenever any filter changes
   useEffect(() => {
-    save({ status, priority, expertise, sortBy });
-  }, [status, priority, expertise, sortBy]);
+    save({ status, priority, expertise, projectId, sortBy });
+  }, [status, priority, expertise, projectId, sortBy]);
 
   return {
     status, setStatus,
     priority, setPriority,
     expertise, setExpertise,
+    projectId, setProjectId,
     sortBy, setSortBy,
   } as const;
 };

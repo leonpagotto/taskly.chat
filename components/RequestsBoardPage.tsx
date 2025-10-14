@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import Header from './Header';
-import { Request, RequestPriority, RequestStatus } from '../types';
+import { Request, RequestPriority, RequestStatus, Project } from '../types';
 import UnifiedToolbar from './UnifiedToolbar';
-import { Icon, ExpandMoreIcon, AddIcon, CloseIcon } from './icons';
+import { Icon, ExpandMoreIcon, AddIcon, CloseIcon, MoreVertIcon } from './icons';
 import { useRequestsFilters } from '../utils/useRequestsFilters';
 import EmptyState from './EmptyState';
 
@@ -35,34 +35,90 @@ const RequestCard: React.FC<{
   r: Request;
   onSelect: (id: string) => void;
   onGenerateStories: (id: string) => void;
-}> = ({ r, onSelect, onGenerateStories }) => {
+  project?: Project;
+}> = ({ r, onSelect, onGenerateStories, project }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (menuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [menuOpen]);
+  
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('text/plain', r.id);
     e.dataTransfer.effectAllowed = 'move';
   };
+  
+  const stop = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+  
+  // Priority color for icon background
+  const getPriorityColor = () => {
+    switch (r.priority) {
+      case 'critical': return '#DC2626';
+      case 'high': return '#F97316';
+      case 'medium': return '#FBBF24';
+      case 'low': return '#10B981';
+      default: return '#6B7280';
+    }
+  };
+  
   return (
     <div
       draggable
       onDragStart={handleDragStart}
-      className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none"
+      className="bg-white dark:bg-gray-700/50 rounded-xl p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none group transition-all hover:shadow-md"
       onClick={() => onSelect(r.id)}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className="font-semibold text-sm text-gray-900 dark:text-white truncate">{r.product || 'Untitled'}</div>
-        <PriorityDot p={r.priority} />
+      <div className="flex items-center gap-2">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: project ? `${project.color}20` : `${getPriorityColor()}20` }}>
+          <Icon name={project ? (project.icon || 'folder') : 'concierge'} style={{ color: project ? project.color : getPriorityColor() }} className="text-2xl" />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="font-semibold text-sm text-gray-900 dark:text-white truncate flex-1">{r.product || 'Untitled'}</div>
+            <button
+              type="button"
+              onClick={(e) => { stop(e); setMenuOpen(v => !v); }}
+              className="p-1 -mr-1 text-gray-500 hover:text-blue-400 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+              title="More actions"
+              aria-label="More actions"
+            >
+              <MoreVertIcon className="text-sm" />
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="mt-1 text-xs text-gray-600 dark:text-gray-300 line-clamp-2" title={r.problem}>{r.problem}</div>
-      <div className="mt-2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onGenerateStories(r.id); }}
-          className="px-2 py-1 rounded-md bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] text-white text-xs font-semibold"
-          title="Generate Stories with AI"
-        >
-          <span className="material-symbols-outlined text-sm align-middle mr-1">auto_stories</span>
-          Stories
-        </button>
-      </div>
+      
+      <div className="mt-1 text-xs text-gray-600 dark:text-gray-300 line-clamp-2 pl-12" title={r.problem}>{r.problem}</div>
+      
+      {menuOpen && (
+        <div ref={menuRef} className="absolute right-2 top-10 z-10 w-44 bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-1" onClick={stop}>
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onGenerateStories(r.id); }} 
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600"
+          >
+            <span className="material-symbols-outlined text-base">auto_stories</span> 
+            Generate Stories
+          </button>
+          <div className="my-1 h-px bg-gray-200 dark:bg-gray-700" />
+          <button 
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onSelect(r.id); }} 
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600"
+          >
+            <span className="material-symbols-outlined text-base">edit</span> 
+            View / Edit
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -74,7 +130,8 @@ const Column: React.FC<{
   onDrop: (id: string, to: RequestStatus) => void;
   onSelect: (id: string) => void;
   onGenerateStories: (id: string) => void;
-}> = ({ title, status, items, onDrop, onSelect, onGenerateStories }) => {
+  projects: Project[];
+}> = ({ title, status, items, onDrop, onSelect, onGenerateStories, projects }) => {
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -91,9 +148,12 @@ const Column: React.FC<{
         <span className="text-xs text-gray-400">{items.length}</span>
       </div>
       <div className="space-y-2 min-h-[200px]">
-        {items.map(r => (
-          <RequestCard key={r.id} r={r} onSelect={onSelect} onGenerateStories={onGenerateStories} />
-        ))}
+        {items.map(r => {
+          const project = projects.find(p => p.id === r.projectId);
+          return (
+            <RequestCard key={r.id} r={r} onSelect={onSelect} onGenerateStories={onGenerateStories} project={project} />
+          );
+        })}
         {items.length === 0 && (
           <div className="text-center py-8">
             <p className="text-sm text-gray-400 dark:text-gray-500">No requests yet</p>
@@ -106,6 +166,7 @@ const Column: React.FC<{
 
 const RequestsBoardPage: React.FC<{
   requests: Request[];
+  projects: Project[];
   onBack: () => void;
   onSelect: (id: string) => void;
   onMove: (id: string, to: RequestStatus) => void;
@@ -114,10 +175,10 @@ const RequestsBoardPage: React.FC<{
   mode: Mode;
   onToggleMode: (mode: Mode) => void;
   onToggleSidebar: () => void;
-}> = ({ requests, onBack, onSelect, onMove, onNew, onGenerateStories, mode, onToggleMode, onToggleSidebar }) => {
+}> = ({ requests, projects, onBack, onSelect, onMove, onNew, onGenerateStories, mode, onToggleMode, onToggleSidebar }) => {
   // Filters and search
   const [q, setQ] = useState('');
-  const { status, setStatus, priority, setPriority, expertise, setExpertise, sortBy, setSortBy } = useRequestsFilters();
+  const { status, setStatus, priority, setPriority, expertise, setExpertise, projectId, setProjectId, sortBy, setSortBy } = useRequestsFilters();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filtered = useMemo(() => {
@@ -125,6 +186,7 @@ const RequestsBoardPage: React.FC<{
     return requests.filter(r => {
       if (status !== 'all' && normalizeStatus(r.status) !== status) return false;
       if (priority !== 'all' && r.priority !== priority) return false;
+      if (projectId !== 'all' && r.projectId !== projectId) return false;
       if (expertise !== 'all') {
         const set = new Set(r.requestedExpertise || []);
         if (!set.has(expertise)) return false;
@@ -135,7 +197,7 @@ const RequestsBoardPage: React.FC<{
       }
       return true;
     });
-  }, [requests, q, status, priority, expertise]);
+  }, [requests, q, status, priority, projectId, expertise]);
 
   const sortRequests = (arr: Request[]) => {
     const copy = [...arr];
@@ -162,10 +224,11 @@ const RequestsBoardPage: React.FC<{
 
   const hasVisibleRequests = grouped.some(col => col.items.length > 0);
   const hasRequests = requests.length > 0;
-  const filtersActive = status !== 'all' || priority !== 'all' || expertise !== 'all' || q.trim().length > 0;
+  const filtersActive = status !== 'all' || priority !== 'all' || projectId !== 'all' || expertise !== 'all' || q.trim().length > 0;
   const handleResetFilters = () => {
     setStatus('all');
     setPriority('all');
+    setProjectId('all');
     setExpertise('all');
     setSortBy('updated');
     setQ('');
@@ -194,13 +257,12 @@ const RequestsBoardPage: React.FC<{
         <div className="px-4 sm:px-6">
           <div className="w-full py-4">
             <UnifiedToolbar
-              projects={[]}
+              projects={projects}
               userCategories={[]}
-              selectedProjectId={'all'}
+              selectedProjectId={projectId}
               selectedCategoryId={'all'}
-              onChangeProject={() => {}}
+              onChangeProject={setProjectId}
               onChangeCategory={() => {}}
-              hideProject
               hideCategory
               compactHeight="h10"
               fluidControls
@@ -319,6 +381,7 @@ const RequestsBoardPage: React.FC<{
                   onDrop={onMove}
                   onSelect={onSelect}
                   onGenerateStories={onGenerateStories}
+                  projects={projects}
                 />
               ))}
             </div>

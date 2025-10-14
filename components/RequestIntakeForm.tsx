@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Header from './Header';
 import { ArrowBackIcon } from './icons';
-import { Checklist, Request, RequestPriority, RequestUpdate } from '../types';
+import { Checklist, Request, RequestPriority, RequestUpdate, Project } from '../types';
 import { generateRequestAssist } from '../services/geminiService';
 import { ExpandMoreIcon, AddIcon } from './icons';
 import { relationalDb } from '../services/relationalDatabaseService';
@@ -16,7 +16,8 @@ const RequestIntakeForm: React.FC<{
   onCreateLinkedTask: (name: string) => void;
   existingChecklists: Checklist[];
   skillCategories: import('../types').SkillCategory[];
-}> = ({ initial, onBack, onSubmit, onSuggest, onCreateLinkedTask, existingChecklists, skillCategories }) => {
+  projects: Project[];
+}> = ({ initial, onBack, onSubmit, onSuggest, onCreateLinkedTask, existingChecklists, skillCategories, projects }) => {
   const [local, setLocal] = useState<Omit<Request, 'id' | 'createdAt' | 'updatedAt'>>({
     product: initial?.product || '',
     requester: initial?.requester || '',
@@ -33,6 +34,7 @@ const RequestIntakeForm: React.FC<{
     status: initial?.status || 'new',
     linkedTaskIds: initial?.linkedTaskIds || [],
     skillIds: initial?.skillIds || [],
+    projectId: initial?.projectId || undefined,
   });
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [newTaskName, setNewTaskName] = useState('');
@@ -177,6 +179,19 @@ const RequestIntakeForm: React.FC<{
             <div>
               <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Affected Users / Customers <span className="text-gray-400 font-normal">(optional)</span></label>
               <textarea value={local.affectedUsers} onChange={e => handle('affectedUsers', e.target.value)} className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none" rows={2} placeholder="Who is affected? How many?" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Project <span className="text-gray-400 font-normal">(optional)</span></label>
+              <select 
+                value={local.projectId || ''} 
+                onChange={e => handle('projectId', e.target.value || undefined)} 
+                className="w-full bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none"
+              >
+                <option value="">No project</option>
+                {projects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 

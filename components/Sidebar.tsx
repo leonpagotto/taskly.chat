@@ -54,7 +54,7 @@ const NavItem: React.FC<{
     default: `text-slate-200/80 hover:bg-white/10 hover:text-white`,
   } as const;
   const baseIconNormClass = 'leading-none block';
-  const gradientIconClass = 'bg-gradient-to-r from-[var(--color-primary-500,#9d7bff)] via-[var(--color-primary-600)] to-[var(--color-primary-end)] bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(139,92,246,0.45)]';
+  const gradientIconClass = 'bg-gradient-to-r from-[var(--color-primary-500,#9d7bff)] via-[var(--color-primary-600)] to-[var(--color-primary-end)] bg-clip-text text-transparent';
   const normalizeIcon = (node: React.ReactNode, active?: boolean) => {
     if (!React.isValidElement(node)) return node;
     const existingClass = (node.props as any)?.className || '';
@@ -106,7 +106,7 @@ const NavItem: React.FC<{
         <div className="pointer-events-none absolute inset-0 rounded-[14px] opacity-90" 
              style={{
                background: 'linear-gradient(145deg, rgba(124, 58, 237, 0.55), rgba(59, 130, 246, 0.45))',
-               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -8px 18px rgba(0, 0, 0, 0.55), 0 14px 42px rgba(124, 58, 237, 0.22)'
+               boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -8px 18px rgba(0, 0, 0, 0.55)'
              }} 
              aria-hidden="true" 
         />

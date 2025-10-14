@@ -240,18 +240,24 @@ export const relationalDb = {
     const { id, tasks = [], completionHistory = [], ...rest } = payload as any;
     // Try RPC for atomic upsert; fallback to manual if RPC not available
     // Note: RPC function expects camelCase in JSONB, not snake_case
+    // CRITICAL: Ensure UUID fields are null if empty/undefined, not empty strings
+    const cleanUUID = (val: any): string | null => {
+      if (!val || val === '' || val === 'null' || val === 'undefined') return null;
+      return val;
+    };
+    
     const rpcChecklist = {
-      id: id || null,
+      id: cleanUUID(id),
       name: rest.name,
-      categoryId: rest.categoryId || null,  // camelCase for JSONB RPC
-      projectId: rest.projectId || null,     // camelCase for JSONB RPC
+      categoryId: cleanUUID(rest.categoryId),  // camelCase for JSONB RPC
+      projectId: cleanUUID(rest.projectId),     // camelCase for JSONB RPC
       dueDate: rest.dueDate || null,         // camelCase for JSONB RPC
       dueTime: rest.dueTime || null,         // camelCase for JSONB RPC
       priority: rest.priority || null,
       recurrence: rest.recurrence || null,
       reminder: rest.reminder || null,
-      sourceNoteId: rest.sourceNoteId || null,        // camelCase for JSONB RPC
-      generatedChecklistId: rest.generatedChecklistId || null,  // camelCase for JSONB RPC
+      sourceNoteId: cleanUUID(rest.sourceNoteId),        // camelCase for JSONB RPC
+      generatedChecklistId: cleanUUID(rest.generatedChecklistId),  // camelCase for JSONB RPC
     } as any;
     const { data: rpcData, error: rpcErr } = await supabase.rpc('upsert_checklist_bundle', {
       p_checklist: rpcChecklist,
@@ -270,15 +276,15 @@ export const relationalDb = {
       ...(id ? { id } : {}),
       user_id: u.user_id,
       name: rest.name,
-      category_id: rest.categoryId || null,
-      project_id: rest.projectId || null,
+      category_id: cleanUUID(rest.categoryId),
+      project_id: cleanUUID(rest.projectId),
       due_date: rest.dueDate || null,
       due_time: rest.dueTime || null,
       priority: rest.priority || null,
       recurrence: rest.recurrence || null,
       reminder: rest.reminder || null,
-      source_note_id: rest.sourceNoteId || null,
-      generated_checklist_id: rest.generatedChecklistId || null,
+      source_note_id: cleanUUID(rest.sourceNoteId),
+      generated_checklist_id: cleanUUID(rest.generatedChecklistId),
     } as any;
     const { data: listRow, error: upsertError } = await supabase.from('checklists').upsert(base).select('*').single();
     if (upsertError || !listRow) {
@@ -347,13 +353,20 @@ export const relationalDb = {
     const u = await withUser();
     if (!supabase || !u) return null;
   const { id, tasks = [], completionHistory = [], ...rest } = payload as any;
+    
+    // CRITICAL: Ensure UUID fields are null if empty/undefined, not empty strings
+    const cleanUUID = (val: any): string | null => {
+      if (!val || val === '' || val === 'null' || val === 'undefined') return null;
+      return val;
+    };
+    
     const base = {
   ...(id ? { id } : {}),
       user_id: u.user_id,
       name: rest.name,
       type: rest.type,
-      category_id: rest.categoryId || null,
-      project_id: rest.projectId || null,
+      category_id: cleanUUID(rest.categoryId),
+      project_id: cleanUUID(rest.projectId),
       recurrence: rest.recurrence,
       reminder: rest.reminder || null,
       priority: rest.priority || null,
@@ -411,6 +424,13 @@ export const relationalDb = {
     const supabase = getSupabase();
     const u = await withUser();
     if (!supabase || !u) return null;
+    
+    // CRITICAL: Ensure UUID fields are null if empty/undefined, not empty strings
+    const cleanUUID = (val: any): string | null => {
+      if (!val || val === '' || val === 'null' || val === 'undefined') return null;
+      return val;
+    };
+    
     const base = {
       ...(payload as any).id ? { id: (payload as any).id } : {},
       user_id: u.user_id,
@@ -424,8 +444,8 @@ export const relationalDb = {
       end_time: payload.endTime || null,
       is_all_day: payload.isAllDay,
       reminders: payload.reminders || [],
-      category_id: payload.categoryId || null,
-      project_id: payload.projectId || null,
+      category_id: cleanUUID(payload.categoryId),
+      project_id: cleanUUID(payload.projectId),
       recurrence: payload.recurrence || null,
     } as any;
     const { data, error } = await supabase.from('events').upsert(base).select('*').single();
@@ -541,6 +561,7 @@ export const relationalDb = {
       attachments: r.attachments || [],
       status: r.status,
       linkedTaskIds: r.linked_task_ids || [],
+      projectId: r.project_id || undefined,
       createdAt: new Date(r.created_at).toISOString(),
       updatedAt: new Date(r.updated_at).toISOString(),
     }));
@@ -552,6 +573,13 @@ export const relationalDb = {
       console.warn('upsertRequest: Missing supabase or user', { hasSupabase: !!supabase, hasUser: !!u });
       return null;
     }
+    
+    // CRITICAL: Ensure UUID fields are null if empty/undefined, not empty strings
+    const cleanUUID = (val: any): string | null => {
+      if (!val || val === '' || val === 'null' || val === 'undefined') return null;
+      return val;
+    };
+    
     const base = {
       ...(payload as any).id ? { id: (payload as any).id } : {},
       user_id: u.user_id,
@@ -570,6 +598,7 @@ export const relationalDb = {
       linked_task_ids: payload.linkedTaskIds || [],
       requested_expertise: payload.requestedExpertise || [],
       skill_ids: payload.skillIds || [],
+      project_id: cleanUUID(payload.projectId),
     } as any;
     const { data, error } = await supabase.from('requests').upsert(base).select('*').single();
     if (error) {
@@ -593,6 +622,7 @@ export const relationalDb = {
       attachments: data.attachments || [],
       status: data.status,
       linkedTaskIds: data.linked_task_ids || [],
+      projectId: data.project_id || undefined,
       createdAt: new Date(data.created_at).toISOString(),
       updatedAt: new Date(data.updated_at).toISOString(),
     };

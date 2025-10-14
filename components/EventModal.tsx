@@ -187,7 +187,13 @@ const EventModal: React.FC<EventModalProps> = ({ initialData, onClose, onSave, o
     if (field === 'type') {
       const baseRecurrence = { type: value, startDate: updatedRecurrence.startDate };
       if (value === 'weekly') {
-        (baseRecurrence as any).daysOfWeek = ['Mon'];
+        // Default to current day of the week
+        const dayMap: { [key: number]: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' } = { 
+          0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' 
+        };
+        const today = new Date();
+        const currentDay = dayMap[today.getDay()];
+        (baseRecurrence as any).daysOfWeek = [currentDay];
         (baseRecurrence as any).interval = 1;
       } else if (value === 'monthly') {
         (baseRecurrence as any).dayOfMonth = parseInt(updatedRecurrence.startDate.split('-')[2]);

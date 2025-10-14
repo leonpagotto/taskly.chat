@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Header from './Header';
-import { Request, RequestPriority, RequestStatus } from '../types';
+import { Request, RequestPriority, RequestStatus, Project, UserCategory } from '../types';
 import { ChevronRightIcon, AddIcon, PlaylistAddIcon, MoreVertIcon, Icon, ExpandMoreIcon, CloseIcon } from './icons';
 import UnifiedToolbar from './UnifiedToolbar';
 import { useRequestsFilters } from '../utils/useRequestsFilters';
@@ -38,15 +38,16 @@ type Mode = 'list' | 'board';
 
 const RequestsListPage: React.FC<{
   requests: Request[];
+  projects: Project[];
   onBack: () => void;
   onSelect: (id: string) => void;
   onNew: () => void;
   mode: Mode;
   onToggleMode: (mode: Mode) => void;
   onToggleSidebar: () => void;
-}> = ({ requests, onBack, onSelect, onNew, mode, onToggleMode, onToggleSidebar }) => {
+}> = ({ requests, projects, onBack, onSelect, onNew, mode, onToggleMode, onToggleSidebar }) => {
   const [q, setQ] = useState('');
-  const { status, setStatus, priority, setPriority, expertise, setExpertise, sortBy, setSortBy } = useRequestsFilters();
+  const { status, setStatus, priority, setPriority, expertise, setExpertise, projectId, setProjectId, sortBy, setSortBy } = useRequestsFilters();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const filtered = useMemo(() => {
@@ -54,6 +55,7 @@ const RequestsListPage: React.FC<{
     return requests.filter(r => {
       if (status !== 'all' && normalizeStatus(r.status) !== status) return false;
       if (priority !== 'all' && r.priority !== priority) return false;
+      if (projectId !== 'all' && r.projectId !== projectId) return false;
       if (expertise !== 'all') {
         const set = new Set(r.requestedExpertise || []);
         if (!set.has(expertise)) return false;
@@ -64,7 +66,7 @@ const RequestsListPage: React.FC<{
       }
       return true;
     });
-  }, [requests, q, status, priority, expertise]);
+  }, [requests, q, status, priority, projectId, expertise]);
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -85,10 +87,11 @@ const RequestsListPage: React.FC<{
   }, [filtered, sortBy]);
 
   const hasRequests = requests.length > 0;
-  const filtersActive = status !== 'all' || priority !== 'all' || expertise !== 'all' || q.trim().length > 0;
+  const filtersActive = status !== 'all' || priority !== 'all' || projectId !== 'all' || expertise !== 'all' || q.trim().length > 0;
   const handleResetFilters = () => {
     setStatus('all');
     setPriority('all');
+    setProjectId('all');
     setExpertise('all');
     setSortBy('updated');
     setQ('');
@@ -118,13 +121,12 @@ const RequestsListPage: React.FC<{
         <div className="px-4 sm:px-6">
           <div className="w-full py-4">
             <UnifiedToolbar
-              projects={[]}
+              projects={projects}
               userCategories={[]}
-              selectedProjectId={'all'}
+              selectedProjectId={projectId}
               selectedCategoryId={'all'}
-              onChangeProject={() => {}}
+              onChangeProject={setProjectId}
               onChangeCategory={() => {}}
-              hideProject
               hideCategory
               compactHeight="h10"
               fluidControls
@@ -234,10 +236,11 @@ const RequestsListPage: React.FC<{
       <main className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="mx-auto w-full max-w-6xl space-y-4">
           {sorted.length > 0 ? (
-            <div className="resend-glass-panel overflow-hidden rounded-2xl divide-y divide-white/10" data-elevated="true">
-              {sorted.map(r => (
-                <RequestCard key={r.id} r={r} onSelect={onSelect} />
-              ))}
+            <div className="space-y-4">
+              {sorted.map(r => {
+                const project = projects.find(p => p.id === r.projectId);
+                return <RequestCard key={r.id} r={r} onSelect={onSelect} project={project} />;
+              })}
             </div>
           ) : (
             <EmptyState
@@ -268,7 +271,7 @@ const RequestsListPage: React.FC<{
 export default RequestsListPage;
 
 // Inline component for cleaner card rendering
-const RequestCard: React.FC<{ r: Request; onSelect: (id: string) => void; }> = ({ r, onSelect }) => {
+const RequestCard: React.FC<{ r: Request; onSelect: (id: string) => void; project?: Project; }> = ({ r, onSelect, project }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const onDoc = () => setMenuOpen(false);
@@ -277,69 +280,71 @@ const RequestCard: React.FC<{ r: Request; onSelect: (id: string) => void; }> = (
   }, []);
   const onCardClick = () => onSelect(r.id);
   const stop = (e: React.MouseEvent) => e.stopPropagation();
+  
+  // Priority color for icon background
+  const getPriorityColor = () => {
+    switch (r.priority) {
+      case 'critical': return '#DC2626';
+      case 'high': return '#F97316';
+      case 'medium': return '#FBBF24';
+      case 'low': return '#10B981';
+      default: return '#6B7280';
+    }
+  };
+  
   return (
-    <div className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/40 cursor-pointer relative" onClick={onCardClick}>
-      <div className="flex items-start gap-3">
+    <div className="bg-white dark:bg-gray-700/50 p-3 rounded-xl flex flex-col gap-0.5 group transition-all hover:shadow-md cursor-pointer" onClick={onCardClick}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: project ? `${project.color}20` : `${getPriorityColor()}20` }}>
+          <Icon name={project ? (project.icon || 'folder') : 'concierge'} style={{ color: project ? project.color : getPriorityColor() }} className="text-2xl" />
+        </div>
+        
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="font-semibold text-gray-900 dark:text-white truncate">{r.product || 'Untitled request'}</div>
-            <div className="text-xs text-gray-500 truncate">{r.requester}</div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <h3 className="text-base font-medium text-gray-900 dark:text-white truncate">{r.product || 'Untitled request'}</h3>
+              <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{r.requester}</span>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <PriorityBadge p={r.priority} />
+              <StatusBadge s={r.status} />
+            </div>
           </div>
-          <div className="mt-1 text-sm text-gray-700 dark:text-gray-200 line-clamp-2" title={r.problem}>{r.problem}</div>
-          {Boolean(r.requestedExpertise && r.requestedExpertise.length) && (
-            <div className="mt-2 flex flex-wrap gap-1">
-              {(r.requestedExpertise || []).slice(0, 6).map(tag => (
-                <span key={tag} className="px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-[11px] text-gray-800 dark:text-gray-200">{tag}</span>
-              ))}
-              {(r.requestedExpertise!.length > 6) && <span className="text-[11px] text-gray-500">+{r.requestedExpertise!.length - 6} more</span>}
+        </div>
+        
+        <div className="relative flex-shrink-0" onClick={stop}>
+          <button
+            onClick={(e) => { stop(e); setMenuOpen(v => !v); }}
+            className="p-2 -mr-2 -mt-1 text-gray-500 hover:text-blue-400 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+            title="More actions"
+            aria-label="More actions"
+          >
+            <MoreVertIcon />
+          </button>
+          {menuOpen && (
+            <div className="absolute top-full right-0 mt-1 w-56 bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 p-1" onClick={stop}>
+              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createStoryFromRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600">
+                <AddIcon className="text-base" /> Create Story
+              </button>
+              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createTasksForRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600">
+                <PlaylistAddIcon className="text-base" /> Create Tasks
+              </button>
+              <div className="my-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <button onClick={() => { setMenuOpen(false); onSelect(r.id); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600">
+                <span className="material-symbols-outlined text-base">edit</span> View / Edit
+              </button>
             </div>
           )}
-          <div className="mt-2 flex items-center gap-2">
-            <PriorityBadge p={r.priority} />
-            <StatusBadge s={r.status} />
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createStoryFromRequest', { detail: { id: r.id } })), 0); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] text-white bg-gradient-to-r from-[var(--color-primary-600)] to-[var(--color-primary-end)] hover:shadow transition-all inline-flex items-center justify-center"
-              title="Create Story from Request"
-              aria-label="Create Story"
-            >
-              <AddIcon className="text-sm" />
-            </button>
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createTasksForRequest', { detail: { id: r.id } })), 0); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 inline-flex items-center justify-center"
-              title="Create Tasks for Request"
-              aria-label="Create Tasks"
-            >
-              <PlaylistAddIcon className="text-sm" />
-            </button>
-            <button
-              onClick={(e) => { stop(e); setMenuOpen(v => !v); }}
-              className="w-9 h-9 rounded-[var(--radius-button)] hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 inline-flex items-center justify-center"
-              title="More actions"
-              aria-label="More actions"
-            >
-              <MoreVertIcon />
-            </button>
-          </div>
         </div>
       </div>
-      {menuOpen && (
-        <div className="absolute right-2 top-12 z-10 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-1" onClick={stop}>
-          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createStoryFromRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <AddIcon className="text-base" /> Create Story
-          </button>
-          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMenuOpen(false); setTimeout(() => window.dispatchEvent(new CustomEvent('taskly.createTasksForRequest', { detail: { id: r.id } })), 0); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <PlaylistAddIcon className="text-base" /> Create Tasks
-          </button>
-          <div className="my-1 h-px bg-gray-200 dark:bg-gray-700" />
-          <button onClick={() => { setMenuOpen(false); onSelect(r.id); }} className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-            <span className="material-symbols-outlined text-base">edit</span> View / Edit
-          </button>
+      
+      <div className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2 pl-13" title={r.problem}>{r.problem}</div>
+      {Boolean(r.requestedExpertise && r.requestedExpertise.length) && (
+        <div className="mt-1 flex flex-wrap gap-1 pl-13">
+          {(r.requestedExpertise || []).slice(0, 6).map(tag => (
+            <span key={tag} className="px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-[11px] text-gray-800 dark:text-gray-200">{tag}</span>
+          ))}
+          {(r.requestedExpertise!.length > 6) && <span className="text-[11px] text-gray-500">+{r.requestedExpertise!.length - 6} more</span>}
         </div>
       )}
     </div>

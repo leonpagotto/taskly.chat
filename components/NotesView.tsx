@@ -75,6 +75,26 @@ const NoteEditor: React.FC<{
             if (editorRef.current.innerHTML !== note.content) {
                 editorRef.current.innerHTML = note.content;
             }
+            
+            // Attach click handlers to all checkboxes for persistence
+            const checkboxes = editorRef.current.querySelectorAll('input.note-checkbox-input');
+            checkboxes.forEach(checkbox => {
+                // Remove any existing listeners to avoid duplicates
+                const newCheckbox = checkbox.cloneNode(true) as HTMLInputElement;
+                checkbox.parentNode?.replaceChild(newCheckbox, checkbox);
+                
+                // Add click handler
+                newCheckbox.addEventListener('click', () => {
+                    handleContentChange();
+                });
+                
+                // Ensure the span next to it is editable
+                const span = newCheckbox.nextElementSibling as HTMLElement;
+                if (span && span.classList.contains('note-checkbox-content')) {
+                    span.setAttribute('contenteditable', 'true');
+                }
+            });
+            
             // If it's a new, unedited note, select the default title for easy replacement
             if (isFirstLoadForNote.current && note.name === 'Untitled Note' && editorRef.current.textContent === 'Untitled Note') {
                 const range = document.createRange();
@@ -200,8 +220,13 @@ const NoteEditor: React.FC<{
         checkbox.type = 'checkbox';
         checkbox.className = 'note-checkbox-input';
         checkbox.setAttribute('contenteditable', 'false');
+        // Add click handler to persist checkbox state
+        checkbox.addEventListener('click', () => {
+            handleContentChange();
+        });
         const span = document.createElement('span');
         span.className = 'note-checkbox-content';
+        span.setAttribute('contenteditable', 'true'); // Make text editable
         li.appendChild(checkbox);
         li.appendChild(span);
         return { li, span };

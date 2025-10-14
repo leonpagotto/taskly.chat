@@ -43,6 +43,7 @@ import { feedbackService } from './services/feedbackService';
 import { microsoftGraphService } from './services/microsoftGraphService';
 import { hasSupabaseEnv } from './services/supabaseClient';
 import { guestSessionService } from './services/guestSessionService';
+import { persistenceService } from './services/persistenceService';
 import { generateUUID } from './utils/uuid';
 
 
@@ -160,6 +161,17 @@ const RecurrenceEditor: React.FC<{
                 daysOfWeek: recurrence?.daysOfWeek,
                 interval: recurrence?.interval,
             };
+            
+            // If changing to weekly and no days are set, default to current day
+            if (newType === 'weekly' && (!recurrence?.daysOfWeek || recurrence.daysOfWeek.length === 0)) {
+                const dayMap: { [key: number]: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' } = { 
+                    0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' 
+                };
+                const today = new Date();
+                const currentDay = dayMap[today.getDay()];
+                baseRecurrence.daysOfWeek = [currentDay];
+            }
+            
             onUpdate(baseRecurrence);
         }
     };
@@ -1424,6 +1436,10 @@ const App: React.FC = () => {
 
     // Save state to local storage
     useEffect(() => {
+        console.log('💾 Saving to localStorage...', { 
+            habitsCount: habits.length, 
+            requestsCount: requests.length 
+        });
         try {
             localStorage.setItem('projects_v4', JSON.stringify(projects));
             localStorage.setItem('conversations_v3', JSON.stringify(conversations));
@@ -1439,7 +1455,10 @@ const App: React.FC = () => {
             localStorage.setItem('projectFiles_v1', JSON.stringify(projectFiles));
             localStorage.setItem('sidebarCollapsed', JSON.stringify(isSidebarCollapsed));
             try { localStorage.setItem('requests.viewMode.v1', requestsViewMode); } catch {}
-        } catch (error) { console.error("Failed to save data to localStorage", error); }
+            console.log('✅ Successfully saved to localStorage');
+        } catch (error) { 
+            console.error("❌ Failed to save data to localStorage", error); 
+        }
   }, [projects, conversations, checklists, habits, events, stories, requests, userCategories, skillCategories, preferences, notes, projectFiles, isSidebarCollapsed, requestsViewMode]);
   
   // Apply theme and color preferences to the UI
@@ -1801,18 +1820,26 @@ const App: React.FC = () => {
         useEffect(() => {
             if (!authSession || !databaseService.isEnabled()) return;
             if (justLoadedFromCloudRef.current) return;
+            console.log('🔄 Debounced save triggered - will save to Supabase in 900ms');
             const id = window.setTimeout(() => {
                 const payload = collectAppState();
                 const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
                 // Always keep JSON app_state up-to-date for backward compatibility
-                databaseService.saveAppState(authSession.userId, payload).catch(() => {});
+                console.log('💾 Saving app state to Supabase...', { 
+                    requestsCount: requests.length, 
+                    habitsCount: habits.length,
+                    checklistsCount: checklists.length 
+                });
+                databaseService.saveAppState(authSession.userId, payload)
+                    .then(() => console.log('✅ Successfully saved to Supabase'))
+                    .catch((err) => console.error('❌ Failed to save to Supabase:', err));
                 // Optionally mirror to relational tables (idempotent upserts)
                 if (useRelDb && relationalDb.isEnabled()) {
                     migrateToRelational(payload).catch(() => { try { localStorage.setItem('relational.sync.dirty.v1', 'true'); } catch {} });
                 }
             }, 900);
             return () => clearTimeout(id);
-        }, [authSession, projects, conversations, checklists, habits, events, stories, userCategories, preferences, notes, projectFiles]);
+        }, [authSession, projects, conversations, checklists, habits, events, stories, requests, userCategories, skillCategories, preferences, notes, projectFiles]);
 
     // On load: handle "import" URL param to import a shared checklist or habit
     useEffect(() => {
@@ -2557,9 +2584,15 @@ Keep descriptions concise (10-15 words max).`;
         }
     };
     const handleUpdateRequest = (id: string, updates: Partial<Request>) => {
+            console.log('🔄 handleUpdateRequest called:', { id, updates });
             const updated = { ...updates, updatedAt: new Date().toISOString() } as Partial<Request>;
             const prevReq = requests.find(r => r.id === id);
-            setRequests(prev => prev.map(r => r.id === id ? { ...r, ...updated } : r));
+            console.log('📋 Previous request:', prevReq);
+            setRequests(prev => {
+                const newRequests = prev.map(r => r.id === id ? { ...r, ...updated } : r);
+                console.log('✅ Updated requests state:', newRequests.find(r => r.id === id));
+                return newRequests;
+            });
             // Mirror to relational DB if enabled
             try {
                 const useRelDb = !!((import.meta as any).env?.VITE_USE_REL_DB === 'true');
@@ -2575,7 +2608,9 @@ Keep descriptions concise (10-15 words max).`;
                       }
                     }
                 }
-            } catch {}
+            } catch (e) {
+                console.error('❌ Error in handleUpdateRequest relational sync:', e);
+            }
     };
     const handleDeleteRequest = (id: string) => {
         setRequests(prev => prev.filter(r => r.id !== id));
@@ -2806,6 +2841,20 @@ Keep descriptions concise (10-15 words max).`;
     }));
     if (toggledChecklist) syncChecklistToRelational(toggledChecklist);
     
+    // 🔥 NEW: Trigger persistence service for immediate database save
+    if (authSession?.userId && toggledChecklist) {
+        const task = toggledChecklist.tasks.find(t => t.id === taskId);
+        if (task) {
+            persistenceService.updateTaskCompletion(
+                authSession.userId,
+                checklistId,
+                taskId,
+                !!task.completedAt,
+                collectAppState
+            );
+        }
+    }
+    
     if (parentCompleted) {
         setTimeout(() => setModalToClose(checklistId), 200);
         setCompletingItemIds(prev => new Set(prev).add(checklistId));
@@ -2899,12 +2948,17 @@ Keep descriptions concise (10-15 words max).`;
         syncHabitToRelational(newHabit);
   };
   const handleUpdateHabit = (habitId: string, updatedData: Partial<Omit<Habit, 'id'>>) => {
+        console.log('🔄 handleUpdateHabit called:', { habitId, updatedData });
         let updatedHabit: Habit | null = null;
-        setHabits(prev => prev.map(h => {
+        setHabits(prev => {
+            const newHabits = prev.map(h => {
                 if (h.id !== habitId) return h;
                 updatedHabit = { ...h, ...updatedData };
                 return updatedHabit;
-        }));
+            });
+            console.log('✅ Updated habits state:', updatedHabit);
+            return newHabits;
+        });
         if (updatedHabit) syncHabitToRelational(updatedHabit);
   };
   const handleDeleteHabit = (habitId: string) => {
@@ -2947,6 +3001,18 @@ Keep descriptions concise (10-15 words max).`;
                 return updatedHabit;
             }));
             if (updatedHabit) syncHabitToRelational(updatedHabit);
+            
+            // 🔥 NEW: Trigger persistence service for immediate database save
+            if (authSession?.userId && updatedHabit) {
+                persistenceService.updateHabitCompletion(
+                    authSession.userId,
+                    habitId,
+                    date,
+                    true,
+                    collectAppState
+                );
+            }
+            
             setCompletingItemIds(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(habitId);
@@ -2961,6 +3027,17 @@ Keep descriptions concise (10-15 words max).`;
             return updatedHabit;
         }));
         if (updatedHabit) syncHabitToRelational(updatedHabit);
+        
+        // 🔥 NEW: Trigger persistence service for immediate database save
+        if (authSession?.userId && updatedHabit) {
+            persistenceService.updateHabitCompletion(
+                authSession.userId,
+                habitId,
+                date,
+                false,
+                collectAppState
+            );
+        }
     }
   };
   const handleAddTaskToHabit = (habitId: string, text: string) => {
@@ -3831,6 +3908,7 @@ Keep descriptions concise (10-15 words max).`;
                                                                                         requestsViewMode === 'list' ? (
                                                                                             <RequestsListPage
                                                                                                 requests={requests}
+                                                                                                projects={projects}
                                                                                                 onBack={() => setCurrentView('dashboard')}
                                                                                                 onSelect={(id) => {
                                                                                                     const r = requests.find(x => x.id === id);
@@ -3846,6 +3924,7 @@ Keep descriptions concise (10-15 words max).`;
                                                                                         ) : (
                                                                                             <RequestsBoardPage
                                                                                                 requests={requests}
+                                                                                                projects={projects}
                                                                                                 onBack={() => setCurrentView('dashboard')}
                                                                                                 onSelect={(id) => {
                                                                                                     const r = requests.find(x => x.id === id);
@@ -3899,6 +3978,7 @@ Keep descriptions concise (10-15 words max).`;
                                                 }}
                                                 existingChecklists={checklists}
                                                 skillCategories={skillCategories}
+                                                projects={projects}
                                             />
                                         ) : null}
                                 </div>
